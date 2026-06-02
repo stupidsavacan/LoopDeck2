@@ -38,6 +38,30 @@ npm test
 npm run build
 ```
 
+CI uses `npm ci` with the checked-in lockfile. The repository `.npmrc` forces public npm registry downloads so GitHub Actions does not try to read private/local registry URLs from generated lockfiles.
+
+## GitHub Actions
+
+Pushes and pull requests run only the fast web checks:
+
+```text
+npm ci --include=dev
+npm test
+npm run build
+```
+
+Unsigned debug APKs are built only from the manual `workflow_dispatch` run of:
+
+```text
+.github/workflows/build-android-debug.yml
+```
+
+Leave `build_apk` enabled when manually running the workflow to upload this artifact:
+
+```text
+LoopDeck-debug-apk
+```
+
 ## Android Studio build
 
 Open the `android/` folder in Android Studio.
@@ -55,22 +79,6 @@ See:
 ```text
 android/README_SIGNING.md
 ```
-
-## Temporary unsigned debug APK build
-
-A GitHub Actions workflow builds an unsigned debug APK for testing:
-
-```text
-.github/workflows/build-android-debug.yml
-```
-
-The uploaded artifact name is:
-
-```text
-LoopDeck-debug-apk
-```
-
-Signed release builds are intentionally left for later, after `keystore.properties` is available locally.
 
 ## Data files
 
