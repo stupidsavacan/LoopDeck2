@@ -1,4 +1,4 @@
-import type { LoopDeckPack, ModuleInfo } from '../core/models';
+import type { FolderInfo, LoopDeckPack, ModuleInfo } from '../core/models';
 import { getVisibleStudyModules } from '../packs/studyhomeNormalizer';
 import { button, clear, el } from '../ui/dom';
 
@@ -8,59 +8,90 @@ function moduleMatches(module: ModuleInfo, query: string): boolean {
   return text.includes(query.trim().toLowerCase());
 }
 
+function uniqueFolders(packs: LoopDeckPack[]): FolderInfo[] {
+  const seen = new Set<string>();
+  const folders: FolderInfo[] = [];
+  for (const folder of packs.flatMap((pack) => pack.folders)) {
+    if (seen.has(folder.id)) continue;
+    seen.add(folder.id);
+    folders.push(folder);
+  }
+  return folders;
+}
+
+function folderTitle(folder: FolderInfo | undefined, fallbackId: string): string {
+  return folder?.title || fallbackId || 'その他';
+}
+
 export function renderHomeScreen(
   root: HTMLElement,
   packs: LoopDeckPack[],
   onOpenModule: (moduleId: string) => void,
   onOpenReview: () => void,
-  onOpenImport: () => void
+  onOpenImport: () => void,
+  onOpenGraphs: () => void
 ): void {
   clear(root);
   let query = '';
 
-  const screen = el('main', 'screen');
+  const visibleModules = getVisibleStudyModules(packs.flatMap((pack) => pack.modules));
+  const totalQuestions = visibleModules.reduce((sum, module) => sum + module.questionIds.length, 0);
+
+  const screen = el('main', 'screen home-screen');
   const hero = el('section', 'hero');
-  hero.innerHTML = `
-    <div>
-      <p class="eyebrow">StudyHome rescued deck</p>
-      <h1>LoopDeck</h1>
-      <p>救出したStudyHome教材をシャッフルで解き、間違いをすぐ復習に回すローカル学習デッキ。</p>
-    </div>
-  `;
+  const heroCopy = el('div');
+  heroCopy.append(
+    el('p', 'eyebrow', 'StudyHome rescued deck'),
+    el('h1', '', 'LoopDeck'),
+    el('p', '', '救出したStudyHome教材を、軽いカード画面からすぐシャッフル学習できるローカル学習デッキ。'),
+  );
+  const heroStats = el('div', 'stats-row');
+  heroStats.append(el('span', '', `${visibleModules.length}教材`), el('span', '', `${totalQuestions}問`));
+  heroCopy.append(heroStats);
+
   const heroActions = el('div', 'hero-actions');
   const review = button('復習センター', 'btn primary');
   review.onclick = onOpenReview;
-  const importer = button('教材追加', 'btn ghost light');
+  const graphs = button('グラフ', 'btn ghost light');
+  graphs.onclick = onOpenGraphs;
+  const importer = button('教材入出力', 'btn ghost light');
   importer.onclick = onOpenImport;
-  heroActions.append(review, importer);
-  hero.append(heroActions);
+  heroActions.append(review, graphs, importer);
+  hero.append(heroCopy, heroActions);
 
   const search = el('input', 'search') as HTMLInputElement;
   search.placeholder = '教材を検索';
+  search.setAttribute('aria-label', '教材を検索');
 
   const list = el('div', 'folder-list');
 
   function renderList(): void {
     clear(list);
-    const folders = packs.flatMap((pack) => pack.folders);
-    const modules = getVisibleStudyModules(packs.flatMap((pack) => pack.modules)).filter((module) => moduleMatches(module, query));
+    const folders = uniqueFolders(packs);
+    const folderById = new Map(folders.map((folder) => [folder.id, folder]));
+    const modules = visibleModules.filter((module) => moduleMatches(module, query));
+    const orderedFolderIds = [
+      ...folders.map((folder) => folder.id),
+      ...modules.map((module) => module.folderId).filter((folderId) => !folderById.has(folderId))
+    ].filter((folderId, index, all) => all.indexOf(folderId) === index);
 
-    for (const folder of folders) {
-      const folderModules = modules.filter((module) => module.folderId === folder.id);
+    for (const folderId of orderedFolderIds) {
+      const folderModules = modules.filter((module) => module.folderId === folderId);
       if (!folderModules.length) continue;
 
       const section = el('section', 'folder-section');
-      section.innerHTML = `<h2>${folder.title}</h2>`;
+      section.append(el('h2', '', folderTitle(folderById.get(folderId), folderId)));
       const grid = el('div', 'module-grid');
       for (const module of folderModules) {
         const card = el('button', 'module-card') as HTMLButtonElement;
         card.type = 'button';
-        card.innerHTML = `
-          <span class="module-subject">${module.subject}</span>
-          <strong>${module.title}</strong>
-          <small>${module.questionIds.length}問</small>
-        `;
         card.onclick = () => onOpenModule(module.id);
+        card.append(
+          el('span', 'module-subject', module.subject),
+          el('strong', '', module.title),
+          el('small', '', module.description ?? 'シャッフルで学習'),
+          el('span', 'module-card-footer', `${module.questionIds.length}問`)
+        );
         grid.append(card);
       }
       section.append(grid);
