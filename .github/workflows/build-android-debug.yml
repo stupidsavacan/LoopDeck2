@@ -36,10 +36,10 @@ jobs:
         with:
           node-version: 20.19.0
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: package.json
 
       - name: Install web dependencies
-        run: npm ci --include=dev
+        run: npm install --include=dev
 
       - name: Show installed tool versions
         run: |
