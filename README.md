@@ -38,6 +38,32 @@ npm test
 npm run build
 ```
 
+Dependencies are pinned to stable Vite / TypeScript / Vitest versions instead of `latest`. The generated lockfile was removed because it pointed at a private/internal registry and had resolved to a broken Vite package for GitHub Actions.
+
+## GitHub Actions
+
+Pushes and pull requests run only the fast web checks:
+
+```text
+npm install --include=dev
+npm test
+npm run build
+```
+
+The repository `.npmrc` forces public npm registry downloads so CI does not try to read private/local registry URLs.
+
+Unsigned debug APKs are built only from the manual `workflow_dispatch` run of:
+
+```text
+.github/workflows/build-android-debug.yml
+```
+
+Leave `build_apk` enabled when manually running the workflow to upload this artifact:
+
+```text
+LoopDeck-debug-apk
+```
+
 ## Android Studio build
 
 Open the `android/` folder in Android Studio.
@@ -55,22 +81,6 @@ See:
 ```text
 android/README_SIGNING.md
 ```
-
-## Temporary unsigned debug APK build
-
-A GitHub Actions workflow builds an unsigned debug APK for testing:
-
-```text
-.github/workflows/build-android-debug.yml
-```
-
-The uploaded artifact name is:
-
-```text
-LoopDeck-debug-apk
-```
-
-Signed release builds are intentionally left for later, after `keystore.properties` is available locally.
 
 ## Data files
 
