@@ -3,6 +3,10 @@ import type { LoopDeckPack } from '../core/models';
 import type { PackValidationIssue, PackValidationResult } from './packTypes';
 import { validatePack, validatePackFiles } from './packValidator';
 
+function validateContainerFile(file: File): PackValidationIssue[] {
+  return validatePackFiles([file.name]);
+}
+
 async function readJson<T>(zip: JSZip, path: string): Promise<T | undefined> {
   const file = zip.file(path);
   if (!file) return undefined;
@@ -11,9 +15,12 @@ async function readJson<T>(zip: JSZip, path: string): Promise<T | undefined> {
 }
 
 export async function importLoopDeckZip(file: File): Promise<PackValidationResult> {
+  const fileIssues = validateContainerFile(file);
+  if (fileIssues.some((issue) => issue.level === 'error')) return { ok: false, issues: fileIssues };
+
   const zip = await JSZip.loadAsync(file);
   const paths = Object.keys(zip.files);
-  const issues: PackValidationIssue[] = validatePackFiles(paths);
+  const issues: PackValidationIssue[] = [...fileIssues, ...validatePackFiles(paths)];
 
   const manifest = await readJson<Record<string, unknown>>(zip, 'manifest.json');
   const modules = await readJson<unknown[]>(zip, 'modules.json');
@@ -46,7 +53,15 @@ export async function importLoopDeckZip(file: File): Promise<PackValidationResul
 }
 
 export async function importLoopDeckJson(file: File): Promise<PackValidationResult> {
+  const issues = validateContainerFile(file);
+  if (issues.some((issue) => issue.level === 'error')) return { ok: false, issues };
+
   const text = await file.text();
   const json = JSON.parse(text) as unknown;
-  return validatePack(json);
+  const packResult = validatePack(json);
+  return {
+    ok: packResult.ok && !issues.some((issue) => issue.level === 'error'),
+    issues: [...issues, ...packResult.issues],
+    pack: packResult.pack
+  };
 }
