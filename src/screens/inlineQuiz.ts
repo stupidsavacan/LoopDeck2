@@ -1,8 +1,9 @@
 import { judgeQuestion, getCorrectAnswer } from '../core/answerJudge';
 import type { Attempt, Question } from '../core/models';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
+import { isSafeImageAssetRef } from '../packs/assetSafety';
 import { db } from '../storage/db';
-import { button, clear, el, toast } from '../ui/dom';
+import { button, clear, el } from '../ui/dom';
 
 export interface InlineQuizCallbacks {
   onSessionChange(session: QuizSession): void;
@@ -42,6 +43,22 @@ function renderResult(container: HTMLElement, question: Question, correct: boole
   } satisfies Attempt);
 }
 
+function renderImageReference(question: Question): HTMLElement | undefined {
+  if (!question.imageAsset) return undefined;
+  if (!isSafeImageAssetRef(question.imageAsset)) {
+    return el('p', 'image-fallback', '画像参照は保持されています。表示は未実装または安全でない参照のためスキップしました。');
+  }
+
+  const image = el('img', 'question-image') as HTMLImageElement;
+  image.src = question.imageAsset;
+  image.alt = '問題資料画像';
+  image.loading = 'lazy';
+  image.onerror = () => {
+    image.replaceWith(el('p', 'image-fallback', '画像参照は保持されています。画像ファイルはまだ表示できません。'));
+  };
+  return image;
+}
+
 export function renderInlineQuiz(container: HTMLElement, session: QuizSession, callbacks: InlineQuizCallbacks): void {
   clear(container);
 
@@ -62,13 +79,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const card = el('section', 'quiz-card');
   const meta = el('div', 'quiz-meta', `${session.index + 1} / ${session.queue.length}`);
   const prompt = el('h3', 'question-prompt', question.prompt);
-  const imageAsset = question.imageAsset;
-  const image = imageAsset ? el('img', 'question-image') as HTMLImageElement : undefined;
-  if (image && imageAsset) {
-    image.src = imageAsset;
-    image.alt = '問題資料画像';
-    image.loading = 'lazy';
-  }
+  const image = renderImageReference(question);
   const answerArea = el('div', 'answer-area');
   const controls = el('div', 'quiz-controls');
   const resultArea = el('div', 'result-area');

@@ -1,8 +1,7 @@
 import type { LoopDeckPack, Question } from '../core/models';
+import { extensionOf, isSafePackPath } from './assetSafety';
 import { FORBIDDEN_EXTENSIONS, type PackValidationIssue, type PackValidationResult } from './packTypes';
 
-const hasUnsafePath = (path: string): boolean => path.includes('..') || path.startsWith('/') || /^[a-zA-Z]:/.test(path);
-const extensionOf = (path: string): string => path.toLowerCase().slice(path.lastIndexOf('.'));
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === 'string');
 
@@ -10,17 +9,13 @@ export function validatePackFiles(paths: string[]): PackValidationIssue[] {
   const issues: PackValidationIssue[] = [];
 
   for (const path of paths) {
-    if (hasUnsafePath(path)) {
+    if (!isSafePackPath(path)) {
       issues.push({ level: 'error', message: 'Unsafe path is not allowed.', path });
     }
 
     const ext = extensionOf(path);
     if (FORBIDDEN_EXTENSIONS.includes(ext)) {
       issues.push({ level: 'error', message: `Executable or renderable file is rejected: ${ext}`, path });
-    }
-
-    if (/^https?:\/\//i.test(path)) {
-      issues.push({ level: 'error', message: 'Remote URLs are not allowed in packs.', path });
     }
   }
 

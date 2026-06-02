@@ -1,7 +1,40 @@
 import type { LoopDeckPack } from '../core/models';
+import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
+
+async function downloadBlob(blob: Blob, filename: string): Promise<void> {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function exportPackJson(pack: LoopDeckPack): Promise<void> {
+  try {
+    const blob = new Blob([stringifyLoopDeckJson(pack)], { type: 'application/json' });
+    await downloadBlob(blob, `${makePackFileStem(pack)}.loopdeck.json`);
+    toast('JSONを書き出しました。');
+  } catch (error) {
+    toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+async function exportPackZip(pack: LoopDeckPack): Promise<void> {
+  try {
+    const blob = await createLoopDeckZipBlob(pack);
+    await downloadBlob(blob, `${makePackFileStem(pack)}.loopdeck.zip`);
+    toast('ZIPを書き出しました。');
+  } catch (error) {
+    toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
+  }
+}
 
 export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], navigateHome: () => void, onImported: () => Promise<void>): void {
   clear(root);
@@ -13,9 +46,9 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
 
   const card = el('section', 'hero-card');
   card.innerHTML = `
-    <p class="eyebrow">Local Pack Import</p>
-    <h1>教材追加</h1>
-    <p>JSON または .loopdeck.zip を選ぶと、ブラウザ内で検証してから取り込みます。HTML / JS / CSS は実行しません。</p>
+    <p class="eyebrow">Local Pack Import / Export</p>
+    <h1>教材入出力</h1>
+    <p>JSON または .loopdeck.zip を取り込み、現在の教材パックを書き出せます。HTML / JS / CSS は実行しません。</p>
   `;
 
   const input = el('input', 'file-input') as HTMLInputElement;
@@ -26,11 +59,21 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
   preview.innerHTML = '<h2>読み込み結果</h2><p class="empty">まだファイルが選ばれていません。</p>';
 
   const packageList = el('section', 'card');
-  packageList.innerHTML = `<h2>現在の教材パック</h2>`;
+  packageList.innerHTML = '<h2>現在の教材パック / 書き出し</h2>';
   const list = el('div', 'weak-list');
   for (const pack of packs) {
-    const row = el('div', 'weak-row');
-    row.innerHTML = `<span>${pack.title}</span><small>${pack.questions.length}問</small>`;
+    const row = el('div', 'weak-row pack-row');
+    const meta = el('div', 'pack-meta');
+    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問`));
+
+    const actions = el('div', 'pack-actions');
+    const json = button('JSON', 'btn');
+    json.onclick = () => void exportPackJson(pack);
+    const zip = button('ZIP', 'btn primary');
+    zip.onclick = () => void exportPackZip(pack);
+    actions.append(json, zip);
+
+    row.append(meta, actions);
     list.append(row);
   }
   packageList.append(list);
@@ -74,9 +117,10 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
     <summary>対応ファイルと安全制限</summary>
     <ul>
       <li>JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。</li>
+      <li>書き出した ZIP は、そのまま LoopDeck に再取り込みできます。</li>
       <li>HTML / JavaScript / CSS は教材として実行しません。</li>
-      <li>.apk / .dex / .jar / .so / .exe / .bat / .sh は拒否します。</li>
-      <li>../ を含む危険なパスは拒否します。</li>
+      <li>.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。</li>
+      <li>../、..\、絶対パス、空パス、null byte を含む危険なパスは拒否します。</li>
     </ul>
   `;
 

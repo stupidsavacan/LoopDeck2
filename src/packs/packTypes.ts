@@ -17,6 +17,7 @@ export const FORBIDDEN_EXTENSIONS = [
   '.htm',
   '.js',
   '.mjs',
+  '.cjs',
   '.css',
   '.apk',
   '.dex',
@@ -25,7 +26,8 @@ export const FORBIDDEN_EXTENSIONS = [
   '.exe',
   '.bat',
   '.cmd',
-  '.sh'
+  '.sh',
+  '.ps1'
 ];
 
 export const ALLOWED_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];

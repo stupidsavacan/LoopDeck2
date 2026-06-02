@@ -10,29 +10,65 @@ const tokugawaQuestion: InputQuestion = {
   answer: '徳川家康'
 };
 
-describe('answer judging', () => {
-  it('rejects partial Japanese answers', () => {
-    expect(judgeInputAnswer(tokugawaQuestion, '徳川')).toBe(false);
-  });
+const englishQuestion: InputQuestion = {
+  id: 'q2',
+  moduleId: 'english',
+  type: 'input',
+  prompt: 'apple',
+  answer: 'Apple'
+};
 
+const multiSelectQuestion: MultiSelectQuestion = {
+  id: 'm1',
+  moduleId: 'history',
+  type: 'multi_select',
+  prompt: '三大改革',
+  choices: ['享保の改革', '寛政の改革', '天保の改革', '明治維新'],
+  correctChoices: ['享保の改革', '寛政の改革', '天保の改革']
+};
+
+describe('answer judging', () => {
   it('accepts exact Japanese answers', () => {
     expect(judgeInputAnswer(tokugawaQuestion, '徳川家康')).toBe(true);
   });
 
-  it('accepts natural longer answers containing the full answer', () => {
+  it('accepts natural longer answers containing the full Japanese answer', () => {
     expect(judgeInputAnswer(tokugawaQuestion, '答えは徳川家康です')).toBe(true);
   });
 
-  it('judges multi-select by exact set equality', () => {
-    const q: MultiSelectQuestion = {
-      id: 'm1',
-      moduleId: 'history',
-      type: 'multi_select',
-      prompt: '三大改革',
-      choices: ['享保の改革', '寛政の改革', '天保の改革', '明治維新'],
-      correctChoices: ['享保の改革', '寛政の改革', '天保の改革']
-    };
-    expect(judgeMultiSelectAnswer(q, ['天保の改革', '享保の改革', '寛政の改革'])).toBe(true);
-    expect(judgeMultiSelectAnswer(q, ['享保の改革', '寛政の改革'])).toBe(false);
+  it('rejects partial Japanese answers', () => {
+    expect(judgeInputAnswer(tokugawaQuestion, '徳川')).toBe(false);
+  });
+
+  it('normalizes whitespace and simple punctuation', () => {
+    expect(judgeInputAnswer(tokugawaQuestion, '  徳川家康。 ')).toBe(true);
+    expect(judgeInputAnswer({ ...englishQuestion, answer: 'New York' }, 'new   york.')).toBe(true);
+  });
+
+  it('judges English answers case-insensitively', () => {
+    expect(judgeInputAnswer(englishQuestion, 'apple')).toBe(true);
+    expect(judgeInputAnswer(englishQuestion, 'APPLE')).toBe(true);
+  });
+
+  it('does not accept English substrings inside another word', () => {
+    expect(judgeInputAnswer({ ...englishQuestion, answer: 'war' }, 'reward')).toBe(false);
+  });
+});
+
+describe('multi-select judging', () => {
+  it('accepts exact sets', () => {
+    expect(judgeMultiSelectAnswer(multiSelectQuestion, ['享保の改革', '寛政の改革', '天保の改革'])).toBe(true);
+  });
+
+  it('rejects missing correct choices', () => {
+    expect(judgeMultiSelectAnswer(multiSelectQuestion, ['享保の改革', '寛政の改革'])).toBe(false);
+  });
+
+  it('rejects extra wrong choices', () => {
+    expect(judgeMultiSelectAnswer(multiSelectQuestion, ['享保の改革', '寛政の改革', '天保の改革', '明治維新'])).toBe(false);
+  });
+
+  it('ignores selection order', () => {
+    expect(judgeMultiSelectAnswer(multiSelectQuestion, ['天保の改革', '享保の改革', '寛政の改革'])).toBe(true);
   });
 });

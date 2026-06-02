@@ -73,9 +73,6 @@ export async function renderModuleScreen(root: HTMLElement, packs: LoopDeckPack[
 
   const actions = el('section', 'card action-card');
   const start = button('テスト開始', 'btn primary');
-  const mistakes = button('間違いだけ', 'btn');
-  const bookmark = button('ブックマーク', 'btn');
-  const reset = button('履歴消去', 'btn danger');
   const quizMount = el('div', 'quiz-mount');
 
   function startSession(items: Question[], mode: 'normal' | 'review'): void {
@@ -89,16 +86,20 @@ export async function renderModuleScreen(root: HTMLElement, packs: LoopDeckPack[
   }
 
   start.onclick = () => startSession(questions, 'normal');
-  mistakes.onclick = () => startSession(wrongQuestions, 'review');
-  bookmark.onclick = () => startSession(bookmarkedQuestions, 'review');
-  reset.onclick = async () => {
-    if (!confirm('すべての解答履歴を消しますか？')) return;
-    await db.clearAttempts();
-    toast('履歴を消去しました。');
-    await renderModuleScreen(root, packs, moduleId, navigateHome, navigateReview);
-  };
+  actions.append(start);
 
-  actions.append(start, mistakes, bookmark, reset);
+  if (wrongQuestions.length) {
+    const mistakes = button('間違いだけ', 'btn');
+    mistakes.onclick = () => startSession(wrongQuestions, 'review');
+    actions.append(mistakes);
+  }
+
+  if (bookmarkedQuestions.length) {
+    const bookmark = button('ブックマーク', 'btn');
+    bookmark.onclick = () => startSession(bookmarkedQuestions, 'review');
+    actions.append(bookmark);
+  }
+
   screen.append(header, info, settingsCard, actions, quizMount);
   root.append(screen);
 }

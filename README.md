@@ -2,32 +2,32 @@
 
 LoopDeck is the HTML/PWA successor to StudyHome.
 
-This build uses the old StudyHome-style lightweight UX, but the data model and import safety ideas come from StudyHome-Next.
+This build keeps the old StudyHome-style lightweight study flow, while using StudyHome-Next rescue data and safer data-only import rules.
 
-## What is included in this ZIP
+## What is included
 
-- LoopDeck web app source: Vite + TypeScript + HTML/CSS
-- Built-in rescued StudyHome-Next教材データ
-- Normal-direction-only data pack: reverse-practice modules removed
-- 1,112 usable questions from StudyHome-Next
-- 4 rescued history images
-- Basic Review Center
+- Vite + TypeScript + HTML/CSS LoopDeck web app
+- Built-in rescued StudyHome / StudyHome-Next 教材データ
+- Normal-direction-only study data; reverse-practice modules are not active
+- 1,112 usable rescued questions
+- Basic Review Center for wrong-answer sessions
 - Input / choice / multi_select questions
-- Safer Japanese answer judging
-- JSON / `.loopdeck.zip` import entry point
-- Android Studio wrapper project with signing-key support
+- Japanese answer judging that rejects partial fragments
+- JSON / `.loopdeck.zip` import and export
 
 ## Removed on purpose
 
-Reverse-practice modules were removed because the intended workflow is shuffled normal study.
+Reverse-practice modules are removed because the intended workflow is shuffled normal study.
 
-Removed modules:
+Removed module ids:
 
 - `english_reverse`
 - `leap_reverse`
 - `leap_final_reverse`
 
-The empty old `kobun_vocab` module is also omitted from the usable built-in pack because it contained 0 questions. The raw source data is still preserved under `rescued-data/raw/`.
+The empty old `kobun_vocab` / `古文単語` module is preserved as a 0-question reference module, but it is hidden from normal Home study cards.
+
+The old Android/WebView wrapper and APK workflow were removed. LoopDeck is now maintained here as an HTML / TypeScript / PWA app only.
 
 ## Commands
 
@@ -42,7 +42,13 @@ Dependencies are pinned to stable Vite / TypeScript / Vitest versions instead of
 
 ## GitHub Actions
 
-Pushes and pull requests run only the fast web checks:
+Pushes, pull requests, and manual workflow runs use the web-only CI workflow:
+
+```text
+.github/workflows/ci.yml
+```
+
+It runs:
 
 ```text
 npm install --include=dev
@@ -52,56 +58,18 @@ npm run build
 
 The repository `.npmrc` forces public npm registry downloads so CI does not try to read private/local registry URLs.
 
-Unsigned debug APKs are built only from the manual `workflow_dispatch` run of:
-
-```text
-.github/workflows/build-android-debug.yml
-```
-
-Leave `build_apk` enabled when manually running the workflow to upload this artifact:
-
-```text
-LoopDeck-debug-apk
-```
-
-## Android Studio build
-
-Open the `android/` folder in Android Studio.
-
-For a signed release build, copy:
-
-```bash
-cp android/keystore.properties.example android/keystore.properties
-```
-
-Then edit `android/keystore.properties` to point to the key you generated in Android Studio.
-
-See:
-
-```text
-android/README_SIGNING.md
-```
-
 ## Data files
 
 The app loads this as built-in data:
 
 ```text
-data/builtin/builtin.json
+data/builtin/studyhome_rescued.loopdeck.json
 ```
 
-Rescued files are also included here:
+Reference rescue data is kept here and is not loaded at runtime:
 
 ```text
-rescued-data/
-```
-
-Most useful files:
-
-```text
-rescued-data/loopdeck/StudyHomeNext_normal_only.loopdeck.json
-rescued-data/loopdeck/StudyHomeNext_normal_only.loopdeck.zip
-rescued-data/raw/StudyHomeNext_question_bank.raw.json
+data/rescued/raw/
 ```
 
 ## Pack format
@@ -115,4 +83,4 @@ questions.json
 images/optional-image.png
 ```
 
-LoopDeck validates the pack before storing it. Imported `.html`, `.js`, `.css`, `.apk`, `.dex`, `.jar`, `.so`, `.exe`, `.bat`, `.sh` and path traversal entries are rejected.
+LoopDeck validates the pack before storing it. Imported `.html`, `.js`, `.mjs`, `.cjs`, `.css`, `.apk`, `.dex`, `.jar`, `.so`, `.exe`, `.bat`, `.cmd`, `.sh`, `.ps1`, remote URLs, absolute paths, path traversal, empty paths, and null-byte paths are rejected.

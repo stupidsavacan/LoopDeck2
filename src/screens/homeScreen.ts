@@ -1,4 +1,5 @@
 import type { LoopDeckPack, ModuleInfo } from '../core/models';
+import { getVisibleStudyModules } from '../packs/studyhomeNormalizer';
 import { button, clear, el } from '../ui/dom';
 
 function moduleMatches(module: ModuleInfo, query: string): boolean {
@@ -21,9 +22,9 @@ export function renderHomeScreen(
   const hero = el('section', 'hero');
   hero.innerHTML = `
     <div>
-      <p class="eyebrow">StudyHome successor</p>
+      <p class="eyebrow">StudyHome rescued deck</p>
       <h1>LoopDeck</h1>
-      <p>教材を入れて、解いて、間違いを復習に回すローカル学習デッキ。</p>
+      <p>救出したStudyHome教材をシャッフルで解き、間違いをすぐ復習に回すローカル学習デッキ。</p>
     </div>
   `;
   const heroActions = el('div', 'hero-actions');
@@ -42,7 +43,7 @@ export function renderHomeScreen(
   function renderList(): void {
     clear(list);
     const folders = packs.flatMap((pack) => pack.folders);
-    const modules = packs.flatMap((pack) => pack.modules).filter((module) => moduleMatches(module, query));
+    const modules = getVisibleStudyModules(packs.flatMap((pack) => pack.modules)).filter((module) => moduleMatches(module, query));
 
     for (const folder of folders) {
       const folderModules = modules.filter((module) => module.folderId === folder.id);
@@ -57,7 +58,7 @@ export function renderHomeScreen(
         card.innerHTML = `
           <span class="module-subject">${module.subject}</span>
           <strong>${module.title}</strong>
-          <small>${module.questionIds.length}問 ${module.tags?.map((tag) => `#${tag}`).join(' ') ?? ''}</small>
+          <small>${module.questionIds.length}問</small>
         `;
         card.onclick = () => onOpenModule(module.id);
         grid.append(card);
