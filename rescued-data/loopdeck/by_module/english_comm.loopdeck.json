@@ -1,0 +1,2481 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-english_comm-normal-v1",
+  "title": "英語コミュニケーション",
+  "description": "StudyHome-Nextから救出した 英語コミュニケーション の通常方向教材。",
+  "folders": [
+    {
+      "id": "english",
+      "title": "英語"
+    }
+  ],
+  "modules": [
+    {
+      "id": "english_comm",
+      "folderId": "english",
+      "title": "英語コミュニケーション",
+      "subject": "英語",
+      "description": "StudyHome-Nextから救出した教材データ。source=english_comm",
+      "tags": [
+        "英語",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "english_comm-engc001",
+        "english_comm-engc002",
+        "english_comm-engc003",
+        "english_comm-engc004",
+        "english_comm-engc005",
+        "english_comm-engc006",
+        "english_comm-engc007",
+        "english_comm-engc008",
+        "english_comm-engc009",
+        "english_comm-engc010",
+        "english_comm-engc011",
+        "english_comm-engc012",
+        "english_comm-engc013",
+        "english_comm-engc014",
+        "english_comm-engc015",
+        "english_comm-engc016",
+        "english_comm-engc017",
+        "english_comm-engc018",
+        "english_comm-engc019",
+        "english_comm-engc020",
+        "english_comm-engc021",
+        "english_comm-engc022",
+        "english_comm-engc023",
+        "english_comm-engc024",
+        "english_comm-engc025",
+        "english_comm-engc026",
+        "english_comm-engc027",
+        "english_comm-engc028",
+        "english_comm-engc029",
+        "english_comm-engc030",
+        "english_comm-engc031",
+        "english_comm-engc032",
+        "english_comm-engc033",
+        "english_comm-engc034",
+        "english_comm-engc035",
+        "english_comm-engc036",
+        "english_comm-engc037",
+        "english_comm-engc038",
+        "english_comm-engc039",
+        "english_comm-engc040",
+        "english_comm-engc041",
+        "english_comm-engc042",
+        "english_comm-engc043",
+        "english_comm-engc044",
+        "english_comm-engc045",
+        "english_comm-engc046",
+        "english_comm-engc047",
+        "english_comm-engc048",
+        "english_comm-engc049",
+        "english_comm-engc050",
+        "english_comm-engc051",
+        "english_comm-engc052",
+        "english_comm-engc053",
+        "english_comm-engc054",
+        "english_comm-engc055",
+        "english_comm-engc056",
+        "english_comm-engc057",
+        "english_comm-engc058",
+        "english_comm-engc059",
+        "english_comm-engc060",
+        "english_comm-engc061",
+        "english_comm-engc062",
+        "english_comm-engc063",
+        "english_comm-engc064",
+        "english_comm-engc065",
+        "english_comm-engc066",
+        "english_comm-engc067",
+        "english_comm-engc068",
+        "english_comm-engc069",
+        "english_comm-engc070",
+        "english_comm-engc071",
+        "english_comm-engc072",
+        "english_comm-engc073",
+        "english_comm-engc074",
+        "english_comm-engc075",
+        "english_comm-engc076",
+        "english_comm-engc077",
+        "english_comm-engc078",
+        "english_comm-engc079",
+        "english_comm-engc080",
+        "english_comm-engc081",
+        "english_comm-engc082",
+        "english_comm-engc083",
+        "english_comm-engc084",
+        "english_comm-engc085",
+        "english_comm-engc086",
+        "english_comm-engc087",
+        "english_comm-engc088",
+        "english_comm-engc089",
+        "english_comm-engc090",
+        "english_comm-engc091",
+        "english_comm-engc092",
+        "english_comm-engc093",
+        "english_comm-engc094",
+        "english_comm-engc095",
+        "english_comm-engc096",
+        "english_comm-engc097",
+        "english_comm-engc098",
+        "english_comm-engc099",
+        "english_comm-engc100",
+        "english_comm-engc101",
+        "english_comm-engc102",
+        "english_comm-engc103",
+        "english_comm-engc104",
+        "english_comm-engc105",
+        "english_comm-engc106",
+        "english_comm-engc107",
+        "english_comm-engc108",
+        "english_comm-engc109",
+        "english_comm-engc110",
+        "english_comm-engc111",
+        "english_comm-engc112",
+        "english_comm-engc113",
+        "english_comm-engc114",
+        "english_comm-engc115",
+        "english_comm-engc116",
+        "english_comm-engc117",
+        "english_comm-engc118",
+        "english_comm-engc119",
+        "english_comm-engc120",
+        "english_comm-engc121",
+        "english_comm-engc122",
+        "english_comm-engc123",
+        "english_comm-engc124",
+        "english_comm-engc125",
+        "english_comm-engc126",
+        "english_comm-engc127",
+        "english_comm-engc128",
+        "english_comm-engc129"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "english_comm-engc001",
+      "moduleId": "english_comm",
+      "prompt": "invention の意味は？",
+      "explanation": "inventは「発明する」、inventionは名詞で「発明」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "発明",
+        "配達",
+        "国際的な",
+        "反応"
+      ],
+      "answer": "発明",
+      "acceptableAnswers": [
+        "発明"
+      ]
+    },
+    {
+      "id": "english_comm-engc002",
+      "moduleId": "english_comm",
+      "prompt": "deliver の意味は？",
+      "explanation": "The post office delivered the letter. の deliver。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "〜を配達する",
+        "〜を組織する",
+        "〜を減らす",
+        "〜を受け取る"
+      ],
+      "answer": "〜を配達する",
+      "acceptableAnswers": [
+        "〜を配達する"
+      ]
+    },
+    {
+      "id": "english_comm-engc003",
+      "moduleId": "english_comm",
+      "prompt": "educational の意味は？",
+      "explanation": "educationは「教育」、educationalは形容詞。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "教育の",
+        "国際的な",
+        "正常な",
+        "医学の"
+      ],
+      "answer": "教育の",
+      "acceptableAnswers": [
+        "教育の"
+      ]
+    },
+    {
+      "id": "english_comm-engc004",
+      "moduleId": "english_comm",
+      "prompt": "rescue の意味は？",
+      "explanation": "animal rescue group は「動物救護団体」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "救助、救護",
+        "発明",
+        "利点",
+        "脳"
+      ],
+      "answer": "救助、救護",
+      "acceptableAnswers": [
+        "救助、救護"
+      ]
+    },
+    {
+      "id": "english_comm-engc005",
+      "moduleId": "english_comm",
+      "prompt": "emergency の意味は？",
+      "explanation": "Pet First Aid で緊急時の対応を扱う。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "緊急時、非常事態",
+        "通常",
+        "午後",
+        "入門"
+      ],
+      "answer": "緊急時、非常事態",
+      "acceptableAnswers": [
+        "緊急時、非常事態"
+      ]
+    },
+    {
+      "id": "english_comm-engc006",
+      "moduleId": "english_comm",
+      "prompt": "normal の意味は？",
+      "explanation": "It is a normal reaction. の normal。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "正常な",
+        "眠って",
+        "国際的な",
+        "教育の"
+      ],
+      "answer": "正常な",
+      "acceptableAnswers": [
+        "正常な"
+      ]
+    },
+    {
+      "id": "english_comm-engc007",
+      "moduleId": "english_comm",
+      "prompt": "reaction の意味は？",
+      "explanation": "食後の眠気は normal reaction。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "反応",
+        "利点",
+        "郵便",
+        "趣味"
+      ],
+      "answer": "反応",
+      "acceptableAnswers": [
+        "反応"
+      ]
+    },
+    {
+      "id": "english_comm-engc008",
+      "moduleId": "english_comm",
+      "prompt": "benefit の意味は？",
+      "explanation": "The first benefit of napping の benefit。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "利点",
+        "脳",
+        "睡眠パターン",
+        "非常時"
+      ],
+      "answer": "利点",
+      "acceptableAnswers": [
+        "利点"
+      ]
+    },
+    {
+      "id": "english_comm-engc009",
+      "moduleId": "english_comm",
+      "prompt": "brain の意味は？",
+      "explanation": "Naps give your brain time... の brain。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "脳",
+        "反応",
+        "教育",
+        "組織"
+      ],
+      "answer": "脳",
+      "acceptableAnswers": [
+        "脳"
+      ]
+    },
+    {
+      "id": "english_comm-engc010",
+      "moduleId": "english_comm",
+      "prompt": "immediately の意味は？",
+      "explanation": "Postage stamps became popular immediately. の語。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "すぐに",
+        "真昼に",
+        "眠って",
+        "国際的に"
+      ],
+      "answer": "すぐに",
+      "acceptableAnswers": [
+        "すぐに"
+      ]
+    },
+    {
+      "id": "english_comm-engc011",
+      "moduleId": "english_comm",
+      "prompt": "「〜を減らす」を英語で？",
+      "explanation": "reduce stressで「ストレスを軽減する」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "reduce",
+        "rescue",
+        "deliver",
+        "organize"
+      ],
+      "answer": "reduce",
+      "acceptableAnswers": [
+        "reduce"
+      ]
+    },
+    {
+      "id": "english_comm-engc012",
+      "moduleId": "english_comm",
+      "prompt": "「眠って」を英語で？",
+      "explanation": "fall asleepで「眠りに落ちる」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "asleep",
+        "awake",
+        "normal",
+        "benefit"
+      ],
+      "answer": "asleep",
+      "acceptableAnswers": [
+        "asleep"
+      ]
+    },
+    {
+      "id": "english_comm-engc013",
+      "moduleId": "english_comm",
+      "prompt": "「国際的な」を英語で？",
+      "explanation": "international mailで「国際郵便」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "international",
+        "educational",
+        "normal",
+        "medical"
+      ],
+      "answer": "international",
+      "acceptableAnswers": [
+        "international"
+      ]
+    },
+    {
+      "id": "english_comm-engc014",
+      "moduleId": "english_comm",
+      "prompt": "「〜を組織する」を英語で？",
+      "explanation": "A German organized the UPU. の organize。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "organize",
+        "receive",
+        "reduce",
+        "provide"
+      ],
+      "answer": "organize",
+      "acceptableAnswers": [
+        "organize"
+      ]
+    },
+    {
+      "id": "english_comm-engc015",
+      "moduleId": "english_comm",
+      "prompt": "「生きもの、動物」を英語で？",
+      "explanation": "all types of creatures の creature。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "creature",
+        "reaction",
+        "benefit",
+        "organization"
+      ],
+      "answer": "creature",
+      "acceptableAnswers": [
+        "creature"
+      ]
+    },
+    {
+      "id": "english_comm-engc016",
+      "moduleId": "english_comm",
+      "prompt": "Please (   ) this small gift from me. に入る語は？",
+      "explanation": "acceptは「〜を受け取る」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "accept",
+        "disturb",
+        "focus",
+        "provide"
+      ],
+      "answer": "accept",
+      "acceptableAnswers": [
+        "accept"
+      ]
+    },
+    {
+      "id": "english_comm-engc017",
+      "moduleId": "english_comm",
+      "prompt": "Trees (   ) food and homes for many birds. に入る語は？",
+      "explanation": "provide A for Bの形で「BにAを提供する」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "provide",
+        "accept",
+        "focus",
+        "disturb"
+      ],
+      "answer": "provide",
+      "acceptableAnswers": [
+        "provide"
+      ]
+    },
+    {
+      "id": "english_comm-engc018",
+      "moduleId": "english_comm",
+      "prompt": "In class, you must (   ) on your teacher and listen well. に入る語は？",
+      "explanation": "focus on ... で「〜に集中する」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "focus",
+        "accept",
+        "provide",
+        "disturb"
+      ],
+      "answer": "focus",
+      "acceptableAnswers": [
+        "focus"
+      ]
+    },
+    {
+      "id": "english_comm-engc019",
+      "moduleId": "english_comm",
+      "prompt": "I need to write an (   ). に入る語は？",
+      "explanation": "applicationは「申し込み、応募」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "application",
+        "organization",
+        "emergency",
+        "reaction"
+      ],
+      "answer": "application",
+      "acceptableAnswers": [
+        "application"
+      ]
+    },
+    {
+      "id": "english_comm-engc020",
+      "moduleId": "english_comm",
+      "prompt": "Please be quiet and do not (   ) the baby. He is sleeping. に入る語は？",
+      "explanation": "disturbは「邪魔をする、乱す」。",
+      "category": "Switch2単語",
+      "type": "choice",
+      "choices": [
+        "disturb",
+        "reduce",
+        "accept",
+        "organize"
+      ],
+      "answer": "disturb",
+      "acceptableAnswers": [
+        "disturb"
+      ]
+    },
+    {
+      "id": "english_comm-engc021",
+      "moduleId": "english_comm",
+      "prompt": "postage の意味は？",
+      "explanation": "postage stampは「郵便切手」。postage単体は郵便料金。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "郵便料金",
+        "郵便局",
+        "郵便切手",
+        "郵便物"
+      ],
+      "answer": "郵便料金",
+      "acceptableAnswers": [
+        "郵便料金"
+      ]
+    },
+    {
+      "id": "english_comm-engc022",
+      "moduleId": "english_comm",
+      "prompt": "postage stamp の意味は？",
+      "explanation": "Unit1本文の中心語。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "郵便切手",
+        "郵便料金",
+        "郵政公社",
+        "万国郵便連合"
+      ],
+      "answer": "郵便切手",
+      "acceptableAnswers": [
+        "郵便切手"
+      ]
+    },
+    {
+      "id": "english_comm-engc023",
+      "moduleId": "english_comm",
+      "prompt": "receive の意味は？",
+      "explanation": "When people received letters... の receive。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "〜を受け取る",
+        "〜を配達する",
+        "〜を発明する",
+        "〜に同意する"
+      ],
+      "answer": "〜を受け取る",
+      "acceptableAnswers": [
+        "〜を受け取る"
+      ]
+    },
+    {
+      "id": "english_comm-engc024",
+      "moduleId": "english_comm",
+      "prompt": "prepaid の意味は？",
+      "explanation": "The letters were prepaid. の prepaid。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "前払いされた",
+        "配達された",
+        "発明された",
+        "組織された"
+      ],
+      "answer": "前払いされた",
+      "acceptableAnswers": [
+        "前払いされた"
+      ]
+    },
+    {
+      "id": "english_comm-engc025",
+      "moduleId": "english_comm",
+      "prompt": "organization の意味は？",
+      "explanation": "UPUは国際郵便を扱う組織。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "組織",
+        "同意",
+        "郵便料金",
+        "趣味"
+      ],
+      "answer": "組織",
+      "acceptableAnswers": [
+        "組織"
+      ]
+    },
+    {
+      "id": "english_comm-engc026",
+      "moduleId": "english_comm",
+      "prompt": "agree to do の意味は？",
+      "explanation": "Each country agreed to accept... の形。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "〜することに同意する",
+        "〜することを拒む",
+        "〜することを発明する",
+        "〜することを配達する"
+      ],
+      "answer": "〜することに同意する",
+      "acceptableAnswers": [
+        "〜することに同意する"
+      ]
+    },
+    {
+      "id": "english_comm-engc027",
+      "moduleId": "english_comm",
+      "prompt": "Universal Postal Union の略称は？",
+      "explanation": "本文では1874年に組織された国際郵便の組織。",
+      "category": "Unit1単語・表現",
+      "type": "choice",
+      "choices": [
+        "UPU",
+        "CAS",
+        "GPS",
+        "WHO"
+      ],
+      "answer": "UPU",
+      "acceptableAnswers": [
+        "UPU"
+      ]
+    },
+    {
+      "id": "english_comm-engc028",
+      "moduleId": "english_comm",
+      "prompt": "Penny Black は何に関係する語？",
+      "explanation": "本文で最初の切手として Twopence Blue と並ぶ。",
+      "category": "Unit1単語・表現",
+      "type": "choice",
+      "choices": [
+        "世界初期の郵便切手",
+        "動物救護団体",
+        "昼寝のルール",
+        "獣医入門"
+      ],
+      "answer": "世界初期の郵便切手",
+      "acceptableAnswers": [
+        "世界初期の郵便切手"
+      ]
+    },
+    {
+      "id": "english_comm-engc029",
+      "moduleId": "english_comm",
+      "prompt": "Twopence Blue は何に関係する語？",
+      "explanation": "Penny Black と並んで最初の切手として出る。",
+      "category": "Unit1単語・表現",
+      "type": "choice",
+      "choices": [
+        "世界初期の郵便切手",
+        "国際郵便の問題",
+        "CASの講師",
+        "昼寝の利点"
+      ],
+      "answer": "世界初期の郵便切手",
+      "acceptableAnswers": [
+        "世界初期の郵便切手"
+      ]
+    },
+    {
+      "id": "english_comm-engc030",
+      "moduleId": "english_comm",
+      "prompt": "collecting stamps の意味は？",
+      "explanation": "Unit1最後の趣味の話。",
+      "category": "Unit1単語",
+      "type": "choice",
+      "choices": [
+        "切手を収集すること",
+        "切手を配達すること",
+        "手紙を前払いすること",
+        "国際郵便を組織すること"
+      ],
+      "answer": "切手を収集すること",
+      "acceptableAnswers": [
+        "切手を収集すること"
+      ]
+    },
+    {
+      "id": "english_comm-engc031",
+      "moduleId": "english_comm",
+      "prompt": "郵便切手が発明される前、国際郵便の料金は主にどう支払われていたか。",
+      "explanation": "本文冒頭では、差出人が自国内分、受取人が相手国内分を払ったと説明される。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "差出人と受取人で分担して支払っていた",
+        "差出人が全額支払っていた",
+        "受取人が全額支払っていた",
+        "郵便局が負担していた"
+      ],
+      "answer": "差出人と受取人で分担して支払っていた",
+      "acceptableAnswers": [
+        "差出人と受取人で分担して支払っていた"
+      ]
+    },
+    {
+      "id": "english_comm-engc032",
+      "moduleId": "english_comm",
+      "prompt": "Rowland Hill が考えた切手の特徴は？",
+      "explanation": "Unit1解答欄にも「glue on the back」とある。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "裏側にのりが付いている",
+        "金でできている",
+        "動物の絵がある",
+        "スイスで作られる"
+      ],
+      "answer": "裏側にのりが付いている",
+      "acceptableAnswers": [
+        "裏側にのりが付いている"
+      ]
+    },
+    {
+      "id": "english_comm-engc033",
+      "moduleId": "english_comm",
+      "prompt": "世界初期の切手を1840年に作ったのは？",
+      "explanation": "英国の郵政公社が最初の切手を作った。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "the British post office",
+        "the German post office",
+        "the UPU",
+        "the Swiss office"
+      ],
+      "answer": "the British post office",
+      "acceptableAnswers": [
+        "the British post office"
+      ]
+    },
+    {
+      "id": "english_comm-engc034",
+      "moduleId": "english_comm",
+      "prompt": "最初の切手として本文に出る2つは？",
+      "explanation": "本文の固有名詞。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "Penny Black and Twopence Blue",
+        "Penny Red and Twopence Green",
+        "Penny Blue and Twopence Black",
+        "UPU and CAS"
+      ],
+      "answer": "Penny Black and Twopence Blue",
+      "acceptableAnswers": [
+        "Penny Black and Twopence Blue"
+      ]
+    },
+    {
+      "id": "english_comm-engc035",
+      "moduleId": "english_comm",
+      "prompt": "切手を貼ると、受取人はどうなったか。",
+      "explanation": "手紙の代金が前払いされたため。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "何も支払う必要がなかった",
+        "全額支払う必要があった",
+        "差出人に返金した",
+        "郵便局に申し込んだ"
+      ],
+      "answer": "何も支払う必要がなかった",
+      "acceptableAnswers": [
+        "何も支払う必要がなかった"
+      ]
+    },
+    {
+      "id": "english_comm-engc036",
+      "moduleId": "english_comm",
+      "prompt": "郵便切手は最初どこで急速に普及したか。",
+      "explanation": "Postage stamps became popular in Great Britain immediately. の内容。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "Great Britain",
+        "Germany",
+        "Switzerland",
+        "Japan"
+      ],
+      "answer": "Great Britain",
+      "acceptableAnswers": [
+        "Great Britain"
+      ]
+    },
+    {
+      "id": "english_comm-engc037",
+      "moduleId": "english_comm",
+      "prompt": "国際郵便に残っていた問題は何か。",
+      "explanation": "Some countries did not want to accept letters with stamps from another country. の内容。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "他国の切手が付いた手紙を受け取らない国があった",
+        "切手を集める人がいなかった",
+        "切手がすぐ破れた",
+        "手紙が短すぎた"
+      ],
+      "answer": "他国の切手が付いた手紙を受け取らない国があった",
+      "acceptableAnswers": [
+        "他国の切手が付いた手紙を受け取らない国があった"
+      ]
+    },
+    {
+      "id": "english_comm-engc038",
+      "moduleId": "english_comm",
+      "prompt": "UPUが組織された年は？",
+      "explanation": "本文では1874年にドイツ人がUPUを組織した。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "1874年",
+        "1840年",
+        "1870年",
+        "2020年"
+      ],
+      "answer": "1874年",
+      "acceptableAnswers": [
+        "1874年"
+      ]
+    },
+    {
+      "id": "english_comm-engc039",
+      "moduleId": "english_comm",
+      "prompt": "UPUを組織した人物はどこの人とされているか。",
+      "explanation": "Finally, in 1874, a German organized the UPU. の内容。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "ドイツ人",
+        "英国人",
+        "スイス人",
+        "日本人"
+      ],
+      "answer": "ドイツ人",
+      "acceptableAnswers": [
+        "ドイツ人"
+      ]
+    },
+    {
+      "id": "english_comm-engc040",
+      "moduleId": "english_comm",
+      "prompt": "現在のUPUのオフィスはどこにあるか。",
+      "explanation": "Today, the offices of the UPU are in Switzerland. の内容。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "スイス",
+        "ドイツ",
+        "英国",
+        "アメリカ"
+      ],
+      "answer": "スイス",
+      "acceptableAnswers": [
+        "スイス"
+      ]
+    },
+    {
+      "id": "english_comm-engc041",
+      "moduleId": "english_comm",
+      "prompt": "UPUは何を扱う組織か。",
+      "explanation": "It takes care of any international mail problems. の内容。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "国際郵便の問題",
+        "国内郵便だけの料金",
+        "ペットの世話",
+        "昼寝のルール"
+      ],
+      "answer": "国際郵便の問題",
+      "acceptableAnswers": [
+        "国際郵便の問題"
+      ]
+    },
+    {
+      "id": "english_comm-engc042",
+      "moduleId": "english_comm",
+      "prompt": "Unit1の本文タイトルとして最も適切なものは？",
+      "explanation": "問題ページにあるベストタイトル問題の正解。",
+      "category": "Unit1内容理解",
+      "type": "choice",
+      "choices": [
+        "Postage Stamps and Postal History",
+        "The Invention of the Post Office",
+        "A Worldwide Comparison of Postage Costs",
+        "Positive and Negative Points of Using Postage Stamps"
+      ],
+      "answer": "Postage Stamps and Postal History",
+      "acceptableAnswers": [
+        "Postage Stamps and Postal History"
+      ]
+    },
+    {
+      "id": "english_comm-engc043",
+      "moduleId": "english_comm",
+      "prompt": "「1840年以前、外国からの手紙を受け取った人は料金を払う必要があった」はT/F？",
+      "explanation": "本文冒頭の料金分担の説明に一致する。",
+      "category": "Unit1内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "どちらでもない",
+        "本文にない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc044",
+      "moduleId": "english_comm",
+      "prompt": "「ドイツの郵便局が1840年に最初の切手を作った」はT/F？",
+      "explanation": "最初の切手を作ったのは英国の郵政公社。",
+      "category": "Unit1内容一致",
+      "type": "choice",
+      "choices": [
+        "F",
+        "T",
+        "どちらでもない",
+        "本文にない"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F"
+      ]
+    },
+    {
+      "id": "english_comm-engc045",
+      "moduleId": "english_comm",
+      "prompt": "「Rowland Hillのおかげで国際郵便の全問題がすぐ解決した」はT/F？",
+      "explanation": "切手普及後も国際郵便には問題が残った。",
+      "category": "Unit1内容一致",
+      "type": "choice",
+      "choices": [
+        "F",
+        "T",
+        "どちらでもない",
+        "本文にない"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F"
+      ]
+    },
+    {
+      "id": "english_comm-engc046",
+      "moduleId": "english_comm",
+      "prompt": "「1870年代にUPUが組織された」はT/F？",
+      "explanation": "1874年なので1870年代。",
+      "category": "Unit1内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "どちらでもない",
+        "本文にない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc047",
+      "moduleId": "english_comm",
+      "prompt": "「Penny BlackとTwopence Blueは切手収集家によく知られている」はT/F？",
+      "explanation": "本文最後に切手収集家が知っているとある。",
+      "category": "Unit1内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "どちらでもない",
+        "本文にない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc048",
+      "moduleId": "english_comm",
+      "prompt": "CAS は何の略？",
+      "explanation": "本文冒頭で CAS stands for Cecil Animal Shelter と説明される。",
+      "category": "Unit2単語・表現",
+      "type": "choice",
+      "choices": [
+        "Cecil Animal Shelter",
+        "Central Animal School",
+        "Cecil Art Society",
+        "City Animal Service"
+      ],
+      "answer": "Cecil Animal Shelter",
+      "acceptableAnswers": [
+        "Cecil Animal Shelter"
+      ]
+    },
+    {
+      "id": "english_comm-engc049",
+      "moduleId": "english_comm",
+      "prompt": "local government の意味は？",
+      "explanation": "CAS is funded by our local government. の語。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "地方自治体",
+        "医師",
+        "学生",
+        "ボランティア"
+      ],
+      "answer": "地方自治体",
+      "acceptableAnswers": [
+        "地方自治体"
+      ]
+    },
+    {
+      "id": "english_comm-engc050",
+      "moduleId": "english_comm",
+      "prompt": "volunteer の意味は？",
+      "explanation": "CAS is organized by volunteers. の語。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "ボランティア",
+        "獣医",
+        "爬虫類",
+        "自治体"
+      ],
+      "answer": "ボランティア",
+      "acceptableAnswers": [
+        "ボランティア"
+      ]
+    },
+    {
+      "id": "english_comm-engc051",
+      "moduleId": "english_comm",
+      "prompt": "vet の意味は？",
+      "explanation": "who want to be a vet in the future. の vet。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "獣医",
+        "医療",
+        "救助",
+        "講師"
+      ],
+      "answer": "獣医",
+      "acceptableAnswers": [
+        "獣医"
+      ]
+    },
+    {
+      "id": "english_comm-engc052",
+      "moduleId": "english_comm",
+      "prompt": "provide の意味は？",
+      "explanation": "provide educational programs の provide。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "〜を提供する",
+        "〜を邪魔する",
+        "〜を減らす",
+        "〜を横断する"
+      ],
+      "answer": "〜を提供する",
+      "acceptableAnswers": [
+        "〜を提供する"
+      ]
+    },
+    {
+      "id": "english_comm-engc053",
+      "moduleId": "english_comm",
+      "prompt": "focus on の意味は？",
+      "explanation": "Types of Pets の説明で出る。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "〜に焦点を置く",
+        "〜を配達する",
+        "〜を受け取る",
+        "〜を減らす"
+      ],
+      "answer": "〜に焦点を置く",
+      "acceptableAnswers": [
+        "〜に焦点を置く"
+      ]
+    },
+    {
+      "id": "english_comm-engc054",
+      "moduleId": "english_comm",
+      "prompt": "reptile の意味は？",
+      "explanation": "less traditional pets like reptiles の語。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "爬虫類",
+        "哺乳類",
+        "鳥類",
+        "魚類"
+      ],
+      "answer": "爬虫類",
+      "acceptableAnswers": [
+        "爬虫類"
+      ]
+    },
+    {
+      "id": "english_comm-engc055",
+      "moduleId": "english_comm",
+      "prompt": "enclosure の意味は？",
+      "explanation": "clean enclosures の enclosure。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "囲い、飼育スペース",
+        "応急処置",
+        "申込書",
+        "講師"
+      ],
+      "answer": "囲い、飼育スペース",
+      "acceptableAnswers": [
+        "囲い、飼育スペース"
+      ]
+    },
+    {
+      "id": "english_comm-engc056",
+      "moduleId": "english_comm",
+      "prompt": "feed の意味は？",
+      "explanation": "feed pets の形で出る。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "餌をやる",
+        "救助する",
+        "集中する",
+        "申し込む"
+      ],
+      "answer": "餌をやる",
+      "acceptableAnswers": [
+        "餌をやる"
+      ]
+    },
+    {
+      "id": "english_comm-engc057",
+      "moduleId": "english_comm",
+      "prompt": "physical exam の意味は？",
+      "explanation": "Beginning Vet の説明で出る。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "身体検査",
+        "応急処置",
+        "教育プログラム",
+        "申込期限"
+      ],
+      "answer": "身体検査",
+      "acceptableAnswers": [
+        "身体検査"
+      ]
+    },
+    {
+      "id": "english_comm-engc058",
+      "moduleId": "english_comm",
+      "prompt": "first aid の意味は？",
+      "explanation": "Pet First Aid の first aid。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "応急処置",
+        "獣医入門",
+        "残席",
+        "プロフィール情報"
+      ],
+      "answer": "応急処置",
+      "acceptableAnswers": [
+        "応急処置"
+      ]
+    },
+    {
+      "id": "english_comm-engc059",
+      "moduleId": "english_comm",
+      "prompt": "application deadline の意味は？",
+      "explanation": "Notesに出る重要語。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "申し込み締め切り",
+        "利用可能人数",
+        "応急処置",
+        "身体検査"
+      ],
+      "answer": "申し込み締め切り",
+      "acceptableAnswers": [
+        "申し込み締め切り"
+      ]
+    },
+    {
+      "id": "english_comm-engc060",
+      "moduleId": "english_comm",
+      "prompt": "apply の意味は？",
+      "explanation": "To apply, create an account and click Sign. の語。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "申し込む",
+        "救助する",
+        "提供する",
+        "覚醒する"
+      ],
+      "answer": "申し込む",
+      "acceptableAnswers": [
+        "申し込む"
+      ]
+    },
+    {
+      "id": "english_comm-engc061",
+      "moduleId": "english_comm",
+      "prompt": "availability の意味は？",
+      "explanation": "プログラム表の列名。",
+      "category": "Unit2単語",
+      "type": "choice",
+      "choices": [
+        "空き状況",
+        "講師",
+        "場所",
+        "住所"
+      ],
+      "answer": "空き状況",
+      "acceptableAnswers": [
+        "空き状況"
+      ]
+    },
+    {
+      "id": "english_comm-engc062",
+      "moduleId": "english_comm",
+      "prompt": "CASはどのような団体か。",
+      "explanation": "animal rescue group と説明される。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "動物救護団体",
+        "郵便組織",
+        "学校の部活動",
+        "昼寝研究機関"
+      ],
+      "answer": "動物救護団体",
+      "acceptableAnswers": [
+        "動物救護団体"
+      ]
+    },
+    {
+      "id": "english_comm-engc063",
+      "moduleId": "english_comm",
+      "prompt": "CASの運営主体として問題の正解になっているのは？",
+      "explanation": "解答ページではCAS is run by volunteersが正解。資金提供は地方自治体。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "volunteers",
+        "a local government",
+        "doctors",
+        "students"
+      ],
+      "answer": "volunteers",
+      "acceptableAnswers": [
+        "volunteers"
+      ]
+    },
+    {
+      "id": "english_comm-engc064",
+      "moduleId": "english_comm",
+      "prompt": "CAS summer programs の対象は？",
+      "explanation": "本文の対象説明。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "動物好き、または将来獣医になりたい高校生",
+        "切手収集家",
+        "小学生だけ",
+        "郵便局員"
+      ],
+      "answer": "動物好き、または将来獣医になりたい高校生",
+      "acceptableAnswers": [
+        "動物好き、または将来獣医になりたい高校生"
+      ]
+    },
+    {
+      "id": "english_comm-engc065",
+      "moduleId": "english_comm",
+      "prompt": "CASプログラムの実施日は？",
+      "explanation": "表の Dates にある。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "August 3-6",
+        "July 20",
+        "August 1-2",
+        "September 3-6"
+      ],
+      "answer": "August 3-6",
+      "acceptableAnswers": [
+        "August 3-6"
+      ]
+    },
+    {
+      "id": "english_comm-engc066",
+      "moduleId": "english_comm",
+      "prompt": "CASプログラムの時間は？",
+      "explanation": "日時欄の内容。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "9:00 am - 3:30 pm",
+        "8:00 am - 2:00 pm",
+        "9:00 pm - 3:30 am",
+        "10:00 am - 4:30 pm"
+      ],
+      "answer": "9:00 am - 3:30 pm",
+      "acceptableAnswers": [
+        "9:00 am - 3:30 pm"
+      ]
+    },
+    {
+      "id": "english_comm-engc067",
+      "moduleId": "english_comm",
+      "prompt": "CASプログラムの場所は？",
+      "explanation": "Place の欄。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Second Floor of CAS",
+        "First Floor of CAS",
+        "Cecil City Hall",
+        "Hiro Osaka School"
+      ],
+      "answer": "Second Floor of CAS",
+      "acceptableAnswers": [
+        "Second Floor of CAS"
+      ]
+    },
+    {
+      "id": "english_comm-engc068",
+      "moduleId": "english_comm",
+      "prompt": "Types of Pets の講師は？",
+      "explanation": "8月3日のタイトル＆講師。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Hiro Osaka",
+        "Sara Colman",
+        "Dr. Dennis Lung",
+        "Dr. Lea Suzuki"
+      ],
+      "answer": "Hiro Osaka",
+      "acceptableAnswers": [
+        "Hiro Osaka"
+      ]
+    },
+    {
+      "id": "english_comm-engc069",
+      "moduleId": "english_comm",
+      "prompt": "Pet Basic Care の講師は？",
+      "explanation": "8月4日のタイトル＆講師。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Sara Colman",
+        "Hiro Osaka",
+        "Dr. Dennis Lung",
+        "Dr. Lea Suzuki"
+      ],
+      "answer": "Sara Colman",
+      "acceptableAnswers": [
+        "Sara Colman"
+      ]
+    },
+    {
+      "id": "english_comm-engc070",
+      "moduleId": "english_comm",
+      "prompt": "Beginning Vet の講師は？",
+      "explanation": "8月5日の講師。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Dr. Dennis Lung",
+        "Dr. Lea Suzuki",
+        "Sara Colman",
+        "Hiro Osaka"
+      ],
+      "answer": "Dr. Dennis Lung",
+      "acceptableAnswers": [
+        "Dr. Dennis Lung"
+      ]
+    },
+    {
+      "id": "english_comm-engc071",
+      "moduleId": "english_comm",
+      "prompt": "Pet First Aid の講師は？",
+      "explanation": "8月6日の講師。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Dr. Lea Suzuki",
+        "Hiro Osaka",
+        "Sara Colman",
+        "Dr. Dennis Lung"
+      ],
+      "answer": "Dr. Lea Suzuki",
+      "acceptableAnswers": [
+        "Dr. Lea Suzuki"
+      ]
+    },
+    {
+      "id": "english_comm-engc072",
+      "moduleId": "english_comm",
+      "prompt": "Types of Pets の残席は？",
+      "explanation": "表のAvailability。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "14 seats left",
+        "8 seats left",
+        "4 seats left",
+        "2 on waiting list"
+      ],
+      "answer": "14 seats left",
+      "acceptableAnswers": [
+        "14 seats left"
+      ]
+    },
+    {
+      "id": "english_comm-engc073",
+      "moduleId": "english_comm",
+      "prompt": "Pet Basic Care の残席は？",
+      "explanation": "表のAvailability。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "8 seats left",
+        "14 seats left",
+        "4 seats left",
+        "2 on waiting list"
+      ],
+      "answer": "8 seats left",
+      "acceptableAnswers": [
+        "8 seats left"
+      ]
+    },
+    {
+      "id": "english_comm-engc074",
+      "moduleId": "english_comm",
+      "prompt": "Beginning Vet の空き状況は？",
+      "explanation": "キャンセル待ち2名。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "2 on waiting list",
+        "14 seats left",
+        "8 seats left",
+        "4 seats left"
+      ],
+      "answer": "2 on waiting list",
+      "acceptableAnswers": [
+        "2 on waiting list"
+      ]
+    },
+    {
+      "id": "english_comm-engc075",
+      "moduleId": "english_comm",
+      "prompt": "Pet First Aid の残席は？",
+      "explanation": "表のAvailability。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "4 seats left",
+        "14 seats left",
+        "8 seats left",
+        "2 on waiting list"
+      ],
+      "answer": "4 seats left",
+      "acceptableAnswers": [
+        "4 seats left"
+      ]
+    },
+    {
+      "id": "english_comm-engc076",
+      "moduleId": "english_comm",
+      "prompt": "4つのプログラムのうち最も人気があるのは？",
+      "explanation": "キャンセル待ちが出ているため最も人気。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Beginning Vet",
+        "Types of Pets",
+        "Pet Basic Care",
+        "Pet First Aid"
+      ],
+      "answer": "Beginning Vet",
+      "acceptableAnswers": [
+        "Beginning Vet"
+      ]
+    },
+    {
+      "id": "english_comm-engc077",
+      "moduleId": "english_comm",
+      "prompt": "申し込みの最初の手順は？",
+      "explanation": "問題ページのQ4の正解。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "create your account",
+        "click Info",
+        "click Sign",
+        "send an email to CAS"
+      ],
+      "answer": "create your account",
+      "acceptableAnswers": [
+        "create your account"
+      ]
+    },
+    {
+      "id": "english_comm-engc078",
+      "moduleId": "english_comm",
+      "prompt": "各プログラムに登録できる人数の上限は？",
+      "explanation": "NotesにUp to 20 studentsとある。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "20 students",
+        "10 students",
+        "14 students",
+        "30 students"
+      ],
+      "answer": "20 students",
+      "acceptableAnswers": [
+        "20 students"
+      ]
+    },
+    {
+      "id": "english_comm-engc079",
+      "moduleId": "english_comm",
+      "prompt": "参加できる年齢は？",
+      "explanation": "Notesにbetween the ages of 15 and 18とある。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "15 to 18",
+        "10 to 14",
+        "18 to 20",
+        "全年齢"
+      ],
+      "answer": "15 to 18",
+      "acceptableAnswers": [
+        "15 to 18"
+      ]
+    },
+    {
+      "id": "english_comm-engc080",
+      "moduleId": "english_comm",
+      "prompt": "申し込み締め切りは？",
+      "explanation": "Application deadline for all programs.",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "July 20",
+        "August 3",
+        "August 6",
+        "July 30"
+      ],
+      "answer": "July 20",
+      "acceptableAnswers": [
+        "July 20"
+      ]
+    },
+    {
+      "id": "english_comm-engc081",
+      "moduleId": "english_comm",
+      "prompt": "ペットを飼ったことがなく、猫を飼おうと思っている人に最も合うプログラムは？",
+      "explanation": "世話の基礎、掃除、餌、散歩などを学べる。",
+      "category": "Unit2内容理解",
+      "type": "choice",
+      "choices": [
+        "Pet Basic Care",
+        "Types of Pets",
+        "Beginning Vet",
+        "Pet First Aid"
+      ],
+      "answer": "Pet Basic Care",
+      "acceptableAnswers": [
+        "Pet Basic Care"
+      ]
+    },
+    {
+      "id": "english_comm-engc082",
+      "moduleId": "english_comm",
+      "prompt": "「CASは保護施設から動物を引き取ることを目的としたボランティア団体である」はT/F？",
+      "explanation": "CASは動物救護団体で教育プログラムを提供するが、この文は本文内容とずれる。",
+      "category": "Unit2内容一致",
+      "type": "choice",
+      "choices": [
+        "F",
+        "T",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F"
+      ]
+    },
+    {
+      "id": "english_comm-engc083",
+      "moduleId": "english_comm",
+      "prompt": "「CAS summer programs は高校生向けで、ペットに関する情報を提供する」はT/F？",
+      "explanation": "本文の対象と内容に一致する。",
+      "category": "Unit2内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc084",
+      "moduleId": "english_comm",
+      "prompt": "「表によると合計28席がまだ空いている」はT/F？",
+      "explanation": "残席は14+8+4=26席。Beginning Vetはキャンセル待ち。",
+      "category": "Unit2内容一致",
+      "type": "choice",
+      "choices": [
+        "F",
+        "T",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F"
+      ]
+    },
+    {
+      "id": "english_comm-engc085",
+      "moduleId": "english_comm",
+      "prompt": "「申し込みたい学生は7月20日までに申し込む必要がある」はT/F？",
+      "explanation": "Notesのdeadline。",
+      "category": "Unit2内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc086",
+      "moduleId": "english_comm",
+      "prompt": "「申し込み前にWebサイトを訪れ、プロフィール情報を入力する必要がある」はT/F？",
+      "explanation": "アカウント作成手順に一致する。",
+      "category": "Unit2内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc087",
+      "moduleId": "english_comm",
+      "prompt": "sleepy の意味は？",
+      "explanation": "feel sleepy after lunch の sleepy。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "眠い",
+        "覚醒した",
+        "正常な",
+        "国際的な"
+      ],
+      "answer": "眠い",
+      "acceptableAnswers": [
+        "眠い"
+      ]
+    },
+    {
+      "id": "english_comm-engc088",
+      "moduleId": "english_comm",
+      "prompt": "awake の意味は？",
+      "explanation": "Because you feel very awake... の awake。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "目が覚めている、覚醒した",
+        "眠っている",
+        "正常な",
+        "乱れた"
+      ],
+      "answer": "目が覚めている、覚醒した",
+      "acceptableAnswers": [
+        "目が覚めている、覚醒した"
+      ]
+    },
+    {
+      "id": "english_comm-engc089",
+      "moduleId": "english_comm",
+      "prompt": "process information の意味は？",
+      "explanation": "Naps give your brain time to process information. の表現。",
+      "category": "Unit4単語・表現",
+      "type": "choice",
+      "choices": [
+        "情報を処理する",
+        "食事をする",
+        "郵便を配達する",
+        "動物を救助する"
+      ],
+      "answer": "情報を処理する",
+      "acceptableAnswers": [
+        "情報を処理する"
+      ]
+    },
+    {
+      "id": "english_comm-engc090",
+      "moduleId": "english_comm",
+      "prompt": "rest の意味は？",
+      "explanation": "after a short rest / rest your body の語。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "休む、休ませる",
+        "乱す",
+        "提供する",
+        "発明する"
+      ],
+      "answer": "休む、休ませる",
+      "acceptableAnswers": [
+        "休む、休ませる"
+      ]
+    },
+    {
+      "id": "english_comm-engc091",
+      "moduleId": "english_comm",
+      "prompt": "disturb の意味は？",
+      "explanation": "disturb your sleep pattern の disturb。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "〜を乱す、邪魔する",
+        "〜を減らす",
+        "〜に焦点を置く",
+        "〜を提供する"
+      ],
+      "answer": "〜を乱す、邪魔する",
+      "acceptableAnswers": [
+        "〜を乱す、邪魔する"
+      ]
+    },
+    {
+      "id": "english_comm-engc092",
+      "moduleId": "english_comm",
+      "prompt": "sleep pattern の意味は？",
+      "explanation": "late nap may disturb your sleep pattern。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "睡眠パターン",
+        "昼寝の利点",
+        "郵便料金",
+        "申し込み締め切り"
+      ],
+      "answer": "睡眠パターン",
+      "acceptableAnswers": [
+        "睡眠パターン"
+      ]
+    },
+    {
+      "id": "english_comm-engc093",
+      "moduleId": "english_comm",
+      "prompt": "in the middle of the day の意味は？",
+      "explanation": "第1ルールで出る。",
+      "category": "Unit4単語・表現",
+      "type": "choice",
+      "choices": [
+        "昼の最中、真昼",
+        "午後の遅い時間",
+        "朝早く",
+        "夜中"
+      ],
+      "answer": "昼の最中、真昼",
+      "acceptableAnswers": [
+        "昼の最中、真昼"
+      ]
+    },
+    {
+      "id": "english_comm-engc094",
+      "moduleId": "english_comm",
+      "prompt": "alarm clock の意味は？",
+      "explanation": "第3ルールでセットすべきもの。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "目覚まし時計",
+        "郵便切手",
+        "申込書",
+        "応急処置"
+      ],
+      "answer": "目覚まし時計",
+      "acceptableAnswers": [
+        "目覚まし時計"
+      ]
+    },
+    {
+      "id": "english_comm-engc095",
+      "moduleId": "english_comm",
+      "prompt": "oversleep の意味は？",
+      "explanation": "If you don’t use an alarm... oversleep. の語。",
+      "category": "Unit4単語",
+      "type": "choice",
+      "choices": [
+        "寝過ごす",
+        "眠くなる",
+        "覚醒する",
+        "減らす"
+      ],
+      "answer": "寝過ごす",
+      "acceptableAnswers": [
+        "寝過ごす"
+      ]
+    },
+    {
+      "id": "english_comm-engc096",
+      "moduleId": "english_comm",
+      "prompt": "nap の意味は？",
+      "explanation": "Unit4の中心語。",
+      "category": "Unit4単語・表現",
+      "type": "choice",
+      "choices": [
+        "昼寝をする、昼寝",
+        "深い眠り",
+        "食後の反応",
+        "睡眠パターン"
+      ],
+      "answer": "昼寝をする、昼寝",
+      "acceptableAnswers": [
+        "昼寝をする、昼寝"
+      ]
+    },
+    {
+      "id": "english_comm-engc097",
+      "moduleId": "english_comm",
+      "prompt": "stress の意味は？",
+      "explanation": "naps can also reduce stress. の語。",
+      "category": "Unit4単語・表現",
+      "type": "choice",
+      "choices": [
+        "ストレス",
+        "利点",
+        "反応",
+        "脳"
+      ],
+      "answer": "ストレス",
+      "acceptableAnswers": [
+        "ストレス"
+      ]
+    },
+    {
+      "id": "english_comm-engc098",
+      "moduleId": "english_comm",
+      "prompt": "coffee の意味は？",
+      "explanation": "結論で「コーヒーに手を伸ばすな」と出る。",
+      "category": "Unit4単語・表現",
+      "type": "choice",
+      "choices": [
+        "コーヒー",
+        "昼寝",
+        "情報",
+        "目覚まし時計"
+      ],
+      "answer": "コーヒー",
+      "acceptableAnswers": [
+        "コーヒー"
+      ]
+    },
+    {
+      "id": "english_comm-engc099",
+      "moduleId": "english_comm",
+      "prompt": "多くの人が昼食後に少し眠くなる理由は？",
+      "explanation": "Because our bodies slow down after eating. が解答。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "食後に身体の働きが鈍くなるから",
+        "寝不足だから",
+        "コーヒーを飲むから",
+        "学校が退屈だから"
+      ],
+      "answer": "食後に身体の働きが鈍くなるから",
+      "acceptableAnswers": [
+        "食後に身体の働きが鈍くなるから"
+      ]
+    },
+    {
+      "id": "english_comm-engc100",
+      "moduleId": "english_comm",
+      "prompt": "昼寝の第1の利点は？",
+      "explanation": "The first benefit is that you will remember things better. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "物事をよく覚えられるようになる",
+        "英語が話せるようになる",
+        "昼食を減らせる",
+        "深い眠りに入れる"
+      ],
+      "answer": "物事をよく覚えられるようになる",
+      "acceptableAnswers": [
+        "物事をよく覚えられるようになる"
+      ]
+    },
+    {
+      "id": "english_comm-engc101",
+      "moduleId": "english_comm",
+      "prompt": "昼寝の第2の利点は？",
+      "explanation": "The second benefit is you can learn things more easily. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "物事をより簡単に習得できるようになる",
+        "料金を払わなくてよい",
+        "ペットの世話ができる",
+        "手紙を配達できる"
+      ],
+      "answer": "物事をより簡単に習得できるようになる",
+      "acceptableAnswers": [
+        "物事をより簡単に習得できるようになる"
+      ]
+    },
+    {
+      "id": "english_comm-engc102",
+      "moduleId": "english_comm",
+      "prompt": "昼寝は脳に何を与えるか。",
+      "explanation": "Naps give your brain time to process information. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "情報を処理する時間",
+        "国際郵便を扱う時間",
+        "ペットを散歩させる時間",
+        "切手を作る時間"
+      ],
+      "answer": "情報を処理する時間",
+      "acceptableAnswers": [
+        "情報を処理する時間"
+      ]
+    },
+    {
+      "id": "english_comm-engc103",
+      "moduleId": "english_comm",
+      "prompt": "昼寝の補足的な利点は？",
+      "explanation": "naps can also reduce stress. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "ストレスを減らせる",
+        "郵便料金を減らせる",
+        "残席を増やせる",
+        "年齢制限をなくせる"
+      ],
+      "answer": "ストレスを減らせる",
+      "acceptableAnswers": [
+        "ストレスを減らせる"
+      ]
+    },
+    {
+      "id": "english_comm-engc104",
+      "moduleId": "english_comm",
+      "prompt": "昼寝をする第1のルールは？",
+      "explanation": "The first rule is that you should take a nap in the middle of the day.",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "昼の最中に寝る",
+        "夜遅くに寝る",
+        "夕方遅くに寝る",
+        "朝食前に寝る"
+      ],
+      "answer": "昼の最中に寝る",
+      "acceptableAnswers": [
+        "昼の最中に寝る"
+      ]
+    },
+    {
+      "id": "english_comm-engc105",
+      "moduleId": "english_comm",
+      "prompt": "昼寝をする第2のルールは？",
+      "explanation": "20-30 minute nap is best. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "20〜30分がベスト",
+        "5分以下がベスト",
+        "2時間がベスト",
+        "長いほどよい"
+      ],
+      "answer": "20〜30分がベスト",
+      "acceptableAnswers": [
+        "20〜30分がベスト"
+      ]
+    },
+    {
+      "id": "english_comm-engc106",
+      "moduleId": "english_comm",
+      "prompt": "昼寝をする第3のルールは？",
+      "explanation": "set an alarm clock が第3ルール。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "目覚まし時計をセットする",
+        "コーヒーを飲む",
+        "メールを送る",
+        "Webサイトを開く"
+      ],
+      "answer": "目覚まし時計をセットする",
+      "acceptableAnswers": [
+        "目覚まし時計をセットする"
+      ]
+    },
+    {
+      "id": "english_comm-engc107",
+      "moduleId": "english_comm",
+      "prompt": "昼寝が長すぎるとどうなるか。",
+      "explanation": "If you sleep too long... feel worse. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "深い眠りに入り、起きたあと気分が悪くなる",
+        "空腹になる",
+        "英単語を忘れる",
+        "郵便料金が高くなる"
+      ],
+      "answer": "深い眠りに入り、起きたあと気分が悪くなる",
+      "acceptableAnswers": [
+        "深い眠りに入り、起きたあと気分が悪くなる"
+      ]
+    },
+    {
+      "id": "english_comm-engc108",
+      "moduleId": "english_comm",
+      "prompt": "昼食後に眠くなったら、筆者は何を勧めているか。",
+      "explanation": "Instead, put your head down and take a nap. の内容。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "頭を下げて昼寝をする",
+        "コーヒーを飲む",
+        "授業を休む",
+        "ペットを散歩させる"
+      ],
+      "answer": "頭を下げて昼寝をする",
+      "acceptableAnswers": [
+        "頭を下げて昼寝をする"
+      ]
+    },
+    {
+      "id": "english_comm-engc109",
+      "moduleId": "english_comm",
+      "prompt": "Unit4の本文タイトルとして最も適切なものは？",
+      "explanation": "理由と方法の両方を扱う本文。",
+      "category": "Unit4内容理解",
+      "type": "choice",
+      "choices": [
+        "Why and How You Should Take a Nap",
+        "Health Benefits of Taking a Nap",
+        "Some Steps to Help You Sleep",
+        "How to Wake Up from Sleep"
+      ],
+      "answer": "Why and How You Should Take a Nap",
+      "acceptableAnswers": [
+        "Why and How You Should Take a Nap"
+      ]
+    },
+    {
+      "id": "english_comm-engc110",
+      "moduleId": "english_comm",
+      "prompt": "「昼寝をすると、普通はミスの数が減る」はT/F？",
+      "explanation": "Because you feel very awake, you will make fewer mistakes. の内容。",
+      "category": "Unit4内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc111",
+      "moduleId": "english_comm",
+      "prompt": "「寝ている間に脳へ整理の時間を与えられる」はT/F？",
+      "explanation": "your brain can organize itself too に一致。",
+      "category": "Unit4内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc112",
+      "moduleId": "english_comm",
+      "prompt": "「昼寝は長ければ長いほど起きたとき気分がよい」はT/F？",
+      "explanation": "長すぎると気分が悪くなる。",
+      "category": "Unit4内容一致",
+      "type": "choice",
+      "choices": [
+        "F",
+        "T",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F"
+      ]
+    },
+    {
+      "id": "english_comm-engc113",
+      "moduleId": "english_comm",
+      "prompt": "「昼に深い眠りをとることは健康によりよい」はT/F？",
+      "explanation": "本文では長く寝て深い眠りに入るのは逆効果。",
+      "category": "Unit4内容一致",
+      "type": "choice",
+      "choices": [
+        "F",
+        "T",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F"
+      ]
+    },
+    {
+      "id": "english_comm-engc114",
+      "moduleId": "english_comm",
+      "prompt": "「目覚まし時計をセットすると昼寝中に快適に休みやすい」はT/F？",
+      "explanation": "set an alarm clock so that you can fully relax. に一致。",
+      "category": "Unit4内容一致",
+      "type": "choice",
+      "choices": [
+        "T",
+        "F",
+        "本文にない",
+        "どちらでもない"
+      ],
+      "answer": "T",
+      "acceptableAnswers": [
+        "T"
+      ]
+    },
+    {
+      "id": "english_comm-engc115",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "Before the invention of ... は「〜の発明前」。it was difficult to do は「〜するのは難しかった」。",
+      "category": "Unit1文章翻訳",
+      "type": "choice",
+      "choices": [
+        "郵便切手が発明される前、手紙をほかの国に送るのは難しかった。",
+        "郵便切手が発明されたあと、手紙をほかの国に送るのは簡単になった。",
+        "郵便局ができる前、国内の手紙を送るのは難しかった。",
+        "郵便切手の発明は、ほかの国の手紙を受け取ることを難しくした。"
+      ],
+      "answer": "郵便切手が発明される前、手紙をほかの国に送るのは難しかった。",
+      "acceptableAnswers": [
+        "郵便切手が発明される前、手紙をほかの国に送るのは難しかった。"
+      ]
+    },
+    {
+      "id": "english_comm-engc116",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "with glue on the back が「裏側にのりの付いた」。",
+      "category": "Unit1文章翻訳",
+      "type": "choice",
+      "choices": [
+        "英国人教師のローランド・ヒルは、裏側にのりの付いた郵便切手を作るという考えを持っていた。",
+        "ローランド・ヒルは、表側にのりの付いた手紙を作った英国の郵便局員だった。",
+        "英国人教師のローランド・ヒルは、切手を集めるという趣味を持っていた。",
+        "ローランド・ヒルは、裏側に青い絵がある切手を買った。"
+      ],
+      "answer": "英国人教師のローランド・ヒルは、裏側にのりの付いた郵便切手を作るという考えを持っていた。",
+      "acceptableAnswers": [
+        "英国人教師のローランド・ヒルは、裏側にのりの付いた郵便切手を作るという考えを持っていた。"
+      ]
+    },
+    {
+      "id": "english_comm-engc117",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "made the first stamps = 最初の切手を作った。",
+      "category": "Unit1文章翻訳",
+      "type": "choice",
+      "choices": [
+        "英国の郵政公社は1840年に最初の切手を作った。",
+        "ドイツの郵便局は1874年に最初の切手を作った。",
+        "英国の郵政公社は1840年にUPUを組織した。",
+        "英国の郵政公社は1840年に切手収集を始めた。"
+      ],
+      "answer": "英国の郵政公社は1840年に最初の切手を作った。",
+      "acceptableAnswers": [
+        "英国の郵政公社は1840年に最初の切手を作った。"
+      ]
+    },
+    {
+      "id": "english_comm-engc118",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "did not want to accept = 受け取りたがらなかった。",
+      "category": "Unit1文章翻訳",
+      "type": "choice",
+      "choices": [
+        "一部の国は、ほかの国の切手が付いた手紙を受け取りたがらなかった。",
+        "一部の国は、ほかの国の切手をすべて受け取りたがった。",
+        "すべての国は、ほかの国からの手紙を無料で配達した。",
+        "一部の国は、自国の切手が付いた手紙を作りたがらなかった。"
+      ],
+      "answer": "一部の国は、ほかの国の切手が付いた手紙を受け取りたがらなかった。",
+      "acceptableAnswers": [
+        "一部の国は、ほかの国の切手が付いた手紙を受け取りたがらなかった。"
+      ]
+    },
+    {
+      "id": "english_comm-engc119",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "Almost every country = ほぼすべての国。",
+      "category": "Unit1文章翻訳",
+      "type": "choice",
+      "choices": [
+        "世界のほぼすべての国がこの組織の加盟国である。",
+        "世界の一部の国だけがこの組織の問題を扱っている。",
+        "世界のほぼすべての国がこの切手を作っている。",
+        "世界のすべての郵便局が英国にある。"
+      ],
+      "answer": "世界のほぼすべての国がこの組織の加盟国である。",
+      "acceptableAnswers": [
+        "世界のほぼすべての国がこの組織の加盟国である。"
+      ]
+    },
+    {
+      "id": "english_comm-engc120",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "stand for は「〜を表す、〜の略である」。",
+      "category": "Unit2文章翻訳",
+      "type": "choice",
+      "choices": [
+        "CASはCecil Animal Shelterの略である。",
+        "CASはCentral Animal Schoolの略である。",
+        "CASはCecil Animal Shelterを運営している医師である。",
+        "CASは高校生の夏休みの予定である。"
+      ],
+      "answer": "CASはCecil Animal Shelterの略である。",
+      "acceptableAnswers": [
+        "CASはCecil Animal Shelterの略である。"
+      ]
+    },
+    {
+      "id": "english_comm-engc121",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "funded by ... = 〜から資金提供を受けた、organized by ... = 〜によって組織された。",
+      "category": "Unit2文章翻訳",
+      "type": "choice",
+      "choices": [
+        "私たちは地元の自治体から資金提供を受け、ボランティアによって組織されている動物救護団体です。",
+        "私たちは医師によって資金提供され、学生によって救助されている団体です。",
+        "私たちは国際郵便の問題を扱うボランティア団体です。",
+        "私たちは地方自治体を救助するために動物を組織しています。"
+      ],
+      "answer": "私たちは地元の自治体から資金提供を受け、ボランティアによって組織されている動物救護団体です。",
+      "acceptableAnswers": [
+        "私たちは地元の自治体から資金提供を受け、ボランティアによって組織されている動物救護団体です。"
+      ]
+    },
+    {
+      "id": "english_comm-engc122",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "who love animals / who want to be a vet が high school students を説明している。",
+      "category": "Unit2文章翻訳",
+      "type": "choice",
+      "choices": [
+        "毎夏、私たちは動物が好きな、または将来獣医になりたい高校生に教育プログラムを提供しています。",
+        "毎夏、私たちは動物が嫌いな高校生に郵便プログラムを提供しています。",
+        "私たちは獣医だけに、将来高校生になるためのプログラムを提供しています。",
+        "毎夏、学生は教育プログラムを地元の自治体に提供しています。"
+      ],
+      "answer": "毎夏、私たちは動物が好きな、または将来獣医になりたい高校生に教育プログラムを提供しています。",
+      "acceptableAnswers": [
+        "毎夏、私たちは動物が好きな、または将来獣医になりたい高校生に教育プログラムを提供しています。"
+      ]
+    },
+    {
+      "id": "english_comm-engc123",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "To apply = 申し込むには。",
+      "category": "Unit2文章翻訳",
+      "type": "choice",
+      "choices": [
+        "申し込むには、アカウントを作成してSignをクリックします。",
+        "詳しい情報を見るには、アカウントを削除してInfoをクリックします。",
+        "申し込むには、メールを送り、Create Accountをクリックしてはいけません。",
+        "応募を締め切るには、プロフィール情報を書き込んでInfoをクリックします。"
+      ],
+      "answer": "申し込むには、アカウントを作成してSignをクリックします。",
+      "acceptableAnswers": [
+        "申し込むには、アカウントを作成してSignをクリックします。"
+      ]
+    },
+    {
+      "id": "english_comm-engc124",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "Up to 20 students = 最大20名の学生。",
+      "category": "Unit2文章翻訳",
+      "type": "choice",
+      "choices": [
+        "各プログラムには15歳から18歳までの学生が最大20名まで登録できます。",
+        "各プログラムには20歳以上の学生だけが登録できます。",
+        "15個から18個のプログラムに最大20名の先生が登録できます。",
+        "各プログラムでは15名から18名の学生が必ずキャンセル待ちになります。"
+      ],
+      "answer": "各プログラムには15歳から18歳までの学生が最大20名まで登録できます。",
+      "acceptableAnswers": [
+        "各プログラムには15歳から18歳までの学生が最大20名まで登録できます。"
+      ]
+    },
+    {
+      "id": "english_comm-engc125",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "feel sleepy = 眠く感じる。",
+      "category": "Unit4文章翻訳",
+      "type": "choice",
+      "choices": [
+        "ほとんどの人は昼食後に少し眠く感じる。",
+        "ほとんどの人は昼食前に完全に目が覚める。",
+        "昼食後、ほとんどの人は深い眠りに落ちるべきだ。",
+        "ほとんどの人は昼食後にコーヒーを飲む。"
+      ],
+      "answer": "ほとんどの人は昼食後に少し眠く感じる。",
+      "acceptableAnswers": [
+        "ほとんどの人は昼食後に少し眠く感じる。"
+      ]
+    },
+    {
+      "id": "english_comm-engc126",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "as は理由を表し「〜なので」。",
+      "category": "Unit4文章翻訳",
+      "type": "choice",
+      "choices": [
+        "食べたあとで私たちの身体が鈍化するので、それは自然な反応である。",
+        "私たちの脳が整理されるので、それは危険な反応である。",
+        "食べる前に身体が速く動くので、それは異常な反応である。",
+        "眠りすぎると身体が鈍化するので、それは昼寝の規則である。"
+      ],
+      "answer": "食べたあとで私たちの身体が鈍化するので、それは自然な反応である。",
+      "acceptableAnswers": [
+        "食べたあとで私たちの身体が鈍化するので、それは自然な反応である。"
+      ]
+    },
+    {
+      "id": "english_comm-engc127",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "give A B = AにBを与える。",
+      "category": "Unit4文章翻訳",
+      "type": "choice",
+      "choices": [
+        "昼寝は脳に情報を処理する時間を与える。",
+        "昼寝は身体に情報を忘れる時間を与える。",
+        "脳は昼寝にストレスを増やす時間を与える。",
+        "昼寝はあなたの脳から時間と情報を減らす。"
+      ],
+      "answer": "昼寝は脳に情報を処理する時間を与える。",
+      "acceptableAnswers": [
+        "昼寝は脳に情報を処理する時間を与える。"
+      ]
+    },
+    {
+      "id": "english_comm-engc128",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "fall into a deep sleep = 深い眠りに陥る。",
+      "category": "Unit4文章翻訳",
+      "type": "choice",
+      "choices": [
+        "長く眠りすぎると、深い眠りに陥ってしまう可能性がある。",
+        "長く眠りすぎると、必ず目覚まし時計をセットできる。",
+        "短く眠りすぎると、昼の最中に眠らなくなる。",
+        "長く眠るほど、必ず気分がよくなる。"
+      ],
+      "answer": "長く眠りすぎると、深い眠りに陥ってしまう可能性がある。",
+      "acceptableAnswers": [
+        "長く眠りすぎると、深い眠りに陥ってしまう可能性がある。"
+      ]
+    },
+    {
+      "id": "english_comm-engc129",
+      "moduleId": "english_comm",
+      "prompt": "次の英文を日本語に訳しなさい。",
+      "explanation": "instead = その代わりに。put your head down = 頭を下げる。",
+      "category": "Unit4文章翻訳",
+      "type": "choice",
+      "choices": [
+        "その代わりに、頭を下げて昼寝をしなさい。",
+        "その代わりに、コーヒーに手を伸ばして起きなさい。",
+        "その前に、頭を上げて授業中に寝てはいけません。",
+        "代わりに、脳を整理して昼食をとりなさい。"
+      ],
+      "answer": "その代わりに、頭を下げて昼寝をしなさい。",
+      "acceptableAnswers": [
+        "その代わりに、頭を下げて昼寝をしなさい。"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3792 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-history-normal-v1",
+  "title": "歴史総合",
+  "description": "StudyHome-Nextから救出した 歴史総合 の通常方向教材。",
+  "folders": [
+    {
+      "id": "social",
+      "title": "社会"
+    }
+  ],
+  "modules": [
+    {
+      "id": "history",
+      "folderId": "social",
+      "title": "歴史総合",
+      "subject": "社会",
+      "description": "StudyHome-Nextから救出した教材データ。source=history",
+      "tags": [
+        "社会",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "history-61-B01",
+        "history-61-B02",
+        "history-61-B03",
+        "history-61-B04",
+        "history-61-B05",
+        "history-61-B06",
+        "history-61-B07",
+        "history-61-B08",
+        "history-61-B09",
+        "history-61-B10",
+        "history-61-B11",
+        "history-61-B12",
+        "history-61-B13A",
+        "history-61-B13B",
+        "history-61-B14",
+        "history-61-B15",
+        "history-61-B16",
+        "history-61-B17",
+        "history-61-B18",
+        "history-61-B19",
+        "history-61-B20",
+        "history-61-A01",
+        "history-61-A02",
+        "history-61-A03",
+        "history-61-A04",
+        "history-61-A05",
+        "history-61-A06",
+        "history-61-A07",
+        "history-61-A08",
+        "history-61-A09",
+        "history-61-A10",
+        "history-61-A11",
+        "history-61-A12",
+        "history-61-A13",
+        "history-61-A14",
+        "history-61-A15",
+        "history-61-A16",
+        "history-61-A17",
+        "history-62-B01",
+        "history-62-B02",
+        "history-62-B03",
+        "history-62-B04",
+        "history-62-B05",
+        "history-62-B06",
+        "history-62-B07A",
+        "history-62-B07B",
+        "history-62-B08",
+        "history-62-B09",
+        "history-62-B10",
+        "history-62-B11",
+        "history-62-B12",
+        "history-62-B13",
+        "history-62-B14",
+        "history-62-B15",
+        "history-62-B16",
+        "history-62-B17",
+        "history-62-B18",
+        "history-62-B19",
+        "history-62-B20",
+        "history-62-A01",
+        "history-62-A02",
+        "history-62-A03",
+        "history-62-A04",
+        "history-62-A05",
+        "history-62-A06",
+        "history-62-E01",
+        "history-62-E02",
+        "history-62-E03",
+        "history-62-E04",
+        "history-62-E05",
+        "history-62-E06",
+        "history-62-E07",
+        "history-62-E08",
+        "history-62-E09",
+        "history-62-E10",
+        "history-62-E11",
+        "history-63-B01",
+        "history-63-B02",
+        "history-63-B03",
+        "history-63-B04",
+        "history-63-B05",
+        "history-63-B06A",
+        "history-63-B06B",
+        "history-63-B07",
+        "history-63-B08",
+        "history-63-B09",
+        "history-63-B10",
+        "history-63-B11",
+        "history-63-A01",
+        "history-63-E01A",
+        "history-63-E01B",
+        "history-63-E01C",
+        "history-63-E01D",
+        "history-63-E01E",
+        "history-63-E02A",
+        "history-63-E02B",
+        "history-63-E02C",
+        "history-63-E02D",
+        "history-63-E02E",
+        "history-63-E02F",
+        "history-64-B01",
+        "history-64-B02",
+        "history-64-B03",
+        "history-64-B04",
+        "history-64-B05A",
+        "history-64-B05B",
+        "history-64-B06",
+        "history-64-B07A",
+        "history-64-B07B",
+        "history-64-B07C",
+        "history-64-B08",
+        "history-64-B09",
+        "history-64-B10",
+        "history-64-B11",
+        "history-64-B12",
+        "history-64-B13",
+        "history-64-B14",
+        "history-64-B15",
+        "history-64-B16",
+        "history-64-B17",
+        "history-64-B18",
+        "history-64-B19",
+        "history-64-B20",
+        "history-64-A01",
+        "history-64-A02",
+        "history-64-A03",
+        "history-64-A04",
+        "history-64-A05",
+        "history-64-A06",
+        "history-64-A07",
+        "history-64-A08",
+        "history-64-A09",
+        "history-64-A10",
+        "history-64-E01",
+        "history-64-E02",
+        "history-64-E03",
+        "history-64-E04",
+        "history-64-E05",
+        "history-64-E06",
+        "history-64-E07",
+        "history-64-E08",
+        "history-64-E09",
+        "history-64-E10",
+        "history-H-T001",
+        "history-H-T002",
+        "history-H-T003",
+        "history-H-T004",
+        "history-H-T005",
+        "history-H-T006",
+        "history-H-T007",
+        "history-H-T008",
+        "history-H-T009",
+        "history-H-T010",
+        "history-H-T011",
+        "history-H-T012",
+        "history-H-T013",
+        "history-H-T016",
+        "history-H-T017",
+        "history-H-T019",
+        "history-H-T023",
+        "history-H-T025",
+        "history-H-T026",
+        "history-H-T028",
+        "history-H-T030",
+        "history-H-T034",
+        "history-H-T041",
+        "history-H-T042",
+        "history-H-T046",
+        "history-H-T048",
+        "history-H-T050",
+        "history-H-T051",
+        "history-H-T052",
+        "history-H-T053",
+        "history-H-T054",
+        "history-H-T055",
+        "history-H-T056",
+        "history-H-T057",
+        "history-H-T058",
+        "history-H-T059",
+        "history-H-T060",
+        "history-H-T061",
+        "history-H-T062",
+        "history-H-T063",
+        "history-H-T064",
+        "history-H-T065",
+        "history-H-T066",
+        "history-H-T069",
+        "history-H-T070"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "history-61-B01",
+      "moduleId": "history",
+      "prompt": "石油・電気を動力源に重化学工業を発展させた、19世紀後半の技術革新を何というか。",
+      "explanation": "第2次産業革命は19世紀後半から進んだ技術革新で、電力・石油・鉄鋼・化学工業などが発展した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "第2次産業革命",
+        "第1次産業革命",
+        "交通革命",
+        "科学革命"
+      ],
+      "answer": "第2次産業革命",
+      "acceptableAnswers": [
+        "第2次産業革命",
+        "第二次産業革命"
+      ]
+    },
+    {
+      "id": "history-61-B02",
+      "moduleId": "history",
+      "prompt": "19世紀末以降、欧米列強が巨大な生産力と軍事力の優位を背景として、世界をみずからの植民地や従属地域に分割した政策を何というか。",
+      "explanation": "帝国主義は、資本主義の発展を背景に、列強が植民地・勢力圏を拡大した動き。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "帝国主義",
+        "植民地主義",
+        "民族主義",
+        "社会主義"
+      ],
+      "answer": "帝国主義",
+      "acceptableAnswers": [
+        "帝国主義"
+      ]
+    },
+    {
+      "id": "history-61-B03",
+      "moduleId": "history",
+      "prompt": "流刑植民地として出発し、1901年にイギリス帝国の自治領となったのは何という国か。",
+      "explanation": "オーストラリアは1901年にイギリス帝国の自治領となった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "オーストラリア",
+        "カナダ",
+        "ニュージーランド",
+        "南アフリカ連邦"
+      ],
+      "answer": "オーストラリア",
+      "acceptableAnswers": [
+        "オーストラリア"
+      ]
+    },
+    {
+      "id": "history-61-B04",
+      "moduleId": "history",
+      "prompt": "イギリスの首相ディズレーリは、財政難に陥ったエジプトから何を買収したか。",
+      "explanation": "スエズ運河はインドへの交通路として重要で、イギリスの帝国支配と深く関わった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "スエズ運河会社の株",
+        "パナマ運河の管理権",
+        "シベリア鉄道の敷設権",
+        "バグダード鉄道の敷設権"
+      ],
+      "answer": "スエズ運河会社の株",
+      "acceptableAnswers": [
+        "スエズ運河会社の株",
+        "スエズ運河会社株",
+        "スエズ運河会社の株式",
+        "スエズ運河会社株式"
+      ]
+    },
+    {
+      "id": "history-61-B05",
+      "moduleId": "history",
+      "prompt": "南アフリカ戦争を起こすなど、帝国主義政策を推進したイギリスの植民相は誰か。",
+      "explanation": "ジョゼフ＝チェンバレンはイギリス帝国主義政策を推進した政治家。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ジョゼフ＝チェンバレン",
+        "ディズレーリ",
+        "グラッドストン",
+        "セシル＝ローズ"
+      ],
+      "answer": "ジョゼフ＝チェンバレン",
+      "acceptableAnswers": [
+        "ジョゼフ＝チェンバレン",
+        "ジョゼフ・チェンバレン",
+        "チェンバレン"
+      ]
+    },
+    {
+      "id": "history-61-B06",
+      "moduleId": "history",
+      "prompt": "ウェッブ夫妻やバーナード＝ショーに代表される、漸進的な社会改革を主張したイギリスの社会主義団体を何というか。",
+      "explanation": "フェビアン協会は議会を通じた漸進的社会改革を主張した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "フェビアン協会",
+        "労働党",
+        "ドイツ社会民主党",
+        "第2インターナショナル"
+      ],
+      "answer": "フェビアン協会",
+      "acceptableAnswers": [
+        "フェビアン協会"
+      ]
+    },
+    {
+      "id": "history-61-B07",
+      "moduleId": "history",
+      "prompt": "フェビアン協会や労働組合などにより労働代表委員会として結成され、1906年に名称を改めたイギリスの社会主義政党を何というか。",
+      "explanation": "労働党は20世紀以降、イギリスの主要政党となった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "労働党",
+        "フェビアン協会",
+        "自由党",
+        "保守党"
+      ],
+      "answer": "労働党",
+      "acceptableAnswers": [
+        "労働党"
+      ]
+    },
+    {
+      "id": "history-61-B08",
+      "moduleId": "history",
+      "prompt": "アイルランドの独立を主張して、急進的な反英路線をとった民族主義政党を何というか。",
+      "explanation": "シン＝フェイン党はアイルランド独立運動で重要な役割をもった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "シン＝フェイン党",
+        "労働党",
+        "フェビアン協会",
+        "フランス社会党"
+      ],
+      "answer": "シン＝フェイン党",
+      "acceptableAnswers": [
+        "シン＝フェイン党",
+        "シンフェイン党"
+      ]
+    },
+    {
+      "id": "history-61-B09",
+      "moduleId": "history",
+      "prompt": "1887年にフランスで起こった、軍部独裁を企図したクーデタ未遂事件を何というか。",
+      "explanation": "ブーランジェ事件はフランス第三共和政を揺るがしたクーデタ未遂事件。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ブーランジェ事件",
+        "ドレフュス事件",
+        "血の日曜日事件",
+        "ファショダ事件"
+      ],
+      "answer": "ブーランジェ事件",
+      "acceptableAnswers": [
+        "ブーランジェ事件"
+      ]
+    },
+    {
+      "id": "history-61-B10",
+      "moduleId": "history",
+      "prompt": "1894年にフランスで起こった、ユダヤ系軍人のスパイ容疑事件を何というか。",
+      "explanation": "ドレフュス事件は反ユダヤ主義・軍部批判・共和政擁護が争点となった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ドレフュス事件",
+        "ブーランジェ事件",
+        "血の日曜日事件",
+        "ファショダ事件"
+      ],
+      "answer": "ドレフュス事件",
+      "acceptableAnswers": [
+        "ドレフュス事件"
+      ]
+    },
+    {
+      "id": "history-61-B11",
+      "moduleId": "history",
+      "prompt": "1890年にビスマルクを引退させて、積極的な世界政策を展開したドイツの皇帝は誰か。",
+      "explanation": "ヴィルヘルム2世はビスマルクを退け、世界政策を展開した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ヴィルヘルム2世",
+        "ビスマルク",
+        "ニコライ2世",
+        "フランツ＝ヨーゼフ1世"
+      ],
+      "answer": "ヴィルヘルム2世",
+      "acceptableAnswers": [
+        "ヴィルヘルム2世",
+        "ヴィルヘルム二世",
+        "ウィルヘルム2世",
+        "ウィルヘルム二世"
+      ]
+    },
+    {
+      "id": "history-61-B12",
+      "moduleId": "history",
+      "prompt": "社会主義者鎮圧法の廃止後、やがて議会の第一党となったドイツの社会主義政党は何か。",
+      "explanation": "ドイツ社会民主党は社会主義者鎮圧法廃止後に勢力を拡大した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "社会民主党",
+        "労働党",
+        "フランス社会党",
+        "フェビアン協会"
+      ],
+      "answer": "社会民主党",
+      "acceptableAnswers": [
+        "社会民主党",
+        "ドイツ社会民主党"
+      ]
+    },
+    {
+      "id": "history-61-B13A",
+      "moduleId": "history",
+      "prompt": "ロシア社会民主労働党が1903年の党大会で二つに分裂した際、『多数派』の意味をもつ党派は何か。",
+      "explanation": "ボリシェヴィキはロシア社会民主労働党の多数派。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ボリシェヴィキ",
+        "メンシェヴィキ",
+        "エスエル",
+        "ナロードニキ"
+      ],
+      "answer": "ボリシェヴィキ",
+      "acceptableAnswers": [
+        "ボリシェヴィキ",
+        "ボリシェビキ"
+      ]
+    },
+    {
+      "id": "history-61-B13B",
+      "moduleId": "history",
+      "prompt": "ロシア社会民主労働党が1903年の党大会で二つに分裂した際、『少数派』の意味をもつ党派は何か。",
+      "explanation": "メンシェヴィキはロシア社会民主労働党の少数派。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "メンシェヴィキ",
+        "ボリシェヴィキ",
+        "エスエル",
+        "ナロードニキ"
+      ],
+      "answer": "メンシェヴィキ",
+      "acceptableAnswers": [
+        "メンシェヴィキ",
+        "メンシェビキ"
+      ]
+    },
+    {
+      "id": "history-61-B14",
+      "moduleId": "history",
+      "prompt": "1905年革命の発端となった、ペテルブルクの冬宮前で起こった流血事件を何というか。",
+      "explanation": "血の日曜日事件は1905年革命の発端となった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "血の日曜日事件",
+        "ドレフュス事件",
+        "ブーランジェ事件",
+        "デカブリストの乱"
+      ],
+      "answer": "血の日曜日事件",
+      "acceptableAnswers": [
+        "血の日曜日事件"
+      ]
+    },
+    {
+      "id": "history-61-B15",
+      "moduleId": "history",
+      "prompt": "1905年革命後、反動政治を強行する一方で、ミール解体などの土地改革を進めたロシアの首相は誰か。",
+      "explanation": "ストルイピンはミール解体などの土地改革を進めた。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ストルイピン",
+        "ニコライ2世",
+        "ウィッテ",
+        "レーニン"
+      ],
+      "answer": "ストルイピン",
+      "acceptableAnswers": [
+        "ストルイピン"
+      ]
+    },
+    {
+      "id": "history-61-B16",
+      "moduleId": "history",
+      "prompt": "アメリカ合衆国第25代大統領（共和党）で、帝国主義政策を積極的に進めたのは誰か。",
+      "explanation": "マッキンリーはアメリカの帝国主義政策を進めた大統領。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "マッキンリー",
+        "セオドア＝ローズヴェルト",
+        "タフト",
+        "ウィルソン"
+      ],
+      "answer": "マッキンリー",
+      "acceptableAnswers": [
+        "マッキンリー"
+      ]
+    },
+    {
+      "id": "history-61-B17",
+      "moduleId": "history",
+      "prompt": "キューバの独立運動をきっかけに起こり、その後アメリカが海外進出を積極化した戦争を何というか。",
+      "explanation": "米西戦争後、アメリカはフィリピン・グアム・プエルトリコなどを獲得した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "アメリカ＝スペイン（米西）戦争",
+        "南北戦争",
+        "南アフリカ戦争",
+        "日露戦争"
+      ],
+      "answer": "アメリカ＝スペイン（米西）戦争",
+      "acceptableAnswers": [
+        "アメリカ＝スペイン（米西）戦争",
+        "アメリカ＝スペイン戦争",
+        "米西戦争",
+        "アメリカスペイン戦争"
+      ]
+    },
+    {
+      "id": "history-61-B18",
+      "moduleId": "history",
+      "prompt": "革新主義の立場をとり、反トラスト法を発動して社会改革につとめ、『棍棒外交』を展開したアメリカ大統領は誰か。",
+      "explanation": "セオドア＝ローズヴェルトは革新主義と棍棒外交で知られる。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "セオドア＝ローズヴェルト",
+        "マッキンリー",
+        "タフト",
+        "ウィルソン"
+      ],
+      "answer": "セオドア＝ローズヴェルト",
+      "acceptableAnswers": [
+        "セオドア＝ローズヴェルト",
+        "セオドア・ローズヴェルト",
+        "セオドア＝ルーズベルト",
+        "セオドア・ルーズベルト"
+      ]
+    },
+    {
+      "id": "history-61-B19",
+      "moduleId": "history",
+      "prompt": "アメリカが1914年に完成させた、太平洋と大西洋を結ぶ運河を何というか。",
+      "explanation": "パナマ運河は太平洋と大西洋を結び、アメリカの中南米政策と関係した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "パナマ運河",
+        "スエズ運河",
+        "キール運河",
+        "バグダード鉄道"
+      ],
+      "answer": "パナマ運河",
+      "acceptableAnswers": [
+        "パナマ運河"
+      ]
+    },
+    {
+      "id": "history-61-B20",
+      "moduleId": "history",
+      "prompt": "1889年にパリで結成された、社会主義運動の国際的連帯組織を何というか。",
+      "explanation": "第2インターナショナルは社会主義運動の国際的組織。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "第2インターナショナル",
+        "第1インターナショナル",
+        "コミンテルン",
+        "ドイツ社会民主党"
+      ],
+      "answer": "第2インターナショナル",
+      "acceptableAnswers": [
+        "第2インターナショナル",
+        "第二インターナショナル"
+      ]
+    },
+    {
+      "id": "history-61-A01",
+      "moduleId": "history",
+      "prompt": "1867年に自治を認められた、イギリス初の自治領はどこか。",
+      "explanation": "カナダは1867年に自治を認められたイギリス初の自治領。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "カナダ",
+        "オーストラリア",
+        "ニュージーランド",
+        "南アフリカ連邦"
+      ],
+      "answer": "カナダ",
+      "acceptableAnswers": [
+        "カナダ"
+      ]
+    },
+    {
+      "id": "history-61-A02",
+      "moduleId": "history",
+      "prompt": "1911年にイギリスで制定され、上院に対する下院の優越を規定した法律を何というか。",
+      "explanation": "議会法はイギリスにおける下院優越を制度化した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "議会法",
+        "アイルランド自治法",
+        "選挙法改正",
+        "工場法"
+      ],
+      "answer": "議会法",
+      "acceptableAnswers": [
+        "議会法"
+      ]
+    },
+    {
+      "id": "history-61-A03",
+      "moduleId": "history",
+      "prompt": "アイルランドの独立運動の高まりに対して、イギリスの自由党政府が1914年に成立させた法律を何というか。",
+      "explanation": "アイルランド自治法は1914年に成立したが、第一次世界大戦などで実施は複雑化した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "アイルランド自治法",
+        "議会法",
+        "カトリック解放法",
+        "審査法"
+      ],
+      "answer": "アイルランド自治法",
+      "acceptableAnswers": [
+        "アイルランド自治法"
+      ]
+    },
+    {
+      "id": "history-61-A04",
+      "moduleId": "history",
+      "prompt": "『私は弾劾する』の論陣をはり、ドレフュスの無罪を主張したフランスの自然主義作家は誰か。",
+      "explanation": "ゾラは『私は弾劾する』でドレフュス擁護の論陣を張った。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ゾラ",
+        "ヘルツル",
+        "ユーゴー",
+        "バルザック"
+      ],
+      "answer": "ゾラ",
+      "acceptableAnswers": [
+        "ゾラ",
+        "エミール＝ゾラ",
+        "エミール・ゾラ"
+      ]
+    },
+    {
+      "id": "history-61-A05",
+      "moduleId": "history",
+      "prompt": "ドレフュス事件で反ユダヤ主義に衝撃を受け、パレスチナでのユダヤ人国家建設をめざす運動を開始した人物は誰か。",
+      "explanation": "ヘルツルはシオニズム運動を進めた人物。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ヘルツル",
+        "ゾラ",
+        "ドレフュス",
+        "ロスチャイルド"
+      ],
+      "answer": "ヘルツル",
+      "acceptableAnswers": [
+        "ヘルツル",
+        "テオドール＝ヘルツル",
+        "テオドール・ヘルツル"
+      ]
+    },
+    {
+      "id": "history-61-A06",
+      "moduleId": "history",
+      "prompt": "1905年に社会主義諸派を集めて組織された、フランスの政党を何というか。",
+      "explanation": "フランス社会党は1905年に社会主義諸派を集めて組織された。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "フランス社会党",
+        "ドイツ社会民主党",
+        "労働党",
+        "フェビアン協会"
+      ],
+      "answer": "フランス社会党",
+      "acceptableAnswers": [
+        "フランス社会党"
+      ]
+    },
+    {
+      "id": "history-61-A07",
+      "moduleId": "history",
+      "prompt": "ドイツのバルカン進出のスローガンで、パン＝スラヴ主義と対立した主張を何というか。",
+      "explanation": "パン＝ゲルマン主義は、ドイツ系民族の結束・拡大を掲げる思想。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "パン＝ゲルマン主義",
+        "パン＝スラヴ主義",
+        "シオニズム",
+        "修正主義"
+      ],
+      "answer": "パン＝ゲルマン主義",
+      "acceptableAnswers": [
+        "パン＝ゲルマン主義",
+        "パンゲルマン主義"
+      ]
+    },
+    {
+      "id": "history-61-A08",
+      "moduleId": "history",
+      "prompt": "革命ではなく議会主義による社会改革をとなえた、ドイツ社会民主党のベルンシュタインの考え方を何主義というか。",
+      "explanation": "修正主義は、革命ではなく議会を通じた改革を重視した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "修正主義",
+        "マルクス主義",
+        "無政府主義",
+        "シオニズム"
+      ],
+      "answer": "修正主義",
+      "acceptableAnswers": [
+        "修正主義"
+      ]
+    },
+    {
+      "id": "history-61-A09",
+      "moduleId": "history",
+      "prompt": "ロシアが東アジア進出のため、フランスの財政援助で1891年着工、1905年完成した世界最長の鉄道を何というか。",
+      "explanation": "シベリア鉄道はロシアの東アジア進出を支えた。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "シベリア鉄道",
+        "バグダード鉄道",
+        "東清鉄道",
+        "パナマ運河"
+      ],
+      "answer": "シベリア鉄道",
+      "acceptableAnswers": [
+        "シベリア鉄道"
+      ]
+    },
+    {
+      "id": "history-61-A10",
+      "moduleId": "history",
+      "prompt": "ナロードニキの流れをくむ、ロシアの社会主義政党を何というか。",
+      "explanation": "エスエルはナロードニキの流れをくむロシアの社会主義政党。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "エスエル",
+        "ボリシェヴィキ",
+        "メンシェヴィキ",
+        "社会民主党"
+      ],
+      "answer": "エスエル",
+      "acceptableAnswers": [
+        "エスエル",
+        "社会主義者革命家党",
+        "社会主義者・革命家党",
+        "社会革命党"
+      ]
+    },
+    {
+      "id": "history-61-A11",
+      "moduleId": "history",
+      "prompt": "1905年革命のときに、ペテルブルクやモスクワで結成された労働者の自治組織を何というか。",
+      "explanation": "ソヴィエトは1905年革命時に結成され、のちの革命でも重要となる。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ソヴィエト",
+        "エスエル",
+        "ボリシェヴィキ",
+        "メンシェヴィキ"
+      ],
+      "answer": "ソヴィエト",
+      "acceptableAnswers": [
+        "ソヴィエト",
+        "ソビエト"
+      ]
+    },
+    {
+      "id": "history-61-A12",
+      "moduleId": "history",
+      "prompt": "1905年革命後、皇帝ニコライ2世は十月宣言を発布して、何を開設することを認めたか。",
+      "explanation": "国会（ドゥーマ）の開設は認められたが、専制政治はなお強く残った。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "国会（ドゥーマ）",
+        "ソヴィエト",
+        "ゼムストヴォ",
+        "帝国議会"
+      ],
+      "answer": "国会（ドゥーマ）",
+      "acceptableAnswers": [
+        "国会（ドゥーマ）",
+        "国会",
+        "ドゥーマ",
+        "国会ドゥーマ"
+      ]
+    },
+    {
+      "id": "history-61-A13",
+      "moduleId": "history",
+      "prompt": "アメリカ＝スペイン（米西）戦争の結果、アメリカはプラット条項により何という国を保護国化したか。",
+      "explanation": "キューバは形式上独立したが、プラット条項によりアメリカの強い影響下に置かれた。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "キューバ",
+        "フィリピン",
+        "プエルトリコ",
+        "グアム"
+      ],
+      "answer": "キューバ",
+      "acceptableAnswers": [
+        "キューバ"
+      ]
+    },
+    {
+      "id": "history-61-A14",
+      "moduleId": "history",
+      "prompt": "アメリカ＝スペイン（米西）戦争の結果、アメリカは太平洋上の何という諸島とグアム島、およびカリブ海上の何という島を獲得したか。順に記せ。",
+      "explanation": "米西戦争後、アメリカはフィリピン・グアム・プエルトリコを獲得した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "フィリピン・プエルトリコ",
+        "キューバ・パナマ",
+        "ハワイ・キューバ",
+        "グアム・キューバ"
+      ],
+      "answer": "フィリピン・プエルトリコ",
+      "acceptableAnswers": [
+        "フィリピン・プエルトリコ",
+        "フィリピン、プエルトリコ",
+        "フィリピンとプエルトリコ",
+        "フィリピン諸島・プエルトリコ",
+        "フィリピン プエルトリコ"
+      ]
+    },
+    {
+      "id": "history-61-A15",
+      "moduleId": "history",
+      "prompt": "中国への鉄道敷設や中米への投資による市場開拓を進めた、タフト大統領（共和党）による外交を何というか。",
+      "explanation": "ドル外交はタフト大統領の外交で、投資を通じた市場開拓を進めた。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ドル外交",
+        "棍棒外交",
+        "宣教師外交",
+        "門戸開放政策"
+      ],
+      "answer": "ドル外交",
+      "acceptableAnswers": [
+        "ドル外交"
+      ]
+    },
+    {
+      "id": "history-61-A16",
+      "moduleId": "history",
+      "prompt": "『新しい自由』を掲げて反トラスト法の強化や関税引き下げなどを実施し、対外的には『宣教師外交』を推進したアメリカの民主党大統領は誰か。",
+      "explanation": "ウィルソンは『新しい自由』を掲げ、外交では宣教師外交を展開した。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ウィルソン",
+        "マッキンリー",
+        "セオドア＝ローズヴェルト",
+        "タフト"
+      ],
+      "answer": "ウィルソン",
+      "acceptableAnswers": [
+        "ウィルソン",
+        "ウッドロウ＝ウィルソン",
+        "ウッドロウ・ウィルソン"
+      ]
+    },
+    {
+      "id": "history-61-A17",
+      "moduleId": "history",
+      "prompt": "第2インターナショナルの中心として、これを指導したドイツの社会主義政党は何か。",
+      "explanation": "ドイツ社会民主党は第2インターナショナルの中心的存在だった。",
+      "category": "61 帝国主義とアジアの民族運動（1）",
+      "type": "choice",
+      "choices": [
+        "ドイツ社会民主党",
+        "フランス社会党",
+        "労働党",
+        "フェビアン協会"
+      ],
+      "answer": "ドイツ社会民主党",
+      "acceptableAnswers": [
+        "ドイツ社会民主党",
+        "社会民主党"
+      ]
+    },
+    {
+      "id": "history-62-B01",
+      "moduleId": "history",
+      "prompt": "19世紀半ば、アフリカ奥地を探検したイギリスの宣教師は誰か。",
+      "explanation": "リヴィングストンは19世紀半ばにアフリカ奥地を探検したイギリスの宣教師。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "リヴィングストン",
+        "スタンリー",
+        "ローズ",
+        "セシル＝ローズ"
+      ],
+      "answer": "リヴィングストン",
+      "acceptableAnswers": [
+        "リヴィングストン",
+        "リビングストン",
+        "デイヴィッド＝リヴィングストン",
+        "デイヴィッド・リヴィングストン"
+      ]
+    },
+    {
+      "id": "history-62-B02",
+      "moduleId": "history",
+      "prompt": "ビスマルクが1884年に開催した、実効支配というアフリカ分割の原則を定めた国際会議を何というか。",
+      "explanation": "ベルリン＝コンゴ会議は1884〜85年に開かれ、アフリカ分割の原則を定めた。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ベルリン＝コンゴ会議",
+        "ウィーン会議",
+        "パリ講和会議",
+        "ベルリン会議（1878）"
+      ],
+      "answer": "ベルリン＝コンゴ会議",
+      "acceptableAnswers": [
+        "ベルリン＝コンゴ会議",
+        "ベルリンコンゴ会議",
+        "ベルリン会議"
+      ]
+    },
+    {
+      "id": "history-62-B03",
+      "moduleId": "history",
+      "prompt": "イギリスが1882年にエジプトを事実上の保護下におくきっかけとなった、エジプトの民族主義者の運動（1881〜82年）を何というか。",
+      "explanation": "ウラービー運動はエジプトで起こった民族主義運動で、イギリスのエジプト支配のきっかけとなった。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ウラービー運動",
+        "マフディー運動",
+        "青年トルコ運動",
+        "タンズィマート"
+      ],
+      "answer": "ウラービー運動",
+      "acceptableAnswers": [
+        "ウラービー運動",
+        "ウラービー革命",
+        "オラービー運動"
+      ]
+    },
+    {
+      "id": "history-62-B04",
+      "moduleId": "history",
+      "prompt": "1881年にスーダンで起こった、イスラーム教徒による反イギリス運動を何というか。",
+      "explanation": "マフディー運動はスーダンで起こったイスラーム教徒による反イギリス運動。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "マフディー運動",
+        "ウラービー運動",
+        "義和団事件",
+        "ターバン運動"
+      ],
+      "answer": "マフディー運動",
+      "acceptableAnswers": [
+        "マフディー運動",
+        "マフディ運動"
+      ]
+    },
+    {
+      "id": "history-62-B05",
+      "moduleId": "history",
+      "prompt": "南アフリカのケープ植民地首相となり、イギリスの拡張政策を進めた人物は誰か。",
+      "explanation": "ローズはケープ植民地首相となり、イギリスの南アフリカでの拡張政策を進めた。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ローズ",
+        "リヴィングストン",
+        "スタンリー",
+        "ジョゼフ＝チェンバレン"
+      ],
+      "answer": "ローズ",
+      "acceptableAnswers": [
+        "ローズ",
+        "セシル＝ローズ",
+        "セシル・ローズ"
+      ]
+    },
+    {
+      "id": "history-62-B06",
+      "moduleId": "history",
+      "prompt": "ケープ植民地に居住した、オランダ系移民の子孫のことを何と呼ぶか。",
+      "explanation": "ブール人は南アフリカのケープ植民地に住んだオランダ系移民の子孫。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ブール人",
+        "ズールー人",
+        "ベルベル人",
+        "バントゥー系民族"
+      ],
+      "answer": "ブール人",
+      "acceptableAnswers": [
+        "ブール人",
+        "ボーア人",
+        "ブーア人"
+      ]
+    },
+    {
+      "id": "history-62-B07A",
+      "moduleId": "history",
+      "prompt": "ブール人がケープ植民地の北方に建設した国を2つあげよ。1つ目。",
+      "explanation": "トランスヴァール共和国はブール人が建設した国の一つ。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "トランスヴァール共和国",
+        "オレンジ自由国",
+        "南アフリカ連邦",
+        "リベリア共和国"
+      ],
+      "answer": "トランスヴァール共和国",
+      "acceptableAnswers": [
+        "トランスヴァール共和国",
+        "トランスバール共和国"
+      ]
+    },
+    {
+      "id": "history-62-B07B",
+      "moduleId": "history",
+      "prompt": "ブール人がケープ植民地の北方に建設した国を2つあげよ。2つ目。",
+      "explanation": "オレンジ自由国はブール人が建設した国の一つ。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "オレンジ自由国",
+        "トランスヴァール共和国",
+        "南アフリカ連邦",
+        "リベリア共和国"
+      ],
+      "answer": "オレンジ自由国",
+      "acceptableAnswers": [
+        "オレンジ自由国"
+      ]
+    },
+    {
+      "id": "history-62-B08",
+      "moduleId": "history",
+      "prompt": "イギリスがトランスヴァール共和国とオレンジ自由国を滅ぼした戦争（1899〜1902年）を何というか。",
+      "explanation": "南アフリカ戦争でイギリスはブール人国家を滅ぼした。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "南アフリカ（ブール）戦争",
+        "アメリカ＝スペイン（米西）戦争",
+        "日露戦争",
+        "クリミア戦争"
+      ],
+      "answer": "南アフリカ（ブール）戦争",
+      "acceptableAnswers": [
+        "南アフリカ（ブール）戦争",
+        "南アフリカ戦争",
+        "ブール戦争",
+        "ボーア戦争"
+      ]
+    },
+    {
+      "id": "history-62-B09",
+      "moduleId": "history",
+      "prompt": "ケープ植民地に、問題7の2国などを加えて、1910年に成立したイギリスの自治領を何というか。",
+      "explanation": "南アフリカ連邦は1910年に成立したイギリスの自治領。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "南アフリカ連邦",
+        "トランスヴァール共和国",
+        "オレンジ自由国",
+        "リベリア共和国"
+      ],
+      "answer": "南アフリカ連邦",
+      "acceptableAnswers": [
+        "南アフリカ連邦"
+      ]
+    },
+    {
+      "id": "history-62-B10",
+      "moduleId": "history",
+      "prompt": "イギリスはアフリカ縦断政策を発展させて、インド洋を内海とする植民地政策を展開した。この政策を、主要3都市の頭文字をとって何と呼ぶか。",
+      "explanation": "3C政策はケープタウン・カイロ・カルカッタを結ぶイギリスの帝国主義政策。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "3C政策",
+        "3B政策",
+        "門戸開放政策",
+        "ドル外交"
+      ],
+      "answer": "3C政策",
+      "acceptableAnswers": [
+        "3C政策",
+        "三C政策",
+        "3Ｃ政策"
+      ]
+    },
+    {
+      "id": "history-62-B11",
+      "moduleId": "history",
+      "prompt": "1830年にフランス王シャルル10世が占領した、北アフリカの植民地を何というか。",
+      "explanation": "アルジェリアは1830年にフランスが占領した北アフリカの植民地。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "アルジェリア",
+        "チュニジア",
+        "モロッコ",
+        "マダガスカル"
+      ],
+      "answer": "アルジェリア",
+      "acceptableAnswers": [
+        "アルジェリア"
+      ]
+    },
+    {
+      "id": "history-62-B12",
+      "moduleId": "history",
+      "prompt": "1881年にフランスが保護国化した、アルジェリア東隣の地域を何というか。",
+      "explanation": "チュニジアは1881年にフランスが保護国化した。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "チュニジア",
+        "アルジェリア",
+        "モロッコ",
+        "リビア"
+      ],
+      "answer": "チュニジア",
+      "acceptableAnswers": [
+        "チュニジア"
+      ]
+    },
+    {
+      "id": "history-62-B13",
+      "moduleId": "history",
+      "prompt": "フランスが領有したアフリカ大陸南東沖の島を何というか。",
+      "explanation": "マダガスカルはアフリカ大陸南東沖の島で、フランスが領有した。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "マダガスカル",
+        "ザンジバル",
+        "モーリシャス",
+        "ソマリランド"
+      ],
+      "answer": "マダガスカル",
+      "acceptableAnswers": [
+        "マダガスカル"
+      ]
+    },
+    {
+      "id": "history-62-B14",
+      "moduleId": "history",
+      "prompt": "イギリスの縦断政策とフランスの横断政策が、スーダンで衝突した事件（1898年）を何というか。",
+      "explanation": "ファショダ事件は1898年、イギリスの縦断政策とフランスの横断政策が衝突した事件。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ファショダ事件",
+        "モロッコ事件",
+        "ドレフュス事件",
+        "ブーランジェ事件"
+      ],
+      "answer": "ファショダ事件",
+      "acceptableAnswers": [
+        "ファショダ事件"
+      ]
+    },
+    {
+      "id": "history-62-B15",
+      "moduleId": "history",
+      "prompt": "ファショダ事件をきっかけに、イギリス・フランス両国はドイツの脅威に対抗するため、1904年に何を成立させたか。",
+      "explanation": "英仏協商は1904年に成立し、英仏対立を緩和した。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "英仏協商",
+        "三国同盟",
+        "三国協商",
+        "日英同盟"
+      ],
+      "answer": "英仏協商",
+      "acceptableAnswers": [
+        "英仏協商",
+        "英仏協約"
+      ]
+    },
+    {
+      "id": "history-62-B16",
+      "moduleId": "history",
+      "prompt": "1905年と1911年の2度にわたってドイツ・フランス間でおこった、アフリカ植民地をめぐる国際紛争を何というか。",
+      "explanation": "モロッコ事件はドイツとフランスがモロッコをめぐって対立した国際紛争。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "モロッコ事件",
+        "ファショダ事件",
+        "ドレフュス事件",
+        "ブーランジェ事件"
+      ],
+      "answer": "モロッコ事件",
+      "acceptableAnswers": [
+        "モロッコ事件",
+        "モロッコ危機",
+        "第一次モロッコ事件",
+        "第二次モロッコ事件"
+      ]
+    },
+    {
+      "id": "history-62-B17",
+      "moduleId": "history",
+      "prompt": "1884年にドイツが保護領とした、ギニア湾に面するアフリカ中部の地域はどこか。",
+      "explanation": "カメルーンは1884年にドイツが保護領とした地域。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "カメルーン",
+        "トーゴ",
+        "タンザニア",
+        "ナミビア"
+      ],
+      "answer": "カメルーン",
+      "acceptableAnswers": [
+        "カメルーン"
+      ]
+    },
+    {
+      "id": "history-62-B18",
+      "moduleId": "history",
+      "prompt": "イタリアの侵攻をフランスの支援で撃退（1896年）した、アフリカの独立国はどこか。",
+      "explanation": "エチオピア帝国は1896年のアドワの戦いでイタリアを撃退し、独立を維持した。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "エチオピア帝国",
+        "リベリア共和国",
+        "ソマリランド",
+        "エリトリア"
+      ],
+      "answer": "エチオピア帝国",
+      "acceptableAnswers": [
+        "エチオピア帝国",
+        "エチオピア"
+      ]
+    },
+    {
+      "id": "history-62-B19",
+      "moduleId": "history",
+      "prompt": "イタリア＝トルコ（伊土）戦争（1911〜12年）の結果、イタリアはオスマン帝国からアフリカの何という地域を奪ったか。",
+      "explanation": "イタリアは伊土戦争の結果、オスマン帝国からリビアを奪った。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "リビア（トリポリ・キレナイカ）",
+        "エリトリア",
+        "ソマリランド",
+        "チュニジア"
+      ],
+      "answer": "リビア（トリポリ・キレナイカ）",
+      "acceptableAnswers": [
+        "リビア（トリポリ・キレナイカ）",
+        "リビア",
+        "トリポリ・キレナイカ",
+        "トリポリ キレナイカ"
+      ]
+    },
+    {
+      "id": "history-62-B20",
+      "moduleId": "history",
+      "prompt": "エチオピアとならんで、20世紀初頭のアフリカで独立を維持した国をもう1つあげよ。",
+      "explanation": "リベリア共和国はエチオピアとならび、20世紀初頭のアフリカで独立を維持した国。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "リベリア共和国",
+        "エチオピア帝国",
+        "南アフリカ連邦",
+        "コンゴ自由国"
+      ],
+      "answer": "リベリア共和国",
+      "acceptableAnswers": [
+        "リベリア共和国",
+        "リベリア"
+      ]
+    },
+    {
+      "id": "history-62-A01",
+      "moduleId": "history",
+      "prompt": "アフリカ奥地で消息を絶ったリヴィングストンの救出に成功した、アメリカ人のジャーナリストは誰か。",
+      "explanation": "スタンリーはリヴィングストンの救出に成功したアメリカ人ジャーナリスト。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "スタンリー",
+        "リヴィングストン",
+        "ローズ",
+        "チェンバレン"
+      ],
+      "answer": "スタンリー",
+      "acceptableAnswers": [
+        "スタンリー",
+        "ヘンリー＝スタンリー",
+        "ヘンリー・スタンリー"
+      ]
+    },
+    {
+      "id": "history-62-A02",
+      "moduleId": "history",
+      "prompt": "ベルリン＝コンゴ会議（1884〜85年）において、ベルギー国王の所有地として設立を認められた植民地はどこか。",
+      "explanation": "コンゴ自由国はベルリン＝コンゴ会議でベルギー国王レオポルド2世の所有地として認められた。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "コンゴ自由国",
+        "ベルギー領コンゴ",
+        "カメルーン",
+        "ソマリランド"
+      ],
+      "answer": "コンゴ自由国",
+      "acceptableAnswers": [
+        "コンゴ自由国"
+      ]
+    },
+    {
+      "id": "history-62-A03",
+      "moduleId": "history",
+      "prompt": "イギリスの3C政策の3つの都市をあげよ。",
+      "explanation": "3C政策はケープタウン・カイロ・カルカッタを結ぶイギリスの政策。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ケープタウン・カイロ・カルカッタ",
+        "ベルリン・ビザンティウム・バグダード",
+        "ロンドン・カイロ・ケープタウン",
+        "パリ・アルジェ・マダガスカル"
+      ],
+      "answer": "ケープタウン・カイロ・カルカッタ",
+      "acceptableAnswers": [
+        "ケープタウン・カイロ・カルカッタ",
+        "ケープタウン、カイロ、カルカッタ",
+        "ケープタウン カイロ カルカッタ"
+      ]
+    },
+    {
+      "id": "history-62-A04",
+      "moduleId": "history",
+      "prompt": "英仏協商の内容について、説明せよ。",
+      "explanation": "英仏協商では、エジプトでのイギリスの優越と、モロッコでのフランスの優越を相互に承認した。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "エジプトにおけるイギリスの優越と、モロッコにおけるフランスの優越を相互に承認した",
+        "ドイツのモロッコ支配を承認した",
+        "イギリスとフランスがアフリカ分割を全面的に放棄した",
+        "イタリアのリビア支配を承認した"
+      ],
+      "answer": "エジプトにおけるイギリスの優越と、モロッコにおけるフランスの優越を相互に承認した",
+      "acceptableAnswers": [
+        "エジプトにおけるイギリスの優越と、モロッコにおけるフランスの優越を相互に承認した",
+        "エジプトにおけるイギリスの優越とモロッコにおけるフランスの優越を相互に承認した",
+        "イギリスのエジプト優越とフランスのモロッコ優越を承認"
+      ]
+    },
+    {
+      "id": "history-62-A05",
+      "moduleId": "history",
+      "prompt": "イタリアがアフリカで獲得した植民地を、エリトリア・リビア以外に1か所あげよ。",
+      "explanation": "イタリアはエリトリア・リビアのほか、ソマリランドも植民地とした。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "ソマリランド",
+        "カメルーン",
+        "マダガスカル",
+        "アルジェリア"
+      ],
+      "answer": "ソマリランド",
+      "acceptableAnswers": [
+        "ソマリランド",
+        "イタリア領ソマリランド"
+      ]
+    },
+    {
+      "id": "history-62-A06",
+      "moduleId": "history",
+      "prompt": "エチオピアは1896年の何という戦いでイタリアを撃退したか。",
+      "explanation": "アドワの戦いでエチオピアはイタリア軍を撃退した。",
+      "category": "62 帝国主義とアジアの民族運動（2）",
+      "type": "choice",
+      "choices": [
+        "アドワの戦い",
+        "ファショダ事件",
+        "モロッコ事件",
+        "マフディー運動"
+      ],
+      "answer": "アドワの戦い",
+      "acceptableAnswers": [
+        "アドワの戦い",
+        "アドゥワの戦い",
+        "アドワ戦争"
+      ]
+    },
+    {
+      "id": "history-62-E01",
+      "moduleId": "history",
+      "prompt": "地図問題①：イギリスのアフリカ縦断政策と、フランスの横断政策が衝突した地点は地図中のどれか。",
+      "explanation": "ファショダ事件の地点は地図中の d。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "answer": "d",
+      "acceptableAnswers": [
+        "d",
+        "Ｄ",
+        "ｄ"
+      ]
+    },
+    {
+      "id": "history-62-E02",
+      "moduleId": "history",
+      "prompt": "地図問題②：モロッコ事件（第1次）が発生した地点は地図中のどれか。",
+      "explanation": "第1次モロッコ事件の地点は地図中の a。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "answer": "a",
+      "acceptableAnswers": [
+        "a",
+        "Ａ",
+        "ａ"
+      ]
+    },
+    {
+      "id": "history-62-E03",
+      "moduleId": "history",
+      "prompt": "地図問題③：1830年フランスが占領した地域は地図中のどれか。",
+      "explanation": "1830年フランスが占領したアルジェリアは地図中の A。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": "A",
+      "acceptableAnswers": [
+        "A",
+        "a",
+        "Ａ"
+      ]
+    },
+    {
+      "id": "history-62-E04",
+      "moduleId": "history",
+      "prompt": "地図問題④：イタリア＝トルコ（伊土）戦争でイタリアが獲得した地域は地図中のどれか。",
+      "explanation": "イタリアが伊土戦争で獲得したリビアは地図中の B。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "B",
+        "A",
+        "C",
+        "F"
+      ],
+      "answer": "B",
+      "acceptableAnswers": [
+        "B",
+        "b",
+        "Ｂ"
+      ]
+    },
+    {
+      "id": "history-62-E05",
+      "moduleId": "history",
+      "prompt": "地図問題⑤：イタリアが侵入したが、アドワの戦いで完敗した相手国は地図中のどれか。",
+      "explanation": "アドワの戦いでイタリアを撃退したエチオピアは地図中の F。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "F",
+        "E",
+        "G",
+        "H"
+      ],
+      "answer": "F",
+      "acceptableAnswers": [
+        "F",
+        "f",
+        "Ｆ"
+      ]
+    },
+    {
+      "id": "history-62-E06",
+      "moduleId": "history",
+      "prompt": "地図問題⑥：スタンリーが探検し、ベルギー王の所有地となった地域は地図中のどれか。",
+      "explanation": "コンゴ自由国は地図中の G。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "G",
+        "E",
+        "F",
+        "H"
+      ],
+      "answer": "G",
+      "acceptableAnswers": [
+        "G",
+        "g",
+        "Ｇ"
+      ]
+    },
+    {
+      "id": "history-62-E07",
+      "moduleId": "history",
+      "prompt": "地図問題⑦：ウィーン会議（1814〜15年）によりイギリス領となった地域は地図中のどれか。",
+      "explanation": "ウィーン会議によりイギリス領となったケープ植民地は地図中の I。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "I",
+        "H",
+        "J",
+        "G"
+      ],
+      "answer": "I",
+      "acceptableAnswers": [
+        "I",
+        "i",
+        "Ｉ"
+      ]
+    },
+    {
+      "id": "history-62-E08",
+      "moduleId": "history",
+      "prompt": "地図問題⑧：1899年からの南アフリカ（ブール）戦争で滅ぼされた国は地図中のどれか。",
+      "explanation": "南アフリカ（ブール）戦争で滅ぼされたブール人国家は地図中の J。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "J",
+        "I",
+        "H",
+        "G"
+      ],
+      "answer": "J",
+      "acceptableAnswers": [
+        "J",
+        "j",
+        "Ｊ"
+      ]
+    },
+    {
+      "id": "history-62-E09",
+      "moduleId": "history",
+      "prompt": "地図問題⑨：地図中Dの国で、独立を維持した国の名称は何か。",
+      "explanation": "地図中Dはリベリア共和国。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "リベリア共和国",
+        "エチオピア帝国",
+        "南アフリカ連邦",
+        "コンゴ自由国"
+      ],
+      "answer": "リベリア共和国",
+      "acceptableAnswers": [
+        "リベリア共和国",
+        "リベリア"
+      ]
+    },
+    {
+      "id": "history-62-E10",
+      "moduleId": "history",
+      "prompt": "地図の凡例：上の塗りつぶしの植民地はどこの植民地か。",
+      "explanation": "地図の凡例の上はドイツ植民地。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "ドイツ",
+        "イギリス",
+        "フランス",
+        "ポルトガル"
+      ],
+      "answer": "ドイツ",
+      "acceptableAnswers": [
+        "ドイツ",
+        "ドイツ帝国"
+      ]
+    },
+    {
+      "id": "history-62-E11",
+      "moduleId": "history",
+      "prompt": "地図の凡例：下の縦線の植民地はどこの植民地か。",
+      "explanation": "地図の凡例の下はポルトガル植民地。",
+      "category": "62 exercise 地図問題",
+      "imageAsset": "images/history/map62.png",
+      "type": "choice",
+      "choices": [
+        "ポルトガル",
+        "ドイツ",
+        "イギリス",
+        "フランス"
+      ],
+      "answer": "ポルトガル",
+      "acceptableAnswers": [
+        "ポルトガル",
+        "ポルトガル王国"
+      ]
+    },
+    {
+      "id": "history-63-B01",
+      "moduleId": "history",
+      "prompt": "当初イギリスの流刑植民地であったが、牧羊業の発展やゴールドラッシュにより移民が激増し、1901年に自治領として認められた国はどこか。",
+      "explanation": "オーストラリアは当初イギリスの流刑植民地で、牧羊業やゴールドラッシュを背景に移民が増え、1901年に自治領となった。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "オーストラリア",
+        "カナダ",
+        "ニュージーランド",
+        "南アフリカ連邦"
+      ],
+      "answer": "オーストラリア",
+      "acceptableAnswers": [
+        "オーストラリア"
+      ]
+    },
+    {
+      "id": "history-63-B02",
+      "moduleId": "history",
+      "prompt": "イギリスによって奥地に追われた、オーストラリアの先住民を何というか。",
+      "explanation": "アボリジニーはオーストラリアの先住民で、イギリス植民地化により奥地へ追われた。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "アボリジニー",
+        "マオリ人",
+        "ブール人",
+        "ズールー人"
+      ],
+      "answer": "アボリジニー",
+      "acceptableAnswers": [
+        "アボリジニー",
+        "アボリジニ"
+      ]
+    },
+    {
+      "id": "history-63-B03",
+      "moduleId": "history",
+      "prompt": "イギリスによって武力で抑圧された、ニュージーランドの先住民を何というか。",
+      "explanation": "マオリ人はニュージーランドの先住民で、イギリス植民地化の過程で武力による抑圧を受けた。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "マオリ人",
+        "アボリジニー",
+        "ブール人",
+        "ズールー人"
+      ],
+      "answer": "マオリ人",
+      "acceptableAnswers": [
+        "マオリ人",
+        "マオリ"
+      ]
+    },
+    {
+      "id": "history-63-B04",
+      "moduleId": "history",
+      "prompt": "アメリカ＝スペイン（米西）戦争がおこったのは何年か。",
+      "explanation": "アメリカ＝スペイン（米西）戦争は1898年に起こった。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "1898年",
+        "1895年",
+        "1902年",
+        "1904年"
+      ],
+      "answer": "1898年",
+      "acceptableAnswers": [
+        "1898年",
+        "1898"
+      ]
+    },
+    {
+      "id": "history-63-B05",
+      "moduleId": "history",
+      "prompt": "アメリカ＝スペイン戦争のときのアメリカ合衆国の大統領は誰か。",
+      "explanation": "マッキンリーは米西戦争期のアメリカ大統領で、帝国主義政策を進めた。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "マッキンリー",
+        "セオドア＝ローズヴェルト",
+        "タフト",
+        "ウィルソン"
+      ],
+      "answer": "マッキンリー",
+      "acceptableAnswers": [
+        "マッキンリー"
+      ]
+    },
+    {
+      "id": "history-63-B06A",
+      "moduleId": "history",
+      "prompt": "アメリカ＝スペイン（米西）戦争で、アメリカがスペインから獲得した太平洋上の領土を2つあげよ。1つ目。",
+      "explanation": "フィリピンは米西戦争後、アメリカがスペインから獲得した太平洋上の領土。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "フィリピン",
+        "キューバ",
+        "ハワイ",
+        "プエルトリコ"
+      ],
+      "answer": "フィリピン",
+      "acceptableAnswers": [
+        "フィリピン",
+        "フィリピン諸島"
+      ]
+    },
+    {
+      "id": "history-63-B06B",
+      "moduleId": "history",
+      "prompt": "アメリカ＝スペイン（米西）戦争で、アメリカがスペインから獲得した太平洋上の領土を2つあげよ。2つ目。",
+      "explanation": "グアムは米西戦争後、アメリカがスペインから獲得した太平洋上の島。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "グアム",
+        "キューバ",
+        "ハワイ",
+        "プエルトリコ"
+      ],
+      "answer": "グアム",
+      "acceptableAnswers": [
+        "グアム",
+        "グアム島"
+      ]
+    },
+    {
+      "id": "history-63-B07",
+      "moduleId": "history",
+      "prompt": "太平洋上の独立国であったが、1898年にアメリカが併合した諸島を何というか。",
+      "explanation": "ハワイは太平洋上の独立国だったが、1898年にアメリカが併合した。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "ハワイ",
+        "フィリピン",
+        "グアム",
+        "プエルトリコ"
+      ],
+      "answer": "ハワイ",
+      "acceptableAnswers": [
+        "ハワイ",
+        "ハワイ諸島"
+      ]
+    },
+    {
+      "id": "history-63-B08",
+      "moduleId": "history",
+      "prompt": "アメリカがラテンアメリカへの影響力の拡大をはかった国際会議を何というか。1889年にワシントンで第1回会議が開かれた。",
+      "explanation": "パン＝アメリカ会議はアメリカがラテンアメリカへの影響力拡大をはかった国際会議で、第1回は1889年にワシントンで開かれた。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "パン＝アメリカ会議",
+        "ベルリン＝コンゴ会議",
+        "ウィーン会議",
+        "パリ講和会議"
+      ],
+      "answer": "パン＝アメリカ会議",
+      "acceptableAnswers": [
+        "パン＝アメリカ会議",
+        "パンアメリカ会議"
+      ]
+    },
+    {
+      "id": "history-63-B09",
+      "moduleId": "history",
+      "prompt": "1910年に自由主義者マデロによっておこされた、ラテンアメリカ初の本格的な民主革命を何というか。1917年には民主的憲法が制定された。",
+      "explanation": "メキシコ革命は1910年にマデロによって始まったラテンアメリカ初の本格的な民主革命。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "メキシコ革命",
+        "キューバ革命",
+        "辛亥革命",
+        "ロシア革命"
+      ],
+      "answer": "メキシコ革命",
+      "acceptableAnswers": [
+        "メキシコ革命"
+      ]
+    },
+    {
+      "id": "history-63-B10",
+      "moduleId": "history",
+      "prompt": "メキシコ革命によって追放された独裁者は誰か。",
+      "explanation": "ディアスはメキシコ革命によって追放された独裁者。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "ディアス",
+        "マデロ",
+        "サパタ",
+        "フアレス"
+      ],
+      "answer": "ディアス",
+      "acceptableAnswers": [
+        "ディアス",
+        "ポルフィリオ＝ディアス",
+        "ポルフィリオ・ディアス"
+      ]
+    },
+    {
+      "id": "history-63-B11",
+      "moduleId": "history",
+      "prompt": "メキシコ革命の農民指導者で、ビリャとともに徹底した土地改革を主張したのは誰か。",
+      "explanation": "サパタはメキシコ革命の農民指導者で、徹底した土地改革を主張した。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "サパタ",
+        "マデロ",
+        "ディアス",
+        "ビリャ"
+      ],
+      "answer": "サパタ",
+      "acceptableAnswers": [
+        "サパタ",
+        "エミリアーノ＝サパタ",
+        "エミリアーノ・サパタ"
+      ]
+    },
+    {
+      "id": "history-63-A01",
+      "moduleId": "history",
+      "prompt": "ドイツはメラネシアやミクロネシアで多くの諸島を獲得したが、おもなものを2つあげよ。",
+      "explanation": "ドイツが太平洋で獲得した主な諸島には、カロリン・マリアナ・マーシャル・パラオなどがある。",
+      "category": "63 帝国主義とアジアの民族運動（3）",
+      "type": "choice",
+      "choices": [
+        "カロリン・マリアナ",
+        "フィリピン・グアム",
+        "ハワイ・サモア",
+        "キューバ・パナマ"
+      ],
+      "answer": "カロリン・マリアナ",
+      "acceptableAnswers": [
+        "カロリン・マリアナ",
+        "カロリン・マーシャル",
+        "カロリン・パラオ",
+        "マリアナ・マーシャル",
+        "マリアナ・パラオ",
+        "マーシャル・パラオ",
+        "カロリン、マリアナ",
+        "カロリン マリアナ",
+        "カロリン諸島・マリアナ諸島",
+        "カロリン諸島、マリアナ諸島"
+      ]
+    },
+    {
+      "id": "history-63-E01A",
+      "moduleId": "history",
+      "prompt": "exercise 1：『列強の海外植民地領有面積』のグラフで、A国にあたる国はどれか。",
+      "explanation": "グラフAはイギリス。植民地面積が最大で、本国面積との差が非常に大きい。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/graph63.png",
+      "type": "choice",
+      "choices": [
+        "イギリス",
+        "フランス",
+        "ドイツ",
+        "アメリカ"
+      ],
+      "answer": "イギリス",
+      "acceptableAnswers": [
+        "イギリス"
+      ]
+    },
+    {
+      "id": "history-63-E01B",
+      "moduleId": "history",
+      "prompt": "exercise 1：『列強の海外植民地領有面積』のグラフで、B国にあたる国はどれか。",
+      "explanation": "グラフBはロシア。広大な本国面積をもつ点が特徴。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/graph63.png",
+      "type": "choice",
+      "choices": [
+        "ロシア",
+        "イギリス",
+        "フランス",
+        "ドイツ"
+      ],
+      "answer": "ロシア",
+      "acceptableAnswers": [
+        "ロシア",
+        "ロシア帝国"
+      ]
+    },
+    {
+      "id": "history-63-E01C",
+      "moduleId": "history",
+      "prompt": "exercise 1：『列強の海外植民地領有面積』のグラフで、C国にあたる国はどれか。",
+      "explanation": "グラフCはフランス。イギリスに次ぐ植民地大国だった。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/graph63.png",
+      "type": "choice",
+      "choices": [
+        "フランス",
+        "イギリス",
+        "ドイツ",
+        "アメリカ"
+      ],
+      "answer": "フランス",
+      "acceptableAnswers": [
+        "フランス"
+      ]
+    },
+    {
+      "id": "history-63-E01D",
+      "moduleId": "history",
+      "prompt": "exercise 1：『列強の海外植民地領有面積』のグラフで、D国にあたる国はどれか。",
+      "explanation": "グラフDはアメリカ。広い本国面積に対して海外植民地面積は相対的に小さい。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/graph63.png",
+      "type": "choice",
+      "choices": [
+        "アメリカ",
+        "イギリス",
+        "ドイツ",
+        "ロシア"
+      ],
+      "answer": "アメリカ",
+      "acceptableAnswers": [
+        "アメリカ",
+        "アメリカ合衆国"
+      ]
+    },
+    {
+      "id": "history-63-E01E",
+      "moduleId": "history",
+      "prompt": "exercise 1：『列強の海外植民地領有面積』のグラフで、E国にあたる国はどれか。",
+      "explanation": "グラフEはドイツ。統一後に海外進出を強めた新興帝国主義国。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/graph63.png",
+      "type": "choice",
+      "choices": [
+        "ドイツ",
+        "フランス",
+        "ロシア",
+        "アメリカ"
+      ],
+      "answer": "ドイツ",
+      "acceptableAnswers": [
+        "ドイツ",
+        "ドイツ帝国"
+      ]
+    },
+    {
+      "id": "history-63-E02A",
+      "moduleId": "history",
+      "prompt": "exercise 2：第一次世界大戦前の国際関係図で、aに入る語句は何か。",
+      "explanation": "aは再保障条約。ビスマルク外交期の独露間の秘密条約。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/relation63.png",
+      "type": "choice",
+      "choices": [
+        "再保障条約",
+        "三国同盟",
+        "露仏同盟",
+        "日英同盟"
+      ],
+      "answer": "再保障条約",
+      "acceptableAnswers": [
+        "再保障条約"
+      ]
+    },
+    {
+      "id": "history-63-E02B",
+      "moduleId": "history",
+      "prompt": "exercise 2：第一次世界大戦前の国際関係図で、bに入る語句は何か。",
+      "explanation": "bは三国同盟。1882年にドイツ・オーストリア・イタリアの間で結ばれた。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/relation63.png",
+      "type": "choice",
+      "choices": [
+        "三国同盟",
+        "三国協商",
+        "日英同盟",
+        "英仏協商"
+      ],
+      "answer": "三国同盟",
+      "acceptableAnswers": [
+        "三国同盟"
+      ]
+    },
+    {
+      "id": "history-63-E02C",
+      "moduleId": "history",
+      "prompt": "exercise 2：第一次世界大戦前の国際関係図で、露仏同盟の成立時期cに入る年代は何か。",
+      "explanation": "cは1891〜94年。露仏同盟が成立した時期。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/relation63.png",
+      "type": "choice",
+      "choices": [
+        "1891〜94年",
+        "1882年",
+        "1902年",
+        "1904年"
+      ],
+      "answer": "1891〜94年",
+      "acceptableAnswers": [
+        "1891〜94年",
+        "1891～94年",
+        "1891-94年",
+        "1891〜1894年",
+        "1891年〜1894年"
+      ]
+    },
+    {
+      "id": "history-63-E02D",
+      "moduleId": "history",
+      "prompt": "exercise 2：第一次世界大戦前の国際関係図で、日英同盟の成立年dに入る年代は何か。",
+      "explanation": "dは1902年。日英同盟が成立した年。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/relation63.png",
+      "type": "choice",
+      "choices": [
+        "1902年",
+        "1904年",
+        "1907年",
+        "1898年"
+      ],
+      "answer": "1902年",
+      "acceptableAnswers": [
+        "1902年",
+        "1902"
+      ]
+    },
+    {
+      "id": "history-63-E02E",
+      "moduleId": "history",
+      "prompt": "exercise 2：第一次世界大戦前の国際関係図で、英仏協商の成立年eに入る年代は何か。",
+      "explanation": "eは1904年。英仏協商が成立した年。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/relation63.png",
+      "type": "choice",
+      "choices": [
+        "1904年",
+        "1902年",
+        "1907年",
+        "1891〜94年"
+      ],
+      "answer": "1904年",
+      "acceptableAnswers": [
+        "1904年",
+        "1904"
+      ]
+    },
+    {
+      "id": "history-63-E02F",
+      "moduleId": "history",
+      "prompt": "exercise 2：第一次世界大戦前の国際関係図で、英露協商の成立年fに入る年代は何か。",
+      "explanation": "fは1907年。英露協商が成立した年。",
+      "category": "63 exercise 帝国主義統計・国際関係",
+      "imageAsset": "images/history/relation63.png",
+      "type": "choice",
+      "choices": [
+        "1907年",
+        "1902年",
+        "1904年",
+        "1882年"
+      ],
+      "answer": "1907年",
+      "acceptableAnswers": [
+        "1907年",
+        "1907"
+      ]
+    },
+    {
+      "id": "history-64-B01",
+      "moduleId": "history",
+      "prompt": "日本が日清戦争で遼東半島を領有したことに対し、ロシアは1895年にドイツ・フランスと結んで、どのような行動をおこしたか。",
+      "explanation": "三国干渉は、日清戦争後に日本が得た遼東半島を、ロシア・ドイツ・フランスが清に返還するよう勧告した事件。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "三国干渉",
+        "日英同盟",
+        "英露協商",
+        "露仏同盟"
+      ],
+      "answer": "三国干渉",
+      "acceptableAnswers": [
+        "三国干渉"
+      ]
+    },
+    {
+      "id": "history-64-B02",
+      "moduleId": "history",
+      "prompt": "三国干渉の見返りとして、ロシアは中国からどのような権益を獲得したか。",
+      "explanation": "東清鉄道敷設権は、ロシアが満洲方面への進出のために中国から得た鉄道敷設権。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "東清鉄道敷設権",
+        "南満州鉄道権益",
+        "膠州湾租借権",
+        "九竜半島租借権"
+      ],
+      "answer": "東清鉄道敷設権",
+      "acceptableAnswers": [
+        "東清鉄道敷設権",
+        "東清鉄道の敷設権"
+      ]
+    },
+    {
+      "id": "history-64-B03",
+      "moduleId": "history",
+      "prompt": "ドイツは宣教師殺害事件を理由にして、1898年に中国のどこを租借したか。",
+      "explanation": "膠州湾は、ドイツが1898年に中国から租借した山東半島の湾。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "膠州湾",
+        "旅順・大連",
+        "威海衛",
+        "広州湾"
+      ],
+      "answer": "膠州湾",
+      "acceptableAnswers": [
+        "膠州湾",
+        "膠州湾租借地"
+      ]
+    },
+    {
+      "id": "history-64-B04",
+      "moduleId": "history",
+      "prompt": "ロシアは1898年に中国のどこを租借したか。",
+      "explanation": "旅順・大連は、ロシアが1898年に租借した遼東半島南部の拠点。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "旅順・大連（遼東半島南部）",
+        "膠州湾",
+        "威海衛",
+        "九竜半島（新界）"
+      ],
+      "answer": "旅順・大連（遼東半島南部）",
+      "acceptableAnswers": [
+        "旅順・大連（遼東半島南部）",
+        "旅順・大連",
+        "旅順大連",
+        "遼東半島南部"
+      ]
+    },
+    {
+      "id": "history-64-B05A",
+      "moduleId": "history",
+      "prompt": "イギリスは1898年に中国のどこを租借したか。2カ所のうち1つ目。",
+      "explanation": "威海衛は、イギリスが1898年に租借した中国の租借地の一つ。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "威海衛",
+        "膠州湾",
+        "旅順・大連",
+        "広州湾"
+      ],
+      "answer": "威海衛",
+      "acceptableAnswers": [
+        "威海衛",
+        "威海衛租借地"
+      ]
+    },
+    {
+      "id": "history-64-B05B",
+      "moduleId": "history",
+      "prompt": "イギリスは1898年に中国のどこを租借したか。2カ所のうち2つ目。",
+      "explanation": "九竜半島（新界）は、イギリスが1898年に租借した香港周辺の地域。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "九竜半島（新界）",
+        "膠州湾",
+        "旅順・大連",
+        "広州湾"
+      ],
+      "answer": "九竜半島（新界）",
+      "acceptableAnswers": [
+        "九竜半島（新界）",
+        "九竜半島",
+        "新界",
+        "九龍半島"
+      ]
+    },
+    {
+      "id": "history-64-B06",
+      "moduleId": "history",
+      "prompt": "フランスは1899年に中国のどこを租借したか。",
+      "explanation": "広州湾は、フランスが1899年に租借した中国南部の租借地。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "広州湾",
+        "膠州湾",
+        "威海衛",
+        "旅順・大連"
+      ],
+      "answer": "広州湾",
+      "acceptableAnswers": [
+        "広州湾",
+        "広州湾租借地"
+      ]
+    },
+    {
+      "id": "history-64-B07A",
+      "moduleId": "history",
+      "prompt": "中国進出に遅れをとったアメリカ合衆国は、中国市場への参入をはかるため、1899〜1900年に3原則を提唱した。1つ目をあげよ。",
+      "explanation": "門戸開放は、列強が中国市場に平等に参入できるよう求めたアメリカの原則。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "門戸開放",
+        "機会均等",
+        "領土保全",
+        "最恵国待遇"
+      ],
+      "answer": "門戸開放",
+      "acceptableAnswers": [
+        "門戸開放"
+      ]
+    },
+    {
+      "id": "history-64-B07B",
+      "moduleId": "history",
+      "prompt": "中国進出に遅れをとったアメリカ合衆国は、中国市場への参入をはかるため、1899〜1900年に3原則を提唱した。2つ目をあげよ。",
+      "explanation": "機会均等は、中国市場における列強の通商機会の平等を求めた原則。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "機会均等",
+        "門戸開放",
+        "領土保全",
+        "最恵国待遇"
+      ],
+      "answer": "機会均等",
+      "acceptableAnswers": [
+        "機会均等"
+      ]
+    },
+    {
+      "id": "history-64-B07C",
+      "moduleId": "history",
+      "prompt": "中国進出に遅れをとったアメリカ合衆国は、中国市場への参入をはかるため、1899〜1900年に3原則を提唱した。3つ目をあげよ。",
+      "explanation": "領土保全は、中国の領土的統一を保つことを求めたアメリカの原則。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "領土保全",
+        "門戸開放",
+        "機会均等",
+        "最恵国待遇"
+      ],
+      "answer": "領土保全",
+      "acceptableAnswers": [
+        "領土保全"
+      ]
+    },
+    {
+      "id": "history-64-B08",
+      "moduleId": "history",
+      "prompt": "門戸開放・機会均等・領土保全を提唱したアメリカの国務長官は誰か。",
+      "explanation": "ジョン＝ヘイは、門戸開放・機会均等・領土保全を提唱したアメリカの国務長官。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "ジョン＝ヘイ",
+        "マッキンリー",
+        "セオドア＝ローズヴェルト",
+        "タフト"
+      ],
+      "answer": "ジョン＝ヘイ",
+      "acceptableAnswers": [
+        "ジョン＝ヘイ",
+        "ジョン・ヘイ",
+        "ヘイ"
+      ]
+    },
+    {
+      "id": "history-64-B09",
+      "moduleId": "history",
+      "prompt": "中国では洋務運動失敗の反省から、日本の明治維新を範とした運動が1898年におこされるが、これを何というか。",
+      "explanation": "戊戌の変法は、康有為らが中心となり、日本の明治維新を範として清の改革を目指した運動。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "戊戌の変法",
+        "戊戌の政変",
+        "洋務運動",
+        "義和団事件"
+      ],
+      "answer": "戊戌の変法",
+      "acceptableAnswers": [
+        "戊戌の変法",
+        "変法運動"
+      ]
+    },
+    {
+      "id": "history-64-B10",
+      "moduleId": "history",
+      "prompt": "戊戌の変法がめざしたのは、どのような政治体制か。",
+      "explanation": "立憲君主政は、君主を残しつつ憲法にもとづいて政治を行う体制。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "立憲君主政",
+        "専制君主政",
+        "共和政",
+        "民主共和政"
+      ],
+      "answer": "立憲君主政",
+      "acceptableAnswers": [
+        "立憲君主政",
+        "立憲君主制"
+      ]
+    },
+    {
+      "id": "history-64-B11",
+      "moduleId": "history",
+      "prompt": "社会進化論の影響を受けた梁啓超とともに、戊戌の変法の中心となった公羊学者は誰か。",
+      "explanation": "康有為は、梁啓超とともに戊戌の変法を進めた公羊学者。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "康有為",
+        "梁啓超",
+        "光緒帝",
+        "西太后"
+      ],
+      "answer": "康有為",
+      "acceptableAnswers": [
+        "康有為",
+        "康有爲"
+      ]
+    },
+    {
+      "id": "history-64-B12",
+      "moduleId": "history",
+      "prompt": "戊戌の変法を登用して、改革を断行した皇帝は誰か。",
+      "explanation": "光緒帝は康有為らを登用し、戊戌の変法を進めようとした清の皇帝。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "光緒帝",
+        "西太后",
+        "宣統帝",
+        "康有為"
+      ],
+      "answer": "光緒帝",
+      "acceptableAnswers": [
+        "光緒帝"
+      ]
+    },
+    {
+      "id": "history-64-B13",
+      "moduleId": "history",
+      "prompt": "戊戌の変法は、宮廷守旧派によって弾圧され挫折した。この弾圧事件を何というか。",
+      "explanation": "戊戌の政変は、宮廷守旧派が戊戌の変法を弾圧した事件。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "戊戌の政変",
+        "戊戌の変法",
+        "義和団事件",
+        "辛亥革命"
+      ],
+      "answer": "戊戌の政変",
+      "acceptableAnswers": [
+        "戊戌の政変"
+      ]
+    },
+    {
+      "id": "history-64-B14",
+      "moduleId": "history",
+      "prompt": "戊戌の政変を主導した、宮廷守旧派の中心人物は誰か。",
+      "explanation": "西太后は清朝末期に実権を握り、戊戌の政変を主導した人物。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "西太后",
+        "光緒帝",
+        "康有為",
+        "梁啓超"
+      ],
+      "answer": "西太后",
+      "acceptableAnswers": [
+        "西太后"
+      ]
+    },
+    {
+      "id": "history-64-B15",
+      "moduleId": "history",
+      "prompt": "清朝保守派は、義和団と結んで列強に宣戦を布告したため、8カ国連合軍が北京を占領した。この義和団戦争後、1901年に清朝が列強と結んだ講和条約を何というか。",
+      "explanation": "北京議定書は、義和団戦争後の1901年に清朝が列強と結んだ講和条約。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "北京議定書",
+        "下関条約",
+        "ポーツマス条約",
+        "南京条約"
+      ],
+      "answer": "北京議定書",
+      "acceptableAnswers": [
+        "北京議定書",
+        "辛丑和約"
+      ]
+    },
+    {
+      "id": "history-64-B16",
+      "moduleId": "history",
+      "prompt": "日露戦争がおこったのは何年か。",
+      "explanation": "日露戦争は1904年に始まった。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "1904年",
+        "1898年",
+        "1902年",
+        "1905年"
+      ],
+      "answer": "1904年",
+      "acceptableAnswers": [
+        "1904年",
+        "1904"
+      ]
+    },
+    {
+      "id": "history-64-B17",
+      "moduleId": "history",
+      "prompt": "日露戦争中にペテルブルクでおこった事件をきっかけに、1905年革命が勃発した。この事件を何というか。",
+      "explanation": "血の日曜日事件は、日露戦争中のロシアで1905年革命の発端となった流血事件。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "血の日曜日事件",
+        "義和団事件",
+        "戊戌の政変",
+        "サラエヴォ事件"
+      ],
+      "answer": "血の日曜日事件",
+      "acceptableAnswers": [
+        "血の日曜日事件"
+      ]
+    },
+    {
+      "id": "history-64-B18",
+      "moduleId": "history",
+      "prompt": "日露戦争の講和条約を何というか。",
+      "explanation": "ポーツマス条約は日露戦争の講和条約で、アメリカの仲介により結ばれた。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "ポーツマス条約",
+        "北京議定書",
+        "下関条約",
+        "ベルサイユ条約"
+      ],
+      "answer": "ポーツマス条約",
+      "acceptableAnswers": [
+        "ポーツマス条約"
+      ]
+    },
+    {
+      "id": "history-64-B19",
+      "moduleId": "history",
+      "prompt": "1905年以降に激化した、朝鮮における民衆の抗日武装闘争を何というか。",
+      "explanation": "義兵闘争は、1905年以降に朝鮮で激化した民衆の抗日武装闘争。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "義兵闘争",
+        "義和団事件",
+        "東学農民運動",
+        "三・一独立運動"
+      ],
+      "answer": "義兵闘争",
+      "acceptableAnswers": [
+        "義兵闘争",
+        "義兵運動"
+      ]
+    },
+    {
+      "id": "history-64-B20",
+      "moduleId": "history",
+      "prompt": "韓国併合後、日本がソウル（京城）においた統治機関を何というか。",
+      "explanation": "朝鮮総督府は、韓国併合後に日本がソウル（京城）に置いた統治機関。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "朝鮮総督府",
+        "韓国統監府",
+        "台湾総督府",
+        "関東都督府"
+      ],
+      "answer": "朝鮮総督府",
+      "acceptableAnswers": [
+        "朝鮮総督府"
+      ]
+    },
+    {
+      "id": "history-64-A01",
+      "moduleId": "history",
+      "prompt": "列強の進出にともないキリスト教の布教活動が盛んになると、中国各地で反キリスト教運動による衝突事件が生じた。これを何というか。",
+      "explanation": "教案は、清末の中国各地で起こった反キリスト教運動による衝突事件。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "教案",
+        "義和団事件",
+        "戊戌の政変",
+        "太平天国の乱"
+      ],
+      "answer": "教案",
+      "acceptableAnswers": [
+        "教案"
+      ]
+    },
+    {
+      "id": "history-64-A02",
+      "moduleId": "history",
+      "prompt": "19世紀末に山東省で義和団の排外運動がおこるが、そのスローガンは何か。",
+      "explanation": "扶清滅洋は、義和団が掲げた排外的スローガン。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "扶清滅洋",
+        "尊王攘夷",
+        "扶清滅夷",
+        "打倒列強"
+      ],
+      "answer": "扶清滅洋",
+      "acceptableAnswers": [
+        "扶清滅洋"
+      ]
+    },
+    {
+      "id": "history-64-A03",
+      "moduleId": "history",
+      "prompt": "義和団戦争後の北京議定書で、中国の独立国としての威信は失墜した。このことをもっともよく示す条約内容を答えよ。",
+      "explanation": "北京議定書では、外国軍隊の北京駐屯が認められ、中国の主権が大きく侵害された。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "外国軍隊の北京駐屯",
+        "関税自主権の回復",
+        "治外法権の撤廃",
+        "租借地の全面返還"
+      ],
+      "answer": "外国軍隊の北京駐屯",
+      "acceptableAnswers": [
+        "外国軍隊の北京駐屯",
+        "外国軍隊の北京駐屯を認めた",
+        "北京への外国軍隊駐屯"
+      ]
+    },
+    {
+      "id": "history-64-A04",
+      "moduleId": "history",
+      "prompt": "日清戦争後、朝鮮は1897年に国号を何と改めて、独立国であることを示したか。",
+      "explanation": "大韓帝国は1897年に朝鮮が改めた国号で、独立国としての立場を示した。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "大韓帝国",
+        "大韓民国",
+        "朝鮮王朝",
+        "韓国"
+      ],
+      "answer": "大韓帝国",
+      "acceptableAnswers": [
+        "大韓帝国"
+      ]
+    },
+    {
+      "id": "history-64-A05",
+      "moduleId": "history",
+      "prompt": "朝鮮進出をもくろむロシアに対抗して、日本は1902年に何という同盟を結んだか。",
+      "explanation": "日英同盟は1902年に日本とイギリスの間で結ばれた同盟。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "日英同盟",
+        "英仏協商",
+        "英露協商",
+        "三国同盟"
+      ],
+      "answer": "日英同盟",
+      "acceptableAnswers": [
+        "日英同盟"
+      ]
+    },
+    {
+      "id": "history-64-A06",
+      "moduleId": "history",
+      "prompt": "日露戦争を仲裁したアメリカの大統領は誰か。",
+      "explanation": "セオドア＝ローズヴェルトは日露戦争の講和を仲裁したアメリカ大統領。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "セオドア＝ローズヴェルト",
+        "マッキンリー",
+        "タフト",
+        "ウィルソン"
+      ],
+      "answer": "セオドア＝ローズヴェルト",
+      "acceptableAnswers": [
+        "セオドア＝ローズヴェルト",
+        "セオドア・ローズヴェルト",
+        "セオドア＝ルーズベルト",
+        "セオドア・ルーズベルト"
+      ]
+    },
+    {
+      "id": "history-64-A07",
+      "moduleId": "history",
+      "prompt": "ポーツマス条約で日本が獲得した、主たる租借権・利権・領有権を順にあげよ。",
+      "explanation": "ポーツマス条約で日本は、遼東半島南部の租借権、東清鉄道南部の利権、樺太南部を得た。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "遼東半島南部・東清鉄道南部・樺太南部",
+        "旅順・大連・満鉄・台湾",
+        "膠州湾・山東権益・南洋諸島",
+        "朝鮮・台湾・澎湖諸島"
+      ],
+      "answer": "遼東半島南部・東清鉄道南部・樺太南部",
+      "acceptableAnswers": [
+        "遼東半島南部・東清鉄道南部・樺太南部",
+        "遼東半島南部・東清鉄道南部（南満洲の鉄道）・樺太南部",
+        "遼東半島南部 東清鉄道南部 樺太南部"
+      ]
+    },
+    {
+      "id": "history-64-A08",
+      "moduleId": "history",
+      "prompt": "統監府の設置や韓国の保護国化など、日本の韓国支配を推し進めた協約（1905年）を何というか。",
+      "explanation": "第2次日韓協約は1905年に結ばれ、日本が韓国を保護国化し統監府を設置する根拠となった。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "第2次日韓協約",
+        "第1次日韓協約",
+        "日韓議定書",
+        "韓国併合条約"
+      ],
+      "answer": "第2次日韓協約",
+      "acceptableAnswers": [
+        "第2次日韓協約",
+        "第二次日韓協約",
+        "乙巳条約"
+      ]
+    },
+    {
+      "id": "history-64-A09",
+      "moduleId": "history",
+      "prompt": "日本の韓国支配を進めた初代統監の伊藤博文は、何という韓国の愛国者に暗殺されたか。",
+      "explanation": "安重根は、伊藤博文を暗殺した韓国の民族運動家。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "安重根",
+        "金玉均",
+        "李完用",
+        "閔妃"
+      ],
+      "answer": "安重根",
+      "acceptableAnswers": [
+        "安重根",
+        "アンジュングン",
+        "安ジュングン"
+      ]
+    },
+    {
+      "id": "history-64-A10",
+      "moduleId": "history",
+      "prompt": "その後日本は韓国併合をおこなうが、その年代を答えよ。",
+      "explanation": "日本は1910年に韓国併合を行った。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "type": "choice",
+      "choices": [
+        "1910年",
+        "1905年",
+        "1907年",
+        "1919年"
+      ],
+      "answer": "1910年",
+      "acceptableAnswers": [
+        "1910年",
+        "1910"
+      ]
+    },
+    {
+      "id": "history-64-E01",
+      "moduleId": "history",
+      "prompt": "exercise：列強の中国進出地図で、租借地aの名称を答えよ。",
+      "explanation": "地図中aは遼東半島南部。ロシアが租借し、日露戦争後に日本が権益を継承した。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "遼東半島南部",
+        "威海衛",
+        "膠州湾",
+        "広州湾"
+      ],
+      "answer": "遼東半島南部",
+      "acceptableAnswers": [
+        "遼東半島南部",
+        "旅順・大連"
+      ]
+    },
+    {
+      "id": "history-64-E02",
+      "moduleId": "history",
+      "prompt": "exercise：列強の中国進出地図で、租借地bの名称を答えよ。",
+      "explanation": "地図中bは威海衛。イギリスが租借した。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "威海衛",
+        "遼東半島南部",
+        "膠州湾",
+        "九竜半島"
+      ],
+      "answer": "威海衛",
+      "acceptableAnswers": [
+        "威海衛"
+      ]
+    },
+    {
+      "id": "history-64-E03",
+      "moduleId": "history",
+      "prompt": "exercise：列強の中国進出地図で、租借地cの名称を答えよ。",
+      "explanation": "地図中cは膠州湾。ドイツが租借した。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "膠州湾",
+        "威海衛",
+        "広州湾",
+        "九竜半島"
+      ],
+      "answer": "膠州湾",
+      "acceptableAnswers": [
+        "膠州湾"
+      ]
+    },
+    {
+      "id": "history-64-E04",
+      "moduleId": "history",
+      "prompt": "exercise：列強の中国進出地図で、租借地dの名称を答えよ。",
+      "explanation": "地図中dは九竜半島（新界）。イギリスが租借した。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "九竜半島",
+        "威海衛",
+        "膠州湾",
+        "広州湾"
+      ],
+      "answer": "九竜半島",
+      "acceptableAnswers": [
+        "九竜半島",
+        "九竜半島（新界）",
+        "新界",
+        "九龍半島"
+      ]
+    },
+    {
+      "id": "history-64-E05",
+      "moduleId": "history",
+      "prompt": "exercise：列強の中国進出地図で、租借地eの名称を答えよ。",
+      "explanation": "地図中eは広州湾。フランスが租借した。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "広州湾",
+        "威海衛",
+        "膠州湾",
+        "遼東半島南部"
+      ],
+      "answer": "広州湾",
+      "acceptableAnswers": [
+        "広州湾"
+      ]
+    },
+    {
+      "id": "history-64-E06",
+      "moduleId": "history",
+      "prompt": "exercise：外国資本による鉄道Aを敷設した国を答えよ。",
+      "explanation": "地図中Aはロシアが敷設した鉄道。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "ロシア",
+        "日本",
+        "ドイツ",
+        "イギリス"
+      ],
+      "answer": "ロシア",
+      "acceptableAnswers": [
+        "ロシア"
+      ]
+    },
+    {
+      "id": "history-64-E07",
+      "moduleId": "history",
+      "prompt": "exercise：外国資本による鉄道Bを敷設した国を答えよ。",
+      "explanation": "地図中Bは日本が敷設・支配した鉄道。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "日本",
+        "ロシア",
+        "ドイツ",
+        "イギリス"
+      ],
+      "answer": "日本",
+      "acceptableAnswers": [
+        "日本"
+      ]
+    },
+    {
+      "id": "history-64-E08",
+      "moduleId": "history",
+      "prompt": "exercise：外国資本による鉄道Cを敷設した国を答えよ。",
+      "explanation": "地図中Cはドイツが敷設した鉄道。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "ドイツ",
+        "ロシア",
+        "日本",
+        "フランス"
+      ],
+      "answer": "ドイツ",
+      "acceptableAnswers": [
+        "ドイツ"
+      ]
+    },
+    {
+      "id": "history-64-E09",
+      "moduleId": "history",
+      "prompt": "exercise：外国資本による鉄道Dを敷設した国を答えよ。",
+      "explanation": "地図中Dはイギリスが敷設した鉄道。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "イギリス",
+        "ロシア",
+        "ドイツ",
+        "フランス"
+      ],
+      "answer": "イギリス",
+      "acceptableAnswers": [
+        "イギリス"
+      ]
+    },
+    {
+      "id": "history-64-E10",
+      "moduleId": "history",
+      "prompt": "exercise：外国資本による鉄道Eを敷設した国を答えよ。",
+      "explanation": "地図中Eはフランスが敷設した鉄道。",
+      "category": "64 帝国主義とアジアの民族運動（4）",
+      "imageAsset": "images/history/map64.png",
+      "type": "choice",
+      "choices": [
+        "フランス",
+        "イギリス",
+        "ドイツ",
+        "日本"
+      ],
+      "answer": "フランス",
+      "acceptableAnswers": [
+        "フランス"
+      ]
+    },
+    {
+      "id": "history-H-T001",
+      "moduleId": "history",
+      "prompt": "第2次産業革命で石油とともに重要な動力源となったものは何か。",
+      "explanation": "第2次産業革命は石油・電力・重化学工業が中心。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "電気",
+        "蒸気",
+        "石炭",
+        "水力"
+      ],
+      "answer": "電気",
+      "acceptableAnswers": [
+        "電気"
+      ]
+    },
+    {
+      "id": "history-H-T002",
+      "moduleId": "history",
+      "prompt": "第2次産業革命期、大規模設備に必要な巨額資本を供給し、企業と結びついたものは何か。",
+      "explanation": "大規模設備投資には金融資本の役割が大きかった。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "金融機関",
+        "労働組合",
+        "政党",
+        "農村共同体"
+      ],
+      "answer": "金融機関",
+      "acceptableAnswers": [
+        "金融機関"
+      ]
+    },
+    {
+      "id": "history-H-T003",
+      "moduleId": "history",
+      "prompt": "急速な工業化により生活基盤を奪われ、ヨーロッパからアメリカ大陸へ渡った人々を何というか。",
+      "explanation": "19世紀後半、ヨーロッパからアメリカ大陸へ大量の移民が渡った。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "移民",
+        "難民",
+        "労働貴族",
+        "資本家"
+      ],
+      "answer": "移民",
+      "acceptableAnswers": [
+        "移民"
+      ]
+    },
+    {
+      "id": "history-H-T004",
+      "moduleId": "history",
+      "prompt": "世紀末文化が開花した第一次世界大戦前のフランス語で「よき時代」を何というか。",
+      "explanation": "ベルエポックは第一次世界大戦前のフランスを中心とした「よき時代」。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ベルエポック",
+        "ジャズエイジ",
+        "ヴィクトリア朝",
+        "ロマン主義"
+      ],
+      "answer": "ベルエポック",
+      "acceptableAnswers": [
+        "ベルエポック"
+      ]
+    },
+    {
+      "id": "history-H-T005",
+      "moduleId": "history",
+      "prompt": "3C政策の3都市のうち、エジプト側の都市はどこか。",
+      "explanation": "イギリスの3C政策はカイロ・ケープタウン・カルカッタを結ぶ構想。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "カイロ",
+        "ケープタウン",
+        "カルカッタ",
+        "ベルリン"
+      ],
+      "answer": "カイロ",
+      "acceptableAnswers": [
+        "カイロ"
+      ]
+    },
+    {
+      "id": "history-H-T006",
+      "moduleId": "history",
+      "prompt": "3C政策の3都市のうち、南アフリカ側の都市はどこか。",
+      "explanation": "ケープ植民地を起点に北上する縦断政策。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ケープタウン",
+        "カイロ",
+        "カルカッタ",
+        "バグダード"
+      ],
+      "answer": "ケープタウン",
+      "acceptableAnswers": [
+        "ケープタウン"
+      ]
+    },
+    {
+      "id": "history-H-T007",
+      "moduleId": "history",
+      "prompt": "3C政策の3都市のうち、インド側の都市はどこか。",
+      "explanation": "カルカッタは英領インドの重要拠点。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "カルカッタ",
+        "カイロ",
+        "ケープタウン",
+        "ビザンティウム"
+      ],
+      "answer": "カルカッタ",
+      "acceptableAnswers": [
+        "カルカッタ"
+      ]
+    },
+    {
+      "id": "history-H-T008",
+      "moduleId": "history",
+      "prompt": "3B政策の3都市のうち、ドイツ本国側の都市はどこか。",
+      "explanation": "ドイツの3B政策はベルリン・ビザンティウム・バグダードを結ぶ構想。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ベルリン",
+        "カイロ",
+        "ケープタウン",
+        "カルカッタ"
+      ],
+      "answer": "ベルリン",
+      "acceptableAnswers": [
+        "ベルリン"
+      ]
+    },
+    {
+      "id": "history-H-T009",
+      "moduleId": "history",
+      "prompt": "3B政策の3都市のうち、現在のイスタンブールにあたる都市名は何か。",
+      "explanation": "3B政策のBの1つ。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ビザンティウム",
+        "ベルリン",
+        "バグダード",
+        "カルカッタ"
+      ],
+      "answer": "ビザンティウム",
+      "acceptableAnswers": [
+        "ビザンティウム"
+      ]
+    },
+    {
+      "id": "history-H-T010",
+      "moduleId": "history",
+      "prompt": "3B政策の3都市のうち、西アジア側の都市はどこか。",
+      "explanation": "バグダード鉄道と結びつく重要語。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "バグダード",
+        "ベルリン",
+        "ビザンティウム",
+        "カイロ"
+      ],
+      "answer": "バグダード",
+      "acceptableAnswers": [
+        "バグダード"
+      ]
+    },
+    {
+      "id": "history-H-T011",
+      "moduleId": "history",
+      "prompt": "イギリスでスエズ運河会社の株を買収した保守党内閣の首相は誰か。",
+      "explanation": "ディズレーリはスエズ運河会社の株を買収し、インド帝国を成立させた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ディズレーリ",
+        "グラッドストン",
+        "ソールズベリ",
+        "ロイド＝ジョージ"
+      ],
+      "answer": "ディズレーリ",
+      "acceptableAnswers": [
+        "ディズレーリ"
+      ]
+    },
+    {
+      "id": "history-H-T012",
+      "moduleId": "history",
+      "prompt": "イギリスがエジプトから買収した、地中海と紅海を結ぶ交通路に関係するものは何か。",
+      "explanation": "スエズ運河はイギリスのインド支配・3C政策上重要。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "スエズ運河",
+        "パナマ運河",
+        "バグダード鉄道",
+        "シベリア鉄道"
+      ],
+      "answer": "スエズ運河",
+      "acceptableAnswers": [
+        "スエズ運河"
+      ]
+    },
+    {
+      "id": "history-H-T013",
+      "moduleId": "history",
+      "prompt": "ディズレーリ内閣のもとで、1877年にヴィクトリア女王を皇帝として成立したものは何か。",
+      "explanation": "インド帝国はイギリス帝国主義の象徴。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "インド帝国",
+        "大英帝国",
+        "南アフリカ連邦",
+        "中華民国"
+      ],
+      "answer": "インド帝国",
+      "acceptableAnswers": [
+        "インド帝国"
+      ]
+    },
+    {
+      "id": "history-H-T016",
+      "moduleId": "history",
+      "prompt": "フランスでドレフュス事件の再審を求め「私は弾劾する」を発表した作家は誰か。",
+      "explanation": "ゾラの「私は弾劾する」はドレフュス事件で重要。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "エミール＝ゾラ",
+        "ブーランジェ",
+        "ジャン＝ジョレス",
+        "ベルンシュタイン"
+      ],
+      "answer": "エミール＝ゾラ",
+      "acceptableAnswers": [
+        "エミール＝ゾラ"
+      ]
+    },
+    {
+      "id": "history-H-T017",
+      "moduleId": "history",
+      "prompt": "ドイツが獲得権を得た、ベルリンとバグダードを結ぶ鉄道は何か。",
+      "explanation": "バグダード鉄道はドイツの3B政策と結びつく。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "バグダード鉄道",
+        "シベリア鉄道",
+        "東清鉄道",
+        "南満州鉄道"
+      ],
+      "answer": "バグダード鉄道",
+      "acceptableAnswers": [
+        "バグダード鉄道"
+      ]
+    },
+    {
+      "id": "history-H-T019",
+      "moduleId": "history",
+      "prompt": "ドイツで議会主義による社会改革を主張した修正主義者は誰か。",
+      "explanation": "ベルンシュタインは修正主義の代表。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ベルンシュタイン",
+        "レーニン",
+        "プレハーノフ",
+        "ブーランジェ"
+      ],
+      "answer": "ベルンシュタイン",
+      "acceptableAnswers": [
+        "ベルンシュタイン"
+      ]
+    },
+    {
+      "id": "history-H-T023",
+      "moduleId": "history",
+      "prompt": "ロシアで知識人・貴族に支持された、農民を基盤とする流れの革命政党は何か。",
+      "explanation": "社会革命党はナロードニキの流れをくむ。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "社会革命党",
+        "立憲民主党",
+        "ボリシェヴィキ",
+        "メンシェヴィキ"
+      ],
+      "answer": "社会革命党",
+      "acceptableAnswers": [
+        "社会革命党"
+      ]
+    },
+    {
+      "id": "history-H-T025",
+      "moduleId": "history",
+      "prompt": "1905年革命後、ニコライ2世が開設を認めた国会を何というか。",
+      "explanation": "ドゥーマはロシアの国会。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ドゥーマ",
+        "ソヴィエト",
+        "ミール",
+        "議会法"
+      ],
+      "answer": "ドゥーマ",
+      "acceptableAnswers": [
+        "ドゥーマ"
+      ]
+    },
+    {
+      "id": "history-H-T026",
+      "moduleId": "history",
+      "prompt": "19世紀末にアメリカで消滅したとされ、国内膨張の限界を示すものは何か。",
+      "explanation": "フロンティアの消滅後、アメリカは海外進出を強めた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "フロンティア",
+        "モンロー主義",
+        "ドル外交",
+        "反トラスト法"
+      ],
+      "answer": "フロンティア",
+      "acceptableAnswers": [
+        "フロンティア"
+      ]
+    },
+    {
+      "id": "history-H-T028",
+      "moduleId": "history",
+      "prompt": "キューバに保護国化を押しつけたアメリカの条項は何か。",
+      "explanation": "プラット条項はキューバへのアメリカの干渉を認めた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "プラット条項",
+        "門戸開放宣言",
+        "ベルリン議定書",
+        "北京議定書"
+      ],
+      "answer": "プラット条項",
+      "acceptableAnswers": [
+        "プラット条項"
+      ]
+    },
+    {
+      "id": "history-H-T030",
+      "moduleId": "history",
+      "prompt": "1898年の米西戦争後、アメリカがスペインから獲得したカリブ海の地域は何か。",
+      "explanation": "プエルトリコは米西戦争後アメリカ領となった。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "プエルトリコ",
+        "キューバ",
+        "ハワイ",
+        "パナマ"
+      ],
+      "answer": "プエルトリコ",
+      "acceptableAnswers": [
+        "プエルトリコ"
+      ]
+    },
+    {
+      "id": "history-H-T034",
+      "moduleId": "history",
+      "prompt": "ベルリン＝コンゴ会議を仲介し開催したドイツ皇帝ではなく首相は誰か。",
+      "explanation": "ビスマルクはベルリン＝コンゴ会議を主導した。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ビスマルク",
+        "ヴィルヘルム2世",
+        "チェンバレン",
+        "ディズレーリ"
+      ],
+      "answer": "ビスマルク",
+      "acceptableAnswers": [
+        "ビスマルク"
+      ]
+    },
+    {
+      "id": "history-H-T041",
+      "moduleId": "history",
+      "prompt": "第1次モロッコ事件でドイツ皇帝が上陸した都市はどこか。",
+      "explanation": "1905年、ヴィルヘルム2世がタンジールに上陸した。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "タンジール",
+        "カイロ",
+        "ファショダ",
+        "ケープタウン"
+      ],
+      "answer": "タンジール",
+      "acceptableAnswers": [
+        "タンジール"
+      ]
+    },
+    {
+      "id": "history-H-T042",
+      "moduleId": "history",
+      "prompt": "第1次モロッコ事件解決のため1906年にスペインで開かれた会議は何か。",
+      "explanation": "アルヘシラス会議でフランスの優位が認められた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "アルヘシラス会議",
+        "ベルリン＝コンゴ会議",
+        "ポーツマス会議",
+        "パン＝アメリカ会議"
+      ],
+      "answer": "アルヘシラス会議",
+      "acceptableAnswers": [
+        "アルヘシラス会議"
+      ]
+    },
+    {
+      "id": "history-H-T046",
+      "moduleId": "history",
+      "prompt": "メキシコ革命で活躍した農民指導者の1人は誰か。",
+      "explanation": "パンチョ＝ビリャはメキシコ革命の指導者の1人。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "パンチョ＝ビリャ",
+        "サパタ",
+        "ディアス",
+        "アギナルド"
+      ],
+      "answer": "パンチョ＝ビリャ",
+      "acceptableAnswers": [
+        "パンチョ＝ビリャ"
+      ]
+    },
+    {
+      "id": "history-H-T048",
+      "moduleId": "history",
+      "prompt": "ブラジルでコーヒー栽培と関係して力を持った寡頭支配層は何か。",
+      "explanation": "ブラジルではコーヒー栽培を背景に寡頭支配が強まった。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "コーヒー寡頭制",
+        "砂糖寡頭制",
+        "軍閥",
+        "ボーア人"
+      ],
+      "answer": "コーヒー寡頭制",
+      "acceptableAnswers": [
+        "コーヒー寡頭制"
+      ]
+    },
+    {
+      "id": "history-H-T050",
+      "moduleId": "history",
+      "prompt": "第一次世界大戦前の国際関係で、英・仏・露の協力関係を何というか。",
+      "explanation": "三国協商は英仏露の協力関係。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "三国協商",
+        "三国同盟",
+        "日英同盟",
+        "英仏協商"
+      ],
+      "answer": "三国協商",
+      "acceptableAnswers": [
+        "三国協商"
+      ]
+    },
+    {
+      "id": "history-H-T051",
+      "moduleId": "history",
+      "prompt": "中国で康有為が依拠した儒学の一派は何か。",
+      "explanation": "康有為は公羊学者として戊戌の変法に関わった。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "公羊学",
+        "朱子学",
+        "陽明学",
+        "蘭学"
+      ],
+      "answer": "公羊学",
+      "acceptableAnswers": [
+        "公羊学"
+      ]
+    },
+    {
+      "id": "history-H-T052",
+      "moduleId": "history",
+      "prompt": "戊戌の変法を支持したが、失脚して日本へ亡命した人物の1人は誰か。",
+      "explanation": "梁啓超は戊戌の変法の中心人物の1人。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "梁啓超",
+        "康有為",
+        "西太后",
+        "袁世凱"
+      ],
+      "answer": "梁啓超",
+      "acceptableAnswers": [
+        "梁啓超"
+      ]
+    },
+    {
+      "id": "history-H-T053",
+      "moduleId": "history",
+      "prompt": "清朝打倒を目指す革命派の中心組織として1905年に結成されたものは何か。",
+      "explanation": "中国同盟会は孫文らが結成した革命団体。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "中国同盟会",
+        "義和団",
+        "国民党",
+        "中国共産党"
+      ],
+      "answer": "中国同盟会",
+      "acceptableAnswers": [
+        "中国同盟会"
+      ]
+    },
+    {
+      "id": "history-H-T054",
+      "moduleId": "history",
+      "prompt": "辛亥革命のきっかけとなった鉄道国有化への反発に関わる政策は何か。",
+      "explanation": "幹線鉄道国有化が各地の反発を招いた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "幹線鉄道国有化",
+        "門戸開放",
+        "変法運動",
+        "ドル外交"
+      ],
+      "answer": "幹線鉄道国有化",
+      "acceptableAnswers": [
+        "幹線鉄道国有化"
+      ]
+    },
+    {
+      "id": "history-H-T055",
+      "moduleId": "history",
+      "prompt": "辛亥革命の発端となった湖北省の蜂起は何か。",
+      "explanation": "武昌蜂起が辛亥革命の始まりとなった。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "武昌蜂起",
+        "東学の乱",
+        "義和団事件",
+        "血の日曜日事件"
+      ],
+      "answer": "武昌蜂起",
+      "acceptableAnswers": [
+        "武昌蜂起"
+      ]
+    },
+    {
+      "id": "history-H-T056",
+      "moduleId": "history",
+      "prompt": "中華民国初代臨時大総統となった人物は誰か。",
+      "explanation": "孫文は中華民国の臨時大総統に就任した。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "孫文",
+        "袁世凱",
+        "康有為",
+        "梁啓超"
+      ],
+      "answer": "孫文",
+      "acceptableAnswers": [
+        "孫文"
+      ]
+    },
+    {
+      "id": "history-H-T057",
+      "moduleId": "history",
+      "prompt": "清朝最後の皇帝退位後、臨時大総統となった北洋軍閥の実力者は誰か。",
+      "explanation": "袁世凱は清朝退位後に中華民国大総統となった。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "袁世凱",
+        "孫文",
+        "西太后",
+        "光緒帝"
+      ],
+      "answer": "袁世凱",
+      "acceptableAnswers": [
+        "袁世凱"
+      ]
+    },
+    {
+      "id": "history-H-T058",
+      "moduleId": "history",
+      "prompt": "辛亥革命後、孫文らが結成した政党は何か。",
+      "explanation": "中国同盟会をもとに国民党が成立。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "国民党",
+        "中国同盟会",
+        "義和団",
+        "立憲民主党"
+      ],
+      "answer": "国民党",
+      "acceptableAnswers": [
+        "国民党"
+      ]
+    },
+    {
+      "id": "history-H-T059",
+      "moduleId": "history",
+      "prompt": "ベトナムの民族運動で、日本留学をすすめるドンズー運動を進めた人物は誰か。",
+      "explanation": "ファン＝ボイ＝チャウはドンズー運動を推進。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ファン＝ボイ＝チャウ",
+        "ホー＝チ＝ミン",
+        "アギナルド",
+        "ガンディー"
+      ],
+      "answer": "ファン＝ボイ＝チャウ",
+      "acceptableAnswers": [
+        "ファン＝ボイ＝チャウ"
+      ]
+    },
+    {
+      "id": "history-H-T060",
+      "moduleId": "history",
+      "prompt": "1905年にベトナムで始まった、日本留学を奨励する運動は何か。",
+      "explanation": "ドンズー運動は日本への留学を通じた独立運動。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ドンズー運動",
+        "スワデーシ運動",
+        "義和団運動",
+        "東学の乱"
+      ],
+      "answer": "ドンズー運動",
+      "acceptableAnswers": [
+        "ドンズー運動"
+      ]
+    },
+    {
+      "id": "history-H-T061",
+      "moduleId": "history",
+      "prompt": "1905年、イギリスがインドで実施して反英運動を高めた分割令は何か。",
+      "explanation": "ベンガル分割令はインド民族運動を強めた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "ベンガル分割令",
+        "カルカッタ大会",
+        "門戸開放宣言",
+        "北京議定書"
+      ],
+      "answer": "ベンガル分割令",
+      "acceptableAnswers": [
+        "ベンガル分割令"
+      ]
+    },
+    {
+      "id": "history-H-T062",
+      "moduleId": "history",
+      "prompt": "インド国民会議が1906年カルカッタ大会で掲げた「国産品愛用」は何か。",
+      "explanation": "スワデーシは国産品愛用。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "スワデーシ",
+        "スワラージ",
+        "ドンズー",
+        "ボイコット"
+      ],
+      "answer": "スワデーシ",
+      "acceptableAnswers": [
+        "スワデーシ"
+      ]
+    },
+    {
+      "id": "history-H-T063",
+      "moduleId": "history",
+      "prompt": "インド国民会議が1906年カルカッタ大会で掲げた「自治」は何か。",
+      "explanation": "スワラージは自治。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "スワラージ",
+        "スワデーシ",
+        "ドンズー",
+        "ボイコット"
+      ],
+      "answer": "スワラージ",
+      "acceptableAnswers": [
+        "スワラージ"
+      ]
+    },
+    {
+      "id": "history-H-T064",
+      "moduleId": "history",
+      "prompt": "イスラーム教徒がインド国民会議に対抗して結成した組織は何か。",
+      "explanation": "全インド＝ムスリム連盟はインドのイスラーム教徒の政治組織。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "全インド＝ムスリム連盟",
+        "インド国民会議",
+        "イスラーム同盟",
+        "中国同盟会"
+      ],
+      "answer": "全インド＝ムスリム連盟",
+      "acceptableAnswers": [
+        "全インド＝ムスリム連盟"
+      ]
+    },
+    {
+      "id": "history-H-T065",
+      "moduleId": "history",
+      "prompt": "オランダ領東インドで結成されたイスラーム系民族組織は何か。",
+      "explanation": "イスラーム同盟はオランダ領東インドの民族運動。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "イスラーム同盟",
+        "全インド＝ムスリム連盟",
+        "中国同盟会",
+        "インド国民会議"
+      ],
+      "answer": "イスラーム同盟",
+      "acceptableAnswers": [
+        "イスラーム同盟"
+      ]
+    },
+    {
+      "id": "history-H-T066",
+      "moduleId": "history",
+      "prompt": "三国干渉で日本に返還を迫られた半島はどこか。",
+      "explanation": "三国干渉により日本は遼東半島を清へ返還した。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "遼東半島",
+        "山東半島",
+        "九竜半島",
+        "朝鮮半島"
+      ],
+      "answer": "遼東半島",
+      "acceptableAnswers": [
+        "遼東半島"
+      ]
+    },
+    {
+      "id": "history-H-T069",
+      "moduleId": "history",
+      "prompt": "義和団戦争後もロシアが満州に軍を残したことに対抗して、1902年に日本が結んだ同盟は何か。",
+      "explanation": "日英同盟はロシアに対抗するために結ばれた。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "日英同盟",
+        "英仏協商",
+        "日露協約",
+        "三国同盟"
+      ],
+      "answer": "日英同盟",
+      "acceptableAnswers": [
+        "日英同盟"
+      ]
+    },
+    {
+      "id": "history-H-T070",
+      "moduleId": "history",
+      "prompt": "ポーツマス条約後、1907年に日本・ロシアが協調して中国進出を進めることにつながった協約は何か。",
+      "explanation": "日露協約により日露の対立は一時緩和した。",
+      "category": "テスト専用",
+      "type": "choice",
+      "choices": [
+        "日露協約",
+        "日英同盟",
+        "英露協商",
+        "三国協商"
+      ],
+      "answer": "日露協約",
+      "acceptableAnswers": [
+        "日露協約"
+      ]
+    }
+  ]
+}

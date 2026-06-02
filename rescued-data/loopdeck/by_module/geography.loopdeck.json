@@ -1,0 +1,2867 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-geography-normal-v1",
+  "title": "地理総合",
+  "description": "StudyHome-Nextから救出した 地理総合 の通常方向教材。",
+  "folders": [
+    {
+      "id": "social",
+      "title": "社会"
+    }
+  ],
+  "modules": [
+    {
+      "id": "geography",
+      "folderId": "social",
+      "title": "地理総合",
+      "subject": "社会",
+      "description": "StudyHome-Nextから救出した教材データ。source=geography",
+      "tags": [
+        "社会",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "geography-001",
+        "geography-002",
+        "geography-003",
+        "geography-004",
+        "geography-005",
+        "geography-006",
+        "geography-007",
+        "geography-008",
+        "geography-009",
+        "geography-010",
+        "geography-011",
+        "geography-012",
+        "geography-013",
+        "geography-014",
+        "geography-015",
+        "geography-016",
+        "geography-017",
+        "geography-018",
+        "geography-019",
+        "geography-020",
+        "geography-021",
+        "geography-022",
+        "geography-023",
+        "geography-024",
+        "geography-025",
+        "geography-026",
+        "geography-027",
+        "geography-028",
+        "geography-029",
+        "geography-030",
+        "geography-031",
+        "geography-032",
+        "geography-033",
+        "geography-038",
+        "geography-039",
+        "geography-040",
+        "geography-041",
+        "geography-044",
+        "geography-045",
+        "geography-046",
+        "geography-047",
+        "geography-048",
+        "geography-049",
+        "geography-050",
+        "geography-051",
+        "geography-052",
+        "geography-053",
+        "geography-054",
+        "geography-055",
+        "geography-056",
+        "geography-057",
+        "geography-058",
+        "geography-059",
+        "geography-060",
+        "geography-062",
+        "geography-063",
+        "geography-064",
+        "geography-065",
+        "geography-066",
+        "geography-067",
+        "geography-068",
+        "geography-069",
+        "geography-070",
+        "geography-071",
+        "geography-072",
+        "geography-073",
+        "geography-074",
+        "geography-075",
+        "geography-076",
+        "geography-086",
+        "geography-087",
+        "geography-088",
+        "geography-089",
+        "geography-095",
+        "geography-097",
+        "geography-098",
+        "geography-099",
+        "geography-100",
+        "geography-101",
+        "geography-102",
+        "geography-103",
+        "geography-104",
+        "geography-105",
+        "geography-106",
+        "geography-107",
+        "geography-108",
+        "geography-109",
+        "geography-110",
+        "geography-111",
+        "geography-112",
+        "geography-113",
+        "geography-114",
+        "geography-115",
+        "geography-116",
+        "geography-117",
+        "geography-118",
+        "geography-119",
+        "geography-120",
+        "geography-121",
+        "geography-122",
+        "geography-123",
+        "geography-124",
+        "geography-125",
+        "geography-126",
+        "geography-127",
+        "geography-128",
+        "geography-129",
+        "geography-130",
+        "geography-131",
+        "geography-132",
+        "geography-133",
+        "geography-134",
+        "geography-135",
+        "geography-136",
+        "geography-137",
+        "geography-138",
+        "geography-139",
+        "geography-140",
+        "geography-141",
+        "geography-142",
+        "geography-143",
+        "geography-144",
+        "geography-145",
+        "geography-146",
+        "geography-147",
+        "geography-148",
+        "geography-149",
+        "geography-150",
+        "geography-151",
+        "geography-152",
+        "geography-153",
+        "geography-154",
+        "geography-155",
+        "geography-156",
+        "geography-157",
+        "geography-158",
+        "geography-159",
+        "geography-160",
+        "geography-161",
+        "geography-162",
+        "geography-163",
+        "geography-165",
+        "geography-166",
+        "geography-167",
+        "geography-168",
+        "geography-169",
+        "geography-170"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "geography-001",
+      "moduleId": "geography",
+      "prompt": "隆起・沈降といった地殻変動や火山噴火など，地球内部からもたらされる地形を形成する力を何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "内的営力",
+        "外的営力",
+        "侵食輪廻",
+        "プレートテクトニクス"
+      ],
+      "answer": "内的営力",
+      "acceptableAnswers": [
+        "内的営力"
+      ]
+    },
+    {
+      "id": "geography-002",
+      "moduleId": "geography",
+      "prompt": "川の流れ，波，風などによる侵食・運搬・堆積など，地殻の外から地形を変化させる力を何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "外的営力",
+        "内的営力",
+        "侵食輪廻",
+        "プレートテクトニクス"
+      ],
+      "answer": "外的営力",
+      "acceptableAnswers": [
+        "外的営力"
+      ]
+    },
+    {
+      "id": "geography-003",
+      "moduleId": "geography",
+      "prompt": "全海底面積の約80％を占める，水深2500〜6000mの比較的平坦な海底を何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "海洋底",
+        "海嶺",
+        "海溝",
+        "大陸棚"
+      ],
+      "answer": "海洋底",
+      "acceptableAnswers": [
+        "海洋底"
+      ]
+    },
+    {
+      "id": "geography-004",
+      "moduleId": "geography",
+      "prompt": "海洋底に発達する長く連なる山脈状の海底地形を何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "海嶺",
+        "海洋底",
+        "海溝",
+        "大陸棚"
+      ],
+      "answer": "海嶺",
+      "acceptableAnswers": [
+        "海嶺"
+      ]
+    },
+    {
+      "id": "geography-005",
+      "moduleId": "geography",
+      "prompt": "列島や大山脈に平行して発達し，水深6000〜8000mの細長い凹地を何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "海溝",
+        "海洋底",
+        "海嶺",
+        "大陸棚"
+      ],
+      "answer": "海溝",
+      "acceptableAnswers": [
+        "海溝"
+      ]
+    },
+    {
+      "id": "geography-006",
+      "moduleId": "geography",
+      "prompt": "全海底面積の約8％を占め，海岸から続く水深200mまでの緩やかな傾斜の海底を何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "大陸棚",
+        "海洋底",
+        "海嶺",
+        "海溝"
+      ],
+      "answer": "大陸棚",
+      "acceptableAnswers": [
+        "大陸棚"
+      ]
+    },
+    {
+      "id": "geography-007",
+      "moduleId": "geography",
+      "prompt": "アメリカの地形学者デービスは，地形の侵食による変化を人間の一生にたとえ，原地形から準平原にいたるまでを1つのサイクルとして考えた。これを何というか。",
+      "explanation": "",
+      "category": "地球内外の力がつくる地表のかたち",
+      "type": "choice",
+      "choices": [
+        "侵食輪廻",
+        "内的営力",
+        "外的営力",
+        "プレートテクトニクス"
+      ],
+      "answer": "侵食輪廻",
+      "acceptableAnswers": [
+        "侵食輪廻",
+        "浸食輪廻"
+      ]
+    },
+    {
+      "id": "geography-008",
+      "moduleId": "geography",
+      "prompt": "地球表面をおおう十数枚の板状の岩石層で，マントル上部層と一体となって水平に移動し，地殻変動をもたらす岩体を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "プレート",
+        "プレートテクトニクス",
+        "せばまる境界",
+        "広がる境界"
+      ],
+      "answer": "プレート",
+      "acceptableAnswers": [
+        "プレート"
+      ]
+    },
+    {
+      "id": "geography-009",
+      "moduleId": "geography",
+      "prompt": "地殻変動や火山活動と，それによる地形の発達を，マントル対流とその上部のプレートの動きによって解明しようとする考え方を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "プレートテクトニクス",
+        "プレート",
+        "せばまる境界",
+        "広がる境界"
+      ],
+      "answer": "プレートテクトニクス",
+      "acceptableAnswers": [
+        "プレートテクトニクス"
+      ]
+    },
+    {
+      "id": "geography-010",
+      "moduleId": "geography",
+      "prompt": "プレートの境界のうち，2つのプレートが近づく境界を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "せばまる境界",
+        "プレート",
+        "プレートテクトニクス",
+        "広がる境界"
+      ],
+      "answer": "せばまる境界",
+      "acceptableAnswers": [
+        "せばまる境界",
+        "狭まる境界"
+      ]
+    },
+    {
+      "id": "geography-011",
+      "moduleId": "geography",
+      "prompt": "せばまる境界のうち，大陸プレートどうしが衝突し，地殻の厚みが増して大山脈ができるところを何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "衝突帯",
+        "沈みこみ帯",
+        "広がる境界",
+        "ずれる境界"
+      ],
+      "answer": "衝突帯",
+      "acceptableAnswers": [
+        "衝突帯"
+      ]
+    },
+    {
+      "id": "geography-012",
+      "moduleId": "geography",
+      "prompt": "せばまる境界のうち，海洋プレートが大陸プレートの下に沈み込み，海溝や弧状列島を形成するところを何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "沈みこみ帯",
+        "衝突帯",
+        "広がる境界",
+        "ずれる境界"
+      ],
+      "answer": "沈みこみ帯",
+      "acceptableAnswers": [
+        "沈みこみ帯",
+        "沈み込み帯"
+      ]
+    },
+    {
+      "id": "geography-013",
+      "moduleId": "geography",
+      "prompt": "プレートの境界のうち，2つのプレートが離れようとし，おもに海嶺が形成され，マグマの噴出により新たな地殻がつくられる境界を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "広がる境界",
+        "衝突帯",
+        "沈みこみ帯",
+        "ずれる境界"
+      ],
+      "answer": "広がる境界",
+      "acceptableAnswers": [
+        "広がる境界"
+      ]
+    },
+    {
+      "id": "geography-014",
+      "moduleId": "geography",
+      "prompt": "プレート境界のうち，2つのプレートが互いに行き交い，横ずれ断層を形成する境界を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "ずれる境界",
+        "衝突帯",
+        "沈みこみ帯",
+        "広がる境界"
+      ],
+      "answer": "ずれる境界",
+      "acceptableAnswers": [
+        "ずれる境界"
+      ]
+    },
+    {
+      "id": "geography-015",
+      "moduleId": "geography",
+      "prompt": "異なる方向に動くプレートの境界に沿って分布し，地殻変動や火山活動が活発な帯状の地域を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "変動帯",
+        "造山運動",
+        "新期造山帯",
+        "古期造山帯"
+      ],
+      "answer": "変動帯",
+      "acceptableAnswers": [
+        "変動帯"
+      ]
+    },
+    {
+      "id": "geography-016",
+      "moduleId": "geography",
+      "prompt": "せばまる境界の一帯で，地震や火山活動をともない，褶曲や断層により新たな山脈や列島をつくる大規模な地殻変動を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "造山運動",
+        "変動帯",
+        "新期造山帯",
+        "古期造山帯"
+      ],
+      "answer": "造山運動",
+      "acceptableAnswers": [
+        "造山運動"
+      ]
+    },
+    {
+      "id": "geography-017",
+      "moduleId": "geography",
+      "prompt": "中生代以降に造山運動が生じた地域を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "新期造山帯",
+        "環太平洋造山帯",
+        "アルプス＝ヒマラヤ造山帯",
+        "古期造山帯"
+      ],
+      "answer": "新期造山帯",
+      "acceptableAnswers": [
+        "新期造山帯"
+      ]
+    },
+    {
+      "id": "geography-018",
+      "moduleId": "geography",
+      "prompt": "新期造山帯のうち，地震帯や火山帯をともなう変動帯が太平洋をとり囲むように分布するものを何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "環太平洋造山帯",
+        "テンシャン山脈",
+        "スカンディナヴィア山脈",
+        "アルプス＝ヒマラヤ造山帯"
+      ],
+      "answer": "環太平洋造山帯",
+      "acceptableAnswers": [
+        "環太平洋造山帯"
+      ]
+    },
+    {
+      "id": "geography-019",
+      "moduleId": "geography",
+      "prompt": "新期造山帯のうち，地中海からインドネシアまで，ユーラシア大陸の南縁を東西に走る形で分布するものを何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "アルプス＝ヒマラヤ造山帯",
+        "テンシャン山脈",
+        "スカンディナヴィア山脈",
+        "環太平洋造山帯"
+      ],
+      "answer": "アルプス＝ヒマラヤ造山帯",
+      "acceptableAnswers": [
+        "アルプス＝ヒマラヤ造山帯",
+        "アルプスヒマラヤ造山帯",
+        "アルプス・ヒマラヤ造山帯",
+        "アルプス=ヒマラヤ造山帯"
+      ]
+    },
+    {
+      "id": "geography-020",
+      "moduleId": "geography",
+      "prompt": "中生代のプランクトンに起源をもつ堆積物で，ペルシャ湾やメキシコ湾の周辺，南アメリカ大陸の北岸沿いなど新期造山帯およびその周辺で多く産出される資源は何か。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "石油",
+        "石炭",
+        "鉄鉱石",
+        "セメント"
+      ],
+      "answer": "石油",
+      "acceptableAnswers": [
+        "石油"
+      ]
+    },
+    {
+      "id": "geography-021",
+      "moduleId": "geography",
+      "prompt": "古生代の造山運動によって形成され，現在は隆起せず侵食が続いているため，起伏のゆるやかな山脈や丘陵になっている地帯を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "古期造山帯",
+        "環太平洋造山帯",
+        "アルプス＝ヒマラヤ造山帯",
+        "新期造山帯"
+      ],
+      "answer": "古期造山帯",
+      "acceptableAnswers": [
+        "古期造山帯"
+      ]
+    },
+    {
+      "id": "geography-022",
+      "moduleId": "geography",
+      "prompt": "古期造山帯に属するが，新期造山帯の造山運動の影響を受けて再び隆起し，起伏の険しい様相を呈する中国とキルギス・カザフスタンの国境に位置する山脈はどこか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "テンシャン山脈",
+        "スカンディナヴィア山脈",
+        "環太平洋造山帯",
+        "アルプス＝ヒマラヤ造山帯"
+      ],
+      "answer": "テンシャン山脈",
+      "acceptableAnswers": [
+        "テンシャン山脈",
+        "天山山脈",
+        "天山"
+      ]
+    },
+    {
+      "id": "geography-023",
+      "moduleId": "geography",
+      "prompt": "古期造山帯に属するが，氷河による侵食を受け，起伏の険しい様相を呈するノルウェーとスウェーデンの国境に位置する山脈はどこか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "スカンディナヴィア山脈",
+        "テンシャン山脈",
+        "環太平洋造山帯",
+        "アルプス＝ヒマラヤ造山帯"
+      ],
+      "answer": "スカンディナヴィア山脈",
+      "acceptableAnswers": [
+        "スカンディナヴィア山脈",
+        "スカンジナビア山脈",
+        "スカンディナビア山脈"
+      ]
+    },
+    {
+      "id": "geography-024",
+      "moduleId": "geography",
+      "prompt": "古生代末期の大型植物の遺骸に由来し，古期造山帯で多く産出される資源は何か。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "石炭",
+        "石油",
+        "鉄鉱石",
+        "セメント"
+      ],
+      "answer": "石炭",
+      "acceptableAnswers": [
+        "石炭"
+      ]
+    },
+    {
+      "id": "geography-025",
+      "moduleId": "geography",
+      "prompt": "先カンブリア時代の造山運動によってつくられた陸地であり，古生代以降は地殻変動がおこらず，侵食され続けて平坦になった地帯を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "安定陸塊",
+        "楯状地",
+        "卓状地",
+        "構造平野"
+      ],
+      "answer": "安定陸塊",
+      "acceptableAnswers": [
+        "安定陸塊"
+      ]
+    },
+    {
+      "id": "geography-026",
+      "moduleId": "geography",
+      "prompt": "安定陸塊のうち，先カンブリア時代の岩石が地表にあらわれ，中央部から周辺にかけてゆるやかに傾斜し，盾を伏せたような形態を示す侵食台地を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "楯状地",
+        "安定陸塊",
+        "卓状地",
+        "構造平野"
+      ],
+      "answer": "楯状地",
+      "acceptableAnswers": [
+        "楯状地",
+        "盾状地"
+      ]
+    },
+    {
+      "id": "geography-027",
+      "moduleId": "geography",
+      "prompt": "安定陸塊のうち，先カンブリア時代の地層の表層に古生代以後の地層がおおい，周辺に急崖をもつ高原状の侵食台地を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "卓状地",
+        "ケスタ",
+        "メサ",
+        "ビュート"
+      ],
+      "answer": "卓状地",
+      "acceptableAnswers": [
+        "卓状地"
+      ]
+    },
+    {
+      "id": "geography-028",
+      "moduleId": "geography",
+      "prompt": "先カンブリア時代の海底の堆積物を起源とする，安定陸塊で多く産出される資源は何か。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "鉄鉱石",
+        "石油",
+        "石炭",
+        "セメント"
+      ],
+      "answer": "鉄鉱石",
+      "acceptableAnswers": [
+        "鉄鉱石"
+      ]
+    },
+    {
+      "id": "geography-029",
+      "moduleId": "geography",
+      "prompt": "大陸の広大な平坦面のように，侵食によって地表の起伏が削り取られて形成された平野を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "侵食平野",
+        "構造平野",
+        "堆積平野",
+        "沖積平野"
+      ],
+      "answer": "侵食平野",
+      "acceptableAnswers": [
+        "侵食平野",
+        "浸食平野"
+      ]
+    },
+    {
+      "id": "geography-030",
+      "moduleId": "geography",
+      "prompt": "侵食平野には，侵食されやすい地層がほぼ削り取られたため，侵食されにくい地層に沿って水平な地表面が形成されることが多い。このような平野を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "構造平野",
+        "侵食平野",
+        "堆積平野",
+        "沖積平野"
+      ],
+      "answer": "構造平野",
+      "acceptableAnswers": [
+        "構造平野"
+      ]
+    },
+    {
+      "id": "geography-031",
+      "moduleId": "geography",
+      "prompt": "構造平野では，硬軟のある地層がゆるやかに傾いている場合，軟層が優先的に侵食されるため，急な崖とゆるやかな斜面が交互に続く丘陵がみられる。このような地形を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "ケスタ",
+        "メサ",
+        "ビュート",
+        "卓状地"
+      ],
+      "answer": "ケスタ",
+      "acceptableAnswers": [
+        "ケスタ"
+      ]
+    },
+    {
+      "id": "geography-032",
+      "moduleId": "geography",
+      "prompt": "構造平野の中で，上部に硬層が載り，侵食から取り残されてできたテーブル状の地形を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "メサ",
+        "ケスタ",
+        "ビュート",
+        "卓状地"
+      ],
+      "answer": "メサ",
+      "acceptableAnswers": [
+        "メサ"
+      ]
+    },
+    {
+      "id": "geography-033",
+      "moduleId": "geography",
+      "prompt": "メサのうち，小規模で，硬層が塔状に侵食から取り残されてできた地形を何というか。",
+      "explanation": "",
+      "category": "地殻変動でつくられた大地形",
+      "type": "choice",
+      "choices": [
+        "ビュート",
+        "ケスタ",
+        "メサ",
+        "卓状地"
+      ],
+      "answer": "ビュート",
+      "acceptableAnswers": [
+        "ビュート"
+      ]
+    },
+    {
+      "id": "geography-038",
+      "moduleId": "geography",
+      "prompt": "ハワイ諸島のように，マントル深部の固定された熱源からマグマが上昇し，火山活動がおこる地点を何というか。",
+      "explanation": "",
+      "category": "大地の急激な変動―地震と火山",
+      "type": "choice",
+      "choices": [
+        "ホットスポット",
+        "成層火山",
+        "楯状火山",
+        "カルデラ"
+      ],
+      "answer": "ホットスポット",
+      "acceptableAnswers": [
+        "ホットスポット"
+      ]
+    },
+    {
+      "id": "geography-039",
+      "moduleId": "geography",
+      "prompt": "中心火口から噴出した溶岩流や降下火砕物が交互に重なってできた円錐形の火山を何というか。",
+      "explanation": "",
+      "category": "大地の急激な変動―地震と火山",
+      "type": "choice",
+      "choices": [
+        "成層火山",
+        "ホットスポット",
+        "楯状火山",
+        "カルデラ"
+      ],
+      "answer": "成層火山",
+      "acceptableAnswers": [
+        "成層火山"
+      ]
+    },
+    {
+      "id": "geography-040",
+      "moduleId": "geography",
+      "prompt": "ハワイ島のように，粘性が低く流動性に富む溶岩が繰り返し噴出することによって形成された，盾を伏せたようなゆるやかな傾斜をもつ火山を何というか。",
+      "explanation": "",
+      "category": "大地の急激な変動―地震と火山",
+      "type": "choice",
+      "choices": [
+        "楯状火山",
+        "ホットスポット",
+        "成層火山",
+        "カルデラ"
+      ],
+      "answer": "楯状火山",
+      "acceptableAnswers": [
+        "楯状火山",
+        "盾状火山"
+      ]
+    },
+    {
+      "id": "geography-041",
+      "moduleId": "geography",
+      "prompt": "阿蘇山のように，火山噴火によって山体が大きく陥没してできたくぼ地を何というか。",
+      "explanation": "",
+      "category": "大地の急激な変動―地震と火山",
+      "type": "choice",
+      "choices": [
+        "カルデラ",
+        "ホットスポット",
+        "成層火山",
+        "楯状火山"
+      ],
+      "answer": "カルデラ",
+      "acceptableAnswers": [
+        "カルデラ"
+      ]
+    },
+    {
+      "id": "geography-044",
+      "moduleId": "geography",
+      "prompt": "山地が侵食され，生じた土砂が厚く堆積して形成された平野を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "堆積平野",
+        "沖積平野",
+        "V字谷",
+        "谷底平野"
+      ],
+      "answer": "堆積平野",
+      "acceptableAnswers": [
+        "堆積平野"
+      ]
+    },
+    {
+      "id": "geography-045",
+      "moduleId": "geography",
+      "prompt": "堆積平野のうち，河川が土砂を堆積させてつくった平野を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "沖積平野",
+        "海岸平野",
+        "海岸段丘",
+        "河岸段丘"
+      ],
+      "answer": "沖積平野",
+      "acceptableAnswers": [
+        "沖積平野"
+      ]
+    },
+    {
+      "id": "geography-046",
+      "moduleId": "geography",
+      "prompt": "山地の急流では下方への侵食がさかんで，深い谷が形成される。このような谷をその横断面形から何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "V字谷",
+        "堆積平野",
+        "沖積平野",
+        "谷底平野"
+      ],
+      "answer": "V字谷",
+      "acceptableAnswers": [
+        "V字谷",
+        "Ｖ字谷"
+      ]
+    },
+    {
+      "id": "geography-047",
+      "moduleId": "geography",
+      "prompt": "河川の側方への侵食で谷底が広がり，さらに土砂の堆積によって形成された谷間の平野を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "谷底平野",
+        "堆積平野",
+        "沖積平野",
+        "V字谷"
+      ],
+      "answer": "谷底平野",
+      "acceptableAnswers": [
+        "谷底平野"
+      ]
+    },
+    {
+      "id": "geography-048",
+      "moduleId": "geography",
+      "prompt": "河川の流路に沿って発達し，河川が堆積と侵食を繰り返すことで形成される階段状の地形を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "河岸段丘",
+        "海岸平野",
+        "海岸段丘",
+        "沖積平野"
+      ],
+      "answer": "河岸段丘",
+      "acceptableAnswers": [
+        "河岸段丘"
+      ]
+    },
+    {
+      "id": "geography-049",
+      "moduleId": "geography",
+      "prompt": "山地の急流が平野に出るところで，流速を減じて運搬力が衰えることにより，谷の出口を頂点に下流に向けて半円錐状の緩傾斜地が形成される。この地形を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "扇状地",
+        "扇頂",
+        "扇央",
+        "扇端"
+      ],
+      "answer": "扇状地",
+      "acceptableAnswers": [
+        "扇状地"
+      ]
+    },
+    {
+      "id": "geography-050",
+      "moduleId": "geography",
+      "prompt": "両側に山地がせまる，扇状地の最上流部を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "扇頂",
+        "扇状地",
+        "扇央",
+        "扇端"
+      ],
+      "answer": "扇頂",
+      "acceptableAnswers": [
+        "扇頂"
+      ]
+    },
+    {
+      "id": "geography-051",
+      "moduleId": "geography",
+      "prompt": "増水時以外は河川水がない水無川がみられ，水利に恵まれないため果樹園や畑に利用される，扇状地の中央部を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "扇央",
+        "扇状地",
+        "扇頂",
+        "扇端"
+      ],
+      "answer": "扇央",
+      "acceptableAnswers": [
+        "扇央"
+      ]
+    },
+    {
+      "id": "geography-052",
+      "moduleId": "geography",
+      "prompt": "伏流水が地表に湧出するため水利に恵まれ，集落が立地し水田が開かれる，扇状地の末端部を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "扇端",
+        "扇状地",
+        "扇頂",
+        "扇央"
+      ],
+      "answer": "扇端",
+      "acceptableAnswers": [
+        "扇端"
+      ]
+    },
+    {
+      "id": "geography-053",
+      "moduleId": "geography",
+      "prompt": "黄河下流部や草津川（滋賀県）のように，堆積作用が旺盛なため，堤防内の河床が周辺の土地よりも高くなってしまった河川を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "天井川",
+        "扇状地",
+        "扇頂",
+        "扇央"
+      ],
+      "answer": "天井川",
+      "acceptableAnswers": [
+        "天井川"
+      ]
+    },
+    {
+      "id": "geography-054",
+      "moduleId": "geography",
+      "prompt": "河川が左右に屈曲して，S字形を連ねたような形に流れる現象を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "蛇行",
+        "氾濫原",
+        "自然堤防",
+        "後背湿地"
+      ],
+      "answer": "蛇行",
+      "acceptableAnswers": [
+        "蛇行"
+      ]
+    },
+    {
+      "id": "geography-055",
+      "moduleId": "geography",
+      "prompt": "洪水時に河川からあふれた濁流が土砂を堆積させてつくった平坦地を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "氾濫原",
+        "蛇行",
+        "自然堤防",
+        "後背湿地"
+      ],
+      "answer": "氾濫原",
+      "acceptableAnswers": [
+        "氾濫原",
+        "はん濫原",
+        "氾らん原"
+      ]
+    },
+    {
+      "id": "geography-056",
+      "moduleId": "geography",
+      "prompt": "洪水時に河川からあふれた濁流が，急に流速を減じたため，運搬物を堆積させてできた微高地を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "自然堤防",
+        "蛇行",
+        "氾濫原",
+        "後背湿地"
+      ],
+      "answer": "自然堤防",
+      "acceptableAnswers": [
+        "自然堤防"
+      ]
+    },
+    {
+      "id": "geography-057",
+      "moduleId": "geography",
+      "prompt": "洪水時に河川からあふれた水流が，洪水後も自然堤防にさえぎられて溜ることで生じた，水はけの悪い低湿地を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "後背湿地",
+        "被圧地下水",
+        "自噴",
+        "伏流水"
+      ],
+      "answer": "後背湿地",
+      "acceptableAnswers": [
+        "後背湿地"
+      ]
+    },
+    {
+      "id": "geography-058",
+      "moduleId": "geography",
+      "prompt": "河川が海や湖にそそぐところで流速を減じ，これまで運搬されてきた細粒の土砂が堆積することで形成された低平な地形を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "三角州",
+        "円弧状三角州",
+        "鳥趾状三角州",
+        "干潟"
+      ],
+      "answer": "三角州",
+      "acceptableAnswers": [
+        "三角州"
+      ]
+    },
+    {
+      "id": "geography-059",
+      "moduleId": "geography",
+      "prompt": "ナイル川河口のように，比較的波静かな水域に形成される半円状の三角州を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "円弧状三角州",
+        "鳥趾状三角州",
+        "三角州",
+        "干潟"
+      ],
+      "answer": "円弧状三角州",
+      "acceptableAnswers": [
+        "円弧状三角州"
+      ]
+    },
+    {
+      "id": "geography-060",
+      "moduleId": "geography",
+      "prompt": "ミシシッピ川河口のように，河川によって運搬されてきた土砂の堆積が旺盛で，分岐した複数の流路に沿って自然堤防がのび，手のひら状の形態を示す三角州を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "鳥趾状三角州",
+        "円弧状三角州",
+        "三角州",
+        "干潟"
+      ],
+      "answer": "鳥趾状三角州",
+      "acceptableAnswers": [
+        "鳥趾状三角州",
+        "鳥し状三角州",
+        "鳥足状三角州"
+      ]
+    },
+    {
+      "id": "geography-062",
+      "moduleId": "geography",
+      "prompt": "不透水層にはさまれた透水層中にあり，大気圧よりも大きい圧力を受けている地下水を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "被圧地下水",
+        "自噴",
+        "伏流水",
+        "後背湿地"
+      ],
+      "answer": "被圧地下水",
+      "acceptableAnswers": [
+        "被圧地下水"
+      ]
+    },
+    {
+      "id": "geography-063",
+      "moduleId": "geography",
+      "prompt": "不透水層を掘り抜くと，地下水に加えられている圧力により，被圧地下水が地表面よりも高い位置まで噴出してくる。これを何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "自噴",
+        "被圧地下水",
+        "伏流水",
+        "後背湿地"
+      ],
+      "answer": "自噴",
+      "acceptableAnswers": [
+        "自噴"
+      ]
+    },
+    {
+      "id": "geography-064",
+      "moduleId": "geography",
+      "prompt": "波により海岸に打ち上げられた砂礫がつくる，海岸線に沿って細長くのびる微高地を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "浜堤",
+        "砂嘴",
+        "砂州",
+        "潟湖（ラグーン）"
+      ],
+      "answer": "浜堤",
+      "acceptableAnswers": [
+        "浜堤"
+      ]
+    },
+    {
+      "id": "geography-065",
+      "moduleId": "geography",
+      "prompt": "半島の先端や岬から海に突き出した細長い堆積地形で，沿岸流の影響で先端部は内湾側に湾曲するものを何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "砂嘴",
+        "浜堤",
+        "砂州",
+        "潟湖（ラグーン）"
+      ],
+      "answer": "砂嘴",
+      "acceptableAnswers": [
+        "砂嘴"
+      ]
+    },
+    {
+      "id": "geography-066",
+      "moduleId": "geography",
+      "prompt": "沿岸流に沿って土砂が細長く堆積し，湾口をふさぐほどまで発達した地形を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "砂州",
+        "浜堤",
+        "砂嘴",
+        "潟湖（ラグーン）"
+      ],
+      "answer": "砂州",
+      "acceptableAnswers": [
+        "砂州"
+      ]
+    },
+    {
+      "id": "geography-067",
+      "moduleId": "geography",
+      "prompt": "砂州によって湾口が部分的または全体的にふさがれ，外洋側と隔てられた水域を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "潟湖（ラグーン）",
+        "浜堤",
+        "砂嘴",
+        "砂州"
+      ],
+      "answer": "潟湖（ラグーン）",
+      "acceptableAnswers": [
+        "潟湖（ラグーン）",
+        "潟湖",
+        "ラグーン"
+      ]
+    },
+    {
+      "id": "geography-068",
+      "moduleId": "geography",
+      "prompt": "海岸の前面の島と陸地を連結させた砂州を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "トンボロ（陸繋砂州）",
+        "浜堤",
+        "砂嘴",
+        "砂州"
+      ],
+      "answer": "トンボロ（陸繋砂州）",
+      "acceptableAnswers": [
+        "トンボロ（陸繋砂州）",
+        "トンボロ",
+        "陸繋砂州",
+        "陸けい砂州"
+      ]
+    },
+    {
+      "id": "geography-069",
+      "moduleId": "geography",
+      "prompt": "砂州によって陸地と連結された島を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "陸繋島",
+        "浜堤",
+        "砂嘴",
+        "砂州"
+      ],
+      "answer": "陸繋島",
+      "acceptableAnswers": [
+        "陸繋島",
+        "陸けい島"
+      ]
+    },
+    {
+      "id": "geography-070",
+      "moduleId": "geography",
+      "prompt": "土地の沈降や海面の上昇によって，陸地だった場所が海面下に没することを何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "沈水",
+        "離水",
+        "リアス海岸",
+        "フィヨルド"
+      ],
+      "answer": "沈水",
+      "acceptableAnswers": [
+        "沈水"
+      ]
+    },
+    {
+      "id": "geography-071",
+      "moduleId": "geography",
+      "prompt": "起伏に富んだ山地が沈水して形成される，小さな湾と岬が隣り合う鋸歯状の海岸線を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "リアス海岸",
+        "沈水",
+        "離水",
+        "フィヨルド"
+      ],
+      "answer": "リアス海岸",
+      "acceptableAnswers": [
+        "リアス海岸"
+      ]
+    },
+    {
+      "id": "geography-072",
+      "moduleId": "geography",
+      "prompt": "ノルウェー西海岸や南アメリカ大陸南端などにみられ，かつて氷河が削った谷が沈水して形成された，両岸を絶壁に囲まれた狭長な湾を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "フィヨルド",
+        "沈水",
+        "離水",
+        "リアス海岸"
+      ],
+      "answer": "フィヨルド",
+      "acceptableAnswers": [
+        "フィヨルド"
+      ]
+    },
+    {
+      "id": "geography-073",
+      "moduleId": "geography",
+      "prompt": "河川の河口部が沈水して生じたラッパ状の入り江を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "エスチュアリー（三角江）",
+        "沈水",
+        "離水",
+        "リアス海岸"
+      ],
+      "answer": "エスチュアリー（三角江）",
+      "acceptableAnswers": [
+        "エスチュアリー（三角江）",
+        "エスチュアリー",
+        "三角江"
+      ]
+    },
+    {
+      "id": "geography-074",
+      "moduleId": "geography",
+      "prompt": "土地の隆起や海面の低下によって，海岸や海面下だった場所が海水に浸らなくなることを何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "離水",
+        "沈水",
+        "リアス海岸",
+        "フィヨルド"
+      ],
+      "answer": "離水",
+      "acceptableAnswers": [
+        "離水"
+      ]
+    },
+    {
+      "id": "geography-075",
+      "moduleId": "geography",
+      "prompt": "土砂の堆積した浅い海底が離水して生じた平野を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "海岸平野",
+        "海岸段丘",
+        "河岸段丘",
+        "沖積平野"
+      ],
+      "answer": "海岸平野",
+      "acceptableAnswers": [
+        "海岸平野"
+      ]
+    },
+    {
+      "id": "geography-076",
+      "moduleId": "geography",
+      "prompt": "間歇的な土地の隆起にともなう離水と波による侵食を繰り返すことで，海岸に沿って形成された階段状の地形を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "海岸段丘",
+        "海岸平野",
+        "河岸段丘",
+        "沖積平野"
+      ],
+      "answer": "海岸段丘",
+      "acceptableAnswers": [
+        "海岸段丘"
+      ]
+    },
+    {
+      "id": "geography-086",
+      "moduleId": "geography",
+      "prompt": "水温25〜30℃以上の清澄な浅海に生息するサンゴ虫の遺骸や分泌物が集積してできた石灰質の岩礁を何というか。",
+      "explanation": "",
+      "category": "その他の特徴的な地形",
+      "type": "choice",
+      "choices": [
+        "サンゴ礁",
+        "裾礁",
+        "堡礁",
+        "環礁"
+      ],
+      "answer": "サンゴ礁",
+      "acceptableAnswers": [
+        "サンゴ礁",
+        "珊瑚礁"
+      ]
+    },
+    {
+      "id": "geography-087",
+      "moduleId": "geography",
+      "prompt": "島や大陸の海岸に密着し，陸地をふちどるように発達したサンゴ礁を何というか。",
+      "explanation": "",
+      "category": "その他の特徴的な地形",
+      "type": "choice",
+      "choices": [
+        "裾礁",
+        "サンゴ礁",
+        "堡礁",
+        "環礁"
+      ],
+      "answer": "裾礁",
+      "acceptableAnswers": [
+        "裾礁"
+      ]
+    },
+    {
+      "id": "geography-088",
+      "moduleId": "geography",
+      "prompt": "陸地との間に礁湖をへだて，その沖合に防波堤状に連なるサンゴ礁を何というか。",
+      "explanation": "",
+      "category": "その他の特徴的な地形",
+      "type": "choice",
+      "choices": [
+        "堡礁",
+        "サンゴ礁",
+        "裾礁",
+        "環礁"
+      ],
+      "answer": "堡礁",
+      "acceptableAnswers": [
+        "堡礁"
+      ]
+    },
+    {
+      "id": "geography-089",
+      "moduleId": "geography",
+      "prompt": "中央の島が海面下に水没したことにより，礁湖をとりまいて環状に発達したサンゴ礁を何というか。",
+      "explanation": "",
+      "category": "その他の特徴的な地形",
+      "type": "choice",
+      "choices": [
+        "環礁",
+        "サンゴ礁",
+        "裾礁",
+        "堡礁"
+      ],
+      "answer": "環礁",
+      "acceptableAnswers": [
+        "環礁"
+      ]
+    },
+    {
+      "id": "geography-095",
+      "moduleId": "geography",
+      "prompt": "フォッサマグナの西縁にあたり，日本列島を東北日本と西南日本に分ける断層帯を何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "糸魚川―静岡構造線",
+        "中央構造線",
+        "ユーラシアプレート",
+        "北アメリカプレート"
+      ],
+      "answer": "糸魚川―静岡構造線",
+      "acceptableAnswers": [
+        "糸魚川―静岡構造線",
+        "糸魚川静岡構造線",
+        "糸魚川-静岡構造線"
+      ]
+    },
+    {
+      "id": "geography-097",
+      "moduleId": "geography",
+      "prompt": "日本付近のプレートのうち，西南日本をふくむ大陸プレートを何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "ユーラシアプレート",
+        "糸魚川―静岡構造線",
+        "中央構造線",
+        "北アメリカプレート"
+      ],
+      "answer": "ユーラシアプレート",
+      "acceptableAnswers": [
+        "ユーラシアプレート"
+      ]
+    },
+    {
+      "id": "geography-098",
+      "moduleId": "geography",
+      "prompt": "日本付近のプレートのうち，東北日本をふくむ大陸プレートを何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "北アメリカプレート",
+        "糸魚川―静岡構造線",
+        "中央構造線",
+        "ユーラシアプレート"
+      ],
+      "answer": "北アメリカプレート",
+      "acceptableAnswers": [
+        "北アメリカプレート"
+      ]
+    },
+    {
+      "id": "geography-099",
+      "moduleId": "geography",
+      "prompt": "日本付近のプレートのうち，日本の南方から北上し，ユーラシアプレートの下に沈みこむプレートを何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "フィリピン海プレート",
+        "糸魚川―静岡構造線",
+        "中央構造線",
+        "ユーラシアプレート"
+      ],
+      "answer": "フィリピン海プレート",
+      "acceptableAnswers": [
+        "フィリピン海プレート"
+      ]
+    },
+    {
+      "id": "geography-100",
+      "moduleId": "geography",
+      "prompt": "日本付近のプレートのうち，日本の東方から移動し，北アメリカプレートおよびフィリピン海プレートの下に沈みこむプレートを何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "太平洋プレート",
+        "糸魚川―静岡構造線",
+        "中央構造線",
+        "ユーラシアプレート"
+      ],
+      "answer": "太平洋プレート",
+      "acceptableAnswers": [
+        "太平洋プレート"
+      ]
+    },
+    {
+      "id": "geography-101",
+      "moduleId": "geography",
+      "prompt": "地球の赤道半径は約何kmか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "6378km",
+        "4万km",
+        "6357km",
+        "約111km"
+      ],
+      "answer": "6378km",
+      "acceptableAnswers": [
+        "6378km",
+        "6378",
+        "約6378km",
+        "約6378",
+        "6378キロメートル",
+        "6378キロ"
+      ]
+    },
+    {
+      "id": "geography-102",
+      "moduleId": "geography",
+      "prompt": "赤道一周の長さは約何万kmか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "4万km",
+        "6378km",
+        "約111km",
+        "約5.1億km2"
+      ],
+      "answer": "4万km",
+      "acceptableAnswers": [
+        "4万km",
+        "4万",
+        "約4万km",
+        "約4万",
+        "40000km",
+        "約40000km",
+        "4万キロメートル",
+        "4万キロ"
+      ]
+    },
+    {
+      "id": "geography-103",
+      "moduleId": "geography",
+      "prompt": "北極と南極を通って地球を一周する大円を何というか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "子午線",
+        "赤道",
+        "南北回帰線",
+        "極圏"
+      ],
+      "answer": "子午線",
+      "acceptableAnswers": [
+        "子午線",
+        "経線"
+      ]
+    },
+    {
+      "id": "geography-104",
+      "moduleId": "geography",
+      "prompt": "南北緯23°26′付近にある緯線を何というか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "南北回帰線",
+        "極圏",
+        "赤道",
+        "日付変更線"
+      ],
+      "answer": "南北回帰線",
+      "acceptableAnswers": [
+        "南北回帰線"
+      ]
+    },
+    {
+      "id": "geography-105",
+      "moduleId": "geography",
+      "prompt": "南北緯66°34′より高緯度の地域を何というか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "極圏",
+        "南北回帰線",
+        "低緯度",
+        "中緯度"
+      ],
+      "answer": "極圏",
+      "acceptableAnswers": [
+        "極圏"
+      ]
+    },
+    {
+      "id": "geography-106",
+      "moduleId": "geography",
+      "prompt": "陸地面積が最も広い半球を何というか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "陸半球",
+        "水半球",
+        "北半球",
+        "東半球"
+      ],
+      "answer": "陸半球",
+      "acceptableAnswers": [
+        "陸半球"
+      ]
+    },
+    {
+      "id": "geography-107",
+      "moduleId": "geography",
+      "prompt": "海洋面積が最も広い半球を何というか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "水半球",
+        "陸半球",
+        "南半球",
+        "西半球"
+      ],
+      "answer": "水半球",
+      "acceptableAnswers": [
+        "水半球"
+      ]
+    },
+    {
+      "id": "geography-108",
+      "moduleId": "geography",
+      "prompt": "地球上のある地点から地球の中心を通って正反対にあたる地点を何というか。",
+      "explanation": "",
+      "category": "地球の基礎",
+      "type": "choice",
+      "choices": [
+        "対蹠点",
+        "極点",
+        "赤道",
+        "本初子午線"
+      ],
+      "answer": "対蹠点",
+      "acceptableAnswers": [
+        "対蹠点"
+      ]
+    },
+    {
+      "id": "geography-109",
+      "moduleId": "geography",
+      "prompt": "約2億年前に存在したとされる一つの巨大な大陸を何というか。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "パンゲア",
+        "ローラシア大陸",
+        "ゴンドワナ大陸",
+        "テチス海"
+      ],
+      "answer": "パンゲア",
+      "acceptableAnswers": [
+        "パンゲア"
+      ]
+    },
+    {
+      "id": "geography-110",
+      "moduleId": "geography",
+      "prompt": "パンゲアが分裂したうち，北半球側にあった大陸を何というか。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "ローラシア大陸",
+        "ゴンドワナ大陸",
+        "パンゲア",
+        "ユーラシア大陸"
+      ],
+      "answer": "ローラシア大陸",
+      "acceptableAnswers": [
+        "ローラシア大陸"
+      ]
+    },
+    {
+      "id": "geography-111",
+      "moduleId": "geography",
+      "prompt": "パンゲアが分裂したうち，南半球側にあった大陸を何というか。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "ゴンドワナ大陸",
+        "ローラシア大陸",
+        "パンゲア",
+        "南極大陸"
+      ],
+      "answer": "ゴンドワナ大陸",
+      "acceptableAnswers": [
+        "ゴンドワナ大陸"
+      ]
+    },
+    {
+      "id": "geography-112",
+      "moduleId": "geography",
+      "prompt": "大陸はかつて一つで，分裂・移動して現在の姿になったとする説を何というか。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "大陸移動説",
+        "プレートテクトニクス",
+        "造山運動",
+        "侵食輪廻"
+      ],
+      "answer": "大陸移動説",
+      "acceptableAnswers": [
+        "大陸移動説"
+      ]
+    },
+    {
+      "id": "geography-113",
+      "moduleId": "geography",
+      "prompt": "大陸移動説を提唱したドイツの学者は誰か。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "ウェゲナー",
+        "デービス",
+        "メンデレーエフ",
+        "ダーウィン"
+      ],
+      "answer": "ウェゲナー",
+      "acceptableAnswers": [
+        "ウェゲナー"
+      ]
+    },
+    {
+      "id": "geography-114",
+      "moduleId": "geography",
+      "prompt": "ずれる境界で見られる，プレートどうしが横にずれて動く断層を何というか。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "トランスフォーム断層",
+        "逆断層",
+        "正断層",
+        "中央構造線"
+      ],
+      "answer": "トランスフォーム断層",
+      "acceptableAnswers": [
+        "トランスフォーム断層"
+      ]
+    },
+    {
+      "id": "geography-115",
+      "moduleId": "geography",
+      "prompt": "プレート境界から離れ，地震や火山活動が比較的少ない地域を何というか。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "安定地域",
+        "変動帯",
+        "新期造山帯",
+        "地溝帯"
+      ],
+      "answer": "安定地域",
+      "acceptableAnswers": [
+        "安定地域"
+      ]
+    },
+    {
+      "id": "geography-116",
+      "moduleId": "geography",
+      "prompt": "ホットスポットによる火山列の代表例としてよく挙げられる諸島は何か。",
+      "explanation": "",
+      "category": "大陸移動説とプレート",
+      "type": "choice",
+      "choices": [
+        "ハワイ諸島",
+        "日本列島",
+        "アリューシャン列島",
+        "フィリピン諸島"
+      ],
+      "answer": "ハワイ諸島",
+      "acceptableAnswers": [
+        "ハワイ諸島"
+      ]
+    },
+    {
+      "id": "geography-117",
+      "moduleId": "geography",
+      "prompt": "地層が左右から押され，曲げられてできた山地を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "褶曲山地",
+        "断層山地",
+        "傾動山地",
+        "溶岩台地"
+      ],
+      "answer": "褶曲山地",
+      "acceptableAnswers": [
+        "褶曲山地"
+      ]
+    },
+    {
+      "id": "geography-118",
+      "moduleId": "geography",
+      "prompt": "断層による上下のずれで生じた急な崖を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "断層崖",
+        "海食崖",
+        "段丘崖",
+        "河食崖"
+      ],
+      "answer": "断層崖",
+      "acceptableAnswers": [
+        "断層崖"
+      ]
+    },
+    {
+      "id": "geography-119",
+      "moduleId": "geography",
+      "prompt": "断層によって土地が上下にずれてできた山地を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "断層山地",
+        "褶曲山地",
+        "傾動山地",
+        "楯状地"
+      ],
+      "answer": "断層山地",
+      "acceptableAnswers": [
+        "断層山地"
+      ]
+    },
+    {
+      "id": "geography-120",
+      "moduleId": "geography",
+      "prompt": "断層運動で地塊が一方に傾いて形成された山地を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "傾動山地",
+        "断層山地",
+        "褶曲山地",
+        "火山岩尖"
+      ],
+      "answer": "傾動山地",
+      "acceptableAnswers": [
+        "傾動山地"
+      ]
+    },
+    {
+      "id": "geography-121",
+      "moduleId": "geography",
+      "prompt": "断層にはさまれた土地が周囲より高くなった地形を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "地塁",
+        "地溝",
+        "海溝",
+        "地峡"
+      ],
+      "answer": "地塁",
+      "acceptableAnswers": [
+        "地塁"
+      ]
+    },
+    {
+      "id": "geography-122",
+      "moduleId": "geography",
+      "prompt": "断層にはさまれた土地が周囲より低くなった地形を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "地溝",
+        "地塁",
+        "海嶺",
+        "海溝"
+      ],
+      "answer": "地溝",
+      "acceptableAnswers": [
+        "地溝"
+      ]
+    },
+    {
+      "id": "geography-123",
+      "moduleId": "geography",
+      "prompt": "地溝が帯状に連なる大規模な地形を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "地溝帯",
+        "褶曲山地",
+        "安定陸塊",
+        "海岸平野"
+      ],
+      "answer": "地溝帯",
+      "acceptableAnswers": [
+        "地溝帯"
+      ]
+    },
+    {
+      "id": "geography-124",
+      "moduleId": "geography",
+      "prompt": "ヨーロッパにある代表的な地溝帯で，ライン川上流にあるものを何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "ライン地溝帯",
+        "中央リフト谷",
+        "フォッサマグナ",
+        "アパラチア山脈"
+      ],
+      "answer": "ライン地溝帯",
+      "acceptableAnswers": [
+        "ライン地溝帯"
+      ]
+    },
+    {
+      "id": "geography-125",
+      "moduleId": "geography",
+      "prompt": "アフリカ東部の大地溝帯にみられる代表的な地溝帯を何というか。",
+      "explanation": "",
+      "category": "山地の地形",
+      "type": "choice",
+      "choices": [
+        "中央リフト谷",
+        "ライン地溝帯",
+        "フォッサマグナ",
+        "中央構造線"
+      ],
+      "answer": "中央リフト谷",
+      "acceptableAnswers": [
+        "中央リフト谷"
+      ]
+    },
+    {
+      "id": "geography-126",
+      "moduleId": "geography",
+      "prompt": "日本列島を東北日本と西南日本に分ける大きな地溝状の地域を何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "フォッサマグナ",
+        "中央構造線",
+        "糸魚川―静岡構造線",
+        "三陸海岸"
+      ],
+      "answer": "フォッサマグナ",
+      "acceptableAnswers": [
+        "フォッサマグナ"
+      ]
+    },
+    {
+      "id": "geography-127",
+      "moduleId": "geography",
+      "prompt": "西南日本を内帯と外帯に分ける，日本最大級の構造線を何というか。",
+      "explanation": "",
+      "category": "日本の地形と自然災害",
+      "type": "choice",
+      "choices": [
+        "中央構造線",
+        "糸魚川―静岡構造線",
+        "フォッサマグナ",
+        "日本海溝"
+      ],
+      "answer": "中央構造線",
+      "acceptableAnswers": [
+        "中央構造線"
+      ]
+    },
+    {
+      "id": "geography-128",
+      "moduleId": "geography",
+      "prompt": "北アメリカ東部にある古期造山帯の代表的な山脈は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "アパラチア山脈",
+        "ロッキー山脈",
+        "アンデス山脈",
+        "ヒマラヤ山脈"
+      ],
+      "answer": "アパラチア山脈",
+      "acceptableAnswers": [
+        "アパラチア山脈"
+      ]
+    },
+    {
+      "id": "geography-129",
+      "moduleId": "geography",
+      "prompt": "オーストラリア東部にある古期造山帯の代表的な山脈は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "グレートディヴァイディング山脈",
+        "アパラチア山脈",
+        "ウラル山脈",
+        "アルプス山脈"
+      ],
+      "answer": "グレートディヴァイディング山脈",
+      "acceptableAnswers": [
+        "グレートディヴァイディング山脈"
+      ]
+    },
+    {
+      "id": "geography-130",
+      "moduleId": "geography",
+      "prompt": "ヨーロッパとアジアの境界付近にある古期造山帯の代表的な山脈は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "ウラル山脈",
+        "ヒマラヤ山脈",
+        "ロッキー山脈",
+        "アンデス山脈"
+      ],
+      "answer": "ウラル山脈",
+      "acceptableAnswers": [
+        "ウラル山脈"
+      ]
+    },
+    {
+      "id": "geography-131",
+      "moduleId": "geography",
+      "prompt": "北アメリカ北部に広がる楯状地の代表例は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "カナダ楯状地",
+        "ブラジル楯状地",
+        "ギアナ楯状地",
+        "ロシア卓状地"
+      ],
+      "answer": "カナダ楯状地",
+      "acceptableAnswers": [
+        "カナダ楯状地"
+      ]
+    },
+    {
+      "id": "geography-132",
+      "moduleId": "geography",
+      "prompt": "南アメリカ東部に広がる楯状地の代表例は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "ブラジル楯状地",
+        "カナダ楯状地",
+        "アフリカ楯状地",
+        "シベリア卓状地"
+      ],
+      "answer": "ブラジル楯状地",
+      "acceptableAnswers": [
+        "ブラジル楯状地"
+      ]
+    },
+    {
+      "id": "geography-133",
+      "moduleId": "geography",
+      "prompt": "オーストラリア西部に広がる安定陸塊の代表例は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "オーストラリア楯状地",
+        "アフリカ楯状地",
+        "カナダ楯状地",
+        "ブラジル楯状地"
+      ],
+      "answer": "オーストラリア楯状地",
+      "acceptableAnswers": [
+        "オーストラリア楯状地"
+      ]
+    },
+    {
+      "id": "geography-134",
+      "moduleId": "geography",
+      "prompt": "安定陸塊の風化地域に多く，アルミニウムの原料となる鉱産資源は何か。",
+      "explanation": "",
+      "category": "古期造山帯・安定陸塊",
+      "type": "choice",
+      "choices": [
+        "ボーキサイト",
+        "鉄鉱石",
+        "石炭",
+        "石油"
+      ],
+      "answer": "ボーキサイト",
+      "acceptableAnswers": [
+        "ボーキサイト"
+      ]
+    },
+    {
+      "id": "geography-135",
+      "moduleId": "geography",
+      "prompt": "粘性の小さい溶岩が広がってできる，傾斜のゆるやかな楯状火山を別名で何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "アスピーテ",
+        "コニーデ",
+        "トロイデ",
+        "ベロニーテ"
+      ],
+      "answer": "アスピーテ",
+      "acceptableAnswers": [
+        "アスピーテ"
+      ]
+    },
+    {
+      "id": "geography-136",
+      "moduleId": "geography",
+      "prompt": "富士山のように溶岩と火山灰が重なった円錐形の成層火山を別名で何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "コニーデ",
+        "アスピーテ",
+        "トロイデ",
+        "ペディオニーテ"
+      ],
+      "answer": "コニーデ",
+      "acceptableAnswers": [
+        "コニーデ"
+      ]
+    },
+    {
+      "id": "geography-137",
+      "moduleId": "geography",
+      "prompt": "粘性の大きい溶岩が盛り上がってできる溶岩円頂丘を別名で何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "トロイデ",
+        "コニーデ",
+        "アスピーテ",
+        "ペディオニーテ"
+      ],
+      "answer": "トロイデ",
+      "acceptableAnswers": [
+        "トロイデ"
+      ]
+    },
+    {
+      "id": "geography-138",
+      "moduleId": "geography",
+      "prompt": "火口内の粘性の高いマグマが固まり，塔状に突き出した火山岩尖を別名で何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "ベロニーテ",
+        "トロイデ",
+        "コニーデ",
+        "カルデラ"
+      ],
+      "answer": "ベロニーテ",
+      "acceptableAnswers": [
+        "ベロニーテ"
+      ]
+    },
+    {
+      "id": "geography-139",
+      "moduleId": "geography",
+      "prompt": "溶岩が広い台地状に広がってできた溶岩台地を別名で何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "ペディオニーテ",
+        "アスピーテ",
+        "トロイデ",
+        "ベロニーテ"
+      ],
+      "answer": "ペディオニーテ",
+      "acceptableAnswers": [
+        "ペディオニーテ"
+      ]
+    },
+    {
+      "id": "geography-140",
+      "moduleId": "geography",
+      "prompt": "粘性の高い溶岩が火口付近で盛り上がり，ドーム状になった地形を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "溶岩円頂丘",
+        "溶岩台地",
+        "火山岩尖",
+        "カルデラ"
+      ],
+      "answer": "溶岩円頂丘",
+      "acceptableAnswers": [
+        "溶岩円頂丘"
+      ]
+    },
+    {
+      "id": "geography-141",
+      "moduleId": "geography",
+      "prompt": "流動性の大きい溶岩が広範囲に流れ出してできる台地を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "溶岩台地",
+        "溶岩円頂丘",
+        "楯状火山",
+        "外輪山"
+      ],
+      "answer": "溶岩台地",
+      "acceptableAnswers": [
+        "溶岩台地"
+      ]
+    },
+    {
+      "id": "geography-142",
+      "moduleId": "geography",
+      "prompt": "粘性の高い溶岩が火口から塔状に突き出して固まった地形を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "火山岩尖",
+        "溶岩円頂丘",
+        "中央火口丘",
+        "溶岩台地"
+      ],
+      "answer": "火山岩尖",
+      "acceptableAnswers": [
+        "火山岩尖"
+      ]
+    },
+    {
+      "id": "geography-143",
+      "moduleId": "geography",
+      "prompt": "カルデラの外側を取り囲む山体を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "外輪山",
+        "中央火口丘",
+        "火口湖",
+        "溶岩円頂丘"
+      ],
+      "answer": "外輪山",
+      "acceptableAnswers": [
+        "外輪山"
+      ]
+    },
+    {
+      "id": "geography-144",
+      "moduleId": "geography",
+      "prompt": "カルデラ内に新たな噴火でできた小火山を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "中央火口丘",
+        "外輪山",
+        "寄生火山",
+        "火山岩尖"
+      ],
+      "answer": "中央火口丘",
+      "acceptableAnswers": [
+        "中央火口丘"
+      ]
+    },
+    {
+      "id": "geography-145",
+      "moduleId": "geography",
+      "prompt": "火口に水がたまってできた湖を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "火口湖",
+        "カルデラ湖",
+        "三日月湖",
+        "堰止湖"
+      ],
+      "answer": "火口湖",
+      "acceptableAnswers": [
+        "火口湖"
+      ]
+    },
+    {
+      "id": "geography-146",
+      "moduleId": "geography",
+      "prompt": "カルデラに水がたまってできた湖を何というか。",
+      "explanation": "",
+      "category": "火山地形",
+      "type": "choice",
+      "choices": [
+        "カルデラ湖",
+        "火口湖",
+        "三日月湖",
+        "潟湖"
+      ],
+      "answer": "カルデラ湖",
+      "acceptableAnswers": [
+        "カルデラ湖"
+      ]
+    },
+    {
+      "id": "geography-147",
+      "moduleId": "geography",
+      "prompt": "火山灰・軽石・火山ガスなどが高温のまま高速で流れ下る現象を何というか。",
+      "explanation": "",
+      "category": "火山災害",
+      "type": "choice",
+      "choices": [
+        "火砕流",
+        "火山泥流",
+        "土石流",
+        "津波"
+      ],
+      "answer": "火砕流",
+      "acceptableAnswers": [
+        "火砕流"
+      ]
+    },
+    {
+      "id": "geography-148",
+      "moduleId": "geography",
+      "prompt": "火山噴出物が水と混ざり，泥流となって流れ下る現象を何というか。",
+      "explanation": "",
+      "category": "火山災害",
+      "type": "choice",
+      "choices": [
+        "火山泥流",
+        "火砕流",
+        "溶岩流",
+        "高潮"
+      ],
+      "answer": "火山泥流",
+      "acceptableAnswers": [
+        "火山泥流"
+      ]
+    },
+    {
+      "id": "geography-149",
+      "moduleId": "geography",
+      "prompt": "河口に形成される三角州のうち，海側に尖った形をした三角州を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "カスプ状三角州",
+        "鳥趾状三角州",
+        "円弧状三角州",
+        "扇状地"
+      ],
+      "answer": "カスプ状三角州",
+      "acceptableAnswers": [
+        "カスプ状三角州"
+      ]
+    },
+    {
+      "id": "geography-150",
+      "moduleId": "geography",
+      "prompt": "河岸段丘で，かつての河床や平坦面にあたる部分を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "段丘面",
+        "段丘崖",
+        "谷底平野",
+        "自然堤防"
+      ],
+      "answer": "段丘面",
+      "acceptableAnswers": [
+        "段丘面"
+      ]
+    },
+    {
+      "id": "geography-151",
+      "moduleId": "geography",
+      "prompt": "河岸段丘で，段丘面と低地の間にある崖を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "段丘崖",
+        "段丘面",
+        "海食崖",
+        "断層崖"
+      ],
+      "answer": "段丘崖",
+      "acceptableAnswers": [
+        "段丘崖"
+      ]
+    },
+    {
+      "id": "geography-152",
+      "moduleId": "geography",
+      "prompt": "蛇行した河川の一部が切り離されてできた，三日月形の湖を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "三日月湖",
+        "潟湖",
+        "火口湖",
+        "カルデラ湖"
+      ],
+      "answer": "三日月湖",
+      "acceptableAnswers": [
+        "三日月湖",
+        "河跡湖"
+      ]
+    },
+    {
+      "id": "geography-153",
+      "moduleId": "geography",
+      "prompt": "河川の蛇行部が切り離され，もとの流路のあとに残った湖を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "河跡湖",
+        "潟湖",
+        "堰止湖",
+        "自然堤防"
+      ],
+      "answer": "河跡湖",
+      "acceptableAnswers": [
+        "河跡湖",
+        "三日月湖"
+      ]
+    },
+    {
+      "id": "geography-154",
+      "moduleId": "geography",
+      "prompt": "蛇行する河川の首の部分が切れて，流路が短くなる現象を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "自然短絡",
+        "人工短絡",
+        "河川争奪",
+        "侵食輪廻"
+      ],
+      "answer": "自然短絡",
+      "acceptableAnswers": [
+        "自然短絡"
+      ]
+    },
+    {
+      "id": "geography-155",
+      "moduleId": "geography",
+      "prompt": "洪水を防ぐために人間が河川沿いに築く堤防を何というか。",
+      "explanation": "",
+      "category": "河川の地形",
+      "type": "choice",
+      "choices": [
+        "人工堤防",
+        "自然堤防",
+        "段丘崖",
+        "砂州"
+      ],
+      "answer": "人工堤防",
+      "acceptableAnswers": [
+        "人工堤防"
+      ]
+    },
+    {
+      "id": "geography-156",
+      "moduleId": "geography",
+      "prompt": "古い時代の堆積物が隆起してできた台地を何というか。",
+      "explanation": "",
+      "category": "平野の地形",
+      "type": "choice",
+      "choices": [
+        "洪積台地",
+        "沖積平野",
+        "海岸平野",
+        "構造平野"
+      ],
+      "answer": "洪積台地",
+      "acceptableAnswers": [
+        "洪積台地"
+      ]
+    },
+    {
+      "id": "geography-157",
+      "moduleId": "geography",
+      "prompt": "波の侵食作用によって形成され，海食崖や海食台などがみられる海岸を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "岩石海岸",
+        "砂浜海岸",
+        "サンゴ礁海岸",
+        "海岸平野"
+      ],
+      "answer": "岩石海岸",
+      "acceptableAnswers": [
+        "岩石海岸"
+      ]
+    },
+    {
+      "id": "geography-158",
+      "moduleId": "geography",
+      "prompt": "波の侵食によって海岸にできる急な崖を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "海食崖",
+        "海食台",
+        "段丘崖",
+        "断層崖"
+      ],
+      "answer": "海食崖",
+      "acceptableAnswers": [
+        "海食崖"
+      ]
+    },
+    {
+      "id": "geography-159",
+      "moduleId": "geography",
+      "prompt": "海食崖の前面に，波の侵食でできる平坦な岩盤面を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "海食台",
+        "海食崖",
+        "海岸段丘",
+        "砂州"
+      ],
+      "answer": "海食台",
+      "acceptableAnswers": [
+        "海食台"
+      ]
+    },
+    {
+      "id": "geography-160",
+      "moduleId": "geography",
+      "prompt": "波や沿岸流によって運ばれた砂が堆積してできる海岸を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "砂浜海岸",
+        "岩石海岸",
+        "サンゴ礁海岸",
+        "リアス海岸"
+      ],
+      "answer": "砂浜海岸",
+      "acceptableAnswers": [
+        "砂浜海岸"
+      ]
+    },
+    {
+      "id": "geography-161",
+      "moduleId": "geography",
+      "prompt": "陸地の沈降または海面上昇によって形成された海岸を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "沈水海岸",
+        "離水海岸",
+        "岩石海岸",
+        "砂浜海岸"
+      ],
+      "answer": "沈水海岸",
+      "acceptableAnswers": [
+        "沈水海岸"
+      ]
+    },
+    {
+      "id": "geography-162",
+      "moduleId": "geography",
+      "prompt": "陸地の隆起または海面低下によって形成された海岸を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "離水海岸",
+        "沈水海岸",
+        "リアス海岸",
+        "砂浜海岸"
+      ],
+      "answer": "離水海岸",
+      "acceptableAnswers": [
+        "離水海岸"
+      ]
+    },
+    {
+      "id": "geography-163",
+      "moduleId": "geography",
+      "prompt": "スコットランドなどにみられる，氷食谷の沈水によってできた入り江を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "ファース",
+        "エスチュアリー",
+        "フィヨルド",
+        "リアス海岸"
+      ],
+      "answer": "ファース",
+      "acceptableAnswers": [
+        "ファース"
+      ]
+    },
+    {
+      "id": "geography-165",
+      "moduleId": "geography",
+      "prompt": "海岸線で海に突き出た部分を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "岬",
+        "湾",
+        "砂州",
+        "潟湖"
+      ],
+      "answer": "岬",
+      "acceptableAnswers": [
+        "岬"
+      ]
+    },
+    {
+      "id": "geography-166",
+      "moduleId": "geography",
+      "prompt": "海岸線で陸地側に入り込んだ海域を何というか。",
+      "explanation": "",
+      "category": "海岸の地形",
+      "type": "choice",
+      "choices": [
+        "湾",
+        "岬",
+        "砂嘴",
+        "陸繋島"
+      ],
+      "answer": "湾",
+      "acceptableAnswers": [
+        "湾"
+      ]
+    },
+    {
+      "id": "geography-167",
+      "moduleId": "geography",
+      "prompt": "アルプス＝ヒマラヤ造山帯に属する，世界最高峰を含む大山脈は何か。",
+      "explanation": "",
+      "category": "新期造山帯の具体例",
+      "type": "choice",
+      "choices": [
+        "ヒマラヤ山脈",
+        "アンデス山脈",
+        "ロッキー山脈",
+        "アパラチア山脈"
+      ],
+      "answer": "ヒマラヤ山脈",
+      "acceptableAnswers": [
+        "ヒマラヤ山脈"
+      ]
+    },
+    {
+      "id": "geography-168",
+      "moduleId": "geography",
+      "prompt": "ヨーロッパ南部に位置し，アルプス＝ヒマラヤ造山帯に属する山脈は何か。",
+      "explanation": "",
+      "category": "新期造山帯の具体例",
+      "type": "choice",
+      "choices": [
+        "アルプス山脈",
+        "ヒマラヤ山脈",
+        "ロッキー山脈",
+        "ウラル山脈"
+      ],
+      "answer": "アルプス山脈",
+      "acceptableAnswers": [
+        "アルプス山脈"
+      ]
+    },
+    {
+      "id": "geography-169",
+      "moduleId": "geography",
+      "prompt": "南アメリカ大陸西岸に沿って南北にのびる新期造山帯の山脈は何か。",
+      "explanation": "",
+      "category": "新期造山帯の具体例",
+      "type": "choice",
+      "choices": [
+        "アンデス山脈",
+        "ロッキー山脈",
+        "アルプス山脈",
+        "アパラチア山脈"
+      ],
+      "answer": "アンデス山脈",
+      "acceptableAnswers": [
+        "アンデス山脈"
+      ]
+    },
+    {
+      "id": "geography-170",
+      "moduleId": "geography",
+      "prompt": "北アメリカ大陸西部を南北にのびる新期造山帯の山脈は何か。",
+      "explanation": "",
+      "category": "新期造山帯の具体例",
+      "type": "choice",
+      "choices": [
+        "ロッキー山脈",
+        "アンデス山脈",
+        "ヒマラヤ山脈",
+        "ウラル山脈"
+      ],
+      "answer": "ロッキー山脈",
+      "acceptableAnswers": [
+        "ロッキー山脈"
+      ]
+    }
+  ]
+}

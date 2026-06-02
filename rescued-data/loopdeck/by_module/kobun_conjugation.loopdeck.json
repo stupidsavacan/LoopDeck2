@@ -1,0 +1,1367 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-kobun_conjugation-normal-v1",
+  "title": "古文・動詞の活用",
+  "description": "StudyHome-Nextから救出した 古文・動詞の活用 の通常方向教材。",
+  "folders": [
+    {
+      "id": "japanese",
+      "title": "国語"
+    }
+  ],
+  "modules": [
+    {
+      "id": "kobun_conjugation",
+      "folderId": "japanese",
+      "title": "古文・動詞の活用",
+      "subject": "国語",
+      "description": "StudyHome-Nextから救出した教材データ。source=kobun_conjugation",
+      "tags": [
+        "国語",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "kobun_conjugation-rule01",
+        "kobun_conjugation-rule02",
+        "kobun_conjugation-rule03",
+        "kobun_conjugation-rule04",
+        "kobun_conjugation-rule05",
+        "kobun_conjugation-rule06",
+        "kobun_conjugation-rule07",
+        "kobun_conjugation-rule08",
+        "kobun_conjugation-rule09",
+        "kobun_conjugation-rule10",
+        "kobun_conjugation-rule11",
+        "kobun_conjugation-rule12",
+        "kobun_conjugation-rule13",
+        "kobun_conjugation-rule14",
+        "kobun_conjugation-rule15",
+        "kobun_conjugation-rule16",
+        "kobun_conjugation-kobun01",
+        "kobun_conjugation-kobun02",
+        "kobun_conjugation-kobun03",
+        "kobun_conjugation-kobun04",
+        "kobun_conjugation-kobun05",
+        "kobun_conjugation-kobun06",
+        "kobun_conjugation-kobun07",
+        "kobun_conjugation-kobun08",
+        "kobun_conjugation-kobun09",
+        "kobun_conjugation-kobun10",
+        "kobun_conjugation-kobun11",
+        "kobun_conjugation-kobun12",
+        "kobun_conjugation-kobun13",
+        "kobun_conjugation-kobun14",
+        "kobun_conjugation-kobun15",
+        "kobun_conjugation-kobun16",
+        "kobun_conjugation-kobun17",
+        "kobun_conjugation-kobun18",
+        "kobun_conjugation-kobun19",
+        "kobun_conjugation-kobun20",
+        "kobun_conjugation-kobun21",
+        "kobun_conjugation-kobun22",
+        "kobun_conjugation-kobun23",
+        "kobun_conjugation-kobun24",
+        "kobun_conjugation-kobun25",
+        "kobun_conjugation-kobun26",
+        "kobun_conjugation-kobun27",
+        "kobun_conjugation-kobun28",
+        "kobun_conjugation-kobun29",
+        "kobun_conjugation-kobun30",
+        "kobun_conjugation-kobun31",
+        "kobun_conjugation-kobun32",
+        "kobun_conjugation-kobun33",
+        "kobun_conjugation-kobun34",
+        "kobun_conjugation-kobun35",
+        "kobun_conjugation-kobun36",
+        "kobun_conjugation-kobun37",
+        "kobun_conjugation-kobun38",
+        "kobun_conjugation-kobun39",
+        "kobun_conjugation-kobun40",
+        "kobun_conjugation-kobun41",
+        "kobun_conjugation-kobun42",
+        "kobun_conjugation-kobun43",
+        "kobun_conjugation-kobun44",
+        "kobun_conjugation-kobun45",
+        "kobun_conjugation-kobun46",
+        "kobun_conjugation-kobun47",
+        "kobun_conjugation-kobun48",
+        "kobun_conjugation-kobun49"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "kobun_conjugation-rule01",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「ず」をつけたとき，直前がア段の音なら何活用か。",
+      "explanation": "ずの上がア段なら四段活用。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "四段活用",
+        "上二段活用",
+        "下二段活用",
+        "サ行変格活用"
+      ],
+      "answer": "四段活用",
+      "acceptableAnswers": [
+        "四段活用"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule02",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「ず」をつけたとき，直前がイ段の音なら何活用か。",
+      "explanation": "ずの上がイ段なら上二段活用。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "上二段活用",
+        "四段活用",
+        "下二段活用",
+        "下一段活用"
+      ],
+      "answer": "上二段活用",
+      "acceptableAnswers": [
+        "上二段活用"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule03",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「ず」をつけたとき，直前がエ段の音なら何活用か。",
+      "explanation": "ずの上がエ段なら下二段活用。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "下二段活用",
+        "四段活用",
+        "上二段活用",
+        "上一段活用"
+      ],
+      "answer": "下二段活用",
+      "acceptableAnswers": [
+        "下二段活用"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule04",
+      "moduleId": "kobun_conjugation",
+      "prompt": "カ行変格活用の代表的な動詞は何か。",
+      "explanation": "カ変は基本的に「来」。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "来（く）",
+        "す",
+        "あり",
+        "蹴る"
+      ],
+      "answer": "来（く）",
+      "acceptableAnswers": [
+        "来（く）"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule05",
+      "moduleId": "kobun_conjugation",
+      "prompt": "サ行変格活用の代表的な動詞は何か。",
+      "explanation": "サ変は「す」「おはす」。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "す・おはす",
+        "来（く）",
+        "あり・をり",
+        "死ぬ・去ぬ"
+      ],
+      "answer": "す・おはす",
+      "acceptableAnswers": [
+        "す・おはす"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule06",
+      "moduleId": "kobun_conjugation",
+      "prompt": "ナ行変格活用の代表的な動詞は何か。",
+      "explanation": "ナ変は「死ぬ」「去ぬ」「往ぬ」。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "死ぬ・去ぬ・往ぬ",
+        "あり・をり・はべり",
+        "す・おはす",
+        "蹴る"
+      ],
+      "answer": "死ぬ・去ぬ・往ぬ",
+      "acceptableAnswers": [
+        "死ぬ・去ぬ・往ぬ"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule07",
+      "moduleId": "kobun_conjugation",
+      "prompt": "ラ行変格活用の代表的な動詞は何か。",
+      "explanation": "ラ変は「あり」「をり」「はべり」「いまそがり」。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "あり・をり・はべり・いまそがり",
+        "来（く）",
+        "す・おはす",
+        "死ぬ・去ぬ・往ぬ"
+      ],
+      "answer": "あり・をり・はべり・いまそがり",
+      "acceptableAnswers": [
+        "あり・をり・はべり・いまそがり"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule08",
+      "moduleId": "kobun_conjugation",
+      "prompt": "下一段活用の代表的な動詞は何か。",
+      "explanation": "下一段活用は「蹴る」。",
+      "category": "識別ルール",
+      "type": "choice",
+      "choices": [
+        "蹴る",
+        "見る",
+        "来（く）",
+        "す"
+      ],
+      "answer": "蹴る",
+      "acceptableAnswers": [
+        "蹴る"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule09",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「けり」が直後に来るとき，前の用言は何形になるか。",
+      "explanation": "助動詞「けり」は連用形接続。",
+      "category": "接続",
+      "type": "choice",
+      "choices": [
+        "連用形",
+        "未然形",
+        "連体形",
+        "已然形"
+      ],
+      "answer": "連用形",
+      "acceptableAnswers": [
+        "連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule10",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「む」が直後に来るとき，前の用言は何形になるか。",
+      "explanation": "助動詞「む」は未然形接続。",
+      "category": "接続",
+      "type": "choice",
+      "choices": [
+        "未然形",
+        "連用形",
+        "連体形",
+        "已然形"
+      ],
+      "answer": "未然形",
+      "acceptableAnswers": [
+        "未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule11",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「て」が直後に来るとき，前の用言は何形になるか。",
+      "explanation": "接続助詞「て」は連用形接続。",
+      "category": "接続",
+      "type": "choice",
+      "choices": [
+        "連用形",
+        "未然形",
+        "終止形",
+        "已然形"
+      ],
+      "answer": "連用形",
+      "acceptableAnswers": [
+        "連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule12",
+      "moduleId": "kobun_conjugation",
+      "prompt": "体言に続く用言は原則として何形か。",
+      "explanation": "体言接続は連体形。",
+      "category": "接続",
+      "type": "choice",
+      "choices": [
+        "連体形",
+        "終止形",
+        "連用形",
+        "命令形"
+      ],
+      "answer": "連体形",
+      "acceptableAnswers": [
+        "連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule13",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「ども」が直後に来るとき，前の用言は何形になるか。",
+      "explanation": "「ども」は已然形接続。",
+      "category": "接続",
+      "type": "choice",
+      "choices": [
+        "已然形",
+        "未然形",
+        "連用形",
+        "連体形"
+      ],
+      "answer": "已然形",
+      "acceptableAnswers": [
+        "已然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule14",
+      "moduleId": "kobun_conjugation",
+      "prompt": "係助詞「ぞ」の結びとなる語は何形になるか。",
+      "explanation": "係り結び。「ぞ」の結びは連体形。",
+      "category": "接続",
+      "type": "choice",
+      "choices": [
+        "連体形",
+        "終止形",
+        "已然形",
+        "命令形"
+      ],
+      "answer": "連体形",
+      "acceptableAnswers": [
+        "連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule15",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「〜なる」をつけて「〜くなる」となる形容詞は何活用か。",
+      "explanation": "「わろくなる」「すべなくなる」などはク活用。",
+      "category": "形容詞",
+      "type": "choice",
+      "choices": [
+        "ク活用",
+        "シク活用",
+        "ナリ活用",
+        "タリ活用"
+      ],
+      "answer": "ク活用",
+      "acceptableAnswers": [
+        "ク活用"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-rule16",
+      "moduleId": "kobun_conjugation",
+      "prompt": "「〜なる」をつけて「〜しくなる」となる形容詞は何活用か。",
+      "explanation": "「うれしくなる」「わびしくなる」などはシク活用。",
+      "category": "形容詞",
+      "type": "choice",
+      "choices": [
+        "シク活用",
+        "ク活用",
+        "ナリ活用",
+        "タリ活用"
+      ],
+      "answer": "シク活用",
+      "acceptableAnswers": [
+        "シク活用"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun01",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【1】次の文の傍線部について文法的説明をせよ。\nこれも今は昔、比叡の山に児ありけり。",
+      "explanation": "けりは連用形接続。「あり」はラ変。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ラ行変格活用「あり」連用形",
+        "動詞ハ行四段活用「言ふ」連用形",
+        "動詞ラ行四段活用「寄る」連用形",
+        "動詞サ行四段活用「驚かす」未然形"
+      ],
+      "answer": "動詞ラ行変格活用「あり」連用形",
+      "acceptableAnswers": [
+        "動詞ラ行変格活用「あり」連用形",
+        "ラ行変格活用「あり」連用形",
+        "動詞ラ行変格活用あり連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun02",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【2】次の文の傍線部について文法的説明をせよ。\n僧たち、宵のつれづれに、「いざ、かいもちひせむ。」",
+      "explanation": "むは未然形接続。「せ」はサ変「す」。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行変格活用「す」未然形",
+        "動詞カ行四段活用「聞く」連用形",
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞ワ行上一段活用「待ちゐる」連用形"
+      ],
+      "answer": "動詞サ行変格活用「す」未然形",
+      "acceptableAnswers": [
+        "動詞サ行変格活用「す」未然形",
+        "サ行変格活用「す」未然形",
+        "動詞サ行変格活用す未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun03",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【3】次の文の傍線部について文法的説明をせよ。\n「いざ、かいもちひせむ。」と言ひけるを、",
+      "explanation": "けりは連用形接続。「言はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「言ふ」連用形",
+        "動詞サ行四段活用「しいだす」未然形",
+        "動詞カ行変格活用「出で来」連体形",
+        "動詞サ行四段活用「申す」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「言ふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「言ふ」連用形",
+        "ハ行四段活用「言ふ」連用形",
+        "動詞ハ行四段活用言ふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun04",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【4】次の文の傍線部について文法的説明をせよ。\nこの児、心寄せに聞きけり。",
+      "explanation": "けりは連用形接続。「聞かず」よりカ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞カ行四段活用「聞く」連用形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞ハ行四段活用「さぶらふ」未然形",
+        "動詞バ行四段活用「呼ぶ」未然形"
+      ],
+      "answer": "動詞カ行四段活用「聞く」連用形",
+      "acceptableAnswers": [
+        "動詞カ行四段活用「聞く」連用形",
+        "カ行四段活用「聞く」連用形",
+        "動詞カ行四段活用聞く連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun05",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【5】次の文の傍線部について文法的説明をせよ。\nさりとて、しいださむを待ちて寝ざらむも",
+      "explanation": "むは未然形接続。「しいださず」よりサ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行四段活用「しいだす」未然形",
+        "動詞ナ行下二段活用「寝（ぬ）」未然形",
+        "動詞サ行四段活用「しいだす」連用形",
+        "動詞カ行四段活用「驚く」未然形"
+      ],
+      "answer": "動詞サ行四段活用「しいだす」未然形",
+      "acceptableAnswers": [
+        "動詞サ行四段活用「しいだす」未然形",
+        "サ行四段活用「しいだす」未然形",
+        "動詞サ行四段活用しいだす未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun06",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【6】次の文の傍線部について文法的説明をせよ。\nさりとて、しいださむを待ちて寝ざらむも",
+      "explanation": "ては連用形接続。「待たず」よりタ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞ハ行四段活用「思ふ」連用形",
+        "動詞サ行四段活用「驚かす」未然形",
+        "動詞ハ行四段活用「言ふ」連体形"
+      ],
+      "answer": "動詞タ行四段活用「待つ」連用形",
+      "acceptableAnswers": [
+        "動詞タ行四段活用「待つ」連用形",
+        "タ行四段活用「待つ」連用形",
+        "動詞タ行四段活用待つ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun07",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【7】次の文の傍線部について文法的説明をせよ。\nさりとて、しいださむを待ちて寝ざらむも",
+      "explanation": "ざらは未然形接続。「寝ず」の上がエ段なのでナ行下二段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ナ行下二段活用「寝（ぬ）」未然形",
+        "動詞ラ行四段活用「寄る」連用形",
+        "動詞サ行四段活用「驚かす」未然形",
+        "動詞ハ行四段活用「言ふ」連体形"
+      ],
+      "answer": "動詞ナ行下二段活用「寝（ぬ）」未然形",
+      "acceptableAnswers": [
+        "動詞ナ行下二段活用「寝（ぬ）」未然形",
+        "ナ行下二段活用「寝（ぬ）」未然形",
+        "動詞ナ行下二段活用寝（ぬ）未然形",
+        "動詞ナ行下二段活用「寝(ぬ)」未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun08",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【8】次の文の傍線部について文法的説明をせよ。\nわろかりなむと思ひて、",
+      "explanation": "「わろかり」は形容詞ク活用の連用形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "形容詞ク活用「わろし」連用形",
+        "形容詞ク活用「すべなし」連用形",
+        "形容詞ク活用「かぎりなし」終止形",
+        "形容詞シク活用「うれし」終止形"
+      ],
+      "answer": "形容詞ク活用「わろし」連用形",
+      "acceptableAnswers": [
+        "形容詞ク活用「わろし」連用形",
+        "ク活用「わろし」連用形",
+        "形容詞ク活用わろし連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun09",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【9】次の文の傍線部について文法的説明をせよ。\nわろかりなむと思ひて、",
+      "explanation": "ては連用形接続。「思はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「思ふ」連用形",
+        "動詞カ行変格活用「出で来」連体形",
+        "動詞サ行四段活用「申す」連用形",
+        "動詞ハ行下二段活用「いらふ」未然形"
+      ],
+      "answer": "動詞ハ行四段活用「思ふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「思ふ」連用形",
+        "ハ行四段活用「思ふ」連用形",
+        "動詞ハ行四段活用思ふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun10",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【10】次の文の傍線部について文法的説明をせよ。\n片方に寄りて、",
+      "explanation": "ては連用形接続。「寄らず」よりラ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ラ行四段活用「寄る」連用形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞ハ行四段活用「さぶらふ」未然形",
+        "動詞ラ行四段活用「寝入る」連用形"
+      ],
+      "answer": "動詞ラ行四段活用「寄る」連用形",
+      "acceptableAnswers": [
+        "動詞ラ行四段活用「寄る」連用形",
+        "ラ行四段活用「寄る」連用形",
+        "動詞ラ行四段活用寄る連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun11",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【11】次の文の傍線部について文法的説明をせよ。\n寝たるよしにて、",
+      "explanation": "たりは連用形接続。「寝ず」の上がエ段なので下二段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞サ行四段活用「しいだす」連用形",
+        "動詞カ行四段活用「驚く」未然形",
+        "動詞ハ行四段活用「思ふ」連体形"
+      ],
+      "answer": "動詞ナ行下二段活用「寝（ぬ）」連用形",
+      "acceptableAnswers": [
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞ナ行下二段活用寝（ぬ）連用形",
+        "動詞ナ行下二段活用「寝(ぬ)」連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun12",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【12】次の文の傍線部について文法的説明をせよ。\n出で来るを",
+      "explanation": "をの前なので連体形。「来」はカ変。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞カ行変格活用「出で来」連体形",
+        "動詞ハ行四段活用「ひしめき合ふ」連用形",
+        "動詞ハ行四段活用「たまふ」命令形",
+        "動詞バ行四段活用「呼ぶ」未然形"
+      ],
+      "answer": "動詞カ行変格活用「出で来」連体形",
+      "acceptableAnswers": [
+        "動詞カ行変格活用「出で来」連体形",
+        "カ行変格活用「出で来」連体形",
+        "動詞カ行変格活用出で来連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun13",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【13】次の文の傍線部について文法的説明をせよ。\n待ちけるに、",
+      "explanation": "けりは連用形接続。「待たず」よりタ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞ワ行上一段活用「待ちゐる」連用形",
+        "動詞ハ行四段活用「思ふ」已然形",
+        "動詞ナ行下二段活用「寝（ぬ）」連用形"
+      ],
+      "answer": "動詞タ行四段活用「待つ」連用形",
+      "acceptableAnswers": [
+        "動詞タ行四段活用「待つ」連用形",
+        "タ行四段活用「待つ」連用形",
+        "動詞タ行四段活用待つ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun14",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【14】次の文の傍線部について文法的説明をせよ。\nすでにしいだしたるさまにて、",
+      "explanation": "たりは連用形接続。「しいださず」よりサ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行四段活用「しいだす」連用形",
+        "動詞ワ行上一段活用「待ちゐる」連用形",
+        "動詞ハ行四段活用「思ふ」已然形",
+        "動詞サ行変格活用「念ず」連用形"
+      ],
+      "answer": "動詞サ行四段活用「しいだす」連用形",
+      "acceptableAnswers": [
+        "動詞サ行四段活用「しいだす」連用形",
+        "サ行四段活用「しいだす」連用形",
+        "動詞サ行四段活用しいだす連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun15",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【15】次の文の傍線部について文法的説明をせよ。\nひしめき合ひたり。",
+      "explanation": "たりは連用形接続。「ひしめき合はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「ひしめき合ふ」連用形",
+        "動詞サ行四段活用「申す」連用形",
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "動詞ナ行下二段活用「寝（ぬ）」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「ひしめき合ふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「ひしめき合ふ」連用形",
+        "ハ行四段活用「ひしめき合ふ」連用形",
+        "動詞ハ行四段活用ひしめき合ふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun16",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【16】次の文の傍線部について文法的説明をせよ。\nこの児、定めて驚かさむずらむと",
+      "explanation": "むずは未然形接続。「驚かさず」よりサ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行四段活用「驚かす」未然形",
+        "動詞ハ行四段活用「さぶらふ」未然形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞サ行四段活用「起こす」連用形"
+      ],
+      "answer": "動詞サ行四段活用「驚かす」未然形",
+      "acceptableAnswers": [
+        "動詞サ行四段活用「驚かす」未然形",
+        "サ行四段活用「驚かす」未然形",
+        "動詞サ行四段活用驚かす未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun17",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【17】次の文の傍線部について文法的説明をせよ。\n待ちゐたるに、",
+      "explanation": "たりは連用形接続。「ゐ」はワ行上一段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ワ行上一段活用「待ちゐる」連用形",
+        "動詞カ行四段活用「驚く」未然形",
+        "動詞ハ行四段活用「思ふ」連体形",
+        "動詞ラ行四段活用「たてまつる」連用形"
+      ],
+      "answer": "動詞ワ行上一段活用「待ちゐる」連用形",
+      "acceptableAnswers": [
+        "動詞ワ行上一段活用「待ちゐる」連用形",
+        "ワ行上一段活用「待ちゐる」連用形",
+        "動詞ワ行上一段活用待ちゐる連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun18",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【18】次の文の傍線部について文法的説明をせよ。\n僧の、「もの申しさぶらはむ。」",
+      "explanation": "用言「さぶらふ」に続くため連用形。「申さず」よりサ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行四段活用「申す」連用形",
+        "動詞ハ行四段活用「たまふ」命令形",
+        "動詞バ行四段活用「呼ぶ」未然形",
+        "動詞ラ行四段活用「寝入る」連用形"
+      ],
+      "answer": "動詞サ行四段活用「申す」連用形",
+      "acceptableAnswers": [
+        "動詞サ行四段活用「申す」連用形",
+        "サ行四段活用「申す」連用形",
+        "動詞サ行四段活用申す連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun19",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【19】次の文の傍線部について文法的説明をせよ。\n僧の、「もの申しさぶらはむ。」",
+      "explanation": "むは未然形接続。「さぶらはず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「さぶらふ」未然形",
+        "動詞ハ行四段活用「言ふ」連体形",
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "動詞ハ行四段活用「たまふ」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「さぶらふ」未然形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「さぶらふ」未然形",
+        "ハ行四段活用「さぶらふ」未然形",
+        "動詞ハ行四段活用さぶらふ未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun20",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【20】次の文の傍線部について文法的説明をせよ。\n驚かせたまへ。」",
+      "explanation": "尊敬の助動詞「す」は未然形接続。「驚かず」よりカ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞カ行四段活用「驚く」未然形",
+        "動詞ハ行四段活用「思ふ」已然形",
+        "動詞サ行変格活用「念ず」連用形",
+        "動詞ハ行四段活用「言ふ」連体形"
+      ],
+      "answer": "動詞カ行四段活用「驚く」未然形",
+      "acceptableAnswers": [
+        "動詞カ行四段活用「驚く」未然形",
+        "カ行四段活用「驚く」未然形",
+        "動詞カ行四段活用驚く未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun21",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【21】次の文の傍線部について文法的説明をせよ。\n驚かせたまへ。」",
+      "explanation": "文末で語尾がエ段なので命令形。「たまはず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「たまふ」命令形",
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞サ行変格活用「す」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「たまふ」命令形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「たまふ」命令形",
+        "ハ行四段活用「たまふ」命令形",
+        "動詞ハ行四段活用たまふ命令形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun22",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【22】次の文の傍線部について文法的説明をせよ。\nと言ふを、",
+      "explanation": "をの前なので連体形。「言はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「言ふ」連体形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞サ行四段活用「起こす」連用形",
+        "動詞サ行四段活用「起こす」命令形"
+      ],
+      "answer": "動詞ハ行四段活用「言ふ」連体形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「言ふ」連体形",
+        "ハ行四段活用「言ふ」連体形",
+        "動詞ハ行四段活用言ふ連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun23",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【23】次の文の傍線部について文法的説明をせよ。\nうれしとは思へども、",
+      "explanation": "とに続く形。うれしくなる→シク活用。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "形容詞シク活用「うれし」終止形",
+        "形容詞ク活用「すべなし」連用形",
+        "形容詞ク活用「かぎりなし」終止形",
+        "形容詞ク活用「わろし」連用形"
+      ],
+      "answer": "形容詞シク活用「うれし」終止形",
+      "acceptableAnswers": [
+        "形容詞シク活用「うれし」終止形",
+        "シク活用「うれし」終止形",
+        "形容詞シク活用うれし終止形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun24",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【24】次の文の傍線部について文法的説明をせよ。\nうれしとは思へども、",
+      "explanation": "どもは已然形接続。「思はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「思ふ」已然形",
+        "動詞バ行四段活用「呼ぶ」未然形",
+        "動詞ラ行四段活用「寝入る」連用形",
+        "動詞カ行四段活用「聞く」已然形"
+      ],
+      "answer": "動詞ハ行四段活用「思ふ」已然形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「思ふ」已然形",
+        "ハ行四段活用「思ふ」已然形",
+        "動詞ハ行四段活用思ふ已然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun25",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【25】次の文の傍線部について文法的説明をせよ。\nただ一度にいらへむも、",
+      "explanation": "むは未然形接続。「いらふ」は古文で暗記が必要な下二段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "動詞サ行変格活用「念ず」連用形",
+        "動詞ハ行四段活用「言ふ」連体形",
+        "動詞ハ行四段活用「食ふ」連体形"
+      ],
+      "answer": "動詞ハ行下二段活用「いらふ」未然形",
+      "acceptableAnswers": [
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "ハ行下二段活用「いらふ」未然形",
+        "動詞ハ行下二段活用いらふ未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun26",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【26】次の文の傍線部について文法的説明をせよ。\n待ちけるかともぞ思ふとて、",
+      "explanation": "けりは連用形接続。「待たず」よりタ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞サ行四段活用「起こす」連用形",
+        "動詞ハ行四段活用「思ふ」連用形",
+        "動詞ハ行下二段活用「いらふ」連用形"
+      ],
+      "answer": "動詞タ行四段活用「待つ」連用形",
+      "acceptableAnswers": [
+        "動詞タ行四段活用「待つ」連用形",
+        "タ行四段活用「待つ」連用形",
+        "動詞タ行四段活用待つ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun27",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【27】次の文の傍線部について文法的説明をせよ。\n待ちけるかともぞ思ふとて、",
+      "explanation": "係助詞「ぞ」の結びなので連体形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「思ふ」連体形",
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞サ行変格活用「す」連用形",
+        "動詞タ行四段活用「待つ」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「思ふ」連体形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「思ふ」連体形",
+        "ハ行四段活用「思ふ」連体形",
+        "動詞ハ行四段活用思ふ連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun28",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【28】次の文の傍線部について文法的説明をせよ。\n今一声呼ばれていらへむと、",
+      "explanation": "る/れは未然形接続。「呼ばず」よりバ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞バ行四段活用「呼ぶ」未然形",
+        "動詞サ行四段活用「起こす」連用形",
+        "動詞ハ行四段活用「思ふ」連用形",
+        "動詞ハ行下二段活用「いらふ」連用形"
+      ],
+      "answer": "動詞バ行四段活用「呼ぶ」未然形",
+      "acceptableAnswers": [
+        "動詞バ行四段活用「呼ぶ」未然形",
+        "バ行四段活用「呼ぶ」未然形",
+        "動詞バ行四段活用呼ぶ未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun29",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【29】次の文の傍線部について文法的説明をせよ。\n今一声呼ばれていらへむと、",
+      "explanation": "むは未然形接続。「いらふ」は下二段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "動詞ラ行四段活用「寝入る」連用形",
+        "動詞カ行四段活用「聞く」已然形",
+        "動詞ラ行変格活用「あり」連用形"
+      ],
+      "answer": "動詞ハ行下二段活用「いらふ」未然形",
+      "acceptableAnswers": [
+        "動詞ハ行下二段活用「いらふ」未然形",
+        "ハ行下二段活用「いらふ」未然形",
+        "動詞ハ行下二段活用いらふ未然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun30",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【30】次の文の傍線部について文法的説明をせよ。\n念じて寝たるほどに、",
+      "explanation": "ては連用形接続。「念ず」はサ変。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行変格活用「念ず」連用形",
+        "動詞ラ行四段活用「寝入る」連用形",
+        "動詞カ行四段活用「聞く」已然形",
+        "動詞ラ行変格活用「あり」連用形"
+      ],
+      "answer": "動詞サ行変格活用「念ず」連用形",
+      "acceptableAnswers": [
+        "動詞サ行変格活用「念ず」連用形",
+        "サ行変格活用「念ず」連用形",
+        "動詞サ行変格活用念ず連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun31",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【31】次の文の傍線部について文法的説明をせよ。\n念じて寝たるほどに、",
+      "explanation": "たりは連用形接続。「寝ず」の上がエ段なので下二段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞ハ行四段活用「言ふ」連体形",
+        "動詞ハ行四段活用「食ふ」連体形",
+        "動詞ハ行四段活用「言ふ」連用形"
+      ],
+      "answer": "動詞ナ行下二段活用「寝（ぬ）」連用形",
+      "acceptableAnswers": [
+        "動詞ナ行下二段活用「寝（ぬ）」連用形",
+        "ナ行下二段活用「寝（ぬ）」連用形",
+        "動詞ナ行下二段活用寝（ぬ）連用形",
+        "動詞ナ行下二段活用「寝(ぬ)」連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun32",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【32】次の文の傍線部について文法的説明をせよ。\n「や、な起こしたてまつりそ。」",
+      "explanation": "用言「たてまつる」に続くため連用形。「起こさず」よりサ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行四段活用「起こす」連用形",
+        "動詞ハ行四段活用「言ふ」連体形",
+        "動詞ハ行四段活用「食ふ」連体形",
+        "動詞ハ行四段活用「言ふ」連用形"
+      ],
+      "answer": "動詞サ行四段活用「起こす」連用形",
+      "acceptableAnswers": [
+        "動詞サ行四段活用「起こす」連用形",
+        "サ行四段活用「起こす」連用形",
+        "動詞サ行四段活用起こす連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun33",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【33】次の文の傍線部について文法的説明をせよ。\n「や、な起こしたてまつりそ。」",
+      "explanation": "そは連用形接続。「たてまつらず」よりラ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ラ行四段活用「たてまつる」連用形",
+        "動詞サ行変格活用「す」連用形",
+        "動詞カ行四段活用「聞く」連用形",
+        "動詞タ行四段活用「待つ」連用形"
+      ],
+      "answer": "動詞ラ行四段活用「たてまつる」連用形",
+      "acceptableAnswers": [
+        "動詞ラ行四段活用「たてまつる」連用形",
+        "ラ行四段活用「たてまつる」連用形",
+        "動詞ラ行四段活用たてまつる連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun34",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【34】次の文の傍線部について文法的説明をせよ。\n幼き人は寝入りたまひにけり。」",
+      "explanation": "体言「人」に続くので連体形。幼くなる→ク活用。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "形容詞ク活用「幼し（をさなし）」連体形",
+        "形容詞ク活用「かぎりなし」終止形",
+        "形容詞ク活用「わろし」連用形",
+        "形容詞シク活用「うれし」終止形"
+      ],
+      "answer": "形容詞ク活用「幼し（をさなし）」連体形",
+      "acceptableAnswers": [
+        "形容詞ク活用「幼し（をさなし）」連体形",
+        "ク活用「幼し（をさなし）」連体形",
+        "形容詞ク活用幼し（をさなし）連体形",
+        "形容詞ク活用「幼し(をさなし)」連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun35",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【35】次の文の傍線部について文法的説明をせよ。\n幼き人は寝入りたまひにけり。」",
+      "explanation": "用言「たまふ」に続くため連用形。「寝入らず」よりラ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ラ行四段活用「寝入る」連用形",
+        "動詞サ行四段活用「起こす」命令形",
+        "動詞ハ行四段活用「笑ふ」連体形",
+        "動詞タ行四段活用「待つ」連用形"
+      ],
+      "answer": "動詞ラ行四段活用「寝入る」連用形",
+      "acceptableAnswers": [
+        "動詞ラ行四段活用「寝入る」連用形",
+        "ラ行四段活用「寝入る」連用形",
+        "動詞ラ行四段活用寝入る連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun36",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【36】次の文の傍線部について文法的説明をせよ。\n幼き人は寝入りたまひにけり。」",
+      "explanation": "ぬ/に は連用形接続。「たまはず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「たまふ」連用形",
+        "動詞カ行四段活用「聞く」已然形",
+        "動詞ラ行変格活用「あり」連用形",
+        "動詞ナ行下二段活用「寝（ぬ）」未然形"
+      ],
+      "answer": "動詞ハ行四段活用「たまふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「たまふ」連用形",
+        "ハ行四段活用「たまふ」連用形",
+        "動詞ハ行四段活用たまふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun37",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【37】次の文の傍線部について文法的説明をせよ。\nと言ふ声のしければ、",
+      "explanation": "体言「声」に続くので連体形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「言ふ」連体形",
+        "動詞ハ行四段活用「食ふ」連体形",
+        "動詞ハ行四段活用「言ふ」連用形",
+        "動詞ラ行四段活用「寄る」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「言ふ」連体形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「言ふ」連体形",
+        "ハ行四段活用「言ふ」連体形",
+        "動詞ハ行四段活用言ふ連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun38",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【38】次の文の傍線部について文法的説明をせよ。\nと言ふ声のしければ、",
+      "explanation": "けりは連用形接続。「し」はサ変「す」の連用形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行変格活用「す」連用形",
+        "動詞ハ行四段活用「食ふ」連体形",
+        "動詞カ行四段活用「聞く」連用形",
+        "動詞ナ行下二段活用「寝（ぬ）」連用形"
+      ],
+      "answer": "動詞サ行変格活用「す」連用形",
+      "acceptableAnswers": [
+        "動詞サ行変格活用「す」連用形",
+        "サ行変格活用「す」連用形",
+        "動詞サ行変格活用す連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun39",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【39】次の文の傍線部について文法的説明をせよ。\nあなわびしと思ひて、",
+      "explanation": "とに続く形。わびしくなる→シク活用。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "形容詞シク活用「わびし」終止形",
+        "形容詞ク活用「かぎりなし」終止形",
+        "形容詞ク活用「わろし」連用形",
+        "形容詞シク活用「うれし」終止形"
+      ],
+      "answer": "形容詞シク活用「わびし」終止形",
+      "acceptableAnswers": [
+        "形容詞シク活用「わびし」終止形",
+        "シク活用「わびし」終止形",
+        "形容詞シク活用わびし終止形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun40",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【40】次の文の傍線部について文法的説明をせよ。\nあなわびしと思ひて、",
+      "explanation": "ては連用形接続。「思はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「思ふ」連用形",
+        "動詞ハ行四段活用「笑ふ」連体形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞サ行四段活用「しいだす」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「思ふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「思ふ」連用形",
+        "ハ行四段活用「思ふ」連用形",
+        "動詞ハ行四段活用思ふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun41",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【41】次の文の傍線部について文法的説明をせよ。\n今一度起こせかしと、",
+      "explanation": "かしは文の終止した形につく。語尾エ段なので命令形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行四段活用「起こす」命令形",
+        "動詞ハ行四段活用「笑ふ」連体形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞ハ行四段活用「たまふ」命令形"
+      ],
+      "answer": "動詞サ行四段活用「起こす」命令形",
+      "acceptableAnswers": [
+        "動詞サ行四段活用「起こす」命令形",
+        "サ行四段活用「起こす」命令形",
+        "動詞サ行四段活用起こす命令形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun42",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【42】次の文の傍線部について文法的説明をせよ。\n思ひ寝に聞けば、",
+      "explanation": "ばは未然/已然接続だが形と文脈から已然形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞カ行四段活用「聞く」已然形",
+        "動詞ラ行変格活用「あり」連用形",
+        "動詞ナ行下二段活用「寝（ぬ）」未然形",
+        "動詞サ行四段活用「しいだす」連用形"
+      ],
+      "answer": "動詞カ行四段活用「聞く」已然形",
+      "acceptableAnswers": [
+        "動詞カ行四段活用「聞く」已然形",
+        "カ行四段活用「聞く」已然形",
+        "動詞カ行四段活用聞く已然形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun43",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【43】次の文の傍線部について文法的説明をせよ。\nとただ食ひに食ふ音のしければ、",
+      "explanation": "実際の形「食ひ」から連用形。「食はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「食ふ」連用形",
+        "動詞サ行変格活用「す」未然形",
+        "動詞ハ行四段活用「思ふ」連用形",
+        "動詞ハ行四段活用「ひしめき合ふ」連用形"
+      ],
+      "answer": "動詞ハ行四段活用「食ふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「食ふ」連用形",
+        "ハ行四段活用「食ふ」連用形",
+        "動詞ハ行四段活用食ふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun44",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【44】次の文の傍線部について文法的説明をせよ。\nとただ食ひに食ふ音のしければ、",
+      "explanation": "体言「音」に続くので連体形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「食ふ」連体形",
+        "動詞ハ行四段活用「言ふ」連用形",
+        "動詞ラ行四段活用「寄る」連用形",
+        "動詞サ行四段活用「驚かす」未然形"
+      ],
+      "answer": "動詞ハ行四段活用「食ふ」連体形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「食ふ」連体形",
+        "ハ行四段活用「食ふ」連体形",
+        "動詞ハ行四段活用食ふ連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun45",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【45】次の文の傍線部について文法的説明をせよ。\nとただ食ひに食ふ音のしければ、",
+      "explanation": "けりは連用形接続。「し」はサ変「す」の連用形。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞サ行変格活用「す」連用形",
+        "動詞サ行四段活用「しいだす」未然形",
+        "動詞カ行変格活用「出で来」連体形",
+        "動詞サ行四段活用「申す」連用形"
+      ],
+      "answer": "動詞サ行変格活用「す」連用形",
+      "acceptableAnswers": [
+        "動詞サ行変格活用「す」連用形",
+        "サ行変格活用「す」連用形",
+        "動詞サ行変格活用す連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun46",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【46】次の文の傍線部について文法的説明をせよ。\nすべなくて、",
+      "explanation": "ては連用形接続。すべなくなる→ク活用。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "形容詞ク活用「すべなし」連用形",
+        "形容詞シク活用「うれし」終止形",
+        "形容詞ク活用「幼し（をさなし）」連体形",
+        "形容詞シク活用「わびし」終止形"
+      ],
+      "answer": "形容詞ク活用「すべなし」連用形",
+      "acceptableAnswers": [
+        "形容詞ク活用「すべなし」連用形",
+        "ク活用「すべなし」連用形",
+        "形容詞ク活用すべなし連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun47",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【47】次の文の傍線部について文法的説明をせよ。\n無期の後に、「えい。」といらへたりければ、",
+      "explanation": "たりは連用形接続。「いらふ」は下二段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行下二段活用「いらふ」連用形",
+        "動詞タ行四段活用「待つ」連用形",
+        "動詞ハ行四段活用「さぶらふ」未然形",
+        "動詞バ行四段活用「呼ぶ」未然形"
+      ],
+      "answer": "動詞ハ行下二段活用「いらふ」連用形",
+      "acceptableAnswers": [
+        "動詞ハ行下二段活用「いらふ」連用形",
+        "ハ行下二段活用「いらふ」連用形",
+        "動詞ハ行下二段活用いらふ連用形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun48",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【48】次の文の傍線部について文法的説明をせよ。\n僧たち笑ふことかぎりなし。",
+      "explanation": "体言「こと」に続くので連体形。「笑はず」よりハ行四段。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "動詞ハ行四段活用「笑ふ」連体形",
+        "動詞ナ行下二段活用「寝（ぬ）」未然形",
+        "動詞サ行四段活用「しいだす」連用形",
+        "動詞カ行四段活用「驚く」未然形"
+      ],
+      "answer": "動詞ハ行四段活用「笑ふ」連体形",
+      "acceptableAnswers": [
+        "動詞ハ行四段活用「笑ふ」連体形",
+        "ハ行四段活用「笑ふ」連体形",
+        "動詞ハ行四段活用笑ふ連体形"
+      ]
+    },
+    {
+      "id": "kobun_conjugation-kobun49",
+      "moduleId": "kobun_conjugation",
+      "prompt": "【49】次の文の傍線部について文法的説明をせよ。\n僧たち笑ふことかぎりなし。",
+      "explanation": "文末なので終止形。かぎりなくなる→ク活用。",
+      "category": "傍線部文法説明",
+      "type": "choice",
+      "choices": [
+        "形容詞ク活用「かぎりなし」終止形",
+        "形容詞ク活用「すべなし」連用形",
+        "形容詞ク活用「わろし」連用形",
+        "形容詞シク活用「うれし」終止形"
+      ],
+      "answer": "形容詞ク活用「かぎりなし」終止形",
+      "acceptableAnswers": [
+        "形容詞ク活用「かぎりなし」終止形",
+        "ク活用「かぎりなし」終止形",
+        "形容詞ク活用かぎりなし終止形"
+      ]
+    }
+  ]
+}

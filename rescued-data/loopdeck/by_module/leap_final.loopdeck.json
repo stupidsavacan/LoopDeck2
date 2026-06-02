@@ -1,0 +1,1598 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-leap_final-normal-v1",
+  "title": "LEAP 201〜300",
+  "description": "StudyHome-Nextから救出した LEAP 201〜300 の通常方向教材。",
+  "folders": [
+    {
+      "id": "english",
+      "title": "英語"
+    }
+  ],
+  "modules": [
+    {
+      "id": "leap_final",
+      "folderId": "english",
+      "title": "LEAP 201〜300",
+      "subject": "英語",
+      "description": "StudyHome-Nextから救出した教材データ。source=leap_final",
+      "tags": [
+        "英語",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "leap_final-201",
+        "leap_final-202",
+        "leap_final-203",
+        "leap_final-204",
+        "leap_final-205",
+        "leap_final-206",
+        "leap_final-207",
+        "leap_final-208",
+        "leap_final-209",
+        "leap_final-210",
+        "leap_final-211",
+        "leap_final-212",
+        "leap_final-213",
+        "leap_final-214",
+        "leap_final-215",
+        "leap_final-216",
+        "leap_final-217",
+        "leap_final-218",
+        "leap_final-219",
+        "leap_final-220",
+        "leap_final-221",
+        "leap_final-222",
+        "leap_final-223",
+        "leap_final-224",
+        "leap_final-225",
+        "leap_final-226",
+        "leap_final-227",
+        "leap_final-228",
+        "leap_final-229",
+        "leap_final-230",
+        "leap_final-231",
+        "leap_final-232",
+        "leap_final-233",
+        "leap_final-234",
+        "leap_final-235",
+        "leap_final-236",
+        "leap_final-237",
+        "leap_final-238",
+        "leap_final-239",
+        "leap_final-240",
+        "leap_final-241",
+        "leap_final-242",
+        "leap_final-243",
+        "leap_final-244",
+        "leap_final-245",
+        "leap_final-246",
+        "leap_final-247",
+        "leap_final-248",
+        "leap_final-249",
+        "leap_final-250",
+        "leap_final-251",
+        "leap_final-252",
+        "leap_final-253",
+        "leap_final-254",
+        "leap_final-255",
+        "leap_final-256",
+        "leap_final-257",
+        "leap_final-258",
+        "leap_final-259",
+        "leap_final-260",
+        "leap_final-261",
+        "leap_final-262",
+        "leap_final-263",
+        "leap_final-264",
+        "leap_final-265",
+        "leap_final-266",
+        "leap_final-267",
+        "leap_final-268",
+        "leap_final-269",
+        "leap_final-270",
+        "leap_final-271",
+        "leap_final-272",
+        "leap_final-273",
+        "leap_final-274",
+        "leap_final-275",
+        "leap_final-276",
+        "leap_final-277",
+        "leap_final-278",
+        "leap_final-279",
+        "leap_final-280",
+        "leap_final-281",
+        "leap_final-282",
+        "leap_final-283",
+        "leap_final-284",
+        "leap_final-285",
+        "leap_final-286",
+        "leap_final-287",
+        "leap_final-288",
+        "leap_final-289",
+        "leap_final-290",
+        "leap_final-291",
+        "leap_final-292",
+        "leap_final-293",
+        "leap_final-294",
+        "leap_final-295",
+        "leap_final-296",
+        "leap_final-297",
+        "leap_final-298",
+        "leap_final-299",
+        "leap_final-300"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "leap_final-201",
+      "moduleId": "leap_final",
+      "prompt": "pollution",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "汚染",
+      "acceptableAnswers": [
+        "汚染",
+        "公害"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-202",
+      "moduleId": "leap_final",
+      "prompt": "sight",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "光景",
+      "acceptableAnswers": [
+        "光景",
+        "視力"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-203",
+      "moduleId": "leap_final",
+      "prompt": "view",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "眺め",
+      "acceptableAnswers": [
+        "眺め",
+        "景色",
+        "見解",
+        "見方",
+        "AをBとみなす"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-204",
+      "moduleId": "leap_final",
+      "prompt": "landscape",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "風景",
+      "acceptableAnswers": [
+        "風景",
+        "情勢"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-205",
+      "moduleId": "leap_final",
+      "prompt": "nature",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "自然",
+      "acceptableAnswers": [
+        "自然",
+        "性質"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-206",
+      "moduleId": "leap_final",
+      "prompt": "seed",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "種",
+      "acceptableAnswers": [
+        "種",
+        "シード選手"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-207",
+      "moduleId": "leap_final",
+      "prompt": "plant",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "植物",
+      "acceptableAnswers": [
+        "植物",
+        "工場",
+        "発電所",
+        "〜を植える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-208",
+      "moduleId": "leap_final",
+      "prompt": "bloom",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "花が咲く",
+      "acceptableAnswers": [
+        "花が咲く",
+        "開花"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-209",
+      "moduleId": "leap_final",
+      "prompt": "harvest",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "収穫",
+      "acceptableAnswers": [
+        "収穫",
+        "〜を収穫する",
+        "〜を摘出する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-210",
+      "moduleId": "leap_final",
+      "prompt": "insect",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "昆虫",
+      "acceptableAnswers": [
+        "昆虫"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-211",
+      "moduleId": "leap_final",
+      "prompt": "earthquake",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "地震",
+      "acceptableAnswers": [
+        "地震"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-212",
+      "moduleId": "leap_final",
+      "prompt": "temperature",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "温度",
+      "acceptableAnswers": [
+        "温度",
+        "気温",
+        "体温"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-213",
+      "moduleId": "leap_final",
+      "prompt": "degree",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "度",
+      "acceptableAnswers": [
+        "度",
+        "程度",
+        "学位"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-214",
+      "moduleId": "leap_final",
+      "prompt": "flood",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "洪水",
+      "acceptableAnswers": [
+        "洪水",
+        "〜を水浸しにする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-215",
+      "moduleId": "leap_final",
+      "prompt": "freeze",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "凍る",
+      "acceptableAnswers": [
+        "凍る",
+        "凍りつく",
+        "〜を凍らせる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-216",
+      "moduleId": "leap_final",
+      "prompt": "reflect",
+      "explanation": "",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "〜を反射する",
+      "acceptableAnswers": [
+        "〜を反射する",
+        "〜を反映する",
+        "〜を熟考する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-217",
+      "moduleId": "leap_final",
+      "prompt": "polite",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "礼儀正しい",
+      "acceptableAnswers": [
+        "礼儀正しい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-218",
+      "moduleId": "leap_final",
+      "prompt": "rude",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "無礼な",
+      "acceptableAnswers": [
+        "無礼な",
+        "不作法な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-219",
+      "moduleId": "leap_final",
+      "prompt": "lonely",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "孤独な",
+      "acceptableAnswers": [
+        "孤独な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-220",
+      "moduleId": "leap_final",
+      "prompt": "lazy",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "怠惰な",
+      "acceptableAnswers": [
+        "怠惰な",
+        "いい加減な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-221",
+      "moduleId": "leap_final",
+      "prompt": "strict",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "厳しい",
+      "acceptableAnswers": [
+        "厳しい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-222",
+      "moduleId": "leap_final",
+      "prompt": "ugly",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "醜い",
+      "acceptableAnswers": [
+        "醜い"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-223",
+      "moduleId": "leap_final",
+      "prompt": "intelligent",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "知的な",
+      "acceptableAnswers": [
+        "知的な",
+        "賢い"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-224",
+      "moduleId": "leap_final",
+      "prompt": "silly",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "ばかな",
+      "acceptableAnswers": [
+        "ばかな"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-225",
+      "moduleId": "leap_final",
+      "prompt": "nervous",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "あがって",
+      "acceptableAnswers": [
+        "あがって",
+        "落ち着かない",
+        "神経質な",
+        "臆病な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-226",
+      "moduleId": "leap_final",
+      "prompt": "awake",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "目を覚まして",
+      "acceptableAnswers": [
+        "目を覚まして"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-227",
+      "moduleId": "leap_final",
+      "prompt": "alone",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "1人で",
+      "acceptableAnswers": [
+        "1人で",
+        "〜だけ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-228",
+      "moduleId": "leap_final",
+      "prompt": "attitude",
+      "explanation": "",
+      "category": "人の性格・状態",
+      "type": "input",
+      "answer": "態度",
+      "acceptableAnswers": [
+        "態度",
+        "姿勢"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-229",
+      "moduleId": "leap_final",
+      "prompt": "character",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "性格",
+      "acceptableAnswers": [
+        "性格",
+        "特徴",
+        "登場人物",
+        "文字"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-230",
+      "moduleId": "leap_final",
+      "prompt": "characteristic",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "特徴",
+      "acceptableAnswers": [
+        "特徴",
+        "特有の",
+        "特徴的な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-231",
+      "moduleId": "leap_final",
+      "prompt": "feature",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "特徴",
+      "acceptableAnswers": [
+        "特徴",
+        "特集記事",
+        "〜を特集する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-232",
+      "moduleId": "leap_final",
+      "prompt": "detail",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "詳細",
+      "acceptableAnswers": [
+        "詳細",
+        "細部"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-233",
+      "moduleId": "leap_final",
+      "prompt": "advantage",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "利点",
+      "acceptableAnswers": [
+        "利点"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-234",
+      "moduleId": "leap_final",
+      "prompt": "fault",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "欠点",
+      "acceptableAnswers": [
+        "欠点",
+        "不具合",
+        "責任",
+        "断層"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-235",
+      "moduleId": "leap_final",
+      "prompt": "quality",
+      "explanation": "",
+      "category": "長所・短所・特徴",
+      "type": "input",
+      "answer": "質",
+      "acceptableAnswers": [
+        "質",
+        "資質"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-236",
+      "moduleId": "leap_final",
+      "prompt": "correct",
+      "explanation": "",
+      "category": "正しい・適切な",
+      "type": "input",
+      "answer": "正確な",
+      "acceptableAnswers": [
+        "正確な",
+        "正しい",
+        "〜を訂正する",
+        "〜を矯正する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-237",
+      "moduleId": "leap_final",
+      "prompt": "ideal",
+      "explanation": "",
+      "category": "正しい・適切な",
+      "type": "input",
+      "answer": "理想的な",
+      "acceptableAnswers": [
+        "理想的な",
+        "申し分のない",
+        "理想",
+        "理想的な姿"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-238",
+      "moduleId": "leap_final",
+      "prompt": "fair",
+      "explanation": "",
+      "category": "正しい・適切な",
+      "type": "input",
+      "answer": "公正な",
+      "acceptableAnswers": [
+        "公正な",
+        "公平な",
+        "品評会",
+        "見本市"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-239",
+      "moduleId": "leap_final",
+      "prompt": "appropriate",
+      "explanation": "",
+      "category": "正しい・適切な",
+      "type": "input",
+      "answer": "適切な",
+      "acceptableAnswers": [
+        "適切な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-240",
+      "moduleId": "leap_final",
+      "prompt": "famous",
+      "explanation": "",
+      "category": "有名な・主要な・重要な",
+      "type": "input",
+      "answer": "有名な",
+      "acceptableAnswers": [
+        "有名な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-241",
+      "moduleId": "leap_final",
+      "prompt": "elementary",
+      "explanation": "",
+      "category": "有名な・主要な・重要な",
+      "type": "input",
+      "answer": "初歩的な",
+      "acceptableAnswers": [
+        "初歩的な",
+        "基本の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-242",
+      "moduleId": "leap_final",
+      "prompt": "major",
+      "explanation": "",
+      "category": "有名な・主要な・重要な",
+      "type": "input",
+      "answer": "主要な",
+      "acceptableAnswers": [
+        "主要な",
+        "〜を専攻する",
+        "専攻"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-243",
+      "moduleId": "leap_final",
+      "prompt": "matter",
+      "explanation": "",
+      "category": "有名な・主要な・重要な",
+      "type": "input",
+      "answer": "重要である",
+      "acceptableAnswers": [
+        "重要である",
+        "物質",
+        "事情",
+        "状況"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-244",
+      "moduleId": "leap_final",
+      "prompt": "bright",
+      "explanation": "",
+      "category": "明るい・生き生きとした",
+      "type": "input",
+      "answer": "明るい",
+      "acceptableAnswers": [
+        "明るい",
+        "賢い"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-245",
+      "moduleId": "leap_final",
+      "prompt": "brilliant",
+      "explanation": "",
+      "category": "明るい・生き生きとした",
+      "type": "input",
+      "answer": "輝いている",
+      "acceptableAnswers": [
+        "輝いている",
+        "すばらしい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-246",
+      "moduleId": "leap_final",
+      "prompt": "lively",
+      "explanation": "",
+      "category": "明るい・生き生きとした",
+      "type": "input",
+      "answer": "生き生きとした",
+      "acceptableAnswers": [
+        "生き生きとした"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-247",
+      "moduleId": "leap_final",
+      "prompt": "comfortable",
+      "explanation": "",
+      "category": "心地よい・都合のよい",
+      "type": "input",
+      "answer": "快適な",
+      "acceptableAnswers": [
+        "快適な",
+        "心地よい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-248",
+      "moduleId": "leap_final",
+      "prompt": "pleasant",
+      "explanation": "",
+      "category": "心地よい・都合のよい",
+      "type": "input",
+      "answer": "楽しい",
+      "acceptableAnswers": [
+        "楽しい",
+        "心地よい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-249",
+      "moduleId": "leap_final",
+      "prompt": "convenient",
+      "explanation": "",
+      "category": "心地よい・都合のよい",
+      "type": "input",
+      "answer": "都合がよい",
+      "acceptableAnswers": [
+        "都合がよい",
+        "近くて便利がよい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-250",
+      "moduleId": "leap_final",
+      "prompt": "false",
+      "explanation": "",
+      "category": "ひどい・誤った",
+      "type": "input",
+      "answer": "誤った",
+      "acceptableAnswers": [
+        "誤った",
+        "偽の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-251",
+      "moduleId": "leap_final",
+      "prompt": "terrible",
+      "explanation": "",
+      "category": "ひどい・誤った",
+      "type": "input",
+      "answer": "ひどい",
+      "acceptableAnswers": [
+        "ひどい",
+        "苦手で"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-252",
+      "moduleId": "leap_final",
+      "prompt": "awful",
+      "explanation": "",
+      "category": "ひどい・誤った",
+      "type": "input",
+      "answer": "ひどい",
+      "acceptableAnswers": [
+        "ひどい",
+        "不快な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-253",
+      "moduleId": "leap_final",
+      "prompt": "thin",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "薄い",
+      "acceptableAnswers": [
+        "薄い",
+        "やせた",
+        "毛が薄い"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-254",
+      "moduleId": "leap_final",
+      "prompt": "tight",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "引き締まった",
+      "acceptableAnswers": [
+        "引き締まった",
+        "きつい",
+        "厳しい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-255",
+      "moduleId": "leap_final",
+      "prompt": "loose",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "ゆるい",
+      "acceptableAnswers": [
+        "ゆるい",
+        "解き放たれた"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-256",
+      "moduleId": "leap_final",
+      "prompt": "raw",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "生の",
+      "acceptableAnswers": [
+        "生の",
+        "加工されていない"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-257",
+      "moduleId": "leap_final",
+      "prompt": "empty",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "空の",
+      "acceptableAnswers": [
+        "空の",
+        "中身のない",
+        "〜を空にする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-258",
+      "moduleId": "leap_final",
+      "prompt": "smooth",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "滑らかな",
+      "acceptableAnswers": [
+        "滑らかな",
+        "順調な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-259",
+      "moduleId": "leap_final",
+      "prompt": "direct",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "直接的な",
+      "acceptableAnswers": [
+        "直接的な",
+        "〜を指揮する",
+        "〜を監督する",
+        "〜を演出する",
+        "〜に道を教える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-260",
+      "moduleId": "leap_final",
+      "prompt": "familiar",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "知られた",
+      "acceptableAnswers": [
+        "知られた",
+        "よく知っている"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-261",
+      "moduleId": "leap_final",
+      "prompt": "similar",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "〜に似た",
+      "acceptableAnswers": [
+        "〜に似た"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-262",
+      "moduleId": "leap_final",
+      "prompt": "differ",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "異なる",
+      "acceptableAnswers": [
+        "異なる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-263",
+      "moduleId": "leap_final",
+      "prompt": "vary",
+      "explanation": "",
+      "category": "物事の形態・状態",
+      "type": "input",
+      "answer": "さまざまだ",
+      "acceptableAnswers": [
+        "さまざまだ",
+        "変わる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-264",
+      "moduleId": "leap_final",
+      "prompt": "specific",
+      "explanation": "",
+      "category": "特徴・共通性",
+      "type": "input",
+      "answer": "特定の",
+      "acceptableAnswers": [
+        "特定の",
+        "具体的な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-265",
+      "moduleId": "leap_final",
+      "prompt": "common",
+      "explanation": "",
+      "category": "特徴・共通性",
+      "type": "input",
+      "answer": "普及した",
+      "acceptableAnswers": [
+        "普及した",
+        "普通の",
+        "共通の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-266",
+      "moduleId": "leap_final",
+      "prompt": "unusual",
+      "explanation": "",
+      "category": "特徴・共通性",
+      "type": "input",
+      "answer": "珍しい",
+      "acceptableAnswers": [
+        "珍しい"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-267",
+      "moduleId": "leap_final",
+      "prompt": "add",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "〜を加える",
+      "acceptableAnswers": [
+        "〜を加える",
+        "〜を増やす"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-268",
+      "moduleId": "leap_final",
+      "prompt": "increase",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "増える",
+      "acceptableAnswers": [
+        "増える",
+        "〜を増やす",
+        "増加"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-269",
+      "moduleId": "leap_final",
+      "prompt": "reduce",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "〜を減らす",
+      "acceptableAnswers": [
+        "〜を減らす",
+        "AをBにする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-270",
+      "moduleId": "leap_final",
+      "prompt": "divide",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "〜を分割する",
+      "acceptableAnswers": [
+        "〜を分割する",
+        "〜を割る"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-271",
+      "moduleId": "leap_final",
+      "prompt": "count",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "〜を数える",
+      "acceptableAnswers": [
+        "〜を数える",
+        "数える",
+        "重要である",
+        "〜を当てにする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-272",
+      "moduleId": "leap_final",
+      "prompt": "weigh",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "〜の重さがある",
+      "acceptableAnswers": [
+        "〜の重さがある",
+        "〜の重さを量る",
+        "〜を比較検討する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-273",
+      "moduleId": "leap_final",
+      "prompt": "quarter",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "4分の1",
+      "acceptableAnswers": [
+        "4分の1",
+        "15分",
+        "25セント",
+        "地域"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-274",
+      "moduleId": "leap_final",
+      "prompt": "lot",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "多くの〜",
+      "acceptableAnswers": [
+        "多くの〜",
+        "とても",
+        "状況",
+        "運命",
+        "土地"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-275",
+      "moduleId": "leap_final",
+      "prompt": "pile",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "積み重ね",
+      "acceptableAnswers": [
+        "積み重ね",
+        "山",
+        "多量",
+        "〜を積み重ねる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-276",
+      "moduleId": "leap_final",
+      "prompt": "rate",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "割合",
+      "acceptableAnswers": [
+        "割合",
+        "速さ",
+        "料金",
+        "〜を評価する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-277",
+      "moduleId": "leap_final",
+      "prompt": "figure",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "数字",
+      "acceptableAnswers": [
+        "数字",
+        "人物",
+        "スタイル",
+        "体つき",
+        "図",
+        "目立つ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-278",
+      "moduleId": "leap_final",
+      "prompt": "lack",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "不足",
+      "acceptableAnswers": [
+        "不足",
+        "〜を欠いている"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-279",
+      "moduleId": "leap_final",
+      "prompt": "extra",
+      "explanation": "",
+      "category": "数量・割合・計算",
+      "type": "input",
+      "answer": "余分な",
+      "acceptableAnswers": [
+        "余分な",
+        "追加の",
+        "臨時の",
+        "余分なもの",
+        "追加されたもの"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-280",
+      "moduleId": "leap_final",
+      "prompt": "ready",
+      "explanation": "",
+      "category": "準備・適応",
+      "type": "input",
+      "answer": "用意ができている",
+      "acceptableAnswers": [
+        "用意ができている",
+        "進んで〜する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-281",
+      "moduleId": "leap_final",
+      "prompt": "prepare",
+      "explanation": "",
+      "category": "準備・適応",
+      "type": "input",
+      "answer": "〜の準備をする",
+      "acceptableAnswers": [
+        "〜の準備をする",
+        "用意をする",
+        "準備をする",
+        "準備ができている"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-282",
+      "moduleId": "leap_final",
+      "prompt": "adjust",
+      "explanation": "",
+      "category": "準備・適応",
+      "type": "input",
+      "answer": "〜に慣れる",
+      "acceptableAnswers": [
+        "〜に慣れる",
+        "〜を調整する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-283",
+      "moduleId": "leap_final",
+      "prompt": "apply",
+      "explanation": "",
+      "category": "準備・適応",
+      "type": "input",
+      "answer": "〜に当てはまる",
+      "acceptableAnswers": [
+        "〜に当てはまる",
+        "〜に申し込む",
+        "〜を当てはめる",
+        "応用する",
+        "〜を塗る"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-284",
+      "moduleId": "leap_final",
+      "prompt": "suit",
+      "explanation": "",
+      "category": "準備・適応",
+      "type": "input",
+      "answer": "〜に適している",
+      "acceptableAnswers": [
+        "〜に適している",
+        "好都合だ",
+        "〜に似合う",
+        "訴訟",
+        "スーツ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-285",
+      "moduleId": "leap_final",
+      "prompt": "case",
+      "explanation": "",
+      "category": "機会・経験",
+      "type": "input",
+      "answer": "場合",
+      "acceptableAnswers": [
+        "場合",
+        "事実",
+        "事件",
+        "症例",
+        "主張"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-286",
+      "moduleId": "leap_final",
+      "prompt": "scene",
+      "explanation": "",
+      "category": "機会・経験",
+      "type": "input",
+      "answer": "場面",
+      "acceptableAnswers": [
+        "場面",
+        "現場",
+        "業界"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-287",
+      "moduleId": "leap_final",
+      "prompt": "chance",
+      "explanation": "",
+      "category": "機会・経験",
+      "type": "input",
+      "answer": "機会",
+      "acceptableAnswers": [
+        "機会",
+        "可能性"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-288",
+      "moduleId": "leap_final",
+      "prompt": "opportunity",
+      "explanation": "",
+      "category": "機会・経験",
+      "type": "input",
+      "answer": "機会",
+      "acceptableAnswers": [
+        "機会",
+        "好機"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-289",
+      "moduleId": "leap_final",
+      "prompt": "experience",
+      "explanation": "",
+      "category": "機会・経験",
+      "type": "input",
+      "answer": "経験",
+      "acceptableAnswers": [
+        "経験",
+        "体験",
+        "〜を経験する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-290",
+      "moduleId": "leap_final",
+      "prompt": "time",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "時間",
+      "acceptableAnswers": [
+        "時間",
+        "回数",
+        "倍",
+        "情勢",
+        "時代"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-291",
+      "moduleId": "leap_final",
+      "prompt": "spring",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "春",
+      "acceptableAnswers": [
+        "春",
+        "泉",
+        "温泉",
+        "飛び出る",
+        "突然出現する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-292",
+      "moduleId": "leap_final",
+      "prompt": "minute",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "分",
+      "acceptableAnswers": [
+        "分",
+        "ちょっとの間",
+        "議事録",
+        "とても小さい",
+        "細かい",
+        "〜するとすぐに"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-293",
+      "moduleId": "leap_final",
+      "prompt": "age",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "年齢",
+      "acceptableAnswers": [
+        "年齢",
+        "時代",
+        "長い間",
+        "高齢化する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-294",
+      "moduleId": "leap_final",
+      "prompt": "generation",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "世代",
+      "acceptableAnswers": [
+        "世代",
+        "生み出すこと",
+        "発電"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-295",
+      "moduleId": "leap_final",
+      "prompt": "anniversary",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "記念日",
+      "acceptableAnswers": [
+        "記念日"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-296",
+      "moduleId": "leap_final",
+      "prompt": "recently",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "最近",
+      "acceptableAnswers": [
+        "最近",
+        "近ごろ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-297",
+      "moduleId": "leap_final",
+      "prompt": "used",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "以前は〜だった",
+      "acceptableAnswers": [
+        "以前は〜だった",
+        "よく〜したものだ",
+        "〜することに慣れている",
+        "中古の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-298",
+      "moduleId": "leap_final",
+      "prompt": "early",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "早く",
+      "acceptableAnswers": [
+        "早く",
+        "初期に",
+        "早い"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-299",
+      "moduleId": "leap_final",
+      "prompt": "first",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "第1の",
+      "acceptableAnswers": [
+        "第1の",
+        "初めて",
+        "まず第1に",
+        "最初のうちは"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap_final-300",
+      "moduleId": "leap_final",
+      "prompt": "latest",
+      "explanation": "",
+      "category": "時",
+      "type": "input",
+      "answer": "最新の",
+      "acceptableAnswers": [
+        "最新の"
+      ],
+      "direction": "normal"
+    }
+  ]
+}

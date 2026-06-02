@@ -1,0 +1,3402 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-chemistry-normal-v1",
+  "title": "化学",
+  "description": "StudyHome-Nextから救出した 化学 の通常方向教材。",
+  "folders": [
+    {
+      "id": "science",
+      "title": "理科"
+    }
+  ],
+  "modules": [
+    {
+      "id": "chemistry",
+      "folderId": "science",
+      "title": "化学",
+      "subject": "理科",
+      "description": "StudyHome-Nextから救出した教材データ。source=chemistry",
+      "tags": [
+        "理科",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "chemistry-chem001",
+        "chemistry-chem002",
+        "chemistry-chem003",
+        "chemistry-chem004",
+        "chemistry-chem005",
+        "chemistry-chem006",
+        "chemistry-chem007",
+        "chemistry-chem008",
+        "chemistry-chem009",
+        "chemistry-chem010",
+        "chemistry-chem011",
+        "chemistry-chem012",
+        "chemistry-chem013",
+        "chemistry-chem014",
+        "chemistry-chem015",
+        "chemistry-chem016",
+        "chemistry-chem017",
+        "chemistry-chem018",
+        "chemistry-chem019",
+        "chemistry-chem020",
+        "chemistry-chem021",
+        "chemistry-chem022",
+        "chemistry-chem023",
+        "chemistry-chem024",
+        "chemistry-chem025",
+        "chemistry-chem026",
+        "chemistry-chem027",
+        "chemistry-chem028",
+        "chemistry-chem029",
+        "chemistry-chem030",
+        "chemistry-chem031",
+        "chemistry-chem032",
+        "chemistry-chem033",
+        "chemistry-chem034",
+        "chemistry-chem035",
+        "chemistry-chem036",
+        "chemistry-chem037",
+        "chemistry-chem038",
+        "chemistry-chem039",
+        "chemistry-chem040",
+        "chemistry-chem041",
+        "chemistry-chem042",
+        "chemistry-chem043",
+        "chemistry-chem044",
+        "chemistry-chem045",
+        "chemistry-chem046",
+        "chemistry-chem047",
+        "chemistry-chem048",
+        "chemistry-chem049",
+        "chemistry-chem050",
+        "chemistry-chem051",
+        "chemistry-chem052",
+        "chemistry-chem053",
+        "chemistry-chem054",
+        "chemistry-chem055",
+        "chemistry-chem056",
+        "chemistry-chem057",
+        "chemistry-chem058",
+        "chemistry-chem059",
+        "chemistry-chem060",
+        "chemistry-chem061",
+        "chemistry-chem062",
+        "chemistry-chem063",
+        "chemistry-chem064",
+        "chemistry-chem065",
+        "chemistry-chem066",
+        "chemistry-chem067",
+        "chemistry-chem068",
+        "chemistry-chem069",
+        "chemistry-chem070",
+        "chemistry-chem071",
+        "chemistry-chem072",
+        "chemistry-chem073",
+        "chemistry-chem074",
+        "chemistry-chem075",
+        "chemistry-chem076",
+        "chemistry-chem077",
+        "chemistry-chem078",
+        "chemistry-chem079",
+        "chemistry-chem080",
+        "chemistry-chem081",
+        "chemistry-chem082",
+        "chemistry-chem083",
+        "chemistry-chem084",
+        "chemistry-chem085",
+        "chemistry-chem086",
+        "chemistry-chem087",
+        "chemistry-chem088",
+        "chemistry-chem089",
+        "chemistry-chem090",
+        "chemistry-chem091",
+        "chemistry-chem092",
+        "chemistry-chem093",
+        "chemistry-chem094",
+        "chemistry-chem095",
+        "chemistry-chem096",
+        "chemistry-chem097",
+        "chemistry-chem098",
+        "chemistry-chem099",
+        "chemistry-chem100",
+        "chemistry-chem101",
+        "chemistry-chem102",
+        "chemistry-chem103",
+        "chemistry-chem104",
+        "chemistry-chem105",
+        "chemistry-chem106",
+        "chemistry-chem107",
+        "chemistry-chem108",
+        "chemistry-chem109",
+        "chemistry-chem110",
+        "chemistry-chem111",
+        "chemistry-chem112",
+        "chemistry-chem113",
+        "chemistry-chem114",
+        "chemistry-chem115",
+        "chemistry-chem116",
+        "chemistry-chem117",
+        "chemistry-chem118",
+        "chemistry-chem119",
+        "chemistry-chem120",
+        "chemistry-chem121",
+        "chemistry-chem122",
+        "chemistry-chem123",
+        "chemistry-chem124",
+        "chemistry-chem125",
+        "chemistry-chem126",
+        "chemistry-chem127",
+        "chemistry-chem128",
+        "chemistry-chem129",
+        "chemistry-chem130",
+        "chemistry-chem131",
+        "chemistry-chem132",
+        "chemistry-chem133",
+        "chemistry-chem134",
+        "chemistry-chem135",
+        "chemistry-chem136",
+        "chemistry-chem137",
+        "chemistry-chem138",
+        "chemistry-chem139",
+        "chemistry-chem140",
+        "chemistry-chem141",
+        "chemistry-chem142",
+        "chemistry-chem143",
+        "chemistry-chem144",
+        "chemistry-chem145",
+        "chemistry-chem146",
+        "chemistry-chem147",
+        "chemistry-chem148",
+        "chemistry-chem149",
+        "chemistry-chem150",
+        "chemistry-chem151",
+        "chemistry-chem152",
+        "chemistry-chem153",
+        "chemistry-chem154",
+        "chemistry-chem155",
+        "chemistry-chem156",
+        "chemistry-chem157",
+        "chemistry-chem158",
+        "chemistry-chem159",
+        "chemistry-chem160",
+        "chemistry-chem161",
+        "chemistry-chem162",
+        "chemistry-chem163",
+        "chemistry-chem164",
+        "chemistry-chem165",
+        "chemistry-chem166",
+        "chemistry-chem167",
+        "chemistry-chem168",
+        "chemistry-chem169",
+        "chemistry-chem170",
+        "chemistry-chem171",
+        "chemistry-chem172",
+        "chemistry-chem173",
+        "chemistry-chem174",
+        "chemistry-chem175",
+        "chemistry-chem176"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "chemistry-chem001",
+      "moduleId": "chemistry",
+      "prompt": "1種類の物質だけからできている物質を何というか。",
+      "explanation": "水や酸素など、1種類の物質として扱えるもの。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "純物質",
+        "混合物",
+        "単体",
+        "化合物"
+      ],
+      "answer": "純物質",
+      "acceptableAnswers": [
+        "純物質"
+      ]
+    },
+    {
+      "id": "chemistry-chem002",
+      "moduleId": "chemistry",
+      "prompt": "2種類以上の物質が混ざり合ったものを何というか。",
+      "explanation": "空気や食塩水のように、複数の物質が混ざったもの。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "混合物",
+        "純物質",
+        "単体",
+        "化合物"
+      ],
+      "answer": "混合物",
+      "acceptableAnswers": [
+        "混合物"
+      ]
+    },
+    {
+      "id": "chemistry-chem003",
+      "moduleId": "chemistry",
+      "prompt": "1種類の元素からなる純物質を何というか。",
+      "explanation": "酸素O2や鉄Feのように、1種類の元素だけでできた物質。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "単体",
+        "化合物",
+        "混合物",
+        "同位体"
+      ],
+      "answer": "単体",
+      "acceptableAnswers": [
+        "単体"
+      ]
+    },
+    {
+      "id": "chemistry-chem004",
+      "moduleId": "chemistry",
+      "prompt": "2種類以上の元素からなる純物質を何というか。",
+      "explanation": "水H2Oや塩化ナトリウムNaClのような物質。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "化合物",
+        "単体",
+        "混合物",
+        "同素体"
+      ],
+      "answer": "化合物",
+      "acceptableAnswers": [
+        "化合物"
+      ]
+    },
+    {
+      "id": "chemistry-chem005",
+      "moduleId": "chemistry",
+      "prompt": "同じ元素からできているが性質の異なる単体どうしを何というか。",
+      "explanation": "酸素とオゾン、ダイヤモンドと黒鉛など。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "同素体",
+        "同位体",
+        "化合物",
+        "混合物"
+      ],
+      "answer": "同素体",
+      "acceptableAnswers": [
+        "同素体"
+      ]
+    },
+    {
+      "id": "chemistry-chem006",
+      "moduleId": "chemistry",
+      "prompt": "酸素O2は単体と化合物のどちらか。",
+      "explanation": "酸素元素だけからできているので単体。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "単体",
+        "化合物",
+        "混合物",
+        "同素体"
+      ],
+      "answer": "単体",
+      "acceptableAnswers": [
+        "単体"
+      ]
+    },
+    {
+      "id": "chemistry-chem007",
+      "moduleId": "chemistry",
+      "prompt": "水H2Oは単体と化合物のどちらか。",
+      "explanation": "水素と酸素の2種類の元素からできている。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "化合物",
+        "単体",
+        "混合物",
+        "同素体"
+      ],
+      "answer": "化合物",
+      "acceptableAnswers": [
+        "化合物"
+      ]
+    },
+    {
+      "id": "chemistry-chem008",
+      "moduleId": "chemistry",
+      "prompt": "空気は純物質と混合物のどちらか。",
+      "explanation": "窒素、酸素、二酸化炭素などが混ざっている。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "混合物",
+        "純物質",
+        "単体",
+        "化合物"
+      ],
+      "answer": "混合物",
+      "acceptableAnswers": [
+        "混合物"
+      ]
+    },
+    {
+      "id": "chemistry-chem009",
+      "moduleId": "chemistry",
+      "prompt": "食塩水は純物質と混合物のどちらか。",
+      "explanation": "水と塩化ナトリウムが混ざっている。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "混合物",
+        "純物質",
+        "単体",
+        "化合物"
+      ],
+      "answer": "混合物",
+      "acceptableAnswers": [
+        "混合物"
+      ]
+    },
+    {
+      "id": "chemistry-chem010",
+      "moduleId": "chemistry",
+      "prompt": "炭素Cの同素体の例として適切なものはどれか。",
+      "explanation": "ダイヤモンドと黒鉛は炭素の同素体。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "ダイヤモンド",
+        "水",
+        "塩化ナトリウム",
+        "アンモニア"
+      ],
+      "answer": "ダイヤモンド",
+      "acceptableAnswers": [
+        "ダイヤモンド"
+      ]
+    },
+    {
+      "id": "chemistry-chem011",
+      "moduleId": "chemistry",
+      "prompt": "酸素Oの同素体の例として適切なものはどれか。",
+      "explanation": "酸素O2とオゾンO3は酸素の同素体。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "オゾン",
+        "水素",
+        "窒素",
+        "塩素"
+      ],
+      "answer": "オゾン",
+      "acceptableAnswers": [
+        "オゾン"
+      ]
+    },
+    {
+      "id": "chemistry-chem012",
+      "moduleId": "chemistry",
+      "prompt": "硫黄の元素記号はどれか。",
+      "explanation": "硫黄はS。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "S",
+        "C",
+        "O",
+        "P"
+      ],
+      "answer": "S",
+      "acceptableAnswers": [
+        "S"
+      ]
+    },
+    {
+      "id": "chemistry-chem013",
+      "moduleId": "chemistry",
+      "prompt": "炭素の元素記号はどれか。",
+      "explanation": "炭素はC。Caはカルシウム、Cuは銅、Clは塩素。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "C",
+        "Ca",
+        "Cu",
+        "Cl"
+      ],
+      "answer": "C",
+      "acceptableAnswers": [
+        "C"
+      ]
+    },
+    {
+      "id": "chemistry-chem014",
+      "moduleId": "chemistry",
+      "prompt": "リンの元素記号はどれか。",
+      "explanation": "リンはP。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "P",
+        "Pb",
+        "Pt",
+        "K"
+      ],
+      "answer": "P",
+      "acceptableAnswers": [
+        "P"
+      ]
+    },
+    {
+      "id": "chemistry-chem015",
+      "moduleId": "chemistry",
+      "prompt": "鉄の元素記号はどれか。",
+      "explanation": "鉄はFe。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "Fe",
+        "F",
+        "Fr",
+        "Au"
+      ],
+      "answer": "Fe",
+      "acceptableAnswers": [
+        "Fe"
+      ]
+    },
+    {
+      "id": "chemistry-chem016",
+      "moduleId": "chemistry",
+      "prompt": "ナトリウムの元素記号はどれか。",
+      "explanation": "ナトリウムはNa。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "Na",
+        "N",
+        "Ne",
+        "Ni"
+      ],
+      "answer": "Na",
+      "acceptableAnswers": [
+        "Na"
+      ]
+    },
+    {
+      "id": "chemistry-chem017",
+      "moduleId": "chemistry",
+      "prompt": "塩素の元素記号はどれか。",
+      "explanation": "塩素はCl。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "Cl",
+        "C",
+        "Ca",
+        "Cu"
+      ],
+      "answer": "Cl",
+      "acceptableAnswers": [
+        "Cl"
+      ]
+    },
+    {
+      "id": "chemistry-chem018",
+      "moduleId": "chemistry",
+      "prompt": "銀の元素記号はどれか。",
+      "explanation": "銀はAg。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "Ag",
+        "Au",
+        "Al",
+        "Ar"
+      ],
+      "answer": "Ag",
+      "acceptableAnswers": [
+        "Ag"
+      ]
+    },
+    {
+      "id": "chemistry-chem019",
+      "moduleId": "chemistry",
+      "prompt": "銅の元素記号はどれか。",
+      "explanation": "銅はCu。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "Cu",
+        "Cl",
+        "Ca",
+        "C"
+      ],
+      "answer": "Cu",
+      "acceptableAnswers": [
+        "Cu"
+      ]
+    },
+    {
+      "id": "chemistry-chem020",
+      "moduleId": "chemistry",
+      "prompt": "金の元素記号はどれか。",
+      "explanation": "金はAu。",
+      "category": "物質の分類",
+      "type": "choice",
+      "choices": [
+        "Au",
+        "Ag",
+        "Al",
+        "Ar"
+      ],
+      "answer": "Au",
+      "acceptableAnswers": [
+        "Au"
+      ]
+    },
+    {
+      "id": "chemistry-chem021",
+      "moduleId": "chemistry",
+      "prompt": "混合物から目的の物質を取り出す操作を何というか。",
+      "explanation": "混合物の性質の違いを利用して成分を分ける。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "分離",
+        "精製",
+        "検出",
+        "分析"
+      ],
+      "answer": "分離",
+      "acceptableAnswers": [
+        "分離"
+      ]
+    },
+    {
+      "id": "chemistry-chem022",
+      "moduleId": "chemistry",
+      "prompt": "取り出した物質から不純物を除き、純度を高める操作を何というか。",
+      "explanation": "分離した物質をさらに純粋に近づける操作。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "精製",
+        "分離",
+        "ろ過",
+        "抽出"
+      ],
+      "answer": "精製",
+      "acceptableAnswers": [
+        "精製"
+      ]
+    },
+    {
+      "id": "chemistry-chem023",
+      "moduleId": "chemistry",
+      "prompt": "水に溶けない固体と液体を、ろ紙で分ける方法を何というか。",
+      "explanation": "砂と水の分離などで使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "ろ過",
+        "蒸留",
+        "分留",
+        "再結晶"
+      ],
+      "answer": "ろ過",
+      "acceptableAnswers": [
+        "ろ過"
+      ]
+    },
+    {
+      "id": "chemistry-chem024",
+      "moduleId": "chemistry",
+      "prompt": "砂と水の混合物を分けるのに適する操作はどれか。",
+      "explanation": "砂は水に溶けないため、ろ紙で分けられる。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "ろ過",
+        "蒸留",
+        "抽出",
+        "クロマトグラフィー"
+      ],
+      "answer": "ろ過",
+      "acceptableAnswers": [
+        "ろ過"
+      ]
+    },
+    {
+      "id": "chemistry-chem025",
+      "moduleId": "chemistry",
+      "prompt": "溶液を加熱して出た蒸気を冷やし、液体として取り出す方法は何か。",
+      "explanation": "海水から水を取り出すときなどに使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "蒸留",
+        "ろ過",
+        "再結晶",
+        "抽出"
+      ],
+      "answer": "蒸留",
+      "acceptableAnswers": [
+        "蒸留"
+      ]
+    },
+    {
+      "id": "chemistry-chem026",
+      "moduleId": "chemistry",
+      "prompt": "海水から水を取り出すときに適する操作はどれか。",
+      "explanation": "水を蒸発させ、冷やして集める。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "蒸留",
+        "ろ過",
+        "昇華",
+        "クロマトグラフィー"
+      ],
+      "answer": "蒸留",
+      "acceptableAnswers": [
+        "蒸留"
+      ]
+    },
+    {
+      "id": "chemistry-chem027",
+      "moduleId": "chemistry",
+      "prompt": "沸点の違いを利用して、液体どうしの混合物を分ける方法は何か。",
+      "explanation": "液体空気や石油の成分分離で使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "分留",
+        "ろ過",
+        "抽出",
+        "再結晶"
+      ],
+      "answer": "分留",
+      "acceptableAnswers": [
+        "分留",
+        "分別蒸留"
+      ]
+    },
+    {
+      "id": "chemistry-chem028",
+      "moduleId": "chemistry",
+      "prompt": "原油を沸点の違いでいくつかの成分に分ける操作は何か。",
+      "explanation": "沸点の近い範囲ごとに成分を分ける。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "分留",
+        "蒸発",
+        "ろ過",
+        "抽出"
+      ],
+      "answer": "分留",
+      "acceptableAnswers": [
+        "分留",
+        "分別蒸留"
+      ]
+    },
+    {
+      "id": "chemistry-chem029",
+      "moduleId": "chemistry",
+      "prompt": "溶解度の差を利用して結晶を取り出す方法は何か。",
+      "explanation": "温度による溶解度の差を使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "再結晶",
+        "蒸留",
+        "分留",
+        "ろ過"
+      ],
+      "answer": "再結晶",
+      "acceptableAnswers": [
+        "再結晶"
+      ]
+    },
+    {
+      "id": "chemistry-chem030",
+      "moduleId": "chemistry",
+      "prompt": "少量の不純物を含む固体を精製するのに使いやすい操作はどれか。",
+      "explanation": "結晶として析出させ、不純物を除きやすくする。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "再結晶",
+        "ろ過",
+        "蒸留",
+        "分留"
+      ],
+      "answer": "再結晶",
+      "acceptableAnswers": [
+        "再結晶"
+      ]
+    },
+    {
+      "id": "chemistry-chem031",
+      "moduleId": "chemistry",
+      "prompt": "物質の溶媒への溶けやすさの違いを利用して成分を取り出す方法は何か。",
+      "explanation": "茶葉から成分を湯に取り出す操作など。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "抽出",
+        "蒸留",
+        "再結晶",
+        "ろ過"
+      ],
+      "answer": "抽出",
+      "acceptableAnswers": [
+        "抽出"
+      ]
+    },
+    {
+      "id": "chemistry-chem032",
+      "moduleId": "chemistry",
+      "prompt": "茶葉から成分を湯に取り出す操作は、分離方法として何に近いか。",
+      "explanation": "目的成分が湯に溶け出すことを利用する。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "抽出",
+        "分留",
+        "昇華",
+        "ろ過"
+      ],
+      "answer": "抽出",
+      "acceptableAnswers": [
+        "抽出"
+      ]
+    },
+    {
+      "id": "chemistry-chem033",
+      "moduleId": "chemistry",
+      "prompt": "吸着されやすさや移動しやすさの違いを利用して分離する方法は何か。",
+      "explanation": "インクの色素分離などで用いる。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "クロマトグラフィー",
+        "再結晶",
+        "分留",
+        "蒸留"
+      ],
+      "answer": "クロマトグラフィー",
+      "acceptableAnswers": [
+        "クロマトグラフィー",
+        "クロマトグラフィ"
+      ]
+    },
+    {
+      "id": "chemistry-chem034",
+      "moduleId": "chemistry",
+      "prompt": "インクの色素を分離する実験でよく使われる方法は何か。",
+      "explanation": "色素の紙への吸着や溶媒への溶けやすさの違いを利用する。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "クロマトグラフィー",
+        "ろ過",
+        "蒸留",
+        "再結晶"
+      ],
+      "answer": "クロマトグラフィー",
+      "acceptableAnswers": [
+        "クロマトグラフィー",
+        "ペーパークロマトグラフィー"
+      ]
+    },
+    {
+      "id": "chemistry-chem035",
+      "moduleId": "chemistry",
+      "prompt": "蒸留や分留で主に利用する物質の性質はどれか。",
+      "explanation": "液体が沸騰する温度の違いを使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "沸点",
+        "融点",
+        "溶解度",
+        "密度"
+      ],
+      "answer": "沸点",
+      "acceptableAnswers": [
+        "沸点"
+      ]
+    },
+    {
+      "id": "chemistry-chem036",
+      "moduleId": "chemistry",
+      "prompt": "再結晶で主に利用する物質の性質はどれか。",
+      "explanation": "温度による溶けやすさの違いを使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "溶解度",
+        "沸点",
+        "融点",
+        "密度"
+      ],
+      "answer": "溶解度",
+      "acceptableAnswers": [
+        "溶解度"
+      ]
+    },
+    {
+      "id": "chemistry-chem037",
+      "moduleId": "chemistry",
+      "prompt": "純物質の確認に利用しやすい、固体が液体になる温度を何というか。",
+      "explanation": "純物質は融点が一定になりやすい。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "融点",
+        "沸点",
+        "凝固点",
+        "溶解度"
+      ],
+      "answer": "融点",
+      "acceptableAnswers": [
+        "融点"
+      ]
+    },
+    {
+      "id": "chemistry-chem038",
+      "moduleId": "chemistry",
+      "prompt": "混合物の分離では、各成分の何の違いを利用するか。",
+      "explanation": "沸点、溶解度、粒の大きさなどの違いを利用する。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "性質の違い",
+        "質量数の違い",
+        "原子番号の違い",
+        "価電子数の違い"
+      ],
+      "answer": "性質の違い",
+      "acceptableAnswers": [
+        "性質の違い"
+      ]
+    },
+    {
+      "id": "chemistry-chem039",
+      "moduleId": "chemistry",
+      "prompt": "物質を構成する基本的な成分を何というか。",
+      "explanation": "物質を構成する成分として元素を扱う。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "元素",
+        "原子",
+        "分子",
+        "イオン"
+      ],
+      "answer": "元素",
+      "acceptableAnswers": [
+        "元素"
+      ]
+    },
+    {
+      "id": "chemistry-chem040",
+      "moduleId": "chemistry",
+      "prompt": "含まれている成分の種類を調べる分析を何というか。",
+      "explanation": "「何が含まれているか」を調べる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "定性分析",
+        "定量分析",
+        "元素分析",
+        "中和滴定"
+      ],
+      "answer": "定性分析",
+      "acceptableAnswers": [
+        "定性分析"
+      ]
+    },
+    {
+      "id": "chemistry-chem041",
+      "moduleId": "chemistry",
+      "prompt": "含まれている成分の量を調べる分析を何というか。",
+      "explanation": "「どれだけ含まれているか」を調べる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "定量分析",
+        "定性分析",
+        "元素分析",
+        "炎色反応"
+      ],
+      "answer": "定量分析",
+      "acceptableAnswers": [
+        "定量分析"
+      ]
+    },
+    {
+      "id": "chemistry-chem042",
+      "moduleId": "chemistry",
+      "prompt": "炭素を含む物質を燃焼させると発生しやすい、石灰水を白くにごらせる気体は何か。",
+      "explanation": "炭素の検出に利用される。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "二酸化炭素",
+        "酸素",
+        "水素",
+        "窒素"
+      ],
+      "answer": "二酸化炭素",
+      "acceptableAnswers": [
+        "二酸化炭素",
+        "CO2"
+      ]
+    },
+    {
+      "id": "chemistry-chem043",
+      "moduleId": "chemistry",
+      "prompt": "二酸化炭素を通すと白くにごる液体は何か。",
+      "explanation": "二酸化炭素の検出に用いる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "石灰水",
+        "塩酸",
+        "アンモニア水",
+        "エタノール"
+      ],
+      "answer": "石灰水",
+      "acceptableAnswers": [
+        "石灰水"
+      ]
+    },
+    {
+      "id": "chemistry-chem044",
+      "moduleId": "chemistry",
+      "prompt": "水の検出に使い、水で青色から赤色に変化する紙は何か。",
+      "explanation": "水の検出に使う。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "塩化コバルト紙",
+        "リトマス紙",
+        "ろ紙",
+        "pH試験紙"
+      ],
+      "answer": "塩化コバルト紙",
+      "acceptableAnswers": [
+        "塩化コバルト紙"
+      ]
+    },
+    {
+      "id": "chemistry-chem045",
+      "moduleId": "chemistry",
+      "prompt": "水の検出に使い、水で白色から青色に変化する物質は何か。",
+      "explanation": "無水硫酸銅は水で青色になる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "硫酸銅(II)無水物",
+        "塩化銀",
+        "炭酸カルシウム",
+        "水酸化ナトリウム"
+      ],
+      "answer": "硫酸銅(II)無水物",
+      "acceptableAnswers": [
+        "硫酸銅(II)無水物",
+        "無水硫酸銅"
+      ]
+    },
+    {
+      "id": "chemistry-chem046",
+      "moduleId": "chemistry",
+      "prompt": "金属元素を炎に入れたとき、元素に特有の色が見える反応は何か。",
+      "explanation": "金属元素の検出に使う。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "炎色反応",
+        "沈殿反応",
+        "中和反応",
+        "分解反応"
+      ],
+      "answer": "炎色反応",
+      "acceptableAnswers": [
+        "炎色反応"
+      ]
+    },
+    {
+      "id": "chemistry-chem047",
+      "moduleId": "chemistry",
+      "prompt": "ナトリウムNaの炎色反応の色は何色か。",
+      "explanation": "Naは黄色。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "黄色",
+        "赤紫色",
+        "青緑色",
+        "橙赤色"
+      ],
+      "answer": "黄色",
+      "acceptableAnswers": [
+        "黄色"
+      ]
+    },
+    {
+      "id": "chemistry-chem048",
+      "moduleId": "chemistry",
+      "prompt": "カリウムKの炎色反応の代表的な色は何色か。",
+      "explanation": "Kは赤紫色系。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "赤紫色",
+        "黄色",
+        "青緑色",
+        "橙赤色"
+      ],
+      "answer": "赤紫色",
+      "acceptableAnswers": [
+        "赤紫色"
+      ]
+    },
+    {
+      "id": "chemistry-chem049",
+      "moduleId": "chemistry",
+      "prompt": "カルシウムCaの炎色反応の代表的な色は何色か。",
+      "explanation": "Caは橙赤色系。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "橙赤色",
+        "黄色",
+        "赤紫色",
+        "青緑色"
+      ],
+      "answer": "橙赤色",
+      "acceptableAnswers": [
+        "橙赤色"
+      ]
+    },
+    {
+      "id": "chemistry-chem050",
+      "moduleId": "chemistry",
+      "prompt": "銅Cuの炎色反応の代表的な色は何色か。",
+      "explanation": "Cuは青緑色系。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "青緑色",
+        "黄色",
+        "赤紫色",
+        "橙赤色"
+      ],
+      "answer": "青緑色",
+      "acceptableAnswers": [
+        "青緑色"
+      ]
+    },
+    {
+      "id": "chemistry-chem051",
+      "moduleId": "chemistry",
+      "prompt": "塩化物イオンを含む水溶液に硝酸銀水溶液を加えるとできる白色沈殿は何か。",
+      "explanation": "Ag+とCl-からAgClができる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "塩化銀",
+        "炭酸カルシウム",
+        "硫酸バリウム",
+        "水酸化銅"
+      ],
+      "answer": "塩化銀",
+      "acceptableAnswers": [
+        "塩化銀",
+        "AgCl"
+      ]
+    },
+    {
+      "id": "chemistry-chem052",
+      "moduleId": "chemistry",
+      "prompt": "塩化銀AgClの沈殿の色は何色か。",
+      "explanation": "AgClは白色沈殿。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "白色",
+        "青色",
+        "赤褐色",
+        "黒色"
+      ],
+      "answer": "白色",
+      "acceptableAnswers": [
+        "白色"
+      ]
+    },
+    {
+      "id": "chemistry-chem053",
+      "moduleId": "chemistry",
+      "prompt": "二酸化炭素を石灰水に通したときにできる白色沈殿は主に何か。",
+      "explanation": "CaCO3の白色沈殿で白くにごる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "炭酸カルシウム",
+        "塩化銀",
+        "硫酸銅",
+        "酸化銅"
+      ],
+      "answer": "炭酸カルシウム",
+      "acceptableAnswers": [
+        "炭酸カルシウム",
+        "CaCO3"
+      ]
+    },
+    {
+      "id": "chemistry-chem054",
+      "moduleId": "chemistry",
+      "prompt": "物質の三態は、固体・液体・何か。",
+      "explanation": "化学基礎では基本的に固体・液体・気体の三態を扱う。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "気体",
+        "固体",
+        "液体",
+        "プラズマ"
+      ],
+      "answer": "気体",
+      "acceptableAnswers": [
+        "気体"
+      ]
+    },
+    {
+      "id": "chemistry-chem055",
+      "moduleId": "chemistry",
+      "prompt": "物質の状態が変わることを何というか。",
+      "explanation": "物質そのものは変わらず、状態だけが変わる。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "状態変化",
+        "化学変化",
+        "中和",
+        "酸化"
+      ],
+      "answer": "状態変化",
+      "acceptableAnswers": [
+        "状態変化"
+      ]
+    },
+    {
+      "id": "chemistry-chem056",
+      "moduleId": "chemistry",
+      "prompt": "固体が液体になる変化は何か。",
+      "explanation": "氷が水になる変化。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "融解",
+        "凝固",
+        "蒸発",
+        "凝縮"
+      ],
+      "answer": "融解",
+      "acceptableAnswers": [
+        "融解"
+      ]
+    },
+    {
+      "id": "chemistry-chem057",
+      "moduleId": "chemistry",
+      "prompt": "液体が固体になる変化は何か。",
+      "explanation": "水が氷になる変化。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "凝固",
+        "融解",
+        "蒸発",
+        "昇華"
+      ],
+      "answer": "凝固",
+      "acceptableAnswers": [
+        "凝固"
+      ]
+    },
+    {
+      "id": "chemistry-chem058",
+      "moduleId": "chemistry",
+      "prompt": "液体が気体になる変化は何か。",
+      "explanation": "液体表面から気体になること。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "蒸発",
+        "融解",
+        "凝固",
+        "凝縮"
+      ],
+      "answer": "蒸発",
+      "acceptableAnswers": [
+        "蒸発"
+      ]
+    },
+    {
+      "id": "chemistry-chem059",
+      "moduleId": "chemistry",
+      "prompt": "液体全体から気体が発生する現象は何か。",
+      "explanation": "沸点で液体内部からも気体が出る。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "沸騰",
+        "蒸発",
+        "凝縮",
+        "昇華"
+      ],
+      "answer": "沸騰",
+      "acceptableAnswers": [
+        "沸騰"
+      ]
+    },
+    {
+      "id": "chemistry-chem060",
+      "moduleId": "chemistry",
+      "prompt": "気体が液体になる変化は何か。",
+      "explanation": "水蒸気が水滴になる変化。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "凝縮",
+        "融解",
+        "凝固",
+        "蒸発"
+      ],
+      "answer": "凝縮",
+      "acceptableAnswers": [
+        "凝縮"
+      ]
+    },
+    {
+      "id": "chemistry-chem061",
+      "moduleId": "chemistry",
+      "prompt": "固体が液体を経ずに直接気体になる変化は何か。",
+      "explanation": "ドライアイスなどで見られる。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "昇華",
+        "融解",
+        "凝固",
+        "蒸発"
+      ],
+      "answer": "昇華",
+      "acceptableAnswers": [
+        "昇華"
+      ]
+    },
+    {
+      "id": "chemistry-chem062",
+      "moduleId": "chemistry",
+      "prompt": "液体が沸騰するときの温度を何というか。",
+      "explanation": "純物質では一定圧力下で一定値を示す。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "沸点",
+        "融点",
+        "凝固点",
+        "溶解度"
+      ],
+      "answer": "沸点",
+      "acceptableAnswers": [
+        "沸点"
+      ]
+    },
+    {
+      "id": "chemistry-chem063",
+      "moduleId": "chemistry",
+      "prompt": "固体が融解するときの温度を何というか。",
+      "explanation": "純物質の確認にも使える。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "融点",
+        "沸点",
+        "凝固点",
+        "密度"
+      ],
+      "answer": "融点",
+      "acceptableAnswers": [
+        "融点"
+      ]
+    },
+    {
+      "id": "chemistry-chem064",
+      "moduleId": "chemistry",
+      "prompt": "粒子が絶えず不規則に運動していることを何というか。",
+      "explanation": "温度が高いほど熱運動は激しくなる。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "熱運動",
+        "ブラウン運動",
+        "電子配置",
+        "状態変化"
+      ],
+      "answer": "熱運動",
+      "acceptableAnswers": [
+        "熱運動"
+      ]
+    },
+    {
+      "id": "chemistry-chem065",
+      "moduleId": "chemistry",
+      "prompt": "温度が高くなると、粒子の熱運動はどうなるか。",
+      "explanation": "加熱により粒子の運動が活発になる。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "激しくなる",
+        "弱くなる",
+        "止まる",
+        "一定になる"
+      ],
+      "answer": "激しくなる",
+      "acceptableAnswers": [
+        "激しくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem066",
+      "moduleId": "chemistry",
+      "prompt": "状態変化で、分子そのものはどうなるか。",
+      "explanation": "状態変化は化学変化ではない。",
+      "category": "状態変化",
+      "type": "choice",
+      "choices": [
+        "変わらない",
+        "別の分子になる",
+        "原子核が変わる",
+        "元素が変わる"
+      ],
+      "answer": "変わらない",
+      "acceptableAnswers": [
+        "変わらない"
+      ]
+    },
+    {
+      "id": "chemistry-chem067",
+      "moduleId": "chemistry",
+      "prompt": "物質を構成する基本粒子で、化学変化でそれ以上分けられないものを何というか。",
+      "explanation": "化学変化では原子の組み合わせが変わる。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "原子",
+        "分子",
+        "元素",
+        "イオン"
+      ],
+      "answer": "原子",
+      "acceptableAnswers": [
+        "原子"
+      ]
+    },
+    {
+      "id": "chemistry-chem068",
+      "moduleId": "chemistry",
+      "prompt": "原子の中心にある部分を何というか。",
+      "explanation": "原子核は陽子と中性子からなる。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "原子核",
+        "電子殻",
+        "陽子",
+        "中性子"
+      ],
+      "answer": "原子核",
+      "acceptableAnswers": [
+        "原子核"
+      ]
+    },
+    {
+      "id": "chemistry-chem069",
+      "moduleId": "chemistry",
+      "prompt": "原子核の周りに存在し、負の電気を帯びた粒子は何か。",
+      "explanation": "電子は負の電荷をもつ。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "電子",
+        "陽子",
+        "中性子",
+        "原子核"
+      ],
+      "answer": "電子",
+      "acceptableAnswers": [
+        "電子"
+      ]
+    },
+    {
+      "id": "chemistry-chem070",
+      "moduleId": "chemistry",
+      "prompt": "原子核内にあり、正の電気を帯びた粒子は何か。",
+      "explanation": "陽子数が原子番号になる。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "陽子",
+        "中性子",
+        "電子",
+        "イオン"
+      ],
+      "answer": "陽子",
+      "acceptableAnswers": [
+        "陽子"
+      ]
+    },
+    {
+      "id": "chemistry-chem071",
+      "moduleId": "chemistry",
+      "prompt": "原子核内にあり、電気を帯びていない粒子は何か。",
+      "explanation": "中性子は電気的に中性。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "中性子",
+        "陽子",
+        "電子",
+        "価電子"
+      ],
+      "answer": "中性子",
+      "acceptableAnswers": [
+        "中性子"
+      ]
+    },
+    {
+      "id": "chemistry-chem072",
+      "moduleId": "chemistry",
+      "prompt": "原子が全体として電気的に中性なのは、陽子数と何の数が等しいからか。",
+      "explanation": "正電荷と負電荷が打ち消し合う。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "電子",
+        "陽子",
+        "中性子",
+        "原子核"
+      ],
+      "answer": "電子",
+      "acceptableAnswers": [
+        "電子"
+      ]
+    },
+    {
+      "id": "chemistry-chem073",
+      "moduleId": "chemistry",
+      "prompt": "陽子の数を表す番号を何というか。",
+      "explanation": "原子番号は元素の種類を決める。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "原子番号",
+        "質量数",
+        "電子数",
+        "価電子数"
+      ],
+      "answer": "原子番号",
+      "acceptableAnswers": [
+        "原子番号"
+      ]
+    },
+    {
+      "id": "chemistry-chem074",
+      "moduleId": "chemistry",
+      "prompt": "陽子数と中性子数の和を何というか。",
+      "explanation": "質量数 = 陽子数 + 中性子数。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "質量数",
+        "原子番号",
+        "電子数",
+        "価電子数"
+      ],
+      "answer": "質量数",
+      "acceptableAnswers": [
+        "質量数"
+      ]
+    },
+    {
+      "id": "chemistry-chem075",
+      "moduleId": "chemistry",
+      "prompt": "同じ元素で、質量数が異なる原子を何というか。",
+      "explanation": "陽子数は同じだが中性子数が異なる。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "同位体",
+        "同素体",
+        "単体",
+        "化合物"
+      ],
+      "answer": "同位体",
+      "acceptableAnswers": [
+        "同位体"
+      ]
+    },
+    {
+      "id": "chemistry-chem076",
+      "moduleId": "chemistry",
+      "prompt": "原子核を構成する陽子と中性子をまとめて何というか。",
+      "explanation": "陽子と中性子をまとめて核子という。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "核子",
+        "電子",
+        "価電子",
+        "イオン"
+      ],
+      "answer": "核子",
+      "acceptableAnswers": [
+        "核子"
+      ]
+    },
+    {
+      "id": "chemistry-chem077",
+      "moduleId": "chemistry",
+      "prompt": "原子番号11、質量数23の原子の中性子数はいくつか。",
+      "explanation": "23 - 11 = 12。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "12",
+        "10",
+        "11",
+        "23"
+      ],
+      "answer": "12",
+      "acceptableAnswers": [
+        "12"
+      ]
+    },
+    {
+      "id": "chemistry-chem078",
+      "moduleId": "chemistry",
+      "prompt": "陽子数17、中性子数18の原子の質量数はいくつか。",
+      "explanation": "17 + 18 = 35。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "35",
+        "17",
+        "18",
+        "36"
+      ],
+      "answer": "35",
+      "acceptableAnswers": [
+        "35"
+      ]
+    },
+    {
+      "id": "chemistry-chem079",
+      "moduleId": "chemistry",
+      "prompt": "電子が原子核の周りで存在する層を何というか。",
+      "explanation": "K殻、L殻、M殻など。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "電子殻",
+        "原子核",
+        "陽子",
+        "中性子"
+      ],
+      "answer": "電子殻",
+      "acceptableAnswers": [
+        "電子殻"
+      ]
+    },
+    {
+      "id": "chemistry-chem080",
+      "moduleId": "chemistry",
+      "prompt": "原子核に最も近い電子殻は何か。",
+      "explanation": "最も内側がK殻。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "K殻",
+        "L殻",
+        "M殻",
+        "N殻"
+      ],
+      "answer": "K殻",
+      "acceptableAnswers": [
+        "K殻"
+      ]
+    },
+    {
+      "id": "chemistry-chem081",
+      "moduleId": "chemistry",
+      "prompt": "K殻に入る電子の最大数はいくつか。",
+      "explanation": "K殻は最大2個。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2個",
+        "8個",
+        "18個",
+        "32個"
+      ],
+      "answer": "2個",
+      "acceptableAnswers": [
+        "2個"
+      ]
+    },
+    {
+      "id": "chemistry-chem082",
+      "moduleId": "chemistry",
+      "prompt": "L殻に入る電子の最大数はいくつか。",
+      "explanation": "L殻は最大8個。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "8個",
+        "2個",
+        "18個",
+        "32個"
+      ],
+      "answer": "8個",
+      "acceptableAnswers": [
+        "8個"
+      ]
+    },
+    {
+      "id": "chemistry-chem083",
+      "moduleId": "chemistry",
+      "prompt": "原子の電子が電子殻にどのように入っているかを表したものを何というか。",
+      "explanation": "例：Naは2,8,1。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "電子配置",
+        "周期表",
+        "原子番号",
+        "質量数"
+      ],
+      "answer": "電子配置",
+      "acceptableAnswers": [
+        "電子配置"
+      ]
+    },
+    {
+      "id": "chemistry-chem084",
+      "moduleId": "chemistry",
+      "prompt": "原子の最も外側の電子殻を何というか。",
+      "explanation": "一番外側の電子殻。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "最外殻",
+        "K殻",
+        "原子核",
+        "内殻"
+      ],
+      "answer": "最外殻",
+      "acceptableAnswers": [
+        "最外殻"
+      ]
+    },
+    {
+      "id": "chemistry-chem085",
+      "moduleId": "chemistry",
+      "prompt": "最外殻にある電子を何というか。",
+      "explanation": "化学的性質に関わりやすい。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "価電子",
+        "陽子",
+        "中性子",
+        "核子"
+      ],
+      "answer": "価電子",
+      "acceptableAnswers": [
+        "価電子"
+      ]
+    },
+    {
+      "id": "chemistry-chem086",
+      "moduleId": "chemistry",
+      "prompt": "価電子がほぼ満たされていて安定な18族元素を何というか。",
+      "explanation": "He, Ne, Arなど。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "希ガス",
+        "ハロゲン",
+        "アルカリ金属",
+        "半金属"
+      ],
+      "answer": "希ガス",
+      "acceptableAnswers": [
+        "希ガス"
+      ]
+    },
+    {
+      "id": "chemistry-chem087",
+      "moduleId": "chemistry",
+      "prompt": "元素を原子番号順に並べ、性質の似た元素が縦に並ぶ表は何か。",
+      "explanation": "縦の列を族、横の行を周期という。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "周期表",
+        "電子配置",
+        "元素記号",
+        "質量数表"
+      ],
+      "answer": "周期表",
+      "acceptableAnswers": [
+        "周期表"
+      ]
+    },
+    {
+      "id": "chemistry-chem088",
+      "moduleId": "chemistry",
+      "prompt": "周期表の縦の列を何というか。",
+      "explanation": "同じ族では性質が似ることが多い。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "族",
+        "周期",
+        "電子殻",
+        "価電子"
+      ],
+      "answer": "族",
+      "acceptableAnswers": [
+        "族"
+      ]
+    },
+    {
+      "id": "chemistry-chem089",
+      "moduleId": "chemistry",
+      "prompt": "周期表の横の行を何というか。",
+      "explanation": "周期は使っている電子殻の数と関係する。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "周期",
+        "族",
+        "電子殻",
+        "価電子"
+      ],
+      "answer": "周期",
+      "acceptableAnswers": [
+        "周期"
+      ]
+    },
+    {
+      "id": "chemistry-chem090",
+      "moduleId": "chemistry",
+      "prompt": "1族の水素以外の元素を何というか。",
+      "explanation": "Li, Na, Kなど。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "アルカリ金属",
+        "ハロゲン",
+        "希ガス",
+        "半金属"
+      ],
+      "answer": "アルカリ金属",
+      "acceptableAnswers": [
+        "アルカリ金属"
+      ]
+    },
+    {
+      "id": "chemistry-chem091",
+      "moduleId": "chemistry",
+      "prompt": "17族元素を何というか。",
+      "explanation": "F, Cl, Br, Iなど。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "ハロゲン",
+        "アルカリ金属",
+        "希ガス",
+        "半金属"
+      ],
+      "answer": "ハロゲン",
+      "acceptableAnswers": [
+        "ハロゲン"
+      ]
+    },
+    {
+      "id": "chemistry-chem092",
+      "moduleId": "chemistry",
+      "prompt": "18族元素を何というか。",
+      "explanation": "He, Ne, Arなど。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "希ガス",
+        "アルカリ金属",
+        "ハロゲン",
+        "遷移元素"
+      ],
+      "answer": "希ガス",
+      "acceptableAnswers": [
+        "希ガス"
+      ]
+    },
+    {
+      "id": "chemistry-chem093",
+      "moduleId": "chemistry",
+      "prompt": "同じ族の元素で化学的性質が似る主な理由は何か。",
+      "explanation": "価電子数が反応性に大きく関係する。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "価電子数が同じだから",
+        "質量数が同じだから",
+        "中性子数が同じだから",
+        "融点が同じだから"
+      ],
+      "answer": "価電子数が同じだから",
+      "acceptableAnswers": [
+        "価電子数が同じだから"
+      ]
+    },
+    {
+      "id": "chemistry-chem094",
+      "moduleId": "chemistry",
+      "prompt": "Naの電子配置はどれか。",
+      "explanation": "Naは原子番号11。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,8,1",
+        "2,7",
+        "2,8,7",
+        "2,8,8"
+      ],
+      "answer": "2,8,1",
+      "acceptableAnswers": [
+        "2,8,1"
+      ]
+    },
+    {
+      "id": "chemistry-chem095",
+      "moduleId": "chemistry",
+      "prompt": "Clの電子配置はどれか。",
+      "explanation": "Clは原子番号17。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,8,7",
+        "2,8,1",
+        "2,6",
+        "2,8,8"
+      ],
+      "answer": "2,8,7",
+      "acceptableAnswers": [
+        "2,8,7"
+      ]
+    },
+    {
+      "id": "chemistry-chem096",
+      "moduleId": "chemistry",
+      "prompt": "Neの電子配置はどれか。",
+      "explanation": "Neは原子番号10。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,8",
+        "2,1",
+        "2,4",
+        "2,8,1"
+      ],
+      "answer": "2,8",
+      "acceptableAnswers": [
+        "2,8"
+      ]
+    },
+    {
+      "id": "chemistry-chem097",
+      "moduleId": "chemistry",
+      "prompt": "原子や原子団が電子を失ったり受け取ったりして電気を帯びた粒子を何というか。",
+      "explanation": "陽イオンと陰イオンがある。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "イオン",
+        "原子",
+        "分子",
+        "同位体"
+      ],
+      "answer": "イオン",
+      "acceptableAnswers": [
+        "イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem098",
+      "moduleId": "chemistry",
+      "prompt": "電子を失って正の電気を帯びたイオンを何というか。",
+      "explanation": "電子を失うと正に帯電する。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "陽イオン",
+        "陰イオン",
+        "原子核",
+        "電子殻"
+      ],
+      "answer": "陽イオン",
+      "acceptableAnswers": [
+        "陽イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem099",
+      "moduleId": "chemistry",
+      "prompt": "電子を受け取って負の電気を帯びたイオンを何というか。",
+      "explanation": "電子を受け取ると負に帯電する。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "陰イオン",
+        "陽イオン",
+        "価電子",
+        "同位体"
+      ],
+      "answer": "陰イオン",
+      "acceptableAnswers": [
+        "陰イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem100",
+      "moduleId": "chemistry",
+      "prompt": "ナトリウム原子Naが電子を1個失うとできるイオンは何か。",
+      "explanation": "Na+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "ナトリウムイオン",
+        "塩化物イオン",
+        "マグネシウムイオン",
+        "酸化物イオン"
+      ],
+      "answer": "ナトリウムイオン",
+      "acceptableAnswers": [
+        "ナトリウムイオン",
+        "Na+"
+      ]
+    },
+    {
+      "id": "chemistry-chem101",
+      "moduleId": "chemistry",
+      "prompt": "塩素原子Clが電子を1個受け取るとできるイオンは何か。",
+      "explanation": "Cl-になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "塩化物イオン",
+        "ナトリウムイオン",
+        "水素イオン",
+        "水酸化物イオン"
+      ],
+      "answer": "塩化物イオン",
+      "acceptableAnswers": [
+        "塩化物イオン",
+        "Cl-"
+      ]
+    },
+    {
+      "id": "chemistry-chem102",
+      "moduleId": "chemistry",
+      "prompt": "マグネシウム原子Mgが電子を2個失うとできるイオンは何か。",
+      "explanation": "Mg2+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "マグネシウムイオン",
+        "カルシウムイオン",
+        "ナトリウムイオン",
+        "塩化物イオン"
+      ],
+      "answer": "マグネシウムイオン",
+      "acceptableAnswers": [
+        "マグネシウムイオン",
+        "Mg2+"
+      ]
+    },
+    {
+      "id": "chemistry-chem103",
+      "moduleId": "chemistry",
+      "prompt": "カルシウム原子Caが電子を2個失うとできるイオンは何か。",
+      "explanation": "Ca2+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "カルシウムイオン",
+        "マグネシウムイオン",
+        "水素イオン",
+        "酸化物イオン"
+      ],
+      "answer": "カルシウムイオン",
+      "acceptableAnswers": [
+        "カルシウムイオン",
+        "Ca2+"
+      ]
+    },
+    {
+      "id": "chemistry-chem104",
+      "moduleId": "chemistry",
+      "prompt": "酸素原子Oが電子を2個受け取るとできるイオンは何か。",
+      "explanation": "O2-になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "酸化物イオン",
+        "塩化物イオン",
+        "硝酸イオン",
+        "硫酸イオン"
+      ],
+      "answer": "酸化物イオン",
+      "acceptableAnswers": [
+        "酸化物イオン",
+        "O2-"
+      ]
+    },
+    {
+      "id": "chemistry-chem105",
+      "moduleId": "chemistry",
+      "prompt": "水素原子Hが電子を1個失うとできるイオンは何か。",
+      "explanation": "H+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "水素イオン",
+        "水酸化物イオン",
+        "塩化物イオン",
+        "アンモニウムイオン"
+      ],
+      "answer": "水素イオン",
+      "acceptableAnswers": [
+        "水素イオン",
+        "H+"
+      ]
+    },
+    {
+      "id": "chemistry-chem106",
+      "moduleId": "chemistry",
+      "prompt": "水酸化物イオンのイオン式はどれか。",
+      "explanation": "水酸化物イオンはOH-。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "OH-",
+        "NO3-",
+        "SO4^2-",
+        "NH4+"
+      ],
+      "answer": "OH-",
+      "acceptableAnswers": [
+        "OH-"
+      ]
+    },
+    {
+      "id": "chemistry-chem107",
+      "moduleId": "chemistry",
+      "prompt": "硝酸イオンのイオン式はどれか。",
+      "explanation": "硝酸イオンはNO3-。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "NO3-",
+        "OH-",
+        "SO4^2-",
+        "CO3^2-"
+      ],
+      "answer": "NO3-",
+      "acceptableAnswers": [
+        "NO3-"
+      ]
+    },
+    {
+      "id": "chemistry-chem108",
+      "moduleId": "chemistry",
+      "prompt": "硫酸イオンのイオン式はどれか。",
+      "explanation": "硫酸イオンはSO4^2-。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "SO4^2-",
+        "NO3-",
+        "CO3^2-",
+        "NH4+"
+      ],
+      "answer": "SO4^2-",
+      "acceptableAnswers": [
+        "SO4^2-"
+      ]
+    },
+    {
+      "id": "chemistry-chem109",
+      "moduleId": "chemistry",
+      "prompt": "炭酸イオンのイオン式はどれか。",
+      "explanation": "炭酸イオンはCO3^2-。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "CO3^2-",
+        "NO3-",
+        "SO4^2-",
+        "OH-"
+      ],
+      "answer": "CO3^2-",
+      "acceptableAnswers": [
+        "CO3^2-"
+      ]
+    },
+    {
+      "id": "chemistry-chem110",
+      "moduleId": "chemistry",
+      "prompt": "アンモニウムイオンのイオン式はどれか。",
+      "explanation": "アンモニウムイオンはNH4+。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "NH4+",
+        "OH-",
+        "NO3-",
+        "CO3^2-"
+      ],
+      "answer": "NH4+",
+      "acceptableAnswers": [
+        "NH4+"
+      ]
+    },
+    {
+      "id": "chemistry-chem111",
+      "moduleId": "chemistry",
+      "prompt": "原子から電子1個を取り去って陽イオンにするのに必要なエネルギーを何というか。",
+      "explanation": "値が小さいほど陽イオンになりやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "イオン化エネルギー",
+        "電子親和力",
+        "活性化エネルギー",
+        "結合エネルギー"
+      ],
+      "answer": "イオン化エネルギー",
+      "acceptableAnswers": [
+        "イオン化エネルギー"
+      ]
+    },
+    {
+      "id": "chemistry-chem112",
+      "moduleId": "chemistry",
+      "prompt": "原子が電子1個を受け取って陰イオンになるときに放出されるエネルギーを何というか。",
+      "explanation": "値が大きいほど電子を受け取りやすい傾向。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "電子親和力",
+        "イオン化エネルギー",
+        "活性化エネルギー",
+        "熱エネルギー"
+      ],
+      "answer": "電子親和力",
+      "acceptableAnswers": [
+        "電子親和力"
+      ]
+    },
+    {
+      "id": "chemistry-chem113",
+      "moduleId": "chemistry",
+      "prompt": "金属元素は陽イオンと陰イオンのどちらになりやすいか。",
+      "explanation": "金属元素は電子を失いやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "陽イオン",
+        "陰イオン",
+        "同位体",
+        "分子"
+      ],
+      "answer": "陽イオン",
+      "acceptableAnswers": [
+        "陽イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem114",
+      "moduleId": "chemistry",
+      "prompt": "非金属元素は陽イオンと陰イオンのどちらになりやすいか。",
+      "explanation": "非金属元素は電子を受け取りやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "陰イオン",
+        "陽イオン",
+        "単体",
+        "同素体"
+      ],
+      "answer": "陰イオン",
+      "acceptableAnswers": [
+        "陰イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem115",
+      "moduleId": "chemistry",
+      "prompt": "塩化ナトリウムNaClは、Na+と何からできているか。",
+      "explanation": "塩化ナトリウムはNa+とCl-からなる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "Cl-",
+        "Na+",
+        "Mg2+",
+        "OH-"
+      ],
+      "answer": "Cl-",
+      "acceptableAnswers": [
+        "Cl-",
+        "塩化物イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem116",
+      "moduleId": "chemistry",
+      "prompt": "陽イオンと陰イオンの間にはどのような力が働くか。",
+      "explanation": "正と負の電荷は引き合う。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "引き合う力",
+        "反発する力",
+        "重力だけ",
+        "力は働かない"
+      ],
+      "answer": "引き合う力",
+      "acceptableAnswers": [
+        "引き合う力",
+        "静電気的な引力"
+      ]
+    },
+    {
+      "id": "chemistry-chem117",
+      "moduleId": "chemistry",
+      "prompt": "固体が液体を経ずに直接気体になる性質を利用して分離する方法は何か。",
+      "explanation": "ヨウ素やナフタレンなど、昇華しやすい物質の分離に使う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "昇華法",
+        "蒸留",
+        "ろ過",
+        "再結晶"
+      ],
+      "answer": "昇華法",
+      "acceptableAnswers": [
+        "昇華法",
+        "昇華"
+      ]
+    },
+    {
+      "id": "chemistry-chem118",
+      "moduleId": "chemistry",
+      "prompt": "液体空気から窒素や酸素を分けるときに使う操作は何か。",
+      "explanation": "液体窒素と液体酸素は沸点が異なるため、分留で分けられる。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "分留",
+        "ろ過",
+        "再結晶",
+        "抽出"
+      ],
+      "answer": "分留",
+      "acceptableAnswers": [
+        "分留",
+        "分別蒸留"
+      ]
+    },
+    {
+      "id": "chemistry-chem119",
+      "moduleId": "chemistry",
+      "prompt": "固体が液体を経ずに気体へ変化し、さらに冷えて固体に戻る性質を何というか。",
+      "explanation": "ヨウ素、ドライアイス、ナフタレンなどで扱う。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "昇華",
+        "融解",
+        "凝固",
+        "凝縮"
+      ],
+      "answer": "昇華",
+      "acceptableAnswers": [
+        "昇華"
+      ]
+    },
+    {
+      "id": "chemistry-chem120",
+      "moduleId": "chemistry",
+      "prompt": "ろ過でろ紙の穴を通るものはどれか。",
+      "explanation": "ろ紙を通り抜けた液体をろ液という。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "ろ液",
+        "残留物",
+        "沈殿",
+        "結晶"
+      ],
+      "answer": "ろ液",
+      "acceptableAnswers": [
+        "ろ液"
+      ]
+    },
+    {
+      "id": "chemistry-chem121",
+      "moduleId": "chemistry",
+      "prompt": "ろ過でろ紙の上に残るものはどれか。",
+      "explanation": "ろ紙の上に残った固体を残留物という。",
+      "category": "分離・精製",
+      "type": "choice",
+      "choices": [
+        "残留物",
+        "ろ液",
+        "蒸留物",
+        "抽出液"
+      ],
+      "answer": "残留物",
+      "acceptableAnswers": [
+        "残留物"
+      ]
+    },
+    {
+      "id": "chemistry-chem122",
+      "moduleId": "chemistry",
+      "prompt": "炎色反応でリチウムLiが示す代表的な色は何色か。",
+      "explanation": "Liは赤色系の炎色反応を示す。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "赤色",
+        "黄色",
+        "赤紫色",
+        "青緑色"
+      ],
+      "answer": "赤色",
+      "acceptableAnswers": [
+        "赤色",
+        "赤"
+      ]
+    },
+    {
+      "id": "chemistry-chem123",
+      "moduleId": "chemistry",
+      "prompt": "炎色反応でストロンチウムSrが示す代表的な色は何色か。",
+      "explanation": "Srは紅色系の炎色反応を示す。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "紅色",
+        "黄色",
+        "黄緑色",
+        "青緑色"
+      ],
+      "answer": "紅色",
+      "acceptableAnswers": [
+        "紅色",
+        "赤色"
+      ]
+    },
+    {
+      "id": "chemistry-chem124",
+      "moduleId": "chemistry",
+      "prompt": "炎色反応でバリウムBaが示す代表的な色は何色か。",
+      "explanation": "Baは黄緑色の炎色反応を示す。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "黄緑色",
+        "黄色",
+        "赤紫色",
+        "橙赤色"
+      ],
+      "answer": "黄緑色",
+      "acceptableAnswers": [
+        "黄緑色"
+      ]
+    },
+    {
+      "id": "chemistry-chem125",
+      "moduleId": "chemistry",
+      "prompt": "白金線などに試料をつけて炎に入れ、元素特有の色を見る実験を何というか。",
+      "explanation": "金属元素の確認に利用される。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "炎色反応",
+        "沈殿反応",
+        "中和反応",
+        "酸化反応"
+      ],
+      "answer": "炎色反応",
+      "acceptableAnswers": [
+        "炎色反応"
+      ]
+    },
+    {
+      "id": "chemistry-chem126",
+      "moduleId": "chemistry",
+      "prompt": "二酸化炭素を石灰水に通すと白くにごるのは、主に何が生じるためか。",
+      "explanation": "二酸化炭素と石灰水中の成分が反応して白色沈殿を生じる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "炭酸カルシウム",
+        "塩化銀",
+        "硫酸銅",
+        "水酸化ナトリウム"
+      ],
+      "answer": "炭酸カルシウム",
+      "acceptableAnswers": [
+        "炭酸カルシウム",
+        "CaCO3"
+      ]
+    },
+    {
+      "id": "chemistry-chem127",
+      "moduleId": "chemistry",
+      "prompt": "水の検出に使い、水があると白色から青色に変わる物質は何か。",
+      "explanation": "無水硫酸銅は水を含むと青色になる。",
+      "category": "元素と検出",
+      "type": "choice",
+      "choices": [
+        "無水硫酸銅",
+        "塩化コバルト紙",
+        "石灰水",
+        "硝酸銀水溶液"
+      ],
+      "answer": "無水硫酸銅",
+      "acceptableAnswers": [
+        "無水硫酸銅",
+        "硫酸銅(II)無水物",
+        "硫酸銅無水物"
+      ]
+    },
+    {
+      "id": "chemistry-chem128",
+      "moduleId": "chemistry",
+      "prompt": "亜鉛の元素記号はどれか。",
+      "explanation": "亜鉛はZn。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Zn",
+        "Zr",
+        "Cu",
+        "Ag"
+      ],
+      "answer": "Zn",
+      "acceptableAnswers": [
+        "Zn"
+      ]
+    },
+    {
+      "id": "chemistry-chem129",
+      "moduleId": "chemistry",
+      "prompt": "白金の元素記号はどれか。",
+      "explanation": "白金はPt。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Pt",
+        "Pb",
+        "P",
+        "Fe"
+      ],
+      "answer": "Pt",
+      "acceptableAnswers": [
+        "Pt"
+      ]
+    },
+    {
+      "id": "chemistry-chem130",
+      "moduleId": "chemistry",
+      "prompt": "クロムの元素記号はどれか。",
+      "explanation": "クロムはCr。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Cr",
+        "Cl",
+        "Cu",
+        "Ca"
+      ],
+      "answer": "Cr",
+      "acceptableAnswers": [
+        "Cr"
+      ]
+    },
+    {
+      "id": "chemistry-chem131",
+      "moduleId": "chemistry",
+      "prompt": "マンガンの元素記号はどれか。",
+      "explanation": "マンガンはMn。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Mn",
+        "Mg",
+        "Mo",
+        "Na"
+      ],
+      "answer": "Mn",
+      "acceptableAnswers": [
+        "Mn"
+      ]
+    },
+    {
+      "id": "chemistry-chem132",
+      "moduleId": "chemistry",
+      "prompt": "臭素の元素記号はどれか。",
+      "explanation": "臭素はBr。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Br",
+        "B",
+        "Ba",
+        "Be"
+      ],
+      "answer": "Br",
+      "acceptableAnswers": [
+        "Br"
+      ]
+    },
+    {
+      "id": "chemistry-chem133",
+      "moduleId": "chemistry",
+      "prompt": "ヨウ素の元素記号はどれか。",
+      "explanation": "ヨウ素はI。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "I",
+        "Y",
+        "In",
+        "Ir"
+      ],
+      "answer": "I",
+      "acceptableAnswers": [
+        "I"
+      ]
+    },
+    {
+      "id": "chemistry-chem134",
+      "moduleId": "chemistry",
+      "prompt": "アルミニウムの元素記号はどれか。",
+      "explanation": "アルミニウムはAl。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Al",
+        "Ag",
+        "Au",
+        "Ar"
+      ],
+      "answer": "Al",
+      "acceptableAnswers": [
+        "Al"
+      ]
+    },
+    {
+      "id": "chemistry-chem135",
+      "moduleId": "chemistry",
+      "prompt": "マグネシウムの元素記号はどれか。",
+      "explanation": "マグネシウムはMg。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Mg",
+        "Mn",
+        "Na",
+        "Ne"
+      ],
+      "answer": "Mg",
+      "acceptableAnswers": [
+        "Mg"
+      ]
+    },
+    {
+      "id": "chemistry-chem136",
+      "moduleId": "chemistry",
+      "prompt": "窒素の元素記号はどれか。",
+      "explanation": "窒素はN。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "N",
+        "Na",
+        "Ne",
+        "Ni"
+      ],
+      "answer": "N",
+      "acceptableAnswers": [
+        "N"
+      ]
+    },
+    {
+      "id": "chemistry-chem137",
+      "moduleId": "chemistry",
+      "prompt": "ネオンの元素記号はどれか。",
+      "explanation": "ネオンはNe。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Ne",
+        "Na",
+        "N",
+        "Ni"
+      ],
+      "answer": "Ne",
+      "acceptableAnswers": [
+        "Ne"
+      ]
+    },
+    {
+      "id": "chemistry-chem138",
+      "moduleId": "chemistry",
+      "prompt": "ベリリウムの元素記号はどれか。",
+      "explanation": "ベリリウムはBe。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "Be",
+        "B",
+        "Ba",
+        "Br"
+      ],
+      "answer": "Be",
+      "acceptableAnswers": [
+        "Be"
+      ]
+    },
+    {
+      "id": "chemistry-chem139",
+      "moduleId": "chemistry",
+      "prompt": "ホウ素の元素記号はどれか。",
+      "explanation": "ホウ素はB。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "B",
+        "Be",
+        "Ba",
+        "Br"
+      ],
+      "answer": "B",
+      "acceptableAnswers": [
+        "B"
+      ]
+    },
+    {
+      "id": "chemistry-chem140",
+      "moduleId": "chemistry",
+      "prompt": "2族元素を何というか。",
+      "explanation": "周期表の2族はアルカリ土類金属として扱う。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "アルカリ土類金属",
+        "アルカリ金属",
+        "ハロゲン",
+        "希ガス"
+      ],
+      "answer": "アルカリ土類金属",
+      "acceptableAnswers": [
+        "アルカリ土類金属"
+      ]
+    },
+    {
+      "id": "chemistry-chem141",
+      "moduleId": "chemistry",
+      "prompt": "周期表の中央付近に多く、3〜11族に多い金属元素を何というか。",
+      "explanation": "周期表中央部の元素群。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "遷移元素",
+        "典型元素",
+        "希ガス",
+        "ハロゲン"
+      ],
+      "answer": "遷移元素",
+      "acceptableAnswers": [
+        "遷移元素"
+      ]
+    },
+    {
+      "id": "chemistry-chem142",
+      "moduleId": "chemistry",
+      "prompt": "周期表で1、2族と12〜18族に多い元素群を何というか。",
+      "explanation": "典型元素は周期表の左側・右側に多い。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "典型元素",
+        "遷移元素",
+        "同位体",
+        "同素体"
+      ],
+      "answer": "典型元素",
+      "acceptableAnswers": [
+        "典型元素"
+      ]
+    },
+    {
+      "id": "chemistry-chem143",
+      "moduleId": "chemistry",
+      "prompt": "元素の性質が原子番号にしたがって周期的に変化することを何というか。",
+      "explanation": "元素を原子番号順に並べると性質が周期的に現れる。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "周期律",
+        "周期表",
+        "電子配置",
+        "イオン化エネルギー"
+      ],
+      "answer": "周期律",
+      "acceptableAnswers": [
+        "周期律"
+      ]
+    },
+    {
+      "id": "chemistry-chem144",
+      "moduleId": "chemistry",
+      "prompt": "元素を原子量順に並べ、周期表の原型を作った人物は誰か。",
+      "explanation": "メンデレーエフは周期表の原型を作った人物。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "メンデレーエフ",
+        "ドルトン",
+        "ボーア",
+        "ラボアジエ"
+      ],
+      "answer": "メンデレーエフ",
+      "acceptableAnswers": [
+        "メンデレーエフ"
+      ]
+    },
+    {
+      "id": "chemistry-chem145",
+      "moduleId": "chemistry",
+      "prompt": "原子の構成表示で、元素記号の左上に書く数は何を表すか。",
+      "explanation": "左上のAは質量数を表す。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "質量数",
+        "原子番号",
+        "電子数",
+        "価電子数"
+      ],
+      "answer": "質量数",
+      "acceptableAnswers": [
+        "質量数"
+      ]
+    },
+    {
+      "id": "chemistry-chem146",
+      "moduleId": "chemistry",
+      "prompt": "原子の構成表示で、元素記号の左下に書く数は何を表すか。",
+      "explanation": "左下のZは原子番号を表す。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "原子番号",
+        "質量数",
+        "中性子数",
+        "価電子数"
+      ],
+      "answer": "原子番号",
+      "acceptableAnswers": [
+        "原子番号"
+      ]
+    },
+    {
+      "id": "chemistry-chem147",
+      "moduleId": "chemistry",
+      "prompt": "中性の原子で、原子番号と等しい粒子数はどれか。",
+      "explanation": "中性原子では原子番号=陽子数=電子数。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "陽子数と電子数",
+        "中性子数だけ",
+        "質量数だけ",
+        "価電子数だけ"
+      ],
+      "answer": "陽子数と電子数",
+      "acceptableAnswers": [
+        "陽子数と電子数"
+      ]
+    },
+    {
+      "id": "chemistry-chem148",
+      "moduleId": "chemistry",
+      "prompt": "放射線を出す性質をもつ同位体を何というか。",
+      "explanation": "放射性同位体は放射線を出して壊れる。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "放射性同位体",
+        "同素体",
+        "典型元素",
+        "遷移元素"
+      ],
+      "answer": "放射性同位体",
+      "acceptableAnswers": [
+        "放射性同位体",
+        "ラジオアイソトープ"
+      ]
+    },
+    {
+      "id": "chemistry-chem149",
+      "moduleId": "chemistry",
+      "prompt": "質量数35、原子番号17の原子の中性子数はいくつか。",
+      "explanation": "35 - 17 = 18。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "18",
+        "17",
+        "35",
+        "52"
+      ],
+      "answer": "18",
+      "acceptableAnswers": [
+        "18"
+      ]
+    },
+    {
+      "id": "chemistry-chem150",
+      "moduleId": "chemistry",
+      "prompt": "原子番号13、質量数27のアルミニウム原子の中性子数はいくつか。",
+      "explanation": "27 - 13 = 14。",
+      "category": "原子の構成",
+      "type": "choice",
+      "choices": [
+        "14",
+        "13",
+        "27",
+        "40"
+      ],
+      "answer": "14",
+      "acceptableAnswers": [
+        "14"
+      ]
+    },
+    {
+      "id": "chemistry-chem151",
+      "moduleId": "chemistry",
+      "prompt": "リチウムLiの価電子数はいくつか。",
+      "explanation": "Liの電子配置は2,1で、価電子は1個。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "1",
+        "2",
+        "4",
+        "7"
+      ],
+      "answer": "1",
+      "acceptableAnswers": [
+        "1"
+      ]
+    },
+    {
+      "id": "chemistry-chem152",
+      "moduleId": "chemistry",
+      "prompt": "炭素Cの価電子数はいくつか。",
+      "explanation": "Cの電子配置は2,4。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "4",
+        "1",
+        "2",
+        "7"
+      ],
+      "answer": "4",
+      "acceptableAnswers": [
+        "4"
+      ]
+    },
+    {
+      "id": "chemistry-chem153",
+      "moduleId": "chemistry",
+      "prompt": "フッ素Fの価電子数はいくつか。",
+      "explanation": "Fの電子配置は2,7。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "7",
+        "1",
+        "4",
+        "8"
+      ],
+      "answer": "7",
+      "acceptableAnswers": [
+        "7"
+      ]
+    },
+    {
+      "id": "chemistry-chem154",
+      "moduleId": "chemistry",
+      "prompt": "ネオンNeの価電子数は通常いくつとして扱うか。",
+      "explanation": "希ガスは安定で、価電子数を0として扱うことがある。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "0",
+        "2",
+        "7",
+        "8"
+      ],
+      "answer": "0",
+      "acceptableAnswers": [
+        "0"
+      ]
+    },
+    {
+      "id": "chemistry-chem155",
+      "moduleId": "chemistry",
+      "prompt": "マグネシウムMgの価電子数はいくつか。",
+      "explanation": "Mgの電子配置は2,8,2。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2",
+        "1",
+        "4",
+        "7"
+      ],
+      "answer": "2",
+      "acceptableAnswers": [
+        "2"
+      ]
+    },
+    {
+      "id": "chemistry-chem156",
+      "moduleId": "chemistry",
+      "prompt": "リチウムLiの電子配置はどれか。",
+      "explanation": "Liは原子番号3。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,1",
+        "2,4",
+        "2,7",
+        "2,8"
+      ],
+      "answer": "2,1",
+      "acceptableAnswers": [
+        "2,1"
+      ]
+    },
+    {
+      "id": "chemistry-chem157",
+      "moduleId": "chemistry",
+      "prompt": "炭素Cの電子配置はどれか。",
+      "explanation": "Cは原子番号6。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,4",
+        "2,1",
+        "2,6",
+        "2,8"
+      ],
+      "answer": "2,4",
+      "acceptableAnswers": [
+        "2,4"
+      ]
+    },
+    {
+      "id": "chemistry-chem158",
+      "moduleId": "chemistry",
+      "prompt": "酸素Oの電子配置はどれか。",
+      "explanation": "Oは原子番号8。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,6",
+        "2,4",
+        "2,8",
+        "2,8,1"
+      ],
+      "answer": "2,6",
+      "acceptableAnswers": [
+        "2,6"
+      ]
+    },
+    {
+      "id": "chemistry-chem159",
+      "moduleId": "chemistry",
+      "prompt": "フッ素Fの電子配置はどれか。",
+      "explanation": "Fは原子番号9。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,7",
+        "2,1",
+        "2,6",
+        "2,8"
+      ],
+      "answer": "2,7",
+      "acceptableAnswers": [
+        "2,7"
+      ]
+    },
+    {
+      "id": "chemistry-chem160",
+      "moduleId": "chemistry",
+      "prompt": "マグネシウムMgの電子配置はどれか。",
+      "explanation": "Mgは原子番号12。",
+      "category": "電子配置と周期表",
+      "type": "choice",
+      "choices": [
+        "2,8,2",
+        "2,8,1",
+        "2,8,7",
+        "2,8,8"
+      ],
+      "answer": "2,8,2",
+      "acceptableAnswers": [
+        "2,8,2"
+      ]
+    },
+    {
+      "id": "chemistry-chem161",
+      "moduleId": "chemistry",
+      "prompt": "リチウム原子Liが電子を1個失うとできるイオンは何か。",
+      "explanation": "Li+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "リチウムイオン",
+        "ナトリウムイオン",
+        "カリウムイオン",
+        "水素イオン"
+      ],
+      "answer": "リチウムイオン",
+      "acceptableAnswers": [
+        "リチウムイオン",
+        "Li+"
+      ]
+    },
+    {
+      "id": "chemistry-chem162",
+      "moduleId": "chemistry",
+      "prompt": "アルミニウム原子Alが電子を3個失うとできるイオンは何か。",
+      "explanation": "Al3+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "アルミニウムイオン",
+        "マグネシウムイオン",
+        "カルシウムイオン",
+        "ナトリウムイオン"
+      ],
+      "answer": "アルミニウムイオン",
+      "acceptableAnswers": [
+        "アルミニウムイオン",
+        "Al3+"
+      ]
+    },
+    {
+      "id": "chemistry-chem163",
+      "moduleId": "chemistry",
+      "prompt": "カリウム原子Kが電子を1個失うとできるイオンは何か。",
+      "explanation": "K+になる。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "カリウムイオン",
+        "カルシウムイオン",
+        "ナトリウムイオン",
+        "塩化物イオン"
+      ],
+      "answer": "カリウムイオン",
+      "acceptableAnswers": [
+        "カリウムイオン",
+        "K+"
+      ]
+    },
+    {
+      "id": "chemistry-chem164",
+      "moduleId": "chemistry",
+      "prompt": "リチウムイオンのイオン式はどれか。",
+      "explanation": "リチウムイオンはLi+。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "Li+",
+        "Na+",
+        "K+",
+        "Al3+"
+      ],
+      "answer": "Li+",
+      "acceptableAnswers": [
+        "Li+"
+      ]
+    },
+    {
+      "id": "chemistry-chem165",
+      "moduleId": "chemistry",
+      "prompt": "アルミニウムイオンのイオン式はどれか。",
+      "explanation": "アルミニウムイオンはAl3+。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "Al3+",
+        "Mg2+",
+        "Ca2+",
+        "Na+"
+      ],
+      "answer": "Al3+",
+      "acceptableAnswers": [
+        "Al3+"
+      ]
+    },
+    {
+      "id": "chemistry-chem166",
+      "moduleId": "chemistry",
+      "prompt": "カリウムイオンのイオン式はどれか。",
+      "explanation": "カリウムイオンはK+。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "K+",
+        "Ca2+",
+        "Cl-",
+        "O2-"
+      ],
+      "answer": "K+",
+      "acceptableAnswers": [
+        "K+"
+      ]
+    },
+    {
+      "id": "chemistry-chem167",
+      "moduleId": "chemistry",
+      "prompt": "オキソニウムイオンのイオン式はどれか。",
+      "explanation": "オキソニウムイオンはH3O+。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "H3O+",
+        "NH4+",
+        "OH-",
+        "NO3-"
+      ],
+      "answer": "H3O+",
+      "acceptableAnswers": [
+        "H3O+",
+        "ヒドロニウムイオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem168",
+      "moduleId": "chemistry",
+      "prompt": "リン酸イオンのイオン式はどれか。",
+      "explanation": "リン酸イオンはPO4^3-。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "PO4^3-",
+        "SO4^2-",
+        "CO3^2-",
+        "NO3-"
+      ],
+      "answer": "PO4^3-",
+      "acceptableAnswers": [
+        "PO4^3-"
+      ]
+    },
+    {
+      "id": "chemistry-chem169",
+      "moduleId": "chemistry",
+      "prompt": "複数の原子からなる原子団が電気を帯びたイオンを何というか。",
+      "explanation": "NH4+、OH-、NO3-などは多原子イオン。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "多原子イオン",
+        "単原子イオン",
+        "同位体",
+        "同素体"
+      ],
+      "answer": "多原子イオン",
+      "acceptableAnswers": [
+        "多原子イオン"
+      ]
+    },
+    {
+      "id": "chemistry-chem170",
+      "moduleId": "chemistry",
+      "prompt": "陽イオンの大きさは、もとの原子より一般にどうなるか。",
+      "explanation": "電子を失うことで、電子配置が安定な希ガス型に近づき、半径は小さくなりやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "小さくなる",
+        "大きくなる",
+        "同じになる",
+        "必ず2倍になる"
+      ],
+      "answer": "小さくなる",
+      "acceptableAnswers": [
+        "小さくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem171",
+      "moduleId": "chemistry",
+      "prompt": "陰イオンの大きさは、もとの原子より一般にどうなるか。",
+      "explanation": "電子を受け取るため電子同士の反発が増え、半径は大きくなりやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "大きくなる",
+        "小さくなる",
+        "同じになる",
+        "必ず半分になる"
+      ],
+      "answer": "大きくなる",
+      "acceptableAnswers": [
+        "大きくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem172",
+      "moduleId": "chemistry",
+      "prompt": "同じ族の陽イオンでは、原子番号が大きいほどイオン半径は一般にどうなるか。",
+      "explanation": "下の周期ほど電子殻が増えるため、大きくなりやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "大きくなる",
+        "小さくなる",
+        "同じになる",
+        "0になる"
+      ],
+      "answer": "大きくなる",
+      "acceptableAnswers": [
+        "大きくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem173",
+      "moduleId": "chemistry",
+      "prompt": "同じ電子配置をもつイオンでは、原子番号が大きいほどイオン半径は一般にどうなるか。",
+      "explanation": "原子核の正電荷が大きいほど電子を強く引きつける。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "小さくなる",
+        "大きくなる",
+        "同じになる",
+        "不規則になる"
+      ],
+      "answer": "小さくなる",
+      "acceptableAnswers": [
+        "小さくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem174",
+      "moduleId": "chemistry",
+      "prompt": "第1イオン化エネルギーは、同一周期では右に行くほど一般にどうなるか。",
+      "explanation": "同一周期では原子番号が増えるほど電子が原子核に強く引かれやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "大きくなる",
+        "小さくなる",
+        "同じになる",
+        "0になる"
+      ],
+      "answer": "大きくなる",
+      "acceptableAnswers": [
+        "大きくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem175",
+      "moduleId": "chemistry",
+      "prompt": "第1イオン化エネルギーは、同一族では下に行くほど一般にどうなるか。",
+      "explanation": "電子殻が増え、最外殻電子が原子核から離れるため小さくなりやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "小さくなる",
+        "大きくなる",
+        "同じになる",
+        "無限大になる"
+      ],
+      "answer": "小さくなる",
+      "acceptableAnswers": [
+        "小さくなる"
+      ]
+    },
+    {
+      "id": "chemistry-chem176",
+      "moduleId": "chemistry",
+      "prompt": "電子親和力が大きい元素ほど、どちらのイオンになりやすいか。",
+      "explanation": "電子を受け取るときにエネルギーを放出しやすいほど陰イオンになりやすい。",
+      "category": "イオン",
+      "type": "choice",
+      "choices": [
+        "陰イオン",
+        "陽イオン",
+        "同位体",
+        "単体"
+      ],
+      "answer": "陰イオン",
+      "acceptableAnswers": [
+        "陰イオン"
+      ]
+    }
+  ]
+}

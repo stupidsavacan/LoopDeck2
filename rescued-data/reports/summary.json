@@ -1,0 +1,63 @@
+{
+  "source": "StudyHome-Next app/src/main/assets/question_bank.json via rescued APK artifact",
+  "originalModules": 13,
+  "originalQuestions": 1112,
+  "usableModules": 9,
+  "usableQuestions": 1112,
+  "removedReverseModules": [
+    "english_reverse",
+    "leap_final_reverse",
+    "leap_reverse"
+  ],
+  "removedEmptyModules": [
+    "kobun_vocab"
+  ],
+  "images": 4,
+  "modules": [
+    {
+      "id": "history",
+      "title": "歴史総合",
+      "questions": 188
+    },
+    {
+      "id": "geography",
+      "title": "地理総合",
+      "questions": 147
+    },
+    {
+      "id": "chemistry",
+      "title": "化学",
+      "questions": 176
+    },
+    {
+      "id": "biology",
+      "title": "生物",
+      "questions": 79
+    },
+    {
+      "id": "english_comm",
+      "title": "英語コミュニケーション",
+      "questions": 129
+    },
+    {
+      "id": "english",
+      "title": "英文暗記",
+      "questions": 28
+    },
+    {
+      "id": "leap",
+      "title": "LEAP 001〜200",
+      "questions": 200
+    },
+    {
+      "id": "leap_final",
+      "title": "LEAP 201〜300",
+      "questions": 100
+    },
+    {
+      "id": "kobun_conjugation",
+      "title": "古文・動詞の活用",
+      "questions": 65
+    }
+  ]
+}

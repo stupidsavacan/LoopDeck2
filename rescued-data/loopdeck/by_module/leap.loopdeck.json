@@ -1,0 +1,3117 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-leap-normal-v1",
+  "title": "LEAP 001〜200",
+  "description": "StudyHome-Nextから救出した LEAP 001〜200 の通常方向教材。",
+  "folders": [
+    {
+      "id": "english",
+      "title": "英語"
+    }
+  ],
+  "modules": [
+    {
+      "id": "leap",
+      "folderId": "english",
+      "title": "LEAP 001〜200",
+      "subject": "英語",
+      "description": "StudyHome-Nextから救出した教材データ。source=leap",
+      "tags": [
+        "英語",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "leap-1",
+        "leap-2",
+        "leap-3",
+        "leap-4",
+        "leap-5",
+        "leap-6",
+        "leap-7",
+        "leap-8",
+        "leap-9",
+        "leap-10",
+        "leap-11",
+        "leap-12",
+        "leap-13",
+        "leap-14",
+        "leap-15",
+        "leap-16",
+        "leap-17",
+        "leap-18",
+        "leap-19",
+        "leap-20",
+        "leap-21",
+        "leap-22",
+        "leap-23",
+        "leap-24",
+        "leap-25",
+        "leap-26",
+        "leap-27",
+        "leap-28",
+        "leap-29",
+        "leap-30",
+        "leap-31",
+        "leap-32",
+        "leap-33",
+        "leap-34",
+        "leap-35",
+        "leap-36",
+        "leap-37",
+        "leap-38",
+        "leap-39",
+        "leap-40",
+        "leap-41",
+        "leap-42",
+        "leap-43",
+        "leap-44",
+        "leap-45",
+        "leap-46",
+        "leap-47",
+        "leap-48",
+        "leap-49",
+        "leap-50",
+        "leap-51",
+        "leap-52",
+        "leap-53",
+        "leap-54",
+        "leap-55",
+        "leap-56",
+        "leap-57",
+        "leap-58",
+        "leap-59",
+        "leap-60",
+        "leap-61",
+        "leap-62",
+        "leap-63",
+        "leap-64",
+        "leap-65",
+        "leap-66",
+        "leap-67",
+        "leap-68",
+        "leap-69",
+        "leap-70",
+        "leap-71",
+        "leap-72",
+        "leap-73",
+        "leap-74",
+        "leap-75",
+        "leap-76",
+        "leap-77",
+        "leap-78",
+        "leap-79",
+        "leap-80",
+        "leap-81",
+        "leap-82",
+        "leap-83",
+        "leap-84",
+        "leap-85",
+        "leap-86",
+        "leap-87",
+        "leap-88",
+        "leap-89",
+        "leap-90",
+        "leap-91",
+        "leap-92",
+        "leap-93",
+        "leap-94",
+        "leap-95",
+        "leap-96",
+        "leap-97",
+        "leap-98",
+        "leap-99",
+        "leap-100",
+        "leap-101",
+        "leap-102",
+        "leap-103",
+        "leap-104",
+        "leap-105",
+        "leap-106",
+        "leap-107",
+        "leap-108",
+        "leap-109",
+        "leap-110",
+        "leap-111",
+        "leap-112",
+        "leap-113",
+        "leap-114",
+        "leap-115",
+        "leap-116",
+        "leap-117",
+        "leap-118",
+        "leap-119",
+        "leap-120",
+        "leap-121",
+        "leap-122",
+        "leap-123",
+        "leap-124",
+        "leap-125",
+        "leap-126",
+        "leap-127",
+        "leap-128",
+        "leap-129",
+        "leap-130",
+        "leap-131",
+        "leap-132",
+        "leap-133",
+        "leap-134",
+        "leap-135",
+        "leap-136",
+        "leap-137",
+        "leap-138",
+        "leap-139",
+        "leap-140",
+        "leap-141",
+        "leap-142",
+        "leap-143",
+        "leap-144",
+        "leap-145",
+        "leap-146",
+        "leap-147",
+        "leap-148",
+        "leap-149",
+        "leap-150",
+        "leap-151",
+        "leap-152",
+        "leap-153",
+        "leap-154",
+        "leap-155",
+        "leap-156",
+        "leap-157",
+        "leap-158",
+        "leap-159",
+        "leap-160",
+        "leap-161",
+        "leap-162",
+        "leap-163",
+        "leap-164",
+        "leap-165",
+        "leap-166",
+        "leap-167",
+        "leap-168",
+        "leap-169",
+        "leap-170",
+        "leap-171",
+        "leap-172",
+        "leap-173",
+        "leap-174",
+        "leap-175",
+        "leap-176",
+        "leap-177",
+        "leap-178",
+        "leap-179",
+        "leap-180",
+        "leap-181",
+        "leap-182",
+        "leap-183",
+        "leap-184",
+        "leap-185",
+        "leap-186",
+        "leap-187",
+        "leap-188",
+        "leap-189",
+        "leap-190",
+        "leap-191",
+        "leap-192",
+        "leap-193",
+        "leap-194",
+        "leap-195",
+        "leap-196",
+        "leap-197",
+        "leap-198",
+        "leap-199",
+        "leap-200"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "leap-1",
+      "moduleId": "leap",
+      "prompt": "agree",
+      "explanation": "I totally agree with this opinion.",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "賛成する",
+      "acceptableAnswers": [
+        "賛成する",
+        "同意する",
+        "意見が一致する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-2",
+      "moduleId": "leap",
+      "prompt": "oppose",
+      "explanation": "I strongly oppose the plan.",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "反対する",
+      "acceptableAnswers": [
+        "反対する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-3",
+      "moduleId": "leap",
+      "prompt": "advise",
+      "explanation": "The doctor advised him not to eat too much.",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "忠告する",
+      "acceptableAnswers": [
+        "忠告する",
+        "助言する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-4",
+      "moduleId": "leap",
+      "prompt": "tip",
+      "explanation": "Do you have any tips on how to use the library?",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "助言",
+      "acceptableAnswers": [
+        "助言",
+        "ヒント",
+        "チップ",
+        "先端"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-5",
+      "moduleId": "leap",
+      "prompt": "discuss",
+      "explanation": "I discussed the problem with a specialist.",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "話し合う",
+      "acceptableAnswers": [
+        "話し合う",
+        "議論する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-6",
+      "moduleId": "leap",
+      "prompt": "blame",
+      "explanation": "He blamed the car's brakes for the accident.",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "責める",
+      "acceptableAnswers": [
+        "責める",
+        "非難する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-7",
+      "moduleId": "leap",
+      "prompt": "argue",
+      "explanation": "I argue that reading aloud is important.",
+      "category": "意見・主張・提案",
+      "type": "input",
+      "answer": "主張する",
+      "acceptableAnswers": [
+        "主張する",
+        "議論する",
+        "言い争う"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-8",
+      "moduleId": "leap",
+      "prompt": "claim",
+      "explanation": "She claims that a vegetarian diet is better.",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "主張する",
+      "acceptableAnswers": [
+        "主張する",
+        "要求する",
+        "請求する",
+        "主張"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-9",
+      "moduleId": "leap",
+      "prompt": "complain",
+      "explanation": "They complain about their loud music.",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "不平を言う",
+      "acceptableAnswers": [
+        "不平を言う",
+        "苦情を言う",
+        "訴える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-10",
+      "moduleId": "leap",
+      "prompt": "offer",
+      "explanation": "He offered him some coffee.",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "申し出る",
+      "acceptableAnswers": [
+        "申し出る",
+        "提供する",
+        "申し出"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-11",
+      "moduleId": "leap",
+      "prompt": "suggest",
+      "explanation": "The letter suggests that she is willing to accept the job.",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "提案する",
+      "acceptableAnswers": [
+        "提案する",
+        "示唆する",
+        "暗示する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-12",
+      "moduleId": "leap",
+      "prompt": "recommend",
+      "explanation": "What would you recommend?",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "推薦する",
+      "acceptableAnswers": [
+        "推薦する",
+        "勧める"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-13",
+      "moduleId": "leap",
+      "prompt": "grateful",
+      "explanation": "I am grateful for your help.",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "感謝している",
+      "acceptableAnswers": [
+        "感謝している"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-14",
+      "moduleId": "leap",
+      "prompt": "apologize",
+      "explanation": "I apologize to her for being late.",
+      "category": "感謝・謝罪",
+      "type": "input",
+      "answer": "謝る",
+      "acceptableAnswers": [
+        "謝る",
+        "謝罪する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-15",
+      "moduleId": "leap",
+      "prompt": "excuse",
+      "explanation": "Don't make excuses.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "許す",
+      "acceptableAnswers": [
+        "許す",
+        "言い訳",
+        "弁解"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-16",
+      "moduleId": "leap",
+      "prompt": "celebrate",
+      "explanation": "We celebrate her 18th birthday.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "祝う",
+      "acceptableAnswers": [
+        "祝う",
+        "祝賀する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-17",
+      "moduleId": "leap",
+      "prompt": "congratulate",
+      "explanation": "I congratulate her on her exam results.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "祝う",
+      "acceptableAnswers": [
+        "祝う",
+        "祝辞を述べる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-18",
+      "moduleId": "leap",
+      "prompt": "admire",
+      "explanation": "I admire him for his great performance.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "称賛する",
+      "acceptableAnswers": [
+        "称賛する",
+        "敬服する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-19",
+      "moduleId": "leap",
+      "prompt": "impress",
+      "explanation": "I was deeply impressed by his speech.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "印象を与える",
+      "acceptableAnswers": [
+        "印象を与える",
+        "感動させる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-20",
+      "moduleId": "leap",
+      "prompt": "award",
+      "explanation": "She was awarded first prize.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "賞",
+      "acceptableAnswers": [
+        "賞",
+        "賞を授与する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-21",
+      "moduleId": "leap",
+      "prompt": "explain",
+      "explanation": "He explained the rules of baseball to him.",
+      "category": "祝福・賞賛・説明",
+      "type": "input",
+      "answer": "説明する",
+      "acceptableAnswers": [
+        "説明する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-22",
+      "moduleId": "leap",
+      "prompt": "describe",
+      "explanation": "Could you describe your lost bag?",
+      "category": "説明・伝達",
+      "type": "input",
+      "answer": "説明する",
+      "acceptableAnswers": [
+        "説明する",
+        "描写する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-23",
+      "moduleId": "leap",
+      "prompt": "communicate",
+      "explanation": "We communicate with each other in sign language.",
+      "category": "説明・伝達",
+      "type": "input",
+      "answer": "連絡をとる",
+      "acceptableAnswers": [
+        "連絡をとる",
+        "伝える",
+        "意思を伝える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-24",
+      "moduleId": "leap",
+      "prompt": "express",
+      "explanation": "Express your opinions clearly.",
+      "category": "説明・伝達",
+      "type": "input",
+      "answer": "表現する",
+      "acceptableAnswers": [
+        "表現する",
+        "述べる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-25",
+      "moduleId": "leap",
+      "prompt": "promise",
+      "explanation": "I made a promise to lose weight.",
+      "category": "説明・伝達",
+      "type": "input",
+      "answer": "約束する",
+      "acceptableAnswers": [
+        "約束する",
+        "約束"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-26",
+      "moduleId": "leap",
+      "prompt": "information",
+      "explanation": "There are various kinds of information.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "情報",
+      "acceptableAnswers": [
+        "情報",
+        "知識"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-27",
+      "moduleId": "leap",
+      "prompt": "technology",
+      "explanation": "Science and technology are important.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "科学技術",
+      "acceptableAnswers": [
+        "科学技術",
+        "テクノロジー"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-28",
+      "moduleId": "leap",
+      "prompt": "research",
+      "explanation": "They research on space rockets.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "研究",
+      "acceptableAnswers": [
+        "研究",
+        "調査",
+        "研究する",
+        "調査する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-29",
+      "moduleId": "leap",
+      "prompt": "material",
+      "explanation": "Collect materials for a paper.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "物質",
+      "acceptableAnswers": [
+        "物質",
+        "資料",
+        "教材",
+        "材料",
+        "生地"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-30",
+      "moduleId": "leap",
+      "prompt": "artificial",
+      "explanation": "Artificial intelligence is developing quickly.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "人工的な",
+      "acceptableAnswers": [
+        "人工的な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-31",
+      "moduleId": "leap",
+      "prompt": "electric",
+      "explanation": "My father bought an electric car.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "電気の",
+      "acceptableAnswers": [
+        "電気の",
+        "電動の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-32",
+      "moduleId": "leap",
+      "prompt": "invent",
+      "explanation": "He invented a speaking robot.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "発明する",
+      "acceptableAnswers": [
+        "発明する",
+        "でっち上げる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-33",
+      "moduleId": "leap",
+      "prompt": "discover",
+      "explanation": "They discovered that the painting is a fake.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "発見する",
+      "acceptableAnswers": [
+        "発見する",
+        "わかる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-34",
+      "moduleId": "leap",
+      "prompt": "develop",
+      "explanation": "The town developed into a big city.",
+      "category": "科学・技術",
+      "type": "input",
+      "answer": "発展させる",
+      "acceptableAnswers": [
+        "発展させる",
+        "発達する",
+        "開発する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-35",
+      "moduleId": "leap",
+      "prompt": "skill",
+      "explanation": "I want to improve my tennis skills.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "技術",
+      "acceptableAnswers": [
+        "技術",
+        "能力",
+        "腕前"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-36",
+      "moduleId": "leap",
+      "prompt": "ability",
+      "explanation": "I want to improve my ability to speak English.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "能力",
+      "acceptableAnswers": [
+        "能力",
+        "才能",
+        "できること"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-37",
+      "moduleId": "leap",
+      "prompt": "talent",
+      "explanation": "She showed her musical talent.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "才能",
+      "acceptableAnswers": [
+        "才能",
+        "才能のある人"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-38",
+      "moduleId": "leap",
+      "prompt": "effort",
+      "explanation": "I make an effort to be on time.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "努力",
+      "acceptableAnswers": [
+        "努力"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-39",
+      "moduleId": "leap",
+      "prompt": "practice",
+      "explanation": "We have practice on Saturday.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "練習",
+      "acceptableAnswers": [
+        "練習",
+        "実践",
+        "練習する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-40",
+      "moduleId": "leap",
+      "prompt": "achieve",
+      "explanation": "He achieved his goal of becoming a vet.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "達成する",
+      "acceptableAnswers": [
+        "達成する",
+        "成し遂げる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-41",
+      "moduleId": "leap",
+      "prompt": "manage",
+      "explanation": "I managed to catch the last train.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "なんとかする",
+      "acceptableAnswers": [
+        "なんとかする",
+        "管理する",
+        "経営する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-42",
+      "moduleId": "leap",
+      "prompt": "improve",
+      "explanation": "His English has improved recently.",
+      "category": "能力・努力・到達",
+      "type": "input",
+      "answer": "改善する",
+      "acceptableAnswers": [
+        "改善する",
+        "向上する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-43",
+      "moduleId": "leap",
+      "prompt": "produce",
+      "explanation": "The farm produces rice and vegetables.",
+      "category": "生産・創造・設立",
+      "type": "input",
+      "answer": "生産する",
+      "acceptableAnswers": [
+        "生産する",
+        "産出する",
+        "生み出す"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-44",
+      "moduleId": "leap",
+      "prompt": "create",
+      "explanation": "They created a website.",
+      "category": "生産・創造・設立",
+      "type": "input",
+      "answer": "創造する",
+      "acceptableAnswers": [
+        "創造する",
+        "作り出す",
+        "引き起こす"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-45",
+      "moduleId": "leap",
+      "prompt": "establish",
+      "explanation": "The company was established in 1950.",
+      "category": "生産・創造・設立",
+      "type": "input",
+      "answer": "設立する",
+      "acceptableAnswers": [
+        "設立する",
+        "確立する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-46",
+      "moduleId": "leap",
+      "prompt": "form",
+      "explanation": "They formed a rock band.",
+      "category": "生産・創造・設立",
+      "type": "input",
+      "answer": "形づくる",
+      "acceptableAnswers": [
+        "形づくる",
+        "形成する",
+        "形",
+        "書式"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-47",
+      "moduleId": "leap",
+      "prompt": "save",
+      "explanation": "He saved my life.",
+      "category": "医療・健康",
+      "type": "input",
+      "answer": "救う",
+      "acceptableAnswers": [
+        "救う",
+        "節約する",
+        "貯金する",
+        "保存する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-48",
+      "moduleId": "leap",
+      "prompt": "medicine",
+      "explanation": "Take medicine twice a day.",
+      "category": "医療・健康",
+      "type": "input",
+      "answer": "薬",
+      "acceptableAnswers": [
+        "薬",
+        "医学"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-49",
+      "moduleId": "leap",
+      "prompt": "patient",
+      "explanation": "The patient is getting better.",
+      "category": "医療・健康",
+      "type": "input",
+      "answer": "患者",
+      "acceptableAnswers": [
+        "患者",
+        "忍耐強い"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-50",
+      "moduleId": "leap",
+      "prompt": "condition",
+      "explanation": "My body is in good condition.",
+      "category": "身体",
+      "type": "input",
+      "answer": "状態",
+      "acceptableAnswers": [
+        "状態",
+        "条件",
+        "状況"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-51",
+      "moduleId": "leap",
+      "prompt": "medical",
+      "explanation": "Medical expenses are high.",
+      "category": "身体",
+      "type": "input",
+      "answer": "医療の",
+      "acceptableAnswers": [
+        "医療の",
+        "医学の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-52",
+      "moduleId": "leap",
+      "prompt": "stress",
+      "explanation": "I have a lot of stress.",
+      "category": "身体",
+      "type": "input",
+      "answer": "ストレス",
+      "acceptableAnswers": [
+        "ストレス",
+        "強調する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-53",
+      "moduleId": "leap",
+      "prompt": "suffer",
+      "explanation": "I am suffering from jet lag.",
+      "category": "身体",
+      "type": "input",
+      "answer": "苦しむ",
+      "acceptableAnswers": [
+        "苦しむ",
+        "被る",
+        "経験する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-54",
+      "moduleId": "leap",
+      "prompt": "exercise",
+      "explanation": "I get light exercise every day.",
+      "category": "身体",
+      "type": "input",
+      "answer": "運動",
+      "acceptableAnswers": [
+        "運動",
+        "練習",
+        "行使する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-55",
+      "moduleId": "leap",
+      "prompt": "breathe",
+      "explanation": "Breathe deeply.",
+      "category": "身体",
+      "type": "input",
+      "answer": "呼吸する",
+      "acceptableAnswers": [
+        "呼吸する",
+        "息をする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-56",
+      "moduleId": "leap",
+      "prompt": "thirsty",
+      "explanation": "I'm really thirsty.",
+      "category": "身体",
+      "type": "input",
+      "answer": "のどが渇いた",
+      "acceptableAnswers": [
+        "のどが渇いた",
+        "切望して"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-57",
+      "moduleId": "leap",
+      "prompt": "physical",
+      "explanation": "Physical health is important.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "身体的な",
+      "acceptableAnswers": [
+        "身体的な",
+        "物理的な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-58",
+      "moduleId": "leap",
+      "prompt": "fever",
+      "explanation": "I have a fever.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "熱",
+      "acceptableAnswers": [
+        "熱",
+        "熱狂"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-59",
+      "moduleId": "leap",
+      "prompt": "strength",
+      "explanation": "I built up my physical strength.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "体力",
+      "acceptableAnswers": [
+        "体力",
+        "力",
+        "強さ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-60",
+      "moduleId": "leap",
+      "prompt": "tear",
+      "explanation": "I was moved to tears.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "涙",
+      "acceptableAnswers": [
+        "涙",
+        "涙を流す",
+        "引き裂く"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-61",
+      "moduleId": "leap",
+      "prompt": "taste",
+      "explanation": "This apple tastes sweet.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "味がする",
+      "acceptableAnswers": [
+        "味がする",
+        "味",
+        "好み"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-62",
+      "moduleId": "leap",
+      "prompt": "rule",
+      "explanation": "It is against the rules.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "規則",
+      "acceptableAnswers": [
+        "規則",
+        "支配する",
+        "統治する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-63",
+      "moduleId": "leap",
+      "prompt": "role",
+      "explanation": "Technology plays an important role in society.",
+      "category": "身体・社会",
+      "type": "input",
+      "answer": "役割",
+      "acceptableAnswers": [
+        "役割"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-64",
+      "moduleId": "leap",
+      "prompt": "habit",
+      "explanation": "I have a habit of making excuses.",
+      "category": "社会",
+      "type": "input",
+      "answer": "習慣",
+      "acceptableAnswers": [
+        "習慣",
+        "癖"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-65",
+      "moduleId": "leap",
+      "prompt": "custom",
+      "explanation": "Different countries have different customs.",
+      "category": "社会",
+      "type": "input",
+      "answer": "慣習",
+      "acceptableAnswers": [
+        "慣習",
+        "税関",
+        "関税"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-66",
+      "moduleId": "leap",
+      "prompt": "tradition",
+      "explanation": "Japanese traditions are important.",
+      "category": "社会",
+      "type": "input",
+      "answer": "伝統",
+      "acceptableAnswers": [
+        "伝統",
+        "慣習"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-67",
+      "moduleId": "leap",
+      "prompt": "society",
+      "explanation": "Women's status in society has changed.",
+      "category": "社会",
+      "type": "input",
+      "answer": "社会",
+      "acceptableAnswers": [
+        "社会",
+        "世間",
+        "会社"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-68",
+      "moduleId": "leap",
+      "prompt": "law",
+      "explanation": "Parking here is against the law.",
+      "category": "社会",
+      "type": "input",
+      "answer": "法律",
+      "acceptableAnswers": [
+        "法律",
+        "法則"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-69",
+      "moduleId": "leap",
+      "prompt": "ancestor",
+      "explanation": "My ancestors were French.",
+      "category": "社会",
+      "type": "input",
+      "answer": "祖先",
+      "acceptableAnswers": [
+        "祖先",
+        "先祖"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-70",
+      "moduleId": "leap",
+      "prompt": "population",
+      "explanation": "The population of Tokyo is larger than that of Osaka.",
+      "category": "社会",
+      "type": "input",
+      "answer": "人口",
+      "acceptableAnswers": [
+        "人口",
+        "個体数"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-71",
+      "moduleId": "leap",
+      "prompt": "native",
+      "explanation": "His native language is Japanese.",
+      "category": "社会",
+      "type": "input",
+      "answer": "母国の",
+      "acceptableAnswers": [
+        "母国の",
+        "その土地の",
+        "生まれた人"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-72",
+      "moduleId": "leap",
+      "prompt": "abroad",
+      "explanation": "She wants to find a job abroad.",
+      "category": "社会",
+      "type": "input",
+      "answer": "海外へ",
+      "acceptableAnswers": [
+        "海外へ",
+        "海外で"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-73",
+      "moduleId": "leap",
+      "prompt": "local",
+      "explanation": "I went to a local bank.",
+      "category": "社会",
+      "type": "input",
+      "answer": "その土地の",
+      "acceptableAnswers": [
+        "その土地の",
+        "地元の",
+        "地元の人"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-74",
+      "moduleId": "leap",
+      "prompt": "survey",
+      "explanation": "According to a recent survey, many teenagers use smartphones.",
+      "category": "社会",
+      "type": "input",
+      "answer": "調査",
+      "acceptableAnswers": [
+        "調査",
+        "調査する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-75",
+      "moduleId": "leap",
+      "prompt": "value",
+      "explanation": "Everyone has their own values.",
+      "category": "社会",
+      "type": "input",
+      "answer": "価値",
+      "acceptableAnswers": [
+        "価値",
+        "評価する",
+        "重んじる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-76",
+      "moduleId": "leap",
+      "prompt": "treasure",
+      "explanation": "My secretary is a real treasure.",
+      "category": "社会",
+      "type": "input",
+      "answer": "財宝",
+      "acceptableAnswers": [
+        "財宝",
+        "宝物",
+        "大切にする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-77",
+      "moduleId": "leap",
+      "prompt": "fashion",
+      "explanation": "She follows the latest fashion.",
+      "category": "社会",
+      "type": "input",
+      "answer": "流行",
+      "acceptableAnswers": [
+        "流行",
+        "ファッション",
+        "やり方"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-78",
+      "moduleId": "leap",
+      "prompt": "public",
+      "explanation": "The general public can use this library.",
+      "category": "社会",
+      "type": "input",
+      "answer": "大衆",
+      "acceptableAnswers": [
+        "大衆",
+        "公の",
+        "公共の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-79",
+      "moduleId": "leap",
+      "prompt": "evidence",
+      "explanation": "There is no evidence to support his story.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "証拠",
+      "acceptableAnswers": [
+        "証拠"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-80",
+      "moduleId": "leap",
+      "prompt": "vote",
+      "explanation": "Everyone has the right to vote.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "投票",
+      "acceptableAnswers": [
+        "投票",
+        "投票する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-81",
+      "moduleId": "leap",
+      "prompt": "government",
+      "explanation": "The Japanese government announced a new policy.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "政府",
+      "acceptableAnswers": [
+        "政府"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-82",
+      "moduleId": "leap",
+      "prompt": "nation",
+      "explanation": "The voice of the nation matters.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "国家",
+      "acceptableAnswers": [
+        "国家",
+        "国民"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-83",
+      "moduleId": "leap",
+      "prompt": "capital",
+      "explanation": "What is the capital of Canada?",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "首都",
+      "acceptableAnswers": [
+        "首都",
+        "資本",
+        "大文字",
+        "重大な"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-84",
+      "moduleId": "leap",
+      "prompt": "state",
+      "explanation": "He stated his opinion clearly.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "州",
+      "acceptableAnswers": [
+        "州",
+        "状態",
+        "国家",
+        "述べる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-85",
+      "moduleId": "leap",
+      "prompt": "political",
+      "explanation": "The political situation in Russia changed.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "政治的な",
+      "acceptableAnswers": [
+        "政治的な",
+        "政治の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-86",
+      "moduleId": "leap",
+      "prompt": "price",
+      "explanation": "Prices have gone up by 5%.",
+      "category": "政治・経済",
+      "type": "input",
+      "answer": "価格",
+      "acceptableAnswers": [
+        "価格",
+        "代価"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-87",
+      "moduleId": "leap",
+      "prompt": "sum",
+      "explanation": "The sum of 5 and 8 is 13.",
+      "category": "経済",
+      "type": "input",
+      "answer": "金額",
+      "acceptableAnswers": [
+        "金額",
+        "合計",
+        "計算",
+        "要約する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-88",
+      "moduleId": "leap",
+      "prompt": "budget",
+      "explanation": "Our budget for this trip is small.",
+      "category": "経済",
+      "type": "input",
+      "answer": "予算",
+      "acceptableAnswers": [
+        "予算",
+        "予算の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-89",
+      "moduleId": "leap",
+      "prompt": "fee",
+      "explanation": "I paid a cancellation fee.",
+      "category": "経済",
+      "type": "input",
+      "answer": "料金",
+      "acceptableAnswers": [
+        "料金",
+        "謝礼"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-90",
+      "moduleId": "leap",
+      "prompt": "fare",
+      "explanation": "Taxi fares are low in Singapore.",
+      "category": "経済",
+      "type": "input",
+      "answer": "運賃",
+      "acceptableAnswers": [
+        "運賃"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-91",
+      "moduleId": "leap",
+      "prompt": "bill",
+      "explanation": "May we have the bill?",
+      "category": "経済",
+      "type": "input",
+      "answer": "勘定",
+      "acceptableAnswers": [
+        "勘定",
+        "請求書",
+        "紙幣",
+        "法案"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-92",
+      "moduleId": "leap",
+      "prompt": "trade",
+      "explanation": "Japan's trade with the U.S. is important.",
+      "category": "経済",
+      "type": "input",
+      "answer": "貿易",
+      "acceptableAnswers": [
+        "貿易",
+        "商売",
+        "交換する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-93",
+      "moduleId": "leap",
+      "prompt": "wealth",
+      "explanation": "He achieved wealth and power.",
+      "category": "経済",
+      "type": "input",
+      "answer": "富",
+      "acceptableAnswers": [
+        "富",
+        "財産",
+        "豊富な〜"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-94",
+      "moduleId": "leap",
+      "prompt": "economy",
+      "explanation": "We need to boost the Japanese economy.",
+      "category": "経済",
+      "type": "input",
+      "answer": "経済",
+      "acceptableAnswers": [
+        "経済",
+        "節約"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-95",
+      "moduleId": "leap",
+      "prompt": "cost",
+      "explanation": "The suit cost me 500 dollars.",
+      "category": "仕事・損害",
+      "type": "input",
+      "answer": "費用がかかる",
+      "acceptableAnswers": [
+        "費用がかかる",
+        "費用",
+        "犠牲"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-96",
+      "moduleId": "leap",
+      "prompt": "company",
+      "explanation": "I work for a big company.",
+      "category": "仕事・損害",
+      "type": "input",
+      "answer": "会社",
+      "acceptableAnswers": [
+        "会社",
+        "一緒にいること",
+        "仲間",
+        "来客"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-97",
+      "moduleId": "leap",
+      "prompt": "task",
+      "explanation": "I accomplished a difficult task.",
+      "category": "仕事・損害",
+      "type": "input",
+      "answer": "仕事",
+      "acceptableAnswers": [
+        "仕事",
+        "課題"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-98",
+      "moduleId": "leap",
+      "prompt": "earn",
+      "explanation": "I earn money to pay my school fees.",
+      "category": "仕事・損害",
+      "type": "input",
+      "answer": "稼ぐ",
+      "acceptableAnswers": [
+        "稼ぐ",
+        "得る"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-99",
+      "moduleId": "leap",
+      "prompt": "hurt",
+      "explanation": "My back hurts a lot.",
+      "category": "仕事・損害",
+      "type": "input",
+      "answer": "痛む",
+      "acceptableAnswers": [
+        "痛む",
+        "傷つける"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-100",
+      "moduleId": "leap",
+      "prompt": "injure",
+      "explanation": "He injured his knee while playing football.",
+      "category": "仕事・損害",
+      "type": "input",
+      "answer": "けがをさせる",
+      "acceptableAnswers": [
+        "けがをさせる",
+        "傷つける"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-101",
+      "moduleId": "leap",
+      "prompt": "damage",
+      "explanation": "The storm damaged the roof.",
+      "category": "損害・破壊・危険",
+      "type": "input",
+      "answer": "損害を与える",
+      "acceptableAnswers": [
+        "損害を与える",
+        "損害"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-102",
+      "moduleId": "leap",
+      "prompt": "destroy",
+      "explanation": "The fire destroyed the building.",
+      "category": "損害・破壊・危険",
+      "type": "input",
+      "answer": "完全に破壊する",
+      "acceptableAnswers": [
+        "完全に破壊する",
+        "殺す",
+        "全滅させる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-103",
+      "moduleId": "leap",
+      "prompt": "ruin",
+      "explanation": "The rain ruined our plan.",
+      "category": "損害・破壊・危険",
+      "type": "input",
+      "answer": "台無しにする",
+      "acceptableAnswers": [
+        "台無しにする",
+        "破滅させる",
+        "破滅"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-104",
+      "moduleId": "leap",
+      "prompt": "danger",
+      "explanation": "The tiger is in danger of extinction.",
+      "category": "損害・破壊・危険",
+      "type": "input",
+      "answer": "危険",
+      "acceptableAnswers": [
+        "危険",
+        "危険性"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-105",
+      "moduleId": "leap",
+      "prompt": "neighbor",
+      "explanation": "I often chat with my neighbor.",
+      "category": "人",
+      "type": "input",
+      "answer": "近所の人",
+      "acceptableAnswers": [
+        "近所の人",
+        "隣人"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-106",
+      "moduleId": "leap",
+      "prompt": "audience",
+      "explanation": "The singer attracted a large audience.",
+      "category": "人",
+      "type": "input",
+      "answer": "観客",
+      "acceptableAnswers": [
+        "観客",
+        "聴衆"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-107",
+      "moduleId": "leap",
+      "prompt": "crowd",
+      "explanation": "A crowd rushed into the hall.",
+      "category": "人",
+      "type": "input",
+      "answer": "群衆",
+      "acceptableAnswers": [
+        "群衆",
+        "人ごみ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-108",
+      "moduleId": "leap",
+      "prompt": "author",
+      "explanation": "She is the author of this book.",
+      "category": "人",
+      "type": "input",
+      "answer": "著者",
+      "acceptableAnswers": [
+        "著者",
+        "作家"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-109",
+      "moduleId": "leap",
+      "prompt": "staff",
+      "explanation": "Most of the staff were kind.",
+      "category": "人",
+      "type": "input",
+      "answer": "職員",
+      "acceptableAnswers": [
+        "職員",
+        "従業員"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-110",
+      "moduleId": "leap",
+      "prompt": "clerk",
+      "explanation": "I spoke to a bank clerk.",
+      "category": "人",
+      "type": "input",
+      "answer": "店員",
+      "acceptableAnswers": [
+        "店員",
+        "事務員",
+        "銀行員"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-111",
+      "moduleId": "leap",
+      "prompt": "customer",
+      "explanation": "The store values every customer.",
+      "category": "人",
+      "type": "input",
+      "answer": "客",
+      "acceptableAnswers": [
+        "客",
+        "顧客"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-112",
+      "moduleId": "leap",
+      "prompt": "passenger",
+      "explanation": "There were many passengers on the train.",
+      "category": "人",
+      "type": "input",
+      "answer": "乗客",
+      "acceptableAnswers": [
+        "乗客"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-113",
+      "moduleId": "leap",
+      "prompt": "elderly",
+      "explanation": "We should help elderly people.",
+      "category": "年齢・性別",
+      "type": "input",
+      "answer": "年配の",
+      "acceptableAnswers": [
+        "年配の",
+        "高齢の人々"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-114",
+      "moduleId": "leap",
+      "prompt": "female",
+      "explanation": "A female doctor treated me.",
+      "category": "年齢・性別",
+      "type": "input",
+      "answer": "女性の",
+      "acceptableAnswers": [
+        "女性の",
+        "雌の",
+        "女性"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-115",
+      "moduleId": "leap",
+      "prompt": "head",
+      "explanation": "We headed for the beach.",
+      "category": "移動",
+      "type": "input",
+      "answer": "向かう",
+      "acceptableAnswers": [
+        "向かう",
+        "率いる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-116",
+      "moduleId": "leap",
+      "prompt": "follow",
+      "explanation": "Please follow my advice.",
+      "category": "移動",
+      "type": "input",
+      "answer": "後について行く",
+      "acceptableAnswers": [
+        "後について行く",
+        "続く",
+        "従う"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-117",
+      "moduleId": "leap",
+      "prompt": "wander",
+      "explanation": "They wandered about the town.",
+      "category": "移動",
+      "type": "input",
+      "answer": "歩き回る",
+      "acceptableAnswers": [
+        "歩き回る",
+        "ぶらぶらする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-118",
+      "moduleId": "leap",
+      "prompt": "travel",
+      "explanation": "I want to travel around the world.",
+      "category": "移動",
+      "type": "input",
+      "answer": "旅行する",
+      "acceptableAnswers": [
+        "旅行する",
+        "移動する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-119",
+      "moduleId": "leap",
+      "prompt": "pass",
+      "explanation": "Please pass me the salt.",
+      "category": "移動・可能性",
+      "type": "input",
+      "answer": "通り過ぎる",
+      "acceptableAnswers": [
+        "通り過ぎる",
+        "抜く",
+        "合格する",
+        "渡す",
+        "過ぎる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-120",
+      "moduleId": "leap",
+      "prompt": "likely",
+      "explanation": "He is likely to come.",
+      "category": "可能性・確実性",
+      "type": "input",
+      "answer": "しそうだ",
+      "acceptableAnswers": [
+        "しそうだ",
+        "可能性が高い",
+        "おそらく"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-121",
+      "moduleId": "leap",
+      "prompt": "natural",
+      "explanation": "It is natural to feel nervous.",
+      "category": "可能性・確実性",
+      "type": "input",
+      "answer": "当然の",
+      "acceptableAnswers": [
+        "当然の",
+        "自然の",
+        "生まれつきの"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-122",
+      "moduleId": "leap",
+      "prompt": "certain",
+      "explanation": "He is certain to win.",
+      "category": "可能性・確実性",
+      "type": "input",
+      "answer": "確かな",
+      "acceptableAnswers": [
+        "確かな",
+        "ある",
+        "きっとする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-123",
+      "moduleId": "leap",
+      "prompt": "probably",
+      "explanation": "She will probably be late.",
+      "category": "可能性・確実性",
+      "type": "input",
+      "answer": "おそらく",
+      "acceptableAnswers": [
+        "おそらく"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-124",
+      "moduleId": "leap",
+      "prompt": "face",
+      "explanation": "We are facing a crisis.",
+      "category": "直面・回避・解決・問題",
+      "type": "input",
+      "answer": "直面する",
+      "acceptableAnswers": [
+        "直面する",
+        "向きである",
+        "顔",
+        "面する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-125",
+      "moduleId": "leap",
+      "prompt": "avoid",
+      "explanation": "Avoid making the same mistake.",
+      "category": "直面・回避・解決・問題",
+      "type": "input",
+      "answer": "避ける",
+      "acceptableAnswers": [
+        "避ける"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-126",
+      "moduleId": "leap",
+      "prompt": "solve",
+      "explanation": "Can you solve this math problem?",
+      "category": "直面・回避・解決・問題",
+      "type": "input",
+      "answer": "解決する",
+      "acceptableAnswers": [
+        "解決する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-127",
+      "moduleId": "leap",
+      "prompt": "trouble",
+      "explanation": "I had trouble sleeping.",
+      "category": "直面・回避・解決・問題",
+      "type": "input",
+      "answer": "問題",
+      "acceptableAnswers": [
+        "問題",
+        "困ったこと",
+        "苦労"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-128",
+      "moduleId": "leap",
+      "prompt": "issue",
+      "explanation": "Climate change is a serious issue.",
+      "category": "人・物への働きかけ",
+      "type": "input",
+      "answer": "問題",
+      "acceptableAnswers": [
+        "問題",
+        "雑誌の号",
+        "発行する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-129",
+      "moduleId": "leap",
+      "prompt": "cheer",
+      "explanation": "Her words cheered me up.",
+      "category": "人・物への働きかけ",
+      "type": "input",
+      "answer": "声援を送る",
+      "acceptableAnswers": [
+        "声援を送る",
+        "元気づける",
+        "歓声"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-130",
+      "moduleId": "leap",
+      "prompt": "encourage",
+      "explanation": "Teachers encourage students to read.",
+      "category": "人・物への働きかけ",
+      "type": "input",
+      "answer": "励ます",
+      "acceptableAnswers": [
+        "励ます",
+        "促す"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-131",
+      "moduleId": "leap",
+      "prompt": "support",
+      "explanation": "I support your idea.",
+      "category": "人・物への働きかけ",
+      "type": "input",
+      "answer": "支持する",
+      "acceptableAnswers": [
+        "支持する",
+        "養う",
+        "支える",
+        "支援"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-132",
+      "moduleId": "leap",
+      "prompt": "prevent",
+      "explanation": "The rain prevented us from going out.",
+      "category": "人・物への働きかけ",
+      "type": "input",
+      "answer": "妨げる",
+      "acceptableAnswers": [
+        "妨げる",
+        "予防する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-133",
+      "moduleId": "leap",
+      "prompt": "deny",
+      "explanation": "He denied the rumor.",
+      "category": "人・物への働きかけ",
+      "type": "input",
+      "answer": "否定する",
+      "acceptableAnswers": [
+        "否定する",
+        "与えない"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-134",
+      "moduleId": "leap",
+      "prompt": "enable",
+      "explanation": "This app enables us to study anywhere.",
+      "category": "成功・失敗・間違い",
+      "type": "input",
+      "answer": "可能にする",
+      "acceptableAnswers": [
+        "可能にする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-135",
+      "moduleId": "leap",
+      "prompt": "succeed",
+      "explanation": "She succeeded in passing the exam.",
+      "category": "成功・失敗・間違い",
+      "type": "input",
+      "answer": "成功する",
+      "acceptableAnswers": [
+        "成功する",
+        "継ぐ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-136",
+      "moduleId": "leap",
+      "prompt": "miss",
+      "explanation": "I missed the last train.",
+      "category": "成功・失敗・間違い",
+      "type": "input",
+      "answer": "逃す",
+      "acceptableAnswers": [
+        "逃す",
+        "休む",
+        "恋しく思う"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-137",
+      "moduleId": "leap",
+      "prompt": "fail",
+      "explanation": "He failed to keep his promise.",
+      "category": "成功・失敗・間違い",
+      "type": "input",
+      "answer": "失敗する",
+      "acceptableAnswers": [
+        "失敗する",
+        "できない",
+        "落第する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-138",
+      "moduleId": "leap",
+      "prompt": "mistake",
+      "explanation": "I made a mistake in the test.",
+      "category": "成功・失敗・間違い",
+      "type": "input",
+      "answer": "間違い",
+      "acceptableAnswers": [
+        "間違い",
+        "AをBと間違える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-139",
+      "moduleId": "leap",
+      "prompt": "check",
+      "explanation": "Please check your answers.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "調べる",
+      "acceptableAnswers": [
+        "調べる",
+        "阻止する",
+        "小切手",
+        "検査"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-140",
+      "moduleId": "leap",
+      "prompt": "hide",
+      "explanation": "Hide the key under the mat.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "隠す",
+      "acceptableAnswers": [
+        "隠す",
+        "隠れる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-141",
+      "moduleId": "leap",
+      "prompt": "draw",
+      "explanation": "The game drew a large audience.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "描く",
+      "acceptableAnswers": [
+        "描く",
+        "引く",
+        "引きつける"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-142",
+      "moduleId": "leap",
+      "prompt": "join",
+      "explanation": "Would you like to join us?",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "加わる",
+      "acceptableAnswers": [
+        "加わる",
+        "つなぐ",
+        "参加する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-143",
+      "moduleId": "leap",
+      "prompt": "throw",
+      "explanation": "Throw the ball to me.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "投げる",
+      "acceptableAnswers": [
+        "投げる",
+        "捨てる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-144",
+      "moduleId": "leap",
+      "prompt": "operate",
+      "explanation": "He can operate the machine.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "操作する",
+      "acceptableAnswers": [
+        "操作する",
+        "手術する",
+        "運営する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-145",
+      "moduleId": "leap",
+      "prompt": "repair",
+      "explanation": "I need to repair my bike.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "修理する",
+      "acceptableAnswers": [
+        "修理する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-146",
+      "moduleId": "leap",
+      "prompt": "sew",
+      "explanation": "She can sew a button on a shirt.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "縫う",
+      "acceptableAnswers": [
+        "縫う"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-147",
+      "moduleId": "leap",
+      "prompt": "raise",
+      "explanation": "Please raise your hand.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "上げる",
+      "acceptableAnswers": [
+        "上げる",
+        "育てる",
+        "提起する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-148",
+      "moduleId": "leap",
+      "prompt": "serve",
+      "explanation": "They served tea to the guests.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "役に立つ",
+      "acceptableAnswers": [
+        "役に立つ",
+        "仕える",
+        "出す"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-149",
+      "moduleId": "leap",
+      "prompt": "pour",
+      "explanation": "Pour water into the glass.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "注ぐ",
+      "acceptableAnswers": [
+        "注ぐ",
+        "降りそそぐ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-150",
+      "moduleId": "leap",
+      "prompt": "spill",
+      "explanation": "I spilled coffee on my laptop.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "こぼす",
+      "acceptableAnswers": [
+        "こぼす",
+        "流出する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-151",
+      "moduleId": "leap",
+      "prompt": "pretend",
+      "explanation": "He pretended to be sleeping.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "ふりをする",
+      "acceptableAnswers": [
+        "ふりをする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-152",
+      "moduleId": "leap",
+      "prompt": "behave",
+      "explanation": "He behaves badly in class.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "ふるまう",
+      "acceptableAnswers": [
+        "ふるまう",
+        "行動する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-153",
+      "moduleId": "leap",
+      "prompt": "bear",
+      "explanation": "I cannot bear the noise.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "耐える",
+      "acceptableAnswers": [
+        "耐える",
+        "持つ",
+        "運ぶ",
+        "産む"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-154",
+      "moduleId": "leap",
+      "prompt": "explore",
+      "explanation": "They explored the surface of Mars.",
+      "category": "動作・行動・ふるまい",
+      "type": "input",
+      "answer": "探検する",
+      "acceptableAnswers": [
+        "探検する",
+        "探る",
+        "調査する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-155",
+      "moduleId": "leap",
+      "prompt": "happen",
+      "explanation": "What happened to her?",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "起こる",
+      "acceptableAnswers": [
+        "起こる",
+        "偶然する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-156",
+      "moduleId": "leap",
+      "prompt": "appear",
+      "explanation": "The singer appeared on the stage.",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "現れる",
+      "acceptableAnswers": [
+        "現れる",
+        "のように見える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-157",
+      "moduleId": "leap",
+      "prompt": "remain",
+      "explanation": "The cause remains unknown.",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "のままでいる",
+      "acceptableAnswers": [
+        "のままでいる",
+        "残る"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-158",
+      "moduleId": "leap",
+      "prompt": "survive",
+      "explanation": "He survived a plane crash.",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "生き残る",
+      "acceptableAnswers": [
+        "生き残る",
+        "生き延びる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-159",
+      "moduleId": "leap",
+      "prompt": "belong",
+      "explanation": "Sam belongs to the Sales Department.",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "所属している",
+      "acceptableAnswers": [
+        "所属している",
+        "属する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-160",
+      "moduleId": "leap",
+      "prompt": "represent",
+      "explanation": "This sign represents a temple.",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "代表する",
+      "acceptableAnswers": [
+        "代表する",
+        "表す",
+        "表現する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-161",
+      "moduleId": "leap",
+      "prompt": "base",
+      "explanation": "This novel is based on facts.",
+      "category": "出現・存在・関係",
+      "type": "input",
+      "answer": "基礎を置く",
+      "acceptableAnswers": [
+        "基礎を置く",
+        "基礎",
+        "基地"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-162",
+      "moduleId": "leap",
+      "prompt": "include",
+      "explanation": "The price includes postage.",
+      "category": "所有・収集",
+      "type": "input",
+      "answer": "含む",
+      "acceptableAnswers": [
+        "含む"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-163",
+      "moduleId": "leap",
+      "prompt": "contain",
+      "explanation": "This soup contains various herbs.",
+      "category": "所有・収集",
+      "type": "input",
+      "answer": "含む",
+      "acceptableAnswers": [
+        "含む",
+        "抑える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-164",
+      "moduleId": "leap",
+      "prompt": "own",
+      "explanation": "I saw it with my own eyes.",
+      "category": "所有・収集",
+      "type": "input",
+      "answer": "自分自身の",
+      "acceptableAnswers": [
+        "自分自身の",
+        "所有する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-165",
+      "moduleId": "leap",
+      "prompt": "share",
+      "explanation": "Share a table with a stranger.",
+      "category": "所有・収集",
+      "type": "input",
+      "answer": "共有する",
+      "acceptableAnswers": [
+        "共有する",
+        "分け前",
+        "分け合う"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-166",
+      "moduleId": "leap",
+      "prompt": "collect",
+      "explanation": "They collect teddy bears.",
+      "category": "所有・収集",
+      "type": "input",
+      "answer": "集める",
+      "acceptableAnswers": [
+        "集める",
+        "徴収する",
+        "回収する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-167",
+      "moduleId": "leap",
+      "prompt": "gather",
+      "explanation": "Gather information.",
+      "category": "所有・収集",
+      "type": "input",
+      "answer": "集める",
+      "acceptableAnswers": [
+        "集める",
+        "集まる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-168",
+      "moduleId": "leap",
+      "prompt": "history",
+      "explanation": "He is the best soccer player in history.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "歴史",
+      "acceptableAnswers": [
+        "歴史",
+        "履歴",
+        "病歴"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-169",
+      "moduleId": "leap",
+      "prompt": "subject",
+      "explanation": "English is my favorite subject.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "科目",
+      "acceptableAnswers": [
+        "科目",
+        "話題",
+        "被験者",
+        "支配下に置く"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-170",
+      "moduleId": "leap",
+      "prompt": "education",
+      "explanation": "She received a good education.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "教育",
+      "acceptableAnswers": [
+        "教育"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-171",
+      "moduleId": "leap",
+      "prompt": "knowledge",
+      "explanation": "He has a wide range of knowledge.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "知識",
+      "acceptableAnswers": [
+        "知識",
+        "知っていること"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-172",
+      "moduleId": "leap",
+      "prompt": "uniform",
+      "explanation": "Students wear a school uniform.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "制服",
+      "acceptableAnswers": [
+        "制服",
+        "同一の",
+        "一定の"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-173",
+      "moduleId": "leap",
+      "prompt": "grade",
+      "explanation": "She is in the eighth grade.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "学年",
+      "acceptableAnswers": [
+        "学年",
+        "等級",
+        "成績"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-174",
+      "moduleId": "leap",
+      "prompt": "senior",
+      "explanation": "He is a college senior.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "最上級生",
+      "acceptableAnswers": [
+        "最上級生",
+        "年上の",
+        "上級の",
+        "高齢者"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-175",
+      "moduleId": "leap",
+      "prompt": "graduate",
+      "explanation": "She graduated from high school.",
+      "category": "教育・学問",
+      "type": "input",
+      "answer": "卒業する",
+      "acceptableAnswers": [
+        "卒業する",
+        "卒業生"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-176",
+      "moduleId": "leap",
+      "prompt": "decide",
+      "explanation": "I decided to live on my own.",
+      "category": "決定・判断・選択",
+      "type": "input",
+      "answer": "決定する",
+      "acceptableAnswers": [
+        "決定する",
+        "決心する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-177",
+      "moduleId": "leap",
+      "prompt": "judge",
+      "explanation": "Do not judge people by appearance.",
+      "category": "決定・判断・選択",
+      "type": "input",
+      "answer": "判断する",
+      "acceptableAnswers": [
+        "判断する",
+        "裁判官",
+        "審判"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-178",
+      "moduleId": "leap",
+      "prompt": "quit",
+      "explanation": "He quit his job.",
+      "category": "決定・判断・選択",
+      "type": "input",
+      "answer": "やめる",
+      "acceptableAnswers": [
+        "やめる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-179",
+      "moduleId": "leap",
+      "prompt": "retire",
+      "explanation": "She retired from the company.",
+      "category": "決定・判断・選択",
+      "type": "input",
+      "answer": "引退する",
+      "acceptableAnswers": [
+        "引退する",
+        "退職する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-180",
+      "moduleId": "leap",
+      "prompt": "review",
+      "explanation": "I wrote a review of the book.",
+      "category": "決定・判断・選択",
+      "type": "input",
+      "answer": "再検討",
+      "acceptableAnswers": [
+        "再検討",
+        "批評",
+        "復習",
+        "再検討する",
+        "復習する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-181",
+      "moduleId": "leap",
+      "prompt": "choose",
+      "explanation": "Choose what to wear.",
+      "category": "決定・判断・選択",
+      "type": "input",
+      "answer": "選ぶ",
+      "acceptableAnswers": [
+        "選ぶ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-182",
+      "moduleId": "leap",
+      "prompt": "imagine",
+      "explanation": "Imagine life without electricity.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "想像する",
+      "acceptableAnswers": [
+        "想像する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-183",
+      "moduleId": "leap",
+      "prompt": "guess",
+      "explanation": "Guess what is in this bag.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "推測する",
+      "acceptableAnswers": [
+        "推測する",
+        "推測"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-184",
+      "moduleId": "leap",
+      "prompt": "expect",
+      "explanation": "We are expecting a typhoon.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "予期する",
+      "acceptableAnswers": [
+        "予期する",
+        "期待する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-185",
+      "moduleId": "leap",
+      "prompt": "predict",
+      "explanation": "They predicted the weather.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "予測する",
+      "acceptableAnswers": [
+        "予測する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-186",
+      "moduleId": "leap",
+      "prompt": "remember",
+      "explanation": "I remember meeting her.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "覚えている",
+      "acceptableAnswers": [
+        "覚えている",
+        "思い出す",
+        "よろしく伝える"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-187",
+      "moduleId": "leap",
+      "prompt": "remind",
+      "explanation": "This song reminds me of him.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "思い出させる",
+      "acceptableAnswers": [
+        "思い出させる",
+        "念を押す"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-188",
+      "moduleId": "leap",
+      "prompt": "realize",
+      "explanation": "She realized her dream.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "理解する",
+      "acceptableAnswers": [
+        "理解する",
+        "気づく",
+        "実現する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-189",
+      "moduleId": "leap",
+      "prompt": "appreciate",
+      "explanation": "I appreciate your help.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "理解する",
+      "acceptableAnswers": [
+        "理解する",
+        "よさがわかる",
+        "感謝する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-190",
+      "moduleId": "leap",
+      "prompt": "accept",
+      "explanation": "Accept other people’s opinions.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "受け入れる",
+      "acceptableAnswers": [
+        "受け入れる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-191",
+      "moduleId": "leap",
+      "prompt": "consider",
+      "explanation": "Consider all the possibilities.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "よく考える",
+      "acceptableAnswers": [
+        "よく考える",
+        "考慮する",
+        "みなす"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-192",
+      "moduleId": "leap",
+      "prompt": "mind",
+      "explanation": "Do you mind if I open the window?",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "気にする",
+      "acceptableAnswers": [
+        "気にする",
+        "心",
+        "精神",
+        "頭脳"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-193",
+      "moduleId": "leap",
+      "prompt": "wonder",
+      "explanation": "I wonder where he has gone.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "かなと思う",
+      "acceptableAnswers": [
+        "かなと思う",
+        "驚く",
+        "不思議に思う"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-194",
+      "moduleId": "leap",
+      "prompt": "seem",
+      "explanation": "It seems that he knows what happened.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "のように思われる",
+      "acceptableAnswers": [
+        "のように思われる",
+        "のようだ"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-195",
+      "moduleId": "leap",
+      "prompt": "compare",
+      "explanation": "Compare city life with country life.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "比較する",
+      "acceptableAnswers": [
+        "比較する",
+        "例える",
+        "匹敵する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-196",
+      "moduleId": "leap",
+      "prompt": "concentrate",
+      "explanation": "Concentrate on your studies.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "集中する",
+      "acceptableAnswers": [
+        "集中する",
+        "集中させる"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-197",
+      "moduleId": "leap",
+      "prompt": "focus",
+      "explanation": "This book focuses on French culture.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "焦点を当てる",
+      "acceptableAnswers": [
+        "焦点を当てる",
+        "集中する",
+        "焦点"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-198",
+      "moduleId": "leap",
+      "prompt": "allow",
+      "explanation": "Please allow me to introduce myself.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "許可する",
+      "acceptableAnswers": [
+        "許可する",
+        "可能にする"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-199",
+      "moduleId": "leap",
+      "prompt": "admit",
+      "explanation": "Tom admitted that he had been mistaken.",
+      "category": "思考・認識・許可",
+      "type": "input",
+      "answer": "認める",
+      "acceptableAnswers": [
+        "認める",
+        "入場を許可する",
+        "入学を許可する"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "leap-200",
+      "moduleId": "leap",
+      "prompt": "ground",
+      "explanation": "The ball fell to the ground.",
+      "category": "自然・環境",
+      "type": "input",
+      "answer": "地面",
+      "acceptableAnswers": [
+        "地面",
+        "根拠",
+        "理由"
+      ],
+      "direction": "normal"
+    }
+  ]
+}

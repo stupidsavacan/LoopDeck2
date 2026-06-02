@@ -1,0 +1,422 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-english-normal-v1",
+  "title": "英文暗記",
+  "description": "StudyHome-Nextから救出した 英文暗記 の通常方向教材。",
+  "folders": [
+    {
+      "id": "english",
+      "title": "英語"
+    }
+  ],
+  "modules": [
+    {
+      "id": "english",
+      "folderId": "english",
+      "title": "英文暗記",
+      "subject": "英語",
+      "description": "StudyHome-Nextから救出した教材データ。source=english",
+      "tags": [
+        "英語",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "english-1",
+        "english-2",
+        "english-3",
+        "english-4",
+        "english-5",
+        "english-6",
+        "english-7",
+        "english-8",
+        "english-9",
+        "english-10",
+        "english-11",
+        "english-12",
+        "english-13",
+        "english-14",
+        "english-15",
+        "english-16",
+        "english-17",
+        "english-18",
+        "english-19",
+        "english-20",
+        "english-21",
+        "english-22",
+        "english-23",
+        "english-24",
+        "english-25",
+        "english-26",
+        "english-27",
+        "english-28"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "english-1",
+      "moduleId": "english",
+      "prompt": "私はちょうど今昼食を終えたところです。",
+      "explanation": "have just finished = ちょうど終えたところ",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I have just finished lunch.",
+      "acceptableAnswers": [
+        "I have just finished lunch."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-2",
+      "moduleId": "english",
+      "prompt": "あなたはスコットランドへ行ったことがありますか？",
+      "explanation": "Have you ever been to ...? = 〜へ行ったことがありますか",
+      "category": "完了形",
+      "type": "input",
+      "answer": "Have you ever been to Scotland?",
+      "acceptableAnswers": [
+        "Have you ever been to Scotland?"
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-3",
+      "moduleId": "english",
+      "prompt": "彼は韓国へ行ってしまった（今ここにはいない）。",
+      "explanation": "has gone to = 行ってしまって、今ここにいない",
+      "category": "完了形",
+      "type": "input",
+      "answer": "He has gone to Korea.",
+      "acceptableAnswers": [
+        "He has gone to Korea."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-4",
+      "moduleId": "english",
+      "prompt": "私は四年間ずっと英語を勉強している。",
+      "explanation": "have been -ing = ずっと〜している",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I have been studying English for four years.",
+      "acceptableAnswers": [
+        "I have been studying English for four years."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-5",
+      "moduleId": "english",
+      "prompt": "私は若いころ2年間中国に住んだことがある。",
+      "explanation": "when I was young があるので、過去の一時期の話",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I lived in China for two years when I was young.",
+      "acceptableAnswers": [
+        "I lived in China for two years when I was young."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-6",
+      "moduleId": "english",
+      "prompt": "私は一週間前に買った時計を昨日なくしました。",
+      "explanation": "had bought = なくした時点より前に買っていた",
+      "category": "完了形",
+      "type": "input",
+      "answer": "Yesterday I lost the watch that I had bought last week.",
+      "acceptableAnswers": [
+        "Yesterday I lost the watch that I had bought last week."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-7",
+      "moduleId": "english",
+      "prompt": "私は正午までには昼食を終えているだろう。",
+      "explanation": "will have 過去分詞 = 未来のある時点までの完了",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I will have eaten lunch by noon.",
+      "acceptableAnswers": [
+        "I will have eaten lunch by noon."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-8",
+      "moduleId": "english",
+      "prompt": "もう一度行けば、彼女は東京に4回いったことになります。",
+      "explanation": "will have been to = 未来の時点で〜へ行った経験があることになる",
+      "category": "完了形",
+      "type": "input",
+      "answer": "She will have been to Tokyo four times if she goes there again.",
+      "acceptableAnswers": [
+        "She will have been to Tokyo four times if she goes there again."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-9",
+      "moduleId": "english",
+      "prompt": "私は彼が病気だったと思う。",
+      "explanation": "think が現在なので、従属節は was sick",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I think he was sick.",
+      "acceptableAnswers": [
+        "I think he was sick."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-10",
+      "moduleId": "english",
+      "prompt": "私は彼が病気だったと思った。",
+      "explanation": "thought より前に病気だったことを had been sick で表す",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I thought he had been sick.",
+      "acceptableAnswers": [
+        "I thought he had been sick."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-11",
+      "moduleId": "english",
+      "prompt": "君が買い物を終えたら車で迎えに行くよ。",
+      "explanation": "when 節の中では未来の内容でも will ではなく現在完了",
+      "category": "完了形",
+      "type": "input",
+      "answer": "I'll pick you up when you have finished shopping.",
+      "acceptableAnswers": [
+        "I'll pick you up when you have finished shopping."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-12",
+      "moduleId": "english",
+      "prompt": "彼は彼の娘にかわいい人形をあげた。",
+      "explanation": "give + 人 + 物",
+      "category": "文型",
+      "type": "input",
+      "answer": "He gave his daughter a pretty doll.",
+      "acceptableAnswers": [
+        "He gave his daughter a pretty doll."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-13",
+      "moduleId": "english",
+      "prompt": "彼はかわいい人形を彼の娘にあげた。",
+      "explanation": "give + 物 + to 人",
+      "category": "文型",
+      "type": "input",
+      "answer": "He gave a pretty doll to his daughter.",
+      "acceptableAnswers": [
+        "He gave a pretty doll to his daughter."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-14",
+      "moduleId": "english",
+      "prompt": "私はいとこに素敵なネクタイを買った。",
+      "explanation": "buy + 人 + 物",
+      "category": "文型",
+      "type": "input",
+      "answer": "I bought my cousin a nice tie.",
+      "acceptableAnswers": [
+        "I bought my cousin a nice tie."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-15",
+      "moduleId": "english",
+      "prompt": "私は素敵なネクタイをいとこに買った。",
+      "explanation": "buy + 物 + for 人",
+      "category": "文型",
+      "type": "input",
+      "answer": "I bought a nice tie for my cousin.",
+      "acceptableAnswers": [
+        "I bought a nice tie for my cousin."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-16",
+      "moduleId": "english",
+      "prompt": "彼女はいつも彼女の部屋をきれいにしています。",
+      "explanation": "keep + O + C = OをCの状態に保つ",
+      "category": "文型",
+      "type": "input",
+      "answer": "She always keeps her room clean.",
+      "acceptableAnswers": [
+        "She always keeps her room clean."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-17",
+      "moduleId": "english",
+      "prompt": "その知らせは私を悲しませた。",
+      "explanation": "make + O + C = OをCにする",
+      "category": "文型",
+      "type": "input",
+      "answer": "The news made me sad.",
+      "acceptableAnswers": [
+        "The news made me sad."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-18",
+      "moduleId": "english",
+      "prompt": "彼らは新居がとても快適だと分かった。",
+      "explanation": "find + O + C = OがCだと分かる",
+      "category": "文型",
+      "type": "input",
+      "answer": "They found their new home very comfortable.",
+      "acceptableAnswers": [
+        "They found their new home very comfortable."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-19",
+      "moduleId": "english",
+      "prompt": "地球は太陽のまわりをまわっている。",
+      "explanation": "普遍的な事実は現在形で表す",
+      "category": "時制",
+      "type": "input",
+      "answer": "The earth goes around the sun.",
+      "acceptableAnswers": [
+        "The earth goes around the sun."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-20",
+      "moduleId": "english",
+      "prompt": "彼はいつも自転車で学校に行っている。",
+      "explanation": "習慣は現在形で表す",
+      "category": "時制",
+      "type": "input",
+      "answer": "He always goes to school by bike.",
+      "acceptableAnswers": [
+        "He always goes to school by bike."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-21",
+      "moduleId": "english",
+      "prompt": "彼はいつも文句ばかり言っている。",
+      "explanation": "be always -ing は「いつも〜ばかりしている」という不満の感じ",
+      "category": "時制",
+      "type": "input",
+      "answer": "He is always complaining.",
+      "acceptableAnswers": [
+        "He is always complaining."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-22",
+      "moduleId": "english",
+      "prompt": "私たちはよく釣りに行った。",
+      "explanation": "過去によくしていたことは過去形",
+      "category": "時制",
+      "type": "input",
+      "answer": "We often went fishing.",
+      "acceptableAnswers": [
+        "We often went fishing."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-23",
+      "moduleId": "english",
+      "prompt": "学校は4月8日に始まります。",
+      "explanation": "時刻表・予定表のような確定した予定は現在形で表すことがある",
+      "category": "時制",
+      "type": "input",
+      "answer": "School starts on April 8th.",
+      "acceptableAnswers": [
+        "School starts on April 8th."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-24",
+      "moduleId": "english",
+      "prompt": "次の急行列車はここに10時につきます。",
+      "explanation": "交通機関の予定は現在形で表すことがある",
+      "category": "時制",
+      "type": "input",
+      "answer": "The next express train arrives here at ten.",
+      "acceptableAnswers": [
+        "The next express train arrives here at ten."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-25",
+      "moduleId": "english",
+      "prompt": "もし明日雨が降ったら、家にいるつもりです。",
+      "explanation": "if 節の中では未来のことでも現在形",
+      "category": "時制",
+      "type": "input",
+      "answer": "If it rains tomorrow, I will stay home.",
+      "acceptableAnswers": [
+        "If it rains tomorrow, I will stay home."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-26",
+      "moduleId": "english",
+      "prompt": "暗くなる前に、私たちは家につくだろう。",
+      "explanation": "before 節の中では未来のことでも現在形",
+      "category": "時制",
+      "type": "input",
+      "answer": "We will get home before it gets dark.",
+      "acceptableAnswers": [
+        "We will get home before it gets dark."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-27",
+      "moduleId": "english",
+      "prompt": "私たちは五分後に東京につきます。",
+      "explanation": "will be -ing で自然な未来の成り行き・予定を表す",
+      "category": "時制",
+      "type": "input",
+      "answer": "We will be arriving at Tokyo in five minutes.",
+      "acceptableAnswers": [
+        "We will be arriving at Tokyo in five minutes."
+      ],
+      "direction": "normal"
+    },
+    {
+      "id": "english-28",
+      "moduleId": "english",
+      "prompt": "明日の朝7時にここを出る予定です。（近接未来）",
+      "explanation": "近い未来の確定した予定は現在進行形で表せる",
+      "category": "時制",
+      "type": "input",
+      "answer": "I'm leaving here at seven tomorrow morning.",
+      "acceptableAnswers": [
+        "I'm leaving here at seven tomorrow morning."
+      ],
+      "direction": "normal"
+    }
+  ]
+}

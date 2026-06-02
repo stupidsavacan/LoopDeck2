@@ -1,0 +1,1531 @@
+{
+  "packVersion": 1,
+  "packId": "studyhome-next-biology-normal-v1",
+  "title": "生物",
+  "description": "StudyHome-Nextから救出した 生物 の通常方向教材。",
+  "folders": [
+    {
+      "id": "science",
+      "title": "理科"
+    }
+  ],
+  "modules": [
+    {
+      "id": "biology",
+      "folderId": "science",
+      "title": "生物",
+      "subject": "理科",
+      "description": "StudyHome-Nextから救出した教材データ。source=biology",
+      "tags": [
+        "理科",
+        "StudyHomeNext",
+        "rescued"
+      ],
+      "questionIds": [
+        "biology-bio001",
+        "biology-bio002",
+        "biology-bio003",
+        "biology-bio004",
+        "biology-bio005",
+        "biology-bio006",
+        "biology-bio007",
+        "biology-bio008",
+        "biology-bio009",
+        "biology-bio010",
+        "biology-bio011",
+        "biology-bio012",
+        "biology-bio013",
+        "biology-bio014",
+        "biology-bio015",
+        "biology-bio016",
+        "biology-bio017",
+        "biology-bio018",
+        "biology-bio019",
+        "biology-bio020",
+        "biology-bio021",
+        "biology-bio022",
+        "biology-bio023",
+        "biology-bio024",
+        "biology-bio025",
+        "biology-bio026",
+        "biology-bio027",
+        "biology-bio028",
+        "biology-bio029",
+        "biology-bio030",
+        "biology-bio031",
+        "biology-bio032",
+        "biology-bio033",
+        "biology-bio034",
+        "biology-bio035",
+        "biology-bio036",
+        "biology-bio037",
+        "biology-bio038",
+        "biology-bio039",
+        "biology-bio040",
+        "biology-bio041",
+        "biology-bio042",
+        "biology-bio043",
+        "biology-bio044",
+        "biology-bio045",
+        "biology-bio046",
+        "biology-bio047",
+        "biology-bio048",
+        "biology-bio049",
+        "biology-bio050",
+        "biology-bio051",
+        "biology-bio052",
+        "biology-bio053",
+        "biology-bio054",
+        "biology-bio055",
+        "biology-bio056",
+        "biology-bio057",
+        "biology-bio058",
+        "biology-bio059",
+        "biology-bio060",
+        "biology-bio061",
+        "biology-bio062",
+        "biology-bio063",
+        "biology-bio064",
+        "biology-bio065",
+        "biology-bio066",
+        "biology-bio067",
+        "biology-bio068",
+        "biology-bio069",
+        "biology-bio070",
+        "biology-bio071",
+        "biology-bio072",
+        "biology-bio073",
+        "biology-bio074",
+        "biology-bio075",
+        "biology-bio076",
+        "biology-bio077",
+        "biology-bio078",
+        "biology-bio079"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "biology-bio001",
+      "moduleId": "biology",
+      "prompt": "地球上に存在する生物の種類や形・生活のしかたが非常に多様であることを何というか。",
+      "explanation": "多くの種がそれぞれ異なる特徴をもつこと。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "生物の多様性",
+        "生物の共通性",
+        "分類",
+        "進化"
+      ],
+      "answer": "生物の多様性",
+      "acceptableAnswers": [
+        "生物の多様性"
+      ]
+    },
+    {
+      "id": "biology-bio002",
+      "moduleId": "biology",
+      "prompt": "多様な生物にも共通して見られる特徴を何というか。",
+      "explanation": "細胞を基本単位とする、DNAをもつ、ATPを利用するなど。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "生物の共通性",
+        "生物の多様性",
+        "適応",
+        "変異"
+      ],
+      "answer": "生物の共通性",
+      "acceptableAnswers": [
+        "生物の共通性"
+      ]
+    },
+    {
+      "id": "biology-bio003",
+      "moduleId": "biology",
+      "prompt": "生物のからだをつくる基本単位は何か。",
+      "explanation": "すべての生物は細胞を基本単位としている。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "細胞",
+        "組織",
+        "器官",
+        "個体"
+      ],
+      "answer": "細胞",
+      "acceptableAnswers": [
+        "細胞"
+      ]
+    },
+    {
+      "id": "biology-bio004",
+      "moduleId": "biology",
+      "prompt": "遺伝情報として多くの生物がもつ物質は何か。",
+      "explanation": "DNAは遺伝情報を担う物質。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "DNA",
+        "ATP",
+        "RNA",
+        "タンパク質"
+      ],
+      "answer": "DNA",
+      "acceptableAnswers": [
+        "DNA"
+      ]
+    },
+    {
+      "id": "biology-bio005",
+      "moduleId": "biology",
+      "prompt": "生物が生命活動のエネルギーの受け渡しに利用する物質は何か。",
+      "explanation": "ATPはエネルギーの受け渡しに使われる。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "ATP",
+        "ADP",
+        "DNA",
+        "グルコース"
+      ],
+      "answer": "ATP",
+      "acceptableAnswers": [
+        "ATP"
+      ]
+    },
+    {
+      "id": "biology-bio006",
+      "moduleId": "biology",
+      "prompt": "現在見られる多様な生物は、共通の祖先から変化してきたと考えられる。この変化を何というか。",
+      "explanation": "進化により生物の多様性が生じたと考えられる。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "進化",
+        "分化",
+        "分類",
+        "遺伝"
+      ],
+      "answer": "進化",
+      "acceptableAnswers": [
+        "進化"
+      ]
+    },
+    {
+      "id": "biology-bio007",
+      "moduleId": "biology",
+      "prompt": "生物が環境に合う特徴をもつようになることを何というか。",
+      "explanation": "環境に適した形や性質をもつこと。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "適応",
+        "進化",
+        "分解",
+        "発生"
+      ],
+      "answer": "適応",
+      "acceptableAnswers": [
+        "適応"
+      ]
+    },
+    {
+      "id": "biology-bio008",
+      "moduleId": "biology",
+      "prompt": "生物を特徴にもとづいて分けることを何というか。",
+      "explanation": "似た特徴をもつものをまとめる。",
+      "category": "生物の多様性と共通性",
+      "type": "choice",
+      "choices": [
+        "分類",
+        "同化",
+        "異化",
+        "代謝"
+      ],
+      "answer": "分類",
+      "acceptableAnswers": [
+        "分類"
+      ]
+    },
+    {
+      "id": "biology-bio009",
+      "moduleId": "biology",
+      "prompt": "1つの細胞だけでできている生物を何というか。",
+      "explanation": "ゾウリムシやミドリムシなど。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "単細胞生物",
+        "多細胞生物",
+        "原核生物",
+        "真核生物"
+      ],
+      "answer": "単細胞生物",
+      "acceptableAnswers": [
+        "単細胞生物"
+      ]
+    },
+    {
+      "id": "biology-bio010",
+      "moduleId": "biology",
+      "prompt": "多数の細胞からできている生物を何というか。",
+      "explanation": "動物や植物など。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "多細胞生物",
+        "単細胞生物",
+        "原核生物",
+        "細胞小器官"
+      ],
+      "answer": "多細胞生物",
+      "acceptableAnswers": [
+        "多細胞生物"
+      ]
+    },
+    {
+      "id": "biology-bio011",
+      "moduleId": "biology",
+      "prompt": "多細胞生物で同じ形やはたらきの細胞が集まったものを何というか。",
+      "explanation": "筋組織、上皮組織など。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "組織",
+        "器官",
+        "器官系",
+        "個体"
+      ],
+      "answer": "組織",
+      "acceptableAnswers": [
+        "組織"
+      ]
+    },
+    {
+      "id": "biology-bio012",
+      "moduleId": "biology",
+      "prompt": "いくつかの組織が集まって特定のはたらきをするまとまりを何というか。",
+      "explanation": "心臓、胃、葉、根など。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "器官",
+        "組織",
+        "細胞",
+        "器官系"
+      ],
+      "answer": "器官",
+      "acceptableAnswers": [
+        "器官"
+      ]
+    },
+    {
+      "id": "biology-bio013",
+      "moduleId": "biology",
+      "prompt": "複数の器官が連携して特定のはたらきをするまとまりを何というか。",
+      "explanation": "消化系、呼吸系など。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "器官系",
+        "器官",
+        "組織",
+        "個体"
+      ],
+      "answer": "器官系",
+      "acceptableAnswers": [
+        "器官系"
+      ]
+    },
+    {
+      "id": "biology-bio014",
+      "moduleId": "biology",
+      "prompt": "植物で光合成を主に行う器官は何か。",
+      "explanation": "葉には葉緑体をもつ細胞が多い。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "葉",
+        "茎",
+        "根",
+        "花"
+      ],
+      "answer": "葉",
+      "acceptableAnswers": [
+        "葉"
+      ]
+    },
+    {
+      "id": "biology-bio015",
+      "moduleId": "biology",
+      "prompt": "植物で水や無機塩類を吸収する器官は何か。",
+      "explanation": "根は土壌から水や無機塩類を吸収する。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "根",
+        "茎",
+        "葉",
+        "果実"
+      ],
+      "answer": "根",
+      "acceptableAnswers": [
+        "根"
+      ]
+    },
+    {
+      "id": "biology-bio016",
+      "moduleId": "biology",
+      "prompt": "動物で酸素を取り込み二酸化炭素を排出する器官の代表は何か。",
+      "explanation": "肺は呼吸に関わる器官。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "肺",
+        "胃",
+        "小腸",
+        "肝臓"
+      ],
+      "answer": "肺",
+      "acceptableAnswers": [
+        "肺"
+      ]
+    },
+    {
+      "id": "biology-bio017",
+      "moduleId": "biology",
+      "prompt": "動物で食物を消化・吸収する器官系は何か。",
+      "explanation": "消化管や消化に関わる器官からなる。",
+      "category": "細胞と個体",
+      "type": "choice",
+      "choices": [
+        "消化系",
+        "呼吸系",
+        "循環系",
+        "神経系"
+      ],
+      "answer": "消化系",
+      "acceptableAnswers": [
+        "消化系"
+      ]
+    },
+    {
+      "id": "biology-bio018",
+      "moduleId": "biology",
+      "prompt": "生物体に最も多く含まれる物質は何か。",
+      "explanation": "細胞内の化学反応の場として重要。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "水",
+        "タンパク質",
+        "脂質",
+        "無機塩類"
+      ],
+      "answer": "水",
+      "acceptableAnswers": [
+        "水"
+      ]
+    },
+    {
+      "id": "biology-bio019",
+      "moduleId": "biology",
+      "prompt": "酵素や筋肉などをつくる主要な有機物は何か。",
+      "explanation": "タンパク質はアミノ酸からできる。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "タンパク質",
+        "脂質",
+        "炭水化物",
+        "核酸"
+      ],
+      "answer": "タンパク質",
+      "acceptableAnswers": [
+        "タンパク質"
+      ]
+    },
+    {
+      "id": "biology-bio020",
+      "moduleId": "biology",
+      "prompt": "タンパク質を構成する基本単位は何か。",
+      "explanation": "アミノ酸が多数つながってタンパク質になる。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "アミノ酸",
+        "グルコース",
+        "脂肪酸",
+        "ヌクレオチド"
+      ],
+      "answer": "アミノ酸",
+      "acceptableAnswers": [
+        "アミノ酸"
+      ]
+    },
+    {
+      "id": "biology-bio021",
+      "moduleId": "biology",
+      "prompt": "エネルギー源として利用され、デンプンや糖が含まれる有機物は何か。",
+      "explanation": "糖質とも呼ばれる。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "炭水化物",
+        "タンパク質",
+        "脂質",
+        "核酸"
+      ],
+      "answer": "炭水化物",
+      "acceptableAnswers": [
+        "炭水化物"
+      ]
+    },
+    {
+      "id": "biology-bio022",
+      "moduleId": "biology",
+      "prompt": "細胞膜の主成分の一つで、エネルギー貯蔵にも関わる有機物は何か。",
+      "explanation": "リン脂質は細胞膜の主成分。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "脂質",
+        "タンパク質",
+        "炭水化物",
+        "核酸"
+      ],
+      "answer": "脂質",
+      "acceptableAnswers": [
+        "脂質"
+      ]
+    },
+    {
+      "id": "biology-bio023",
+      "moduleId": "biology",
+      "prompt": "DNAやRNAのように遺伝情報に関わる有機物は何か。",
+      "explanation": "DNAとRNAが代表。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "核酸",
+        "脂質",
+        "炭水化物",
+        "無機塩類"
+      ],
+      "answer": "核酸",
+      "acceptableAnswers": [
+        "核酸"
+      ]
+    },
+    {
+      "id": "biology-bio024",
+      "moduleId": "biology",
+      "prompt": "ナトリウムやカルシウムなど、体内でイオンとしてはたらく物質群を何というか。",
+      "explanation": "体液の調節や骨の成分などに関わる。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "無機塩類",
+        "脂質",
+        "核酸",
+        "炭水化物"
+      ],
+      "answer": "無機塩類",
+      "acceptableAnswers": [
+        "無機塩類"
+      ]
+    },
+    {
+      "id": "biology-bio025",
+      "moduleId": "biology",
+      "prompt": "水は酸素原子と何原子からできているか。",
+      "explanation": "水分子はH2O。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "水素原子",
+        "炭素原子",
+        "窒素原子",
+        "リン原子"
+      ],
+      "answer": "水素原子",
+      "acceptableAnswers": [
+        "水素原子"
+      ]
+    },
+    {
+      "id": "biology-bio026",
+      "moduleId": "biology",
+      "prompt": "生物体を構成する有機物に多く含まれる元素で、元素記号Cのものは何か。",
+      "explanation": "Cは炭素。",
+      "category": "生物体を構成する物質",
+      "type": "choice",
+      "choices": [
+        "炭素",
+        "酸素",
+        "水素",
+        "窒素"
+      ],
+      "answer": "炭素",
+      "acceptableAnswers": [
+        "炭素"
+      ]
+    },
+    {
+      "id": "biology-bio027",
+      "moduleId": "biology",
+      "prompt": "DNAを含み、細胞の生命活動を調節する細胞小器官は何か。",
+      "explanation": "真核細胞には核膜に包まれた核がある。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "核",
+        "ミトコンドリア",
+        "葉緑体",
+        "液胞"
+      ],
+      "answer": "核",
+      "acceptableAnswers": [
+        "核"
+      ]
+    },
+    {
+      "id": "biology-bio028",
+      "moduleId": "biology",
+      "prompt": "核を包む膜を何というか。",
+      "explanation": "核膜が核と細胞質を分ける。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "核膜",
+        "細胞膜",
+        "細胞壁",
+        "外膜"
+      ],
+      "answer": "核膜",
+      "acceptableAnswers": [
+        "核膜"
+      ]
+    },
+    {
+      "id": "biology-bio029",
+      "moduleId": "biology",
+      "prompt": "細胞の内部を満たし、細胞小器官が存在する部分を何というか。",
+      "explanation": "核以外の内部を大まかに細胞質という。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "細胞質",
+        "核",
+        "液胞",
+        "細胞壁"
+      ],
+      "answer": "細胞質",
+      "acceptableAnswers": [
+        "細胞質"
+      ]
+    },
+    {
+      "id": "biology-bio030",
+      "moduleId": "biology",
+      "prompt": "細胞の内外を仕切る薄い膜を何というか。",
+      "explanation": "細胞膜は物質の出入りにも関わる。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "細胞膜",
+        "細胞壁",
+        "核膜",
+        "液胞"
+      ],
+      "answer": "細胞膜",
+      "acceptableAnswers": [
+        "細胞膜"
+      ]
+    },
+    {
+      "id": "biology-bio031",
+      "moduleId": "biology",
+      "prompt": "植物細胞にあり、細胞を保護し形を保つ構造は何か。",
+      "explanation": "植物細胞では細胞膜の外側に細胞壁がある。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "細胞壁",
+        "細胞膜",
+        "核膜",
+        "液胞"
+      ],
+      "answer": "細胞壁",
+      "acceptableAnswers": [
+        "細胞壁"
+      ]
+    },
+    {
+      "id": "biology-bio032",
+      "moduleId": "biology",
+      "prompt": "呼吸によって生命活動に必要なエネルギーを取り出す細胞小器官は何か。",
+      "explanation": "多くの真核細胞にある。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "ミトコンドリア",
+        "葉緑体",
+        "液胞",
+        "核"
+      ],
+      "answer": "ミトコンドリア",
+      "acceptableAnswers": [
+        "ミトコンドリア"
+      ]
+    },
+    {
+      "id": "biology-bio033",
+      "moduleId": "biology",
+      "prompt": "光合成を行う植物細胞の細胞小器官は何か。",
+      "explanation": "クロロフィルを含む。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "葉緑体",
+        "ミトコンドリア",
+        "核",
+        "リボソーム"
+      ],
+      "answer": "葉緑体",
+      "acceptableAnswers": [
+        "葉緑体"
+      ]
+    },
+    {
+      "id": "biology-bio034",
+      "moduleId": "biology",
+      "prompt": "植物細胞で内部に細胞液を含み、物質の貯蔵などに関わる細胞小器官は何か。",
+      "explanation": "成熟した植物細胞で大きく発達する。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "液胞",
+        "核",
+        "ミトコンドリア",
+        "葉緑体"
+      ],
+      "answer": "液胞",
+      "acceptableAnswers": [
+        "液胞"
+      ]
+    },
+    {
+      "id": "biology-bio035",
+      "moduleId": "biology",
+      "prompt": "光合成に関わる緑色の色素は何か。",
+      "explanation": "葉緑体に含まれる。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "クロロフィル",
+        "ヘモグロビン",
+        "メラニン",
+        "アントシアン"
+      ],
+      "answer": "クロロフィル",
+      "acceptableAnswers": [
+        "クロロフィル"
+      ]
+    },
+    {
+      "id": "biology-bio036",
+      "moduleId": "biology",
+      "prompt": "真核細胞に共通して見られる構造として、核と細胞質を取り囲むものは何か。",
+      "explanation": "動物細胞にも植物細胞にもある。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "細胞膜",
+        "細胞壁",
+        "葉緑体",
+        "液胞"
+      ],
+      "answer": "細胞膜",
+      "acceptableAnswers": [
+        "細胞膜"
+      ]
+    },
+    {
+      "id": "biology-bio037",
+      "moduleId": "biology",
+      "prompt": "動物細胞に普通はなく、植物細胞に見られる構造として代表的なものは何か。",
+      "explanation": "植物細胞には細胞壁・葉緑体・大きな液胞が見られることが多い。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "細胞壁",
+        "細胞膜",
+        "核",
+        "ミトコンドリア"
+      ],
+      "answer": "細胞壁",
+      "acceptableAnswers": [
+        "細胞壁"
+      ]
+    },
+    {
+      "id": "biology-bio038",
+      "moduleId": "biology",
+      "prompt": "植物細胞に普通見られ、動物細胞には普通見られない光合成の場は何か。",
+      "explanation": "葉緑体は植物や藻類などに見られる。",
+      "category": "真核細胞の構造",
+      "type": "choice",
+      "choices": [
+        "葉緑体",
+        "ミトコンドリア",
+        "核",
+        "細胞膜"
+      ],
+      "answer": "葉緑体",
+      "acceptableAnswers": [
+        "葉緑体"
+      ]
+    },
+    {
+      "id": "biology-bio039",
+      "moduleId": "biology",
+      "prompt": "核膜で囲まれた核をもたない細胞を何というか。",
+      "explanation": "原核生物の細胞。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "原核細胞",
+        "真核細胞",
+        "動物細胞",
+        "植物細胞"
+      ],
+      "answer": "原核細胞",
+      "acceptableAnswers": [
+        "原核細胞"
+      ]
+    },
+    {
+      "id": "biology-bio040",
+      "moduleId": "biology",
+      "prompt": "核膜で囲まれた核をもつ細胞を何というか。",
+      "explanation": "動物・植物・菌類などは真核細胞からなる。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "真核細胞",
+        "原核細胞",
+        "細菌",
+        "シアノバクテリア"
+      ],
+      "answer": "真核細胞",
+      "acceptableAnswers": [
+        "真核細胞"
+      ]
+    },
+    {
+      "id": "biology-bio041",
+      "moduleId": "biology",
+      "prompt": "原核細胞からなる生物を何というか。",
+      "explanation": "細菌やシアノバクテリアなど。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "原核生物",
+        "真核生物",
+        "多細胞生物",
+        "単細胞生物"
+      ],
+      "answer": "原核生物",
+      "acceptableAnswers": [
+        "原核生物"
+      ]
+    },
+    {
+      "id": "biology-bio042",
+      "moduleId": "biology",
+      "prompt": "原核生物の代表で、大腸菌などを含むものは何か。",
+      "explanation": "細菌は原核生物。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "細菌",
+        "菌類",
+        "植物",
+        "動物"
+      ],
+      "answer": "細菌",
+      "acceptableAnswers": [
+        "細菌"
+      ]
+    },
+    {
+      "id": "biology-bio043",
+      "moduleId": "biology",
+      "prompt": "光合成を行う原核生物の代表は何か。",
+      "explanation": "シアノバクテリアは原核生物で光合成を行う。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "シアノバクテリア",
+        "ミトコンドリア",
+        "ゾウリムシ",
+        "酵母菌"
+      ],
+      "answer": "シアノバクテリア",
+      "acceptableAnswers": [
+        "シアノバクテリア"
+      ]
+    },
+    {
+      "id": "biology-bio044",
+      "moduleId": "biology",
+      "prompt": "原核細胞のDNAは、核膜に包まれているか。",
+      "explanation": "原核細胞には核膜で囲まれた核がない。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "包まれていない",
+        "包まれている",
+        "細胞壁内にある",
+        "葉緑体内にある"
+      ],
+      "answer": "包まれていない",
+      "acceptableAnswers": [
+        "包まれていない"
+      ]
+    },
+    {
+      "id": "biology-bio045",
+      "moduleId": "biology",
+      "prompt": "真核細胞と比べて、原核細胞の大きさは一般にどうか。",
+      "explanation": "原核細胞は真核細胞より小さいことが多い。",
+      "category": "原核細胞",
+      "type": "choice",
+      "choices": [
+        "小さい",
+        "大きい",
+        "同じ",
+        "必ず巨大"
+      ],
+      "answer": "小さい",
+      "acceptableAnswers": [
+        "小さい"
+      ]
+    },
+    {
+      "id": "biology-bio046",
+      "moduleId": "biology",
+      "prompt": "生体内で起こる化学反応全体を何というか。",
+      "explanation": "同化と異化を含む。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "代謝",
+        "同化",
+        "異化",
+        "消化"
+      ],
+      "answer": "代謝",
+      "acceptableAnswers": [
+        "代謝"
+      ]
+    },
+    {
+      "id": "biology-bio047",
+      "moduleId": "biology",
+      "prompt": "単純な物質から複雑な物質を合成する反応を何というか。",
+      "explanation": "光合成など。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "同化",
+        "異化",
+        "分解",
+        "呼吸"
+      ],
+      "answer": "同化",
+      "acceptableAnswers": [
+        "同化"
+      ]
+    },
+    {
+      "id": "biology-bio048",
+      "moduleId": "biology",
+      "prompt": "複雑な物質を単純な物質に分解する反応を何というか。",
+      "explanation": "呼吸など。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "異化",
+        "同化",
+        "合成",
+        "光合成"
+      ],
+      "answer": "異化",
+      "acceptableAnswers": [
+        "異化"
+      ]
+    },
+    {
+      "id": "biology-bio049",
+      "moduleId": "biology",
+      "prompt": "代謝のうち、エネルギーを吸収して複雑な物質を合成する反応は何か。",
+      "explanation": "同化ではエネルギーを取り込む。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "同化",
+        "異化",
+        "呼吸",
+        "分解"
+      ],
+      "answer": "同化",
+      "acceptableAnswers": [
+        "同化"
+      ]
+    },
+    {
+      "id": "biology-bio050",
+      "moduleId": "biology",
+      "prompt": "代謝のうち、エネルギーを取り出して複雑な物質を分解する反応は何か。",
+      "explanation": "異化ではエネルギーを取り出す。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "異化",
+        "同化",
+        "光合成",
+        "合成"
+      ],
+      "answer": "異化",
+      "acceptableAnswers": [
+        "異化"
+      ]
+    },
+    {
+      "id": "biology-bio051",
+      "moduleId": "biology",
+      "prompt": "植物が光エネルギーを用いて有機物を合成する反応を何というか。",
+      "explanation": "光合成は同化の例。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "光合成",
+        "呼吸",
+        "消化",
+        "分解"
+      ],
+      "answer": "光合成",
+      "acceptableAnswers": [
+        "光合成"
+      ]
+    },
+    {
+      "id": "biology-bio052",
+      "moduleId": "biology",
+      "prompt": "有機物を分解してエネルギーを取り出す反応を何というか。",
+      "explanation": "呼吸は異化の例。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "呼吸",
+        "光合成",
+        "同化",
+        "合成"
+      ],
+      "answer": "呼吸",
+      "acceptableAnswers": [
+        "呼吸"
+      ]
+    },
+    {
+      "id": "biology-bio053",
+      "moduleId": "biology",
+      "prompt": "光合成で二酸化炭素と水から作られる有機物の代表は何か。",
+      "explanation": "光合成ではグルコースなどの有機物が合成される。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "グルコース",
+        "ATP",
+        "ADP",
+        "酸素"
+      ],
+      "answer": "グルコース",
+      "acceptableAnswers": [
+        "グルコース"
+      ]
+    },
+    {
+      "id": "biology-bio054",
+      "moduleId": "biology",
+      "prompt": "呼吸で有機物が分解されると、二酸化炭素と水のほかに何が得られるか。",
+      "explanation": "取り出されたエネルギーはATPに受け渡される。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "エネルギー",
+        "DNA",
+        "クロロフィル",
+        "核酸"
+      ],
+      "answer": "エネルギー",
+      "acceptableAnswers": [
+        "エネルギー"
+      ]
+    },
+    {
+      "id": "biology-bio055",
+      "moduleId": "biology",
+      "prompt": "ATPが分解されるとADPと何になるか。",
+      "explanation": "ATP → ADP + リン酸。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "リン酸",
+        "水",
+        "酸素",
+        "二酸化炭素"
+      ],
+      "answer": "リン酸",
+      "acceptableAnswers": [
+        "リン酸"
+      ]
+    },
+    {
+      "id": "biology-bio056",
+      "moduleId": "biology",
+      "prompt": "ATPの正式名称は何か。",
+      "explanation": "ATPはadenosine triphosphate。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "アデノシン三リン酸",
+        "アデノシン二リン酸",
+        "デオキシリボ核酸",
+        "リボ核酸"
+      ],
+      "answer": "アデノシン三リン酸",
+      "acceptableAnswers": [
+        "アデノシン三リン酸"
+      ]
+    },
+    {
+      "id": "biology-bio057",
+      "moduleId": "biology",
+      "prompt": "ADPの正式名称は何か。",
+      "explanation": "ADPはadenosine diphosphate。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "アデノシン二リン酸",
+        "アデノシン三リン酸",
+        "デオキシリボ核酸",
+        "リボ核酸"
+      ],
+      "answer": "アデノシン二リン酸",
+      "acceptableAnswers": [
+        "アデノシン二リン酸"
+      ]
+    },
+    {
+      "id": "biology-bio058",
+      "moduleId": "biology",
+      "prompt": "ATPに含まれるリン酸は何個か。",
+      "explanation": "三リン酸なのでリン酸は3個。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "3個",
+        "2個",
+        "1個",
+        "4個"
+      ],
+      "answer": "3個",
+      "acceptableAnswers": [
+        "3個"
+      ]
+    },
+    {
+      "id": "biology-bio059",
+      "moduleId": "biology",
+      "prompt": "ADPに含まれるリン酸は何個か。",
+      "explanation": "二リン酸なのでリン酸は2個。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "2個",
+        "3個",
+        "1個",
+        "4個"
+      ],
+      "answer": "2個",
+      "acceptableAnswers": [
+        "2個"
+      ]
+    },
+    {
+      "id": "biology-bio060",
+      "moduleId": "biology",
+      "prompt": "ATPのリン酸どうしの結合で、エネルギーを蓄える結合を何というか。",
+      "explanation": "ATPのエネルギー受け渡しに関わる。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "高エネルギーリン酸結合",
+        "水素結合",
+        "ペプチド結合",
+        "共有結合"
+      ],
+      "answer": "高エネルギーリン酸結合",
+      "acceptableAnswers": [
+        "高エネルギーリン酸結合"
+      ]
+    },
+    {
+      "id": "biology-bio061",
+      "moduleId": "biology",
+      "prompt": "ATPがADPとリン酸に分解されるとき、エネルギーはどうなるか。",
+      "explanation": "ATPの分解でエネルギーが放出される。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "放出される",
+        "吸収される",
+        "消える",
+        "固定される"
+      ],
+      "answer": "放出される",
+      "acceptableAnswers": [
+        "放出される"
+      ]
+    },
+    {
+      "id": "biology-bio062",
+      "moduleId": "biology",
+      "prompt": "ADPとリン酸からATPが合成されるとき、エネルギーはどうなるか。",
+      "explanation": "ATP合成ではエネルギーが蓄えられる。",
+      "category": "代謝とエネルギー",
+      "type": "choice",
+      "choices": [
+        "蓄えられる",
+        "放出される",
+        "失われる",
+        "分解される"
+      ],
+      "answer": "蓄えられる",
+      "acceptableAnswers": [
+        "蓄えられる"
+      ]
+    },
+    {
+      "id": "biology-bio063",
+      "moduleId": "biology",
+      "prompt": "生体内の化学反応を促進するタンパク質を主成分とする物質を何というか。",
+      "explanation": "酵素は反応を速めるはたらきをもつ。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "酵素",
+        "基質",
+        "ATP",
+        "DNA"
+      ],
+      "answer": "酵素",
+      "acceptableAnswers": [
+        "酵素"
+      ]
+    },
+    {
+      "id": "biology-bio064",
+      "moduleId": "biology",
+      "prompt": "酵素が作用する相手の物質を何というか。",
+      "explanation": "基質が酵素に結合する。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "基質",
+        "酵素",
+        "生成物",
+        "補酵素"
+      ],
+      "answer": "基質",
+      "acceptableAnswers": [
+        "基質"
+      ]
+    },
+    {
+      "id": "biology-bio065",
+      "moduleId": "biology",
+      "prompt": "酵素が特定の基質にだけ作用する性質を何というか。",
+      "explanation": "酵素と基質の形が関係する。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "基質特異性",
+        "最適温度",
+        "最適pH",
+        "活性化エネルギー"
+      ],
+      "answer": "基質特異性",
+      "acceptableAnswers": [
+        "基質特異性"
+      ]
+    },
+    {
+      "id": "biology-bio066",
+      "moduleId": "biology",
+      "prompt": "酵素と基質が一時的に結合したものを何というか。",
+      "explanation": "酵素反応の途中でできる。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "酵素基質複合体",
+        "ATP",
+        "ADP",
+        "生成物"
+      ],
+      "answer": "酵素基質複合体",
+      "acceptableAnswers": [
+        "酵素基質複合体"
+      ]
+    },
+    {
+      "id": "biology-bio067",
+      "moduleId": "biology",
+      "prompt": "酵素がはたらきやすい温度を何というか。",
+      "explanation": "酵素には温度による働きやすさがある。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "最適温度",
+        "最適pH",
+        "基質特異性",
+        "活性部位"
+      ],
+      "answer": "最適温度",
+      "acceptableAnswers": [
+        "最適温度"
+      ]
+    },
+    {
+      "id": "biology-bio068",
+      "moduleId": "biology",
+      "prompt": "酵素がはたらきやすいpHを何というか。",
+      "explanation": "酵素ごとに適したpHがある。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "最適pH",
+        "最適温度",
+        "基質特異性",
+        "酵素基質複合体"
+      ],
+      "answer": "最適pH",
+      "acceptableAnswers": [
+        "最適pH"
+      ]
+    },
+    {
+      "id": "biology-bio069",
+      "moduleId": "biology",
+      "prompt": "高温などでタンパク質の立体構造が変化し、酵素が働きにくくなることを何というか。",
+      "explanation": "酵素はタンパク質なので高温で変性することがある。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "変性",
+        "同化",
+        "異化",
+        "凝固"
+      ],
+      "answer": "変性",
+      "acceptableAnswers": [
+        "変性"
+      ]
+    },
+    {
+      "id": "biology-bio070",
+      "moduleId": "biology",
+      "prompt": "過酸化水素を水と酸素に分解する酵素は何か。",
+      "explanation": "肝臓などに含まれる酵素として扱われる。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "カタラーゼ",
+        "アミラーゼ",
+        "ペプシン",
+        "トリプシン"
+      ],
+      "answer": "カタラーゼ",
+      "acceptableAnswers": [
+        "カタラーゼ"
+      ]
+    },
+    {
+      "id": "biology-bio071",
+      "moduleId": "biology",
+      "prompt": "デンプンを分解する酵素の代表は何か。",
+      "explanation": "だ液にも含まれる。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "アミラーゼ",
+        "カタラーゼ",
+        "ペプシン",
+        "トリプシン"
+      ],
+      "answer": "アミラーゼ",
+      "acceptableAnswers": [
+        "アミラーゼ"
+      ]
+    },
+    {
+      "id": "biology-bio072",
+      "moduleId": "biology",
+      "prompt": "タンパク質を分解する胃液中の酵素の代表は何か。",
+      "explanation": "胃液中で働く消化酵素。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "ペプシン",
+        "アミラーゼ",
+        "カタラーゼ",
+        "ラクターゼ"
+      ],
+      "answer": "ペプシン",
+      "acceptableAnswers": [
+        "ペプシン"
+      ]
+    },
+    {
+      "id": "biology-bio073",
+      "moduleId": "biology",
+      "prompt": "酵素反応の速さは、温度が最適温度を大きく超えるとどうなるか。",
+      "explanation": "高温では酵素が変性しやすい。",
+      "category": "酵素",
+      "type": "choice",
+      "choices": [
+        "低下する",
+        "増え続ける",
+        "変わらない",
+        "必ず最大になる"
+      ],
+      "answer": "低下する",
+      "acceptableAnswers": [
+        "低下する"
+      ]
+    },
+    {
+      "id": "biology-bio074",
+      "moduleId": "biology",
+      "prompt": "細胞を観察するために使う器具の代表は何か。",
+      "explanation": "小さい細胞を拡大して観察する。",
+      "category": "観察と大きさ",
+      "type": "choice",
+      "choices": [
+        "顕微鏡",
+        "分光器",
+        "温度計",
+        "遠心分離機"
+      ],
+      "answer": "顕微鏡",
+      "acceptableAnswers": [
+        "顕微鏡"
+      ]
+    },
+    {
+      "id": "biology-bio075",
+      "moduleId": "biology",
+      "prompt": "光を利用して細胞を観察する顕微鏡を何というか。",
+      "explanation": "一般的な細胞観察に使われる。",
+      "category": "観察と大きさ",
+      "type": "choice",
+      "choices": [
+        "光学顕微鏡",
+        "電子顕微鏡",
+        "望遠鏡",
+        "双眼鏡"
+      ],
+      "answer": "光学顕微鏡",
+      "acceptableAnswers": [
+        "光学顕微鏡"
+      ]
+    },
+    {
+      "id": "biology-bio076",
+      "moduleId": "biology",
+      "prompt": "電子線を用いて非常に小さい構造を観察する顕微鏡を何というか。",
+      "explanation": "光学顕微鏡より高倍率・高分解能。",
+      "category": "観察と大きさ",
+      "type": "choice",
+      "choices": [
+        "電子顕微鏡",
+        "光学顕微鏡",
+        "ルーペ",
+        "望遠鏡"
+      ],
+      "answer": "電子顕微鏡",
+      "acceptableAnswers": [
+        "電子顕微鏡"
+      ]
+    },
+    {
+      "id": "biology-bio077",
+      "moduleId": "biology",
+      "prompt": "細胞の大きさを表すときによく使う単位は何か。",
+      "explanation": "μm。",
+      "category": "観察と大きさ",
+      "type": "choice",
+      "choices": [
+        "マイクロメートル",
+        "キログラム",
+        "リットル",
+        "メートル"
+      ],
+      "answer": "マイクロメートル",
+      "acceptableAnswers": [
+        "マイクロメートル"
+      ]
+    },
+    {
+      "id": "biology-bio078",
+      "moduleId": "biology",
+      "prompt": "1mmは何μmか。",
+      "explanation": "1mm = 1000μm。",
+      "category": "観察と大きさ",
+      "type": "choice",
+      "choices": [
+        "1000μm",
+        "100μm",
+        "10μm",
+        "1μm"
+      ],
+      "answer": "1000μm",
+      "acceptableAnswers": [
+        "1000μm"
+      ]
+    },
+    {
+      "id": "biology-bio079",
+      "moduleId": "biology",
+      "prompt": "ウイルスは細胞より一般に大きいか小さいか。",
+      "explanation": "ウイルスは細胞より小さい。",
+      "category": "観察と大きさ",
+      "type": "choice",
+      "choices": [
+        "小さい",
+        "大きい",
+        "同じ",
+        "必ず見える"
+      ],
+      "answer": "小さい",
+      "acceptableAnswers": [
+        "小さい"
+      ]
+    }
+  ]
+}
