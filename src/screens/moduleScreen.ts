@@ -10,7 +10,14 @@ function moduleQuestions(packs: LoopDeckPack[], module: ModuleInfo): Question[] 
   return module.questionIds.map((id) => byId.get(id)).filter((question): question is Question => Boolean(question));
 }
 
-export async function renderModuleScreen(root: HTMLElement, packs: LoopDeckPack[], moduleId: string, navigateHome: () => void, navigateReview: () => void): Promise<void> {
+export async function renderModuleScreen(
+  root: HTMLElement,
+  packs: LoopDeckPack[],
+  moduleId: string,
+  navigateHome: () => void,
+  navigateReview: () => void,
+  navigateGraphs: () => void
+): Promise<void> {
   clear(root);
   const foundModule = packs.flatMap((pack) => pack.modules).find((item) => item.id === moduleId);
   if (!foundModule) {
@@ -30,25 +37,36 @@ export async function renderModuleScreen(root: HTMLElement, packs: LoopDeckPack[
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');
   back.onclick = navigateHome;
+  const navActions = el('div', 'topbar-actions');
   const review = button('復習センター', 'btn ghost');
   review.onclick = navigateReview;
-  header.append(back, review);
+  const graphs = button('グラフ', 'btn ghost');
+  graphs.onclick = navigateGraphs;
+  navActions.append(review, graphs);
+  header.append(back, navActions);
 
   const info = el('section', 'hero-card');
-  info.innerHTML = `
-    <p class="eyebrow">${module.subject}</p>
-    <h1>${module.title}</h1>
-    <p>${module.description ?? '旧StudyHome風のインライン学習で進めます。'}</p>
-    <div class="stats-row">
-      <span>${questions.length}問</span>
-      <span>ミス ${wrongQuestions.length}問</span>
-      <span>ブックマーク ${bookmarkedQuestions.length}問</span>
-    </div>
-  `;
+  info.append(
+    el('p', 'eyebrow', module.subject),
+    el('h1', '', module.title),
+    el('p', '', module.description ?? '旧StudyHome風のインライン学習で進めます。')
+  );
+  if (module.tags?.length) {
+    const tags = el('div', 'tag-row');
+    for (const tag of module.tags.slice(0, 4)) tags.append(el('span', 'tag', tag));
+    info.append(tags);
+  }
+  const stats = el('div', 'stats-row');
+  stats.append(
+    el('span', '', `${questions.length}問`),
+    el('span', '', `ミス ${wrongQuestions.length}問`),
+    el('span', '', `ブックマーク ${bookmarkedQuestions.length}問`)
+  );
+  info.append(stats);
 
   const settings: StudySettings = { shuffle: true, autoNext: true, questionLimit: 'all' };
   const settingsCard = el('section', 'card');
-  settingsCard.innerHTML = `<h2>学習管理</h2>`;
+  settingsCard.append(el('h2', '', '学習の準備'));
   const settingRow = el('div', 'setting-row');
   const shuffleLabel = el('label', 'check-label');
   const shuffleInput = document.createElement('input');
@@ -66,14 +84,17 @@ export async function renderModuleScreen(root: HTMLElement, packs: LoopDeckPack[
   autoNextInput.onchange = () => {
     settings.autoNext = autoNextInput.checked;
   };
-  autoNextLabel.append(autoNextInput, document.createTextNode(' 自動で次へ'));
-  const note = el('p', 'hint', '基本はシャッフル前提です。必要ならチェックを外せます。');
+  autoNextLabel.append(autoNextInput, document.createTextNode(' 正解時に自動で次へ'));
   settingRow.append(shuffleLabel, autoNextLabel);
-  settingsCard.append(settingRow, note);
+  settingsCard.append(settingRow, el('p', 'hint', '基本はシャッフル前提です。必要なときだけ切り替えられます。'));
 
   const actions = el('section', 'card action-card');
-  const start = button('テスト開始', 'btn primary');
+  const start = button('シャッフルで開始', 'btn primary');
   const quizMount = el('div', 'quiz-mount');
+
+  function rerender(): void {
+    void renderModuleScreen(root, packs, moduleId, navigateHome, navigateReview, navigateGraphs);
+  }
 
   function startSession(items: Question[], mode: 'normal' | 'review'): void {
     if (!items.length) {
@@ -81,21 +102,21 @@ export async function renderModuleScreen(root: HTMLElement, packs: LoopDeckPack[
       return;
     }
     const session = createSession(module, items, settings, mode);
-    const update = (next: QuizSession) => renderInlineQuiz(quizMount, next, { onSessionChange: update, onComplete: () => renderModuleScreen(root, packs, moduleId, navigateHome, navigateReview) });
-    renderInlineQuiz(quizMount, session, { onSessionChange: update, onComplete: () => renderModuleScreen(root, packs, moduleId, navigateHome, navigateReview) });
+    const update = (next: QuizSession) => renderInlineQuiz(quizMount, next, { onSessionChange: update, onComplete: rerender });
+    renderInlineQuiz(quizMount, session, { onSessionChange: update, onComplete: rerender });
   }
 
   start.onclick = () => startSession(questions, 'normal');
   actions.append(start);
 
   if (wrongQuestions.length) {
-    const mistakes = button('間違いだけ', 'btn');
+    const mistakes = button(`間違いだけ ${wrongQuestions.length}問`, 'btn');
     mistakes.onclick = () => startSession(wrongQuestions, 'review');
     actions.append(mistakes);
   }
 
   if (bookmarkedQuestions.length) {
-    const bookmark = button('ブックマーク', 'btn');
+    const bookmark = button(`ブックマーク ${bookmarkedQuestions.length}問`, 'btn');
     bookmark.onclick = () => startSession(bookmarkedQuestions, 'review');
     actions.append(bookmark);
   }
