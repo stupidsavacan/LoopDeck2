@@ -3,7 +3,7 @@ import { validatePack, validatePackFiles } from '../src/packs/packValidator';
 
 describe('pack validator', () => {
   it('rejects executable files and unsafe paths', () => {
-    const issues = validatePackFiles(['manifest.json', '../evil.js', '..\\evil.json', 'questions.json', 'images/a.png', 'run.sh', 'script.cjs', 'shell.ps1', 'page.html', '/abs/data.json', '']);
+    const issues = validatePackFiles(['manifest.json', '../evil.js', '..\\evil.json', 'questions.json', 'images/a.png', 'run.sh', 'script.cjs', 'shell.ps1', 'page.html', '/abs/data.json', '', 'bad\0path.json', ' space.json']);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '../evil.js')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '..\\evil.json')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === 'run.sh')).toBe(true);
@@ -12,6 +12,8 @@ describe('pack validator', () => {
     expect(issues.some((issue) => issue.level === 'error' && issue.path === 'page.html')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '/abs/data.json')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '')).toBe(true);
+    expect(issues.some((issue) => issue.level === 'error' && issue.path === 'bad\0path.json')).toBe(true);
+    expect(issues.some((issue) => issue.level === 'error' && issue.path === ' space.json')).toBe(true);
   });
 
   it('accepts safe json and image paths', () => {

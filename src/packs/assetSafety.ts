@@ -12,6 +12,7 @@ export function extensionOf(path: string): string {
 
 export function isSafePackPath(path: string): boolean {
   const trimmed = path.trim();
+  if (trimmed !== path) return false;
   if (!trimmed || trimmed.includes('\0')) return false;
   if (trimmed.startsWith('/') || trimmed.startsWith('\\') || WINDOWS_ABSOLUTE_PATH.test(trimmed)) return false;
   if (URI_SCHEME.test(trimmed)) return false;
