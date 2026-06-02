@@ -14,6 +14,7 @@ This build keeps the old StudyHome-style lightweight study flow, while using Stu
 - Input / choice / multi_select questions
 - Japanese answer judging that rejects partial fragments
 - JSON / `.loopdeck.zip` import and export
+- Android debug APK build workflow
 
 ## Removed on purpose
 
@@ -26,8 +27,6 @@ Removed module ids:
 - `leap_final_reverse`
 
 The empty old `kobun_vocab` / `古文単語` module is preserved as a 0-question reference module, but it is hidden from normal Home study cards.
-
-The old Android/WebView wrapper and APK workflow were removed. LoopDeck is now maintained here as an HTML / TypeScript / PWA app only.
 
 ## Commands
 
@@ -56,7 +55,36 @@ npm test
 npm run build
 ```
 
-The repository `.npmrc` forces public npm registry downloads so CI does not try to read private/local registry URLs.
+To write out an unsigned debug APK, manually run:
+
+```text
+.github/workflows/build-android-debug.yml
+```
+
+Download the artifact named:
+
+```text
+LoopDeck-debug-apk
+```
+
+The APK is a small WebView wrapper around the bundled local Vite build. Imported study content remains data-only; LoopDeck still rejects executable/imported HTML, JavaScript, CSS, APK, shell, and unsafe paths.
+
+## Android Studio build
+
+Build the web assets first:
+
+```bash
+npm install
+npm run build
+```
+
+Then open the `android/` folder in Android Studio and run `assembleDebug`.
+
+For signing notes, see:
+
+```text
+android/README_SIGNING.md
+```
 
 ## Data files
 

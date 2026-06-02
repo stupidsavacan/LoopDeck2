@@ -4,7 +4,34 @@ import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 
+declare global {
+  interface Window {
+    LoopDeckAndroid?: {
+      saveFile(filename: string, mimeType: string, base64Data: string): void;
+    };
+  }
+}
+
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      const comma = result.indexOf(',');
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error ?? new Error('Failed to read export file.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function downloadBlob(blob: Blob, filename: string): Promise<void> {
+  if (window.LoopDeckAndroid?.saveFile) {
+    window.LoopDeckAndroid.saveFile(filename, blob.type || 'application/octet-stream', await blobToBase64(blob));
+    toast('保存先を選んでください。');
+    return;
+  }
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
