@@ -56,6 +56,22 @@ See:
 android/README_SIGNING.md
 ```
 
+## Temporary unsigned debug APK build
+
+A GitHub Actions workflow builds an unsigned debug APK for testing:
+
+```text
+.github/workflows/build-android-debug.yml
+```
+
+The uploaded artifact name is:
+
+```text
+LoopDeck-debug-apk
+```
+
+Signed release builds are intentionally left for later, after `keystore.properties` is available locally.
+
 ## Data files
 
 The app loads this as built-in data:
