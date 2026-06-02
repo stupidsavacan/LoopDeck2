@@ -130,7 +130,10 @@ export function normalizeStudyHomePack(rawPack: unknown): LoopDeckPack {
   const usedFolderIds = new Set(modules.map((module) => module.folderId));
   const folders = (Array.isArray(rawPack.folders) ? rawPack.folders : [])
     .map(normalizeFolder)
-    .filter((folder): folder is FolderInfo => Boolean(folder) && usedFolderIds.has(folder.id));
+    .filter((folder): folder is FolderInfo => {
+      if (!folder) return false;
+      return usedFolderIds.has(folder.id);
+    });
 
   if (usedFolderIds.has('japanese') && !folders.some((folder) => folder.id === 'japanese')) folders.push({ id: 'japanese', title: '国語' });
 
