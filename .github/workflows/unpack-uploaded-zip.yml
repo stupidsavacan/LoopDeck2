@@ -1,0 +1,67 @@
+name: Unpack uploaded LoopDeck ZIP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Find and unpack uploaded ZIP files
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          zips=(./*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "No root ZIP files found. Nothing to unpack."
+            exit 0
+          fi
+
+          for zip_file in "${zips[@]}"; do
+            echo "Unpacking ${zip_file}"
+            workdir=".unpack-tmp"
+            rm -rf "$workdir"
+            mkdir -p "$workdir"
+            unzip -q "$zip_file" -d "$workdir"
+
+            # If the ZIP contains a single top-level loopdeck/ directory, flatten it into repo root.
+            if [ -d "$workdir/loopdeck" ]; then
+              echo "Detected top-level loopdeck/ directory. Flattening into repository root."
+              cp -a "$workdir/loopdeck/." ./
+            else
+              echo "No top-level loopdeck/ directory. Copying ZIP contents into repository root."
+              cp -a "$workdir/." ./
+            fi
+
+            rm -rf "$workdir"
+            rm -f "$zip_file"
+          done
+
+      - name: Commit unpacked files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git add -A
+          git commit -m "Unpack uploaded LoopDeck ZIP"
+          git push
