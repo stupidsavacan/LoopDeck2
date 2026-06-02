@@ -11,6 +11,9 @@ permissions:
 jobs:
   build-debug-apk:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: development
+      NPM_CONFIG_PRODUCTION: "false"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,11 +23,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install web dependencies
-        run: npm install
+      - name: Install web dependencies including dev tools
+        run: npm install --include=dev
+
+      - name: Show installed tool versions
+        run: |
+          node --version
+          npm --version
+          npx vite --version
+          npx vitest --version
 
       - name: Run web tests
-        run: npm test
+        run: npx vitest run
 
       - name: Build LoopDeck web assets
         run: npm run build
