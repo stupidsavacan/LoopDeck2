@@ -35,7 +35,7 @@ async function showReview(): Promise<void> {
 
 async function showImport(): Promise<void> {
   await loadPacks();
-  renderImportScreen(root, packs, () => void showHome(), async () => {
+  await renderImportScreen(root, packs, () => void showHome(), async () => {
     await showHome();
   });
 }
