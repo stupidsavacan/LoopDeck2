@@ -33,34 +33,34 @@ LoopDeck-signed-release-apk
 Required GitHub Actions secrets:
 
 ```text
-STUDYHOME_KEYSTORE_BASE64
-STUDYHOME_KEYSTORE_PASSWORD
-STUDYHOME_KEY_ALIAS
-STUDYHOME_KEY_PASSWORD
+ANDROID_KEYSTORE_BASE64
+KEYSTORE_PASSWORD
+KEY_ALIAS
+KEY_PASSWORD
 ```
 
-The workflow decodes `STUDYHOME_KEYSTORE_BASE64` into a temporary `android/studyhome-release.jks` file and creates `android/keystore.properties` during CI. Those files must never be committed.
+The workflow decodes `ANDROID_KEYSTORE_BASE64` into a temporary `android/loopdeck-release.jks` file and creates `android/keystore.properties` during CI. Those files must never be committed.
 
-Pull request runs can verify the web build and Android setup. If signing secrets are not available to that PR run, the signed packaging steps are skipped with a notice. Manual `workflow_dispatch` runs are the release-export path and fail clearly if any required signing secret is missing.
+Pull request runs can verify the web build and Android setup. Manual `workflow_dispatch` runs are the release-export path and fail clearly if any required signing secret is missing.
 
-## Creating STUDYHOME_KEYSTORE_BASE64
+## Creating ANDROID_KEYSTORE_BASE64
 
 After creating or locating your release keystore locally, copy its base64 value to the clipboard.
 
 PowerShell example:
 
 ```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\Users\gamit\AndroidKeys\studyhome-release.jks")) | Set-Clipboard
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\\Users\\gamit\\AndroidKeys\\loopdeck-release.jks")) | Set-Clipboard
 ```
 
-Paste that clipboard value into the GitHub Secret named `STUDYHOME_KEYSTORE_BASE64`.
+Paste that clipboard value into the GitHub Secret named `ANDROID_KEYSTORE_BASE64`.
 
 Then add the remaining GitHub Secrets with their real values:
 
 ```text
-STUDYHOME_KEYSTORE_PASSWORD
-STUDYHOME_KEY_ALIAS
-STUDYHOME_KEY_PASSWORD
+KEYSTORE_PASSWORD
+KEY_ALIAS
+KEY_PASSWORD
 ```
 
 Do not paste those values into README files, source files, workflow logs, issues, or normal text files.
@@ -87,7 +87,7 @@ cp android/keystore.properties.example android/keystore.properties
 Then edit `android/keystore.properties`:
 
 ```properties
-storeFile=/absolute/path/to/your/studyhome-release.jks
+storeFile=/absolute/path/to/your/loopdeck-release.jks
 storePassword=YOUR_STORE_PASSWORD
 keyAlias=YOUR_KEY_ALIAS
 keyPassword=YOUR_KEY_PASSWORD
