@@ -1,5 +1,5 @@
 import './styles.css';
-import './studyhomeFeatures.css';
+import './homeFeatures.css';
 import type { LoopDeckPack } from './core/models';
 import { loadBuiltinPacks } from './packs/builtinLoader';
 import { db } from './storage/db';
