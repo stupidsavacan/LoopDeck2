@@ -63,6 +63,13 @@ async function exportPackZip(pack: LoopDeckPack): Promise<void> {
   }
 }
 
+function infoList(items: string[]): HTMLUListElement {
+  const list = document.createElement('ul');
+  list.className = 'info-list';
+  for (const text of items) list.append(el('li', '', text));
+  return list;
+}
+
 export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], navigateHome: () => void, onImported: () => Promise<void>): void {
   clear(root);
   const screen = el('main', 'screen import-screen');
@@ -72,21 +79,21 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
   header.append(back);
 
   const card = el('section', 'hero-card');
-  card.innerHTML = `
-    <p class="eyebrow">Local Pack Import / Export</p>
-    <h1>教材入出力</h1>
-    <p>JSON または .loopdeck.zip を取り込み、現在の教材パックを書き出せます。HTML / JS / CSS は実行しません。</p>
-  `;
+  card.append(
+    el('p', 'eyebrow', 'Data / APK export'),
+    el('h1', '', '教材入出力'),
+    el('p', '', '教材パックの取り込みと書き出しを行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
+  );
 
   const input = el('input', 'file-input') as HTMLInputElement;
   input.type = 'file';
   input.accept = '.json,.zip,.loopdeck.zip,application/json,application/zip';
 
   const preview = el('section', 'card preview-card');
-  preview.innerHTML = '<h2>読み込み結果</h2><p class="empty">まだファイルが選ばれていません。</p>';
+  preview.append(el('h2', '', '読み込み結果'), el('p', 'empty', 'まだファイルが選ばれていません。'));
 
   const packageList = el('section', 'card');
-  packageList.innerHTML = '<h2>現在の教材パック / 書き出し</h2>';
+  packageList.append(el('h2', '', '現在の教材パック / 書き出し'));
   const list = el('div', 'weak-list');
   for (const pack of packs) {
     const row = el('div', 'weak-row pack-row');
@@ -105,6 +112,17 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
   }
   packageList.append(list);
 
+  const apkCard = el('section', 'card');
+  apkCard.append(
+    el('h2', '', 'APK書き出し'),
+    el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した StudyHome 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
+    infoList([
+      'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
+      'signed release APK: Build Android Signed Release APK workflow の LoopDeck-signed-release-apk artifact',
+      '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
+    ])
+  );
+
   input.onchange = async () => {
     const file = input.files?.[0];
     if (!file) return;
@@ -114,7 +132,7 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
         : await importLoopDeckJson(file);
 
       clear(preview);
-      preview.innerHTML = '<h2>読み込み結果</h2>';
+      preview.append(el('h2', '', '読み込み結果'));
       const issueList = el('div', 'issue-list');
       for (const issue of result.issues) {
         const item = el('div', `issue ${issue.level}`);
@@ -135,22 +153,26 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
         preview.append(summary, install);
       }
     } catch (error) {
-      preview.innerHTML = `<h2>読み込み結果</h2><p class="issue error">読み込みに失敗しました：${error instanceof Error ? error.message : String(error)}</p>`;
+      clear(preview);
+      preview.append(
+        el('h2', '', '読み込み結果'),
+        el('p', 'issue error', `読み込みに失敗しました：${error instanceof Error ? error.message : String(error)}`)
+      );
     }
   };
 
   const note = el('details', 'card safe-note');
-  note.innerHTML = `
-    <summary>対応ファイルと安全制限</summary>
-    <ul>
-      <li>JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。</li>
-      <li>書き出した ZIP は、そのまま LoopDeck に再取り込みできます。</li>
-      <li>HTML / JavaScript / CSS は教材として実行しません。</li>
-      <li>.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。</li>
-      <li>../、..\、絶対パス、空パス、null byte を含む危険なパスは拒否します。</li>
-    </ul>
-  `;
+  note.append(
+    el('summary', '', '対応ファイルと安全制限'),
+    infoList([
+      'JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。',
+      '書き出した ZIP は、そのまま LoopDeck に再取り込みできます。',
+      'HTML / JavaScript / CSS は教材として実行しません。',
+      '.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。',
+      '../、..\\、絶対パス、空パス、null byte を含む危険なパスは拒否します。'
+    ])
+  );
 
-  screen.append(header, card, input, preview, packageList, note);
+  screen.append(header, card, input, preview, packageList, apkCard, note);
   root.append(screen);
 }
