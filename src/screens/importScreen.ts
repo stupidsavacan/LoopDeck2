@@ -1,13 +1,15 @@
 import type { LoopDeckPack } from '../core/models';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
-import { db } from '../storage/db';
+import { db, type LoopDeckBackup } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 
 declare global {
   interface Window {
     LoopDeckAndroid?: {
       saveFile(filename: string, mimeType: string, base64Data: string): void;
+      canUseNativeSave?(): boolean;
+      showToast?(message: string): void;
     };
   }
 }
@@ -43,6 +45,12 @@ async function downloadBlob(blob: Blob, filename: string): Promise<void> {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function isBackupPayload(value: unknown): value is LoopDeckBackup {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return record.loopDeckBackupVersion === 1 && Array.isArray(record.attempts) && Array.isArray(record.bookmarks) && Array.isArray(record.importedPacks);
+}
+
 async function exportPackJson(pack: LoopDeckPack): Promise<void> {
   try {
     const blob = new Blob([stringifyLoopDeckJson(pack)], { type: 'application/json' });
@@ -63,6 +71,13 @@ async function exportPackZip(pack: LoopDeckPack): Promise<void> {
   }
 }
 
+async function exportBackup(): Promise<void> {
+  const backup = await db.exportUserData();
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  await downloadBlob(blob, `loopdeck-backup-${backup.exportedAt.slice(0, 10)}.json`);
+  toast('バックアップを書き出しました。');
+}
+
 function infoList(items: string[]): HTMLUListElement {
   const list = document.createElement('ul');
   list.className = 'info-list';
@@ -70,8 +85,11 @@ function infoList(items: string[]): HTMLUListElement {
   return list;
 }
 
-export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], navigateHome: () => void, onImported: () => Promise<void>): void {
+export async function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], navigateHome: () => void, onImported: () => Promise<void>): Promise<void> {
   clear(root);
+  const importedPacks = await db.getImportedPacks();
+  const importedIds = new Set(importedPacks.map((pack) => pack.packId));
+
   const screen = el('main', 'screen import-screen');
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');
@@ -82,7 +100,7 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
   card.append(
     el('p', 'eyebrow', 'Data / APK export'),
     el('h1', '', '教材入出力'),
-    el('p', '', '教材パックの取り込みと書き出しを行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
+    el('p', '', '教材パック、学習履歴、ブックマークの入出力を行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
   );
 
   const input = el('input', 'file-input') as HTMLInputElement;
@@ -98,7 +116,7 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
   for (const pack of packs) {
     const row = el('div', 'weak-row pack-row');
     const meta = el('div', 'pack-meta');
-    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問`));
+    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
 
     const actions = el('div', 'pack-actions');
     const json = button('JSON', 'btn');
@@ -106,11 +124,47 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
     const zip = button('ZIP', 'btn primary');
     zip.onclick = () => void exportPackZip(pack);
     actions.append(json, zip);
+    if (importedIds.has(pack.packId)) {
+      const remove = button('削除', 'btn ghost danger');
+      remove.onclick = async () => {
+        if (!window.confirm(`${pack.title} を削除します。学習履歴は残ります。`)) return;
+        await db.deleteImportedPack(pack.packId);
+        toast('インポート済みパックを削除しました。');
+        await onImported();
+      };
+      actions.append(remove);
+    }
 
     row.append(meta, actions);
     list.append(row);
   }
   packageList.append(list);
+
+  const dataCard = el('section', 'card data-card');
+  dataCard.append(el('h2', '', '学習データ管理'));
+  const dataActions = el('div', 'data-actions');
+  const backup = button('履歴バックアップを書き出し', 'btn primary');
+  backup.onclick = () => void exportBackup();
+  const clearHistory = button('回答履歴を全削除', 'btn ghost danger');
+  clearHistory.onclick = async () => {
+    if (!window.confirm('回答履歴をすべて削除します。ブックマークと教材パックは残ります。')) return;
+    await db.clearAttempts();
+    toast('回答履歴を削除しました。');
+  };
+  const clearWrong = button('ミス履歴だけ削除', 'btn ghost danger');
+  clearWrong.onclick = async () => {
+    if (!window.confirm('不正解・答え表示の履歴だけ削除します。')) return;
+    await db.clearWrongAttempts();
+    toast('ミス履歴を削除しました。');
+  };
+  const clearBookmarks = button('ブックマーク全削除', 'btn ghost danger');
+  clearBookmarks.onclick = async () => {
+    if (!window.confirm('ブックマークをすべて削除します。')) return;
+    await db.clearBookmarks();
+    toast('ブックマークを削除しました。');
+  };
+  dataActions.append(backup, clearHistory, clearWrong, clearBookmarks);
+  dataCard.append(dataActions, el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'));
 
   const apkCard = el('section', 'card');
   apkCard.append(
@@ -129,7 +183,23 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
     try {
       const result = file.name.endsWith('.zip') || file.name.endsWith('.loopdeck.zip')
         ? await importLoopDeckZip(file)
-        : await importLoopDeckJson(file);
+        : await (async () => {
+            const text = await file.text();
+            let parsed: unknown;
+            try {
+              parsed = JSON.parse(text);
+            } catch {
+              parsed = undefined;
+            }
+            if (isBackupPayload(parsed)) {
+              await db.importUserData(parsed);
+              toast('バックアップを復元しました。');
+              await onImported();
+              return undefined;
+            }
+            return importLoopDeckJson(new File([text], file.name, { type: file.type || 'application/json' }));
+          })();
+      if (!result) return;
 
       clear(preview);
       preview.append(el('h2', '', '読み込み結果'));
@@ -166,13 +236,13 @@ export function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], nav
     el('summary', '', '対応ファイルと安全制限'),
     infoList([
       'JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。',
-      '書き出した ZIP は、そのまま LoopDeck に再取り込みできます。',
+      'LoopDeckバックアップJSONは回答履歴・ブックマーク・インポート済み教材を復元できます。',
       'HTML / JavaScript / CSS は教材として実行しません。',
       '.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。',
       '../、..\\、絶対パス、空パス、null byte を含む危険なパスは拒否します。'
     ])
   );
 
-  screen.append(header, card, input, preview, packageList, apkCard, note);
+  screen.append(header, card, input, preview, packageList, dataCard, apkCard, note);
   root.append(screen);
 }
