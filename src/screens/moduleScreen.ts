@@ -4,6 +4,8 @@ import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
 
+type ToggleSettingKey = 'shuffle' | 'autoNext' | 'showExample' | 'showNumber' | 'showCategory';
+
 interface StoredSession {
   questionIds: string[];
   index: number;
@@ -199,7 +201,7 @@ export async function renderModuleScreen(
   settingsCard.append(settingsGrid);
 
   const settingRow = el('div', 'setting-row');
-  const toggles: Array<[keyof StudySettings, string]> = [
+  const toggles: Array<[ToggleSettingKey, string]> = [
     ['shuffle', 'シャッフル'],
     ['autoNext', '正解時に自動で次へ'],
     ['showExample', '例文表示'],
@@ -212,7 +214,7 @@ export async function renderModuleScreen(
     input.type = 'checkbox';
     input.checked = Boolean(settings[key]);
     input.onchange = () => {
-      (settings as Record<string, boolean>)[key] = input.checked;
+      settings[key] = input.checked;
     };
     wrap.append(input, document.createTextNode(` ${label}`));
     settingRow.append(wrap);
