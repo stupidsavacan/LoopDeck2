@@ -58,7 +58,41 @@ jobs:
         with:
           gradle-version: 8.10.2
 
+      - name: Check release signing secrets
+        id: signing
+        shell: bash
+        env:
+          STUDYHOME_KEYSTORE_BASE64: ${{ secrets.STUDYHOME_KEYSTORE_BASE64 }}
+          STUDYHOME_KEYSTORE_PASSWORD: ${{ secrets.STUDYHOME_KEYSTORE_PASSWORD }}
+          STUDYHOME_KEY_ALIAS: ${{ secrets.STUDYHOME_KEY_ALIAS }}
+          STUDYHOME_KEY_PASSWORD: ${{ secrets.STUDYHOME_KEY_PASSWORD }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in STUDYHOME_KEYSTORE_BASE64 STUDYHOME_KEYSTORE_PASSWORD STUDYHOME_KEY_ALIAS STUDYHOME_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+                echo "::error::$name GitHub Secret is required for signed release APK export."
+              else
+                echo "::notice::$name is not available in this PR run; signed APK packaging will be skipped."
+              fi
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+              exit 1
+            fi
+            exit 0
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
       - name: Prepare release signing files
+        if: steps.signing.outputs.ready == 'true'
         shell: bash
         env:
           STUDYHOME_KEYSTORE_BASE64: ${{ secrets.STUDYHOME_KEYSTORE_BASE64 }}
@@ -67,17 +101,6 @@ jobs:
           STUDYHOME_KEY_PASSWORD: ${{ secrets.STUDYHOME_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          missing=0
-          for name in STUDYHOME_KEYSTORE_BASE64 STUDYHOME_KEYSTORE_PASSWORD STUDYHOME_KEY_ALIAS STUDYHOME_KEY_PASSWORD; do
-            if [ -z "${!name:-}" ]; then
-              echo "::error::$name GitHub Secret is required for signed release APK export."
-              missing=1
-            fi
-          done
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
-
           printf '%s' "$STUDYHOME_KEYSTORE_BASE64" | base64 --decode > android/studyhome-release.jks
           cat > android/keystore.properties <<EOF
           storeFile=$GITHUB_WORKSPACE/android/studyhome-release.jks
@@ -88,10 +111,12 @@ jobs:
           chmod 600 android/studyhome-release.jks android/keystore.properties
 
       - name: Build signed release APK
+        if: steps.signing.outputs.ready == 'true'
         working-directory: android
         run: gradle --no-daemon assembleRelease
 
       - name: Upload signed release APK
+        if: steps.signing.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-signed-release-apk
