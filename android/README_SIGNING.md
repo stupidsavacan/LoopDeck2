@@ -41,6 +41,8 @@ STUDYHOME_KEY_PASSWORD
 
 The workflow decodes `STUDYHOME_KEYSTORE_BASE64` into a temporary `android/studyhome-release.jks` file and creates `android/keystore.properties` during CI. Those files must never be committed.
 
+Pull request runs can verify the web build and Android setup. If signing secrets are not available to that PR run, the signed packaging steps are skipped with a notice. Manual `workflow_dispatch` runs are the release-export path and fail clearly if any required signing secret is missing.
+
 ## Creating STUDYHOME_KEYSTORE_BASE64
 
 After creating or locating your release keystore locally, copy its base64 value to the clipboard.
