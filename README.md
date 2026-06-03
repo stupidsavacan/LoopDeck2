@@ -1,15 +1,13 @@
 # LoopDeck
 
-LoopDeck is the HTML/PWA successor to StudyHome.
-
-This build keeps the old StudyHome-style lightweight study flow, while using StudyHome-Next rescue data and safer data-only import rules.
+LoopDeck is a lightweight HTML / TypeScript study app for fast shuffle-based review.
 
 ## What is included
 
 - Vite + TypeScript + HTML/CSS LoopDeck web app
-- Built-in rescued StudyHome / StudyHome-Next 教材データ
+- Built-in 教材データ
 - Normal-direction-only study data; reverse-practice modules are not active
-- 1,112 usable rescued questions
+- 1,112 usable questions
 - Basic Review Center for wrong-answer sessions
 - Study graphs based on saved answer attempts
 - Input / choice / multi_select questions
@@ -27,7 +25,7 @@ Removed module ids:
 - `leap_reverse`
 - `leap_final_reverse`
 
-The empty old `kobun_vocab` / `古文単語` module is preserved as a 0-question reference module, but it is hidden from normal Home study cards.
+The empty `kobun_vocab` / `古文単語` module is preserved as a 0-question reference module, but it is hidden from normal Home study cards.
 
 ## Commands
 
@@ -77,10 +75,10 @@ To write out a signed release APK, run:
 The signed release workflow requires these GitHub Actions secrets:
 
 ```text
-STUDYHOME_KEYSTORE_BASE64
-STUDYHOME_KEYSTORE_PASSWORD
-STUDYHOME_KEY_ALIAS
-STUDYHOME_KEY_PASSWORD
+ANDROID_KEYSTORE_BASE64
+KEYSTORE_PASSWORD
+KEY_ALIAS
+KEY_PASSWORD
 ```
 
 Download the signed artifact named:
@@ -89,7 +87,7 @@ Download the signed artifact named:
 LoopDeck-signed-release-apk
 ```
 
-The release workflow decodes the keystore only during CI, writes `android/keystore.properties` only during CI, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files. Pull request runs skip the signed packaging step when secrets are not available; manual `workflow_dispatch` runs fail clearly if a required secret is missing. Do not commit `.jks`, `.keystore`, or `android/keystore.properties`.
+The release workflow decodes the keystore only during CI, writes `android/keystore.properties` only during CI, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files. Do not commit `.jks`, `.keystore`, or `android/keystore.properties`.
 
 For signing setup notes, see:
 
@@ -111,20 +109,6 @@ npm run build
 Then open the `android/` folder in Android Studio and run `assembleDebug`.
 
 For signed local release builds, create `android/keystore.properties` from `android/keystore.properties.example` and run `assembleRelease`. Never commit the real keystore or real signing properties.
-
-## Data files
-
-The app loads this as built-in data:
-
-```text
-data/builtin/studyhome_rescued.loopdeck.json
-```
-
-Reference rescue data is kept here and is not loaded at runtime:
-
-```text
-data/rescued/raw/
-```
 
 ## Pack format
 
