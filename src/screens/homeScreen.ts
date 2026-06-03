@@ -1,8 +1,8 @@
 import type { LoopDeckPack, ModuleInfo } from '../core/models';
-import { getVisibleStudyModules } from '../packs/studyhomeNormalizer';
+import { getVisibleBuiltinModules } from '../packs/builtinNormalizer';
 import { button, clear, el } from '../ui/dom';
 
-type StudyHomeMeta = {
+type ModuleCardMeta = {
   icon: string;
   accent: string;
   subtitle: string;
@@ -11,7 +11,7 @@ type StudyHomeMeta = {
   folderId: string;
 };
 
-type StudyHomeFolder = {
+type HomeFolder = {
   id: string;
   title: string;
   description: string;
@@ -19,16 +19,16 @@ type StudyHomeFolder = {
   tags: string[];
 };
 
-const STUDYHOME_LAST_APP_KEY = 'studyhome_last_app_v2';
-const STUDYHOME_IN_PLAYER_KEY = 'studyhome_in_player_v2';
-const FOLDER_STATE_PREFIX = 'studyhome_folder_open_v2_';
+const HOME_LAST_MODULE_KEY = 'loopdeck_last_module_v1';
+const HOME_IN_PLAYER_KEY = 'loopdeck_in_player_v1';
+const FOLDER_STATE_PREFIX = 'loopdeck_folder_open_v1_';
 
-const STUDYHOME_MODULE_META: Record<string, StudyHomeMeta> = {
+const MODULE_CARD_META: Record<string, ModuleCardMeta> = {
   history: {
     icon: '歴',
     accent: '#2563eb',
     subtitle: '歴史総合 一問一答',
-    description: '帝国主義とアジアの民族運動など、旧StudyHomeから救出した歴史教材。',
+    description: '帝国主義とアジアの民族運動など、歴史総合の重要語句を短く確認します。',
     tags: ['歴史', '社会', 'テスト'],
     folderId: 'term1_midterm'
   },
@@ -36,7 +36,7 @@ const STUDYHOME_MODULE_META: Record<string, StudyHomeMeta> = {
     icon: '地',
     accent: '#0f766e',
     subtitle: '地理総合 地形・地誌',
-    description: '地形ノート、重要語句、図解系の確認に使う地理教材。',
+    description: '地形ノート、重要語句、図解系の確認に使う地理教材です。',
     tags: ['地理', '社会', '4択'],
     folderId: 'term1_midterm'
   },
@@ -44,7 +44,7 @@ const STUDYHOME_MODULE_META: Record<string, StudyHomeMeta> = {
     icon: '化',
     accent: '#ea580c',
     subtitle: '化学 一問一答',
-    description: '化学の重要語句を旧StudyHome風の短い確認で進めます。',
+    description: '化学の重要語句を短い確認でテンポよく進めます。',
     tags: ['化学', '理科', '入力'],
     folderId: 'term1_midterm'
   },
@@ -52,7 +52,7 @@ const STUDYHOME_MODULE_META: Record<string, StudyHomeMeta> = {
     icon: '生',
     accent: '#16a34a',
     subtitle: '生物 一問一答',
-    description: '生物の復元データを軽いカード学習として使います。',
+    description: '生物の重要語句を軽いカード学習として使います。',
     tags: ['生物', '理科', '復習'],
     folderId: 'term1_midterm'
   },
@@ -98,11 +98,11 @@ const STUDYHOME_MODULE_META: Record<string, StudyHomeMeta> = {
   }
 };
 
-const STUDYHOME_FOLDERS: StudyHomeFolder[] = [
+const HOME_FOLDERS: HomeFolder[] = [
   {
     id: 'term1_midterm',
     title: '一学期中間テスト',
-    description: 'ここまで作ってきた中間テスト用教材',
+    description: '中間テスト用にまとめた教材',
     moduleIds: ['history', 'geography', 'chemistry', 'biology', 'leap', 'english_comm', 'kobun_conjugation', 'english'],
     tags: ['歴史', '地理', '化学', '生物', '英単語 001〜200', '英コミュ', '動詞の活用', '英文暗記']
   },
@@ -131,8 +131,8 @@ function safeSetStorage(key: string, value: string): void {
   }
 }
 
-function moduleMeta(module: ModuleInfo): StudyHomeMeta {
-  return STUDYHOME_MODULE_META[module.id] ?? {
+function moduleMeta(module: ModuleInfo): ModuleCardMeta {
+  return MODULE_CARD_META[module.id] ?? {
     icon: module.title.slice(0, 1) || '教',
     accent: '#2563eb',
     subtitle: module.subject,
@@ -171,10 +171,10 @@ export function renderHomeScreen(
   onOpenGraphs: () => void
 ): void {
   clear(root);
-  safeSetStorage(STUDYHOME_IN_PLAYER_KEY, '0');
+  safeSetStorage(HOME_IN_PLAYER_KEY, '0');
   let query = '';
 
-  const visibleModules = getVisibleStudyModules(packs.flatMap((pack) => pack.modules));
+  const visibleModules = getVisibleBuiltinModules(packs.flatMap((pack) => pack.modules));
   const modulesById = new Map(visibleModules.map((module) => [module.id, module]));
 
   const screen = el('main', 'screen home-screen');
@@ -184,7 +184,7 @@ export function renderHomeScreen(
   const heroCopy = el('div', 'hero-copy');
   heroCopy.append(
     el('h1', '', '学習ホーム'),
-    el('p', '', '教材をテストごとのフォルダにまとめたスマホ向けホーム。救出したStudyHome教材を、LoopDeckでそのまま軽く学習できます。')
+    el('p', '', '教材をテストごとのフォルダにまとめたスマホ向けホーム。LoopDeckで軽く、すばやく学習できます。')
   );
   hero.append(menuOpen, heroCopy);
 
@@ -225,8 +225,8 @@ export function renderHomeScreen(
   list.setAttribute('aria-label', '教材一覧');
 
   function openModule(moduleId: string): void {
-    safeSetStorage(STUDYHOME_LAST_APP_KEY, moduleId);
-    safeSetStorage(STUDYHOME_IN_PLAYER_KEY, '1');
+    safeSetStorage(HOME_LAST_MODULE_KEY, moduleId);
+    safeSetStorage(HOME_IN_PLAYER_KEY, '1');
     onOpenModule(moduleId);
   }
 
@@ -260,7 +260,7 @@ export function renderHomeScreen(
     }
   }
 
-  function renderFolder(folder: StudyHomeFolder): HTMLElement | undefined {
+  function renderFolder(folder: HomeFolder): HTMLElement | undefined {
     const modules = folder.moduleIds.map((id) => modulesById.get(id)).filter((module): module is ModuleInfo => Boolean(module));
     if (!modules.length) return undefined;
 
@@ -300,7 +300,7 @@ export function renderHomeScreen(
     clear(list);
     list.className = 'folder-list';
     const placed = new Set<string>();
-    for (const folder of STUDYHOME_FOLDERS) {
+    for (const folder of HOME_FOLDERS) {
       const folderNode = renderFolder(folder);
       if (!folderNode) continue;
       folder.moduleIds.forEach((id) => placed.add(id));
@@ -309,7 +309,7 @@ export function renderHomeScreen(
 
     const otherModules = visibleModules.filter((module) => !placed.has(module.id));
     if (otherModules.length) {
-      const otherFolder: StudyHomeFolder = {
+      const otherFolder: HomeFolder = {
         id: 'other',
         title: 'その他',
         description: '追加で読み込んだ教材',
@@ -332,7 +332,7 @@ export function renderHomeScreen(
   showAll.onclick = () => {
     search.value = '';
     query = '';
-    for (const folder of STUDYHOME_FOLDERS) setFolderOpen(folder.id, true);
+    for (const folder of HOME_FOLDERS) setFolderOpen(folder.id, true);
     renderList();
   };
 
