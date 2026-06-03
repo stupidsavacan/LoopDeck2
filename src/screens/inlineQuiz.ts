@@ -1,5 +1,6 @@
-import { judgeQuestion, getCorrectAnswer } from '../core/answerJudge';
-import type { Attempt, Question } from '../core/models';
+import { getCorrectAnswer, isNearMissAnswer, judgeQuestion } from '../core/answerJudge';
+import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
+import { scoreAttemptDelta } from '../core/reviewEngine';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
 import { isSafeImageAssetRef } from '../packs/assetSafety';
 import { db } from '../storage/db';
@@ -14,33 +15,61 @@ function answerToText(answer: string | string[]): string {
   return Array.isArray(answer) ? answer.join(' / ') : answer;
 }
 
-function renderResult(container: HTMLElement, question: Question, correct: boolean, input: string | string[], elapsedMs: number, mode: 'normal' | 'review'): void {
+function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto'): AnswerFormat {
+  if (question.type === 'multi_select') return 'choice';
+  if (requested === 'input') return 'input';
+  if (question.type === 'choice') return 'choice';
+  return 'input';
+}
+
+function canJudgeNearMiss(question: Question): question is InputQuestion | ChoiceQuestion {
+  return question.type === 'input' || question.type === 'choice';
+}
+
+function buildAttempt(
+  question: Question,
+  result: Attempt['result'],
+  input: string | string[],
+  elapsedMs: number,
+  mode: 'normal' | 'review',
+  answerMode: AnswerFormat,
+  nearMiss = false
+): Attempt {
   const answer = getCorrectAnswer(question);
-  const result = el('div', correct ? 'result correct' : 'result wrong');
-  result.innerHTML = `
-    <strong>${correct ? '正解' : '不正解'}</strong>
-    <span>答え：${answerToText(answer)}</span>
-    <small>${Math.round(elapsedMs / 100) / 10}秒</small>
-  `;
-  container.append(result);
+  return {
+    attemptId: `${Date.now()}-${crypto.randomUUID()}`,
+    questionId: question.id,
+    moduleId: question.moduleId,
+    answeredAt: new Date().toISOString(),
+    result,
+    input,
+    answer,
+    elapsedMs,
+    mode,
+    nearMiss,
+    hiddenTimeExcludedMs: 0,
+    priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode),
+    answerMode
+  };
+}
+
+function appendResult(container: HTMLElement, question: Question, result: Attempt['result'], elapsedMs: number, nearMiss = false): void {
+  const answer = getCorrectAnswer(question);
+  const correct = result === 'correct';
+  const resultBox = el('div', correct ? 'result correct' : 'result wrong');
+  resultBox.append(
+    el('strong', '', result === 'revealed' ? '答え表示' : correct ? '正解' : '不正解'),
+    el('span', '', `答え：${answerToText(answer)}`),
+    el('small', '', `${Math.round(elapsedMs / 100) / 10}秒`)
+  );
+  if (nearMiss) resultBox.append(el('span', 'near-miss-note', 'かなり近い答えです。復習優先度は軽めに記録しました。'));
+  container.append(resultBox);
 
   if (question.explanation) {
     const explanation = el('p', 'explanation');
     explanation.textContent = question.explanation;
     container.append(explanation);
   }
-
-  void db.addAttempt({
-    attemptId: `${Date.now()}-${crypto.randomUUID()}`,
-    questionId: question.id,
-    moduleId: question.moduleId,
-    answeredAt: new Date().toISOString(),
-    result: correct ? 'correct' : 'wrong',
-    input,
-    answer,
-    elapsedMs,
-    mode
-  } satisfies Attempt);
 }
 
 function renderImageReference(question: Question): HTMLElement | undefined {
@@ -59,12 +88,20 @@ function renderImageReference(question: Question): HTMLElement | undefined {
   return image;
 }
 
+function renderQuizMeta(session: QuizSession, question: Question): HTMLElement {
+  const meta = el('div', 'quiz-meta');
+  meta.append(el('span', '', `${session.index + 1} / ${session.queue.length}`));
+  if (session.settings.showNumber && question.number) meta.append(el('span', '', `No.${question.number}`));
+  if (session.settings.showCategory && question.category) meta.append(el('span', '', question.category));
+  return meta;
+}
+
 export function renderInlineQuiz(container: HTMLElement, session: QuizSession, callbacks: InlineQuizCallbacks): void {
   clear(container);
 
   if (isSessionComplete(session)) {
     const done = el('div', 'quiz-card done');
-    done.innerHTML = `<h3>セッション完了</h3><p>${session.queue.length}問の学習が終わりました。</p>`;
+    done.append(el('h3', '', 'セッション完了'), el('p', '', `${session.queue.length}問の学習が終わりました。`));
     const back = button('教材詳細に戻る', 'btn primary');
     back.onclick = callbacks.onComplete;
     done.append(back);
@@ -75,9 +112,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const maybeQuestion = currentQuestion(session);
   if (!maybeQuestion) return;
   const question: Question = maybeQuestion;
+  const answerMode = effectiveAnswerMode(question, session.settings.answerFormat);
 
   const card = el('section', 'quiz-card');
-  const meta = el('div', 'quiz-meta', `${session.index + 1} / ${session.queue.length}`);
   const prompt = el('h3', 'question-prompt', question.prompt);
   const image = renderImageReference(question);
   const answerArea = el('div', 'answer-area');
@@ -86,36 +123,16 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let selectedAnswer: string | string[] = '';
   let answered = false;
 
-  function submitAnswer(answer: string | string[], revealed = false): void {
+  function record(answer: string | string[], revealed = false): void {
     if (answered) return;
     answered = true;
     const elapsedMs = elapsedForCurrent(session);
+    const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(question) ? isNearMissAnswer(question, answer) : false;
+    const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(question, answer) ? 'correct' : 'wrong';
+    appendResult(resultArea, question, result, elapsedMs, nearMiss);
+    void db.addAttempt(buildAttempt(question, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss));
 
-    if (revealed) {
-      const correctAnswer = getCorrectAnswer(question);
-      resultArea.innerHTML = `<div class="result wrong"><strong>答え表示</strong><span>答え：${answerToText(correctAnswer)}</span></div>`;
-      if (question.explanation) {
-        const explanation = el('p', 'explanation', question.explanation);
-        resultArea.append(explanation);
-      }
-      void db.addAttempt({
-        attemptId: `${Date.now()}-${crypto.randomUUID()}`,
-        questionId: question.id,
-        moduleId: question.moduleId,
-        answeredAt: new Date().toISOString(),
-        result: 'revealed',
-        input: '',
-        answer: correctAnswer,
-        elapsedMs,
-        mode: session.mode
-      });
-      return;
-    }
-
-    const correct = judgeQuestion(question, answer);
-    renderResult(resultArea, question, correct, answer, elapsedMs, session.mode);
-
-    if (correct && session.settings.autoNext) {
+    if (result === 'correct' && session.settings.autoNext) {
       window.setTimeout(nextQuestion, 650);
     }
   }
@@ -124,33 +141,47 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     callbacks.onSessionChange(advanceSession(session));
   }
 
-  if (question.type === 'input') {
+  const bookmark = button('☆ ブックマーク', 'btn ghost bookmark-btn');
+  let bookmarked = false;
+  void db.getBookmarks().then((bookmarks) => {
+    bookmarked = bookmarks.includes(question.id);
+    bookmark.textContent = bookmarked ? '★ ブックマーク済み' : '☆ ブックマーク';
+    bookmark.classList.toggle('selected', bookmarked);
+  });
+  bookmark.onclick = async () => {
+    bookmarked = !bookmarked;
+    await db.setBookmark(question.id, bookmarked);
+    bookmark.textContent = bookmarked ? '★ ブックマーク済み' : '☆ ブックマーク';
+    bookmark.classList.toggle('selected', bookmarked);
+  };
+
+  if (session.settings.showExample && question.example) {
+    answerArea.append(el('p', 'example-line', question.example));
+  }
+
+  if (answerMode === 'input') {
     const input = el('input', 'text-input') as HTMLInputElement;
     input.placeholder = '答えを入力';
     input.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') submitAnswer(input.value);
+      if (event.key === 'Enter') record(input.value);
     });
     selectedAnswer = input.value;
     const submit = button('回答する', 'btn primary');
-    submit.onclick = () => submitAnswer(input.value);
+    submit.onclick = () => record(input.value);
     answerArea.append(input, submit);
     window.setTimeout(() => input.focus(), 0);
-  }
-
-  if (question.type === 'choice') {
+  } else if (question.type === 'choice') {
     const list = el('div', 'choice-list');
     question.choices.forEach((choice) => {
       const choiceButton = button(choice, 'choice-btn');
       choiceButton.onclick = () => {
         selectedAnswer = choice;
-        submitAnswer(choice);
+        record(choice);
       };
       list.append(choiceButton);
     });
     answerArea.append(list);
-  }
-
-  if (question.type === 'multi_select') {
+  } else if (question.type === 'multi_select') {
     const selected = new Set<string>();
     const list = el('div', 'choice-list');
     question.choices.forEach((choice) => {
@@ -168,17 +199,34 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
       list.append(choiceButton);
     });
     const submit = button('選択を確定', 'btn primary');
-    submit.onclick = () => submitAnswer([...selected]);
+    submit.onclick = () => record([...selected]);
     answerArea.append(list, submit);
+  } else {
+    const input = el('input', 'text-input') as HTMLInputElement;
+    input.placeholder = '答えを入力';
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') record(input.value);
+    });
+    const submit = button('回答する', 'btn primary');
+    submit.onclick = () => record(input.value);
+    answerArea.append(input, submit);
+    window.setTimeout(() => input.focus(), 0);
   }
 
+  const hintText = question.example ?? question.explanation;
+  const hint = button('ヒント', 'btn ghost');
+  hint.disabled = !hintText;
+  hint.onclick = () => {
+    if (!hintText || resultArea.querySelector('.hint-panel')) return;
+    resultArea.prepend(el('p', 'hint-panel', hintText));
+  };
   const reveal = button('答えを見る', 'btn ghost');
-  reveal.onclick = () => submitAnswer(selectedAnswer, true);
+  reveal.onclick = () => record(selectedAnswer, true);
   const next = button('次へ', 'btn');
   next.onclick = nextQuestion;
-  controls.append(reveal, next);
+  controls.append(bookmark, hint, reveal, next);
 
-  card.append(meta, prompt);
+  card.append(renderQuizMeta(session, question), prompt);
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
   container.append(card);
