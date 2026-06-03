@@ -16,6 +16,22 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 const asString = (value: unknown, fallback = ''): string => (typeof value === 'string' ? value : fallback);
 const asStringArray = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []);
 
+function asNumber(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value.trim());
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return undefined;
+}
+
+function numberFromId(id: string): number | undefined {
+  const match = /(?:^|:)(\d+)$/.exec(id);
+  if (!match) return undefined;
+  const parsed = Number(match[1]);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function inferQuestionType(raw: Record<string, unknown>): QuestionType {
   const explicit = raw.type;
   if (explicit === 'input' || explicit === 'choice' || explicit === 'multi_select') return explicit;
@@ -37,12 +53,18 @@ function normalizeQuestion(rawQuestion: unknown): Question | undefined {
   const prompt = asString(rawQuestion.prompt).trim();
   if (!id || !moduleId || !prompt || REVERSE_MODULE_IDS.has(moduleId)) return undefined;
 
+  const category = asString(rawQuestion.category, asString(rawQuestion.subject)).trim();
+  const example = asString(rawQuestion.example, asString(rawQuestion.exampleSentence)).trim();
+  const number = asNumber(rawQuestion.number) ?? asNumber(rawQuestion.no) ?? asNumber(rawQuestion.index) ?? numberFromId(id);
   const base = {
     id,
     moduleId,
     prompt,
     explanation: asString(rawQuestion.explanation) || undefined,
-    imageAsset: asString(rawQuestion.imageAsset) || undefined
+    imageAsset: asString(rawQuestion.imageAsset) || undefined,
+    category: category || undefined,
+    example: example || undefined,
+    number
   };
 
   const type = inferQuestionType(rawQuestion);
@@ -62,11 +84,9 @@ function normalizeQuestion(rawQuestion: unknown): Question | undefined {
       ...base,
       type,
       choices: asStringArray(rawQuestion.choices),
-      answer
+      answer,
+      acceptableAnswers: asStringArray(rawQuestion.acceptableAnswers)
     };
-    if (asStringArray(rawQuestion.acceptableAnswers).length) {
-      return { ...question, acceptableAnswers: asStringArray(rawQuestion.acceptableAnswers) } as ChoiceQuestion;
-    }
     return question;
   }
 
