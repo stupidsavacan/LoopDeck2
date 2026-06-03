@@ -58,7 +58,7 @@ jobs:
         with:
           gradle-version: 8.10.2
 
-      - name: Check release signing secrets
+      - name: Check release signing inputs
         id: signing
         shell: bash
         env:
@@ -78,18 +78,38 @@ jobs:
         run: |
           set -euo pipefail
 
+          find_checked_in_keystore() {
+            for path in android/loopdeck-release.jks android/app/loopdeck-release.jks loopdeck-release.jks android/release.jks; do
+              if [ -f "$path" ]; then
+                printf '%s' "$path"
+                return 0
+              fi
+            done
+
+            mapfile -t matches < <(find . \
+              -path './.git' -prune -o \
+              -path './node_modules' -prune -o \
+              -path './android/.gradle' -prune -o \
+              -name '*.jks' -type f -print | sed 's#^./##')
+
+            if [ "${#matches[@]}" -eq 1 ]; then
+              printf '%s' "${matches[0]}"
+            fi
+          }
+
           KEYSTORE_BASE64="${LOOPDECK_KEYSTORE_BASE64:-${LOOPDECK_JKS_BASE64:-${STUDYHOME_KEYSTORE_BASE64:-}}}"
+          KEYSTORE_FILE="$(find_checked_in_keystore)"
           KEYSTORE_PASSWORD="${LOOPDECK_KEYSTORE_PASSWORD:-${LOOPDECK_STORE_PASSWORD:-${STUDYHOME_KEYSTORE_PASSWORD:-}}}"
           KEY_ALIAS="${LOOPDECK_KEY_ALIAS:-${LOOPDECK_KEYSTORE_ALIAS:-${STUDYHOME_KEY_ALIAS:-}}}"
           KEY_PASSWORD="${LOOPDECK_KEY_PASSWORD:-${LOOPDECK_KEYSTORE_KEY_PASSWORD:-${STUDYHOME_KEY_PASSWORD:-}}}"
 
           missing=0
-          require_secret() {
+          require_input() {
             local label="$1"
             local value="$2"
             if [ -z "$value" ]; then
               if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-                echo "::error::$label GitHub Secret is required for signed release APK export."
+                echo "::error::$label is required for signed release APK export."
               else
                 echo "::notice::$label is not available in this PR run; signed APK packaging will be skipped."
               fi
@@ -97,10 +117,19 @@ jobs:
             fi
           }
 
-          require_secret "LOOPDECK_KEYSTORE_BASE64" "$KEYSTORE_BASE64"
-          require_secret "LOOPDECK_KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD"
-          require_secret "LOOPDECK_KEY_ALIAS" "$KEY_ALIAS"
-          require_secret "LOOPDECK_KEY_PASSWORD" "$KEY_PASSWORD"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "source=base64" >> "$GITHUB_OUTPUT"
+            echo "keystore_file=android/loopdeck-release.jks" >> "$GITHUB_OUTPUT"
+          elif [ -n "$KEYSTORE_FILE" ]; then
+            echo "source=file" >> "$GITHUB_OUTPUT"
+            echo "keystore_file=$KEYSTORE_FILE" >> "$GITHUB_OUTPUT"
+          else
+            require_input "LOOPDECK_KEYSTORE_BASE64, LOOPDECK_JKS_BASE64, or a checked-in loopdeck-release.jks file" ""
+          fi
+
+          require_input "LOOPDECK_KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD"
+          require_input "LOOPDECK_KEY_ALIAS" "$KEY_ALIAS"
+          require_input "LOOPDECK_KEY_PASSWORD" "$KEY_PASSWORD"
 
           if [ "$missing" -ne 0 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -116,6 +145,8 @@ jobs:
         if: steps.signing.outputs.ready == 'true'
         shell: bash
         env:
+          SIGNING_SOURCE: ${{ steps.signing.outputs.source }}
+          SIGNING_KEYSTORE_FILE: ${{ steps.signing.outputs.keystore_file }}
           LOOPDECK_KEYSTORE_BASE64: ${{ secrets.LOOPDECK_KEYSTORE_BASE64 }}
           LOOPDECK_JKS_BASE64: ${{ secrets.LOOPDECK_JKS_BASE64 }}
           LOOPDECK_KEYSTORE_PASSWORD: ${{ secrets.LOOPDECK_KEYSTORE_PASSWORD }}
@@ -136,12 +167,17 @@ jobs:
           KEY_ALIAS="${LOOPDECK_KEY_ALIAS:-${LOOPDECK_KEYSTORE_ALIAS:-${STUDYHOME_KEY_ALIAS:-}}}"
           KEY_PASSWORD="${LOOPDECK_KEY_PASSWORD:-${LOOPDECK_KEYSTORE_KEY_PASSWORD:-${STUDYHOME_KEY_PASSWORD:-}}}"
 
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/loopdeck-release.jks
-          chmod 600 android/loopdeck-release.jks
-          keytool -list -keystore android/loopdeck-release.jks -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          if [ "$SIGNING_SOURCE" = "base64" ]; then
+            printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$SIGNING_KEYSTORE_FILE"
+            chmod 600 "$SIGNING_KEYSTORE_FILE"
+          fi
+
+          test -f "$SIGNING_KEYSTORE_FILE"
+          KEYSTORE_ABS_PATH="$(realpath "$SIGNING_KEYSTORE_FILE")"
+          keytool -list -keystore "$KEYSTORE_ABS_PATH" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
 
           cat > android/keystore.properties <<EOF
-          storeFile=$GITHUB_WORKSPACE/android/loopdeck-release.jks
+          storeFile=$KEYSTORE_ABS_PATH
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
@@ -163,4 +199,13 @@ jobs:
 
       - name: Remove release signing files
         if: always()
-        run: rm -f android/loopdeck-release.jks android/studyhome-release.jks android/keystore.properties
+        shell: bash
+        env:
+          SIGNING_SOURCE: ${{ steps.signing.outputs.source }}
+          SIGNING_KEYSTORE_FILE: ${{ steps.signing.outputs.keystore_file }}
+        run: |
+          set -euo pipefail
+          if [ "$SIGNING_SOURCE" = "base64" ] && [ -n "$SIGNING_KEYSTORE_FILE" ]; then
+            rm -f "$SIGNING_KEYSTORE_FILE"
+          fi
+          rm -f android/studyhome-release.jks android/keystore.properties
