@@ -11,10 +11,11 @@ This build keeps the old StudyHome-style lightweight study flow, while using Stu
 - Normal-direction-only study data; reverse-practice modules are not active
 - 1,112 usable rescued questions
 - Basic Review Center for wrong-answer sessions
+- Study graphs based on saved answer attempts
 - Input / choice / multi_select questions
 - Japanese answer judging that rejects partial fragments
 - JSON / `.loopdeck.zip` import and export
-- Android debug APK build workflow
+- Android debug APK and signed release APK workflows
 
 ## Removed on purpose
 
@@ -55,7 +56,7 @@ npm test
 npm run build
 ```
 
-To write out an unsigned debug APK, manually run:
+To write out an unsigned debug APK, run:
 
 ```text
 .github/workflows/build-android-debug.yml
@@ -67,7 +68,36 @@ Download the artifact named:
 LoopDeck-debug-apk
 ```
 
-The APK is a small WebView wrapper around the bundled local Vite build. Imported study content remains data-only; LoopDeck still rejects executable/imported HTML, JavaScript, CSS, APK, shell, and unsafe paths.
+To write out a signed release APK, run:
+
+```text
+.github/workflows/build-android-release.yml
+```
+
+The signed release workflow requires these GitHub Actions secrets:
+
+```text
+STUDYHOME_KEYSTORE_BASE64
+STUDYHOME_KEYSTORE_PASSWORD
+STUDYHOME_KEY_ALIAS
+STUDYHOME_KEY_PASSWORD
+```
+
+Download the signed artifact named:
+
+```text
+LoopDeck-signed-release-apk
+```
+
+The release workflow decodes the keystore only during CI, writes `android/keystore.properties` only during CI, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files. Do not commit `.jks`, `.keystore`, or `android/keystore.properties`.
+
+For signing setup notes, see:
+
+```text
+android/README_SIGNING.md
+```
+
+The APK is a small Android wrapper around the bundled local Vite build. Imported study content remains data-only; LoopDeck still rejects executable/imported HTML, JavaScript, CSS, APK, shell, and unsafe paths.
 
 ## Android Studio build
 
@@ -80,11 +110,7 @@ npm run build
 
 Then open the `android/` folder in Android Studio and run `assembleDebug`.
 
-For signing notes, see:
-
-```text
-android/README_SIGNING.md
-```
+For signed local release builds, create `android/keystore.properties` from `android/keystore.properties.example` and run `assembleRelease`. Never commit the real keystore or real signing properties.
 
 ## Data files
 
