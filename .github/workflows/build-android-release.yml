@@ -72,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           missing=0
-          for name in ANDROID_KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+          for name in ANDROID_KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_PASSWORD; do
             if [ -z "${!name:-}" ]; then
               if [ "$EVENT_NAME" = "pull_request" ]; then
                 echo "::notice::$name is not available in this PR run; signed APK packaging will be skipped."
@@ -91,6 +91,10 @@ jobs:
             exit 0
           fi
 
+          if [ -z "${KEY_ALIAS:-}" ]; then
+            echo "::notice::KEY_ALIAS is empty; the workflow will use the only alias found in the keystore if possible."
+          fi
+
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
       - name: Prepare release signing files
@@ -104,10 +108,40 @@ jobs:
         run: |
           set -euo pipefail
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/loopdeck-release.jks
+
+          mapfile -t keystore_aliases < <(
+            keytool -list -v -keystore android/loopdeck-release.jks -storepass "$KEYSTORE_PASSWORD" 2>/dev/null \
+              | sed -n 's/^Alias name: //p'
+          )
+
+          if [ "${#keystore_aliases[@]}" -eq 0 ]; then
+            echo "::error::Could not read any alias from the Android release keystore. Check ANDROID_KEYSTORE_BASE64 and KEYSTORE_PASSWORD."
+            exit 1
+          fi
+
+          resolved_key_alias="$KEY_ALIAS"
+          alias_found=false
+          for alias in "${keystore_aliases[@]}"; do
+            if [ "$alias" = "$KEY_ALIAS" ]; then
+              alias_found=true
+              break
+            fi
+          done
+
+          if [ -z "$resolved_key_alias" ] || [ "$alias_found" != "true" ]; then
+            if [ "${#keystore_aliases[@]}" -eq 1 ]; then
+              resolved_key_alias="${keystore_aliases[0]}"
+              echo "::warning::KEY_ALIAS does not match the keystore; using the only alias found in the keystore."
+            else
+              echo "::error::KEY_ALIAS does not match any alias in the keystore, and the keystore contains multiple aliases."
+              exit 1
+            fi
+          fi
+
           cat > android/keystore.properties <<EOF
           storeFile=$GITHUB_WORKSPACE/android/loopdeck-release.jks
           storePassword=$KEYSTORE_PASSWORD
-          keyAlias=$KEY_ALIAS
+          keyAlias=$resolved_key_alias
           keyPassword=$KEY_PASSWORD
           EOF
           chmod 600 android/loopdeck-release.jks android/keystore.properties
