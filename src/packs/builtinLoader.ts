@@ -1,14 +1,14 @@
-import studyHomeRescuedPack from '../../data/builtin/studyhome_rescued.loopdeck.json';
+import builtinQuestionPack from '../../data/builtin/studyhome_rescued.loopdeck.json';
 import type { LoopDeckPack } from '../core/models';
 import { validatePack } from './packValidator';
-import { normalizeStudyHomePack } from './studyhomeNormalizer';
+import { normalizeBuiltinPack } from './builtinNormalizer';
 
 export function loadBuiltinPacks(): LoopDeckPack[] {
-  const normalizedPack = normalizeStudyHomePack(studyHomeRescuedPack);
+  const normalizedPack = normalizeBuiltinPack(builtinQuestionPack);
   const result = validatePack(normalizedPack);
   if (!result.ok || !result.pack) {
     console.error(result.issues);
-    throw new Error('Built-in StudyHome rescued pack is invalid.');
+    throw new Error('Built-in LoopDeck pack is invalid.');
   }
   return [result.pack];
 }
