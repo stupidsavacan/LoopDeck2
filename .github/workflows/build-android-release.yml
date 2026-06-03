@@ -1,6 +1,8 @@
 name: Build Android Signed Release APK
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
   pull_request:
 
@@ -19,7 +21,7 @@ jobs:
   build-signed-release-apk:
     name: Build signed release APK
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -62,20 +64,20 @@ jobs:
         id: signing
         shell: bash
         env:
-          STUDYHOME_KEYSTORE_BASE64: ${{ secrets.STUDYHOME_KEYSTORE_BASE64 }}
-          STUDYHOME_KEYSTORE_PASSWORD: ${{ secrets.STUDYHOME_KEYSTORE_PASSWORD }}
-          STUDYHOME_KEY_ALIAS: ${{ secrets.STUDYHOME_KEY_ALIAS }}
-          STUDYHOME_KEY_PASSWORD: ${{ secrets.STUDYHOME_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           missing=0
-          for name in STUDYHOME_KEYSTORE_BASE64 STUDYHOME_KEYSTORE_PASSWORD STUDYHOME_KEY_ALIAS STUDYHOME_KEY_PASSWORD; do
+          for name in ANDROID_KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
             if [ -z "${!name:-}" ]; then
-              if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-                echo "::error::$name GitHub Secret is required for signed release APK export."
-              else
+              if [ "$EVENT_NAME" = "pull_request" ]; then
                 echo "::notice::$name is not available in this PR run; signed APK packaging will be skipped."
+              else
+                echo "::error::$name GitHub Secret is required for signed release APK export."
               fi
               missing=1
             fi
@@ -83,7 +85,7 @@ jobs:
 
           if [ "$missing" -ne 0 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$EVENT_NAME" != "pull_request" ]; then
               exit 1
             fi
             exit 0
@@ -95,20 +97,20 @@ jobs:
         if: steps.signing.outputs.ready == 'true'
         shell: bash
         env:
-          STUDYHOME_KEYSTORE_BASE64: ${{ secrets.STUDYHOME_KEYSTORE_BASE64 }}
-          STUDYHOME_KEYSTORE_PASSWORD: ${{ secrets.STUDYHOME_KEYSTORE_PASSWORD }}
-          STUDYHOME_KEY_ALIAS: ${{ secrets.STUDYHOME_KEY_ALIAS }}
-          STUDYHOME_KEY_PASSWORD: ${{ secrets.STUDYHOME_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          printf '%s' "$STUDYHOME_KEYSTORE_BASE64" | base64 --decode > android/studyhome-release.jks
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/loopdeck-release.jks
           cat > android/keystore.properties <<EOF
-          storeFile=$GITHUB_WORKSPACE/android/studyhome-release.jks
-          storePassword=$STUDYHOME_KEYSTORE_PASSWORD
-          keyAlias=$STUDYHOME_KEY_ALIAS
-          keyPassword=$STUDYHOME_KEY_PASSWORD
+          storeFile=$GITHUB_WORKSPACE/android/loopdeck-release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
           EOF
-          chmod 600 android/studyhome-release.jks android/keystore.properties
+          chmod 600 android/loopdeck-release.jks android/keystore.properties
 
       - name: Build signed release APK
         if: steps.signing.outputs.ready == 'true'
@@ -125,4 +127,4 @@ jobs:
 
       - name: Remove release signing files
         if: always()
-        run: rm -f android/studyhome-release.jks android/keystore.properties
+        run: rm -f android/loopdeck-release.jks android/keystore.properties
