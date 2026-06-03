@@ -1,13 +1,72 @@
 import type { LoopDeckPack, ModuleInfo, Question, StudySettings } from '../core/models';
-import { createSession, type QuizSession } from '../core/sessionEngine';
+import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
+
+interface StoredSession {
+  questionIds: string[];
+  index: number;
+  mode: 'normal' | 'review';
+  settings: StudySettings;
+  savedAt: string;
+}
 
 function moduleQuestions(packs: LoopDeckPack[], module: ModuleInfo): Question[] {
   const questions = packs.flatMap((pack) => pack.questions);
   const byId = new Map(questions.map((question) => [question.id, question]));
   return module.questionIds.map((id) => byId.get(id)).filter((question): question is Question => Boolean(question));
+}
+
+function resumeKey(moduleId: string): string {
+  return `loopdeck_session_${moduleId}`;
+}
+
+function readStoredSession(moduleId: string, byId: Map<string, Question>): StoredSession | undefined {
+  try {
+    const raw = localStorage.getItem(resumeKey(moduleId));
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw) as StoredSession;
+    if (!Array.isArray(parsed.questionIds) || parsed.index >= parsed.questionIds.length) return undefined;
+    if (!parsed.questionIds.every((id) => byId.has(id))) return undefined;
+    return parsed;
+  } catch {
+    return undefined;
+  }
+}
+
+function saveStoredSession(moduleId: string, session: QuizSession): void {
+  const stored: StoredSession = {
+    questionIds: session.queue.map((question) => question.id),
+    index: session.index,
+    mode: session.mode,
+    settings: session.settings,
+    savedAt: new Date().toISOString()
+  };
+  localStorage.setItem(resumeKey(moduleId), JSON.stringify(stored));
+}
+
+function clearStoredSession(moduleId: string): void {
+  localStorage.removeItem(resumeKey(moduleId));
+}
+
+function makeSelect(labelText: string, className = 'study-select'): { wrap: HTMLElement; select: HTMLSelectElement } {
+  const wrap = el('label', 'field-label');
+  const label = el('span', '', labelText);
+  const select = el('select', className) as HTMLSelectElement;
+  wrap.append(label, select);
+  return { wrap, select };
+}
+
+function runtimeSettings(settings: StudySettings): StudySettings {
+  return {
+    ...settings,
+    shuffle: false,
+    questionLimit: 'all',
+    selectedRange: 'all',
+    selectedCategory: 'all',
+    filter: 'all'
+  };
 }
 
 export async function renderModuleScreen(
@@ -27,11 +86,15 @@ export async function renderModuleScreen(
   const module: ModuleInfo = foundModule;
 
   const questions = moduleQuestions(packs, module);
+  const questionsById = new Map(questions.map((question) => [question.id, question]));
   const attempts = await db.getAttempts();
   const bookmarks = await db.getBookmarks();
   const wrongIds = new Set(attempts.filter((attempt) => attempt.result !== 'correct').map((attempt) => attempt.questionId));
+  const bookmarkIds = new Set(bookmarks);
   const wrongQuestions = questions.filter((question) => wrongIds.has(question.id));
-  const bookmarkedQuestions = questions.filter((question) => bookmarks.includes(question.id));
+  const bookmarkedQuestions = questions.filter((question) => bookmarkIds.has(question.id));
+  const categories = listQuestionCategories(questions);
+  const storedSession = readStoredSession(module.id, questionsById);
 
   const screen = el('main', 'screen module-screen');
   const header = el('header', 'topbar');
@@ -64,60 +127,153 @@ export async function renderModuleScreen(
   );
   info.append(stats);
 
-  const settings: StudySettings = { shuffle: true, autoNext: true, questionLimit: 'all' };
-  const settingsCard = el('section', 'card');
-  settingsCard.append(el('h2', '', '学習の準備'));
-  const settingRow = el('div', 'setting-row');
-  const shuffleLabel = el('label', 'check-label');
-  const shuffleInput = document.createElement('input');
-  shuffleInput.type = 'checkbox';
-  shuffleInput.checked = true;
-  shuffleInput.onchange = () => {
-    settings.shuffle = shuffleInput.checked;
+  const settings: StudySettings = {
+    shuffle: true,
+    autoNext: true,
+    questionLimit: 'all',
+    selectedRange: 'all',
+    selectedCategory: 'all',
+    filter: 'all',
+    answerFormat: 'auto',
+    showExample: true,
+    showNumber: true,
+    showCategory: true
   };
-  shuffleLabel.append(shuffleInput, document.createTextNode(' シャッフル'));
 
-  const autoNextLabel = el('label', 'check-label');
-  const autoNextInput = document.createElement('input');
-  autoNextInput.type = 'checkbox';
-  autoNextInput.checked = true;
-  autoNextInput.onchange = () => {
-    settings.autoNext = autoNextInput.checked;
+  const settingsCard = el('section', 'card setup-card');
+  settingsCard.append(el('h2', '', 'テスト前設定'));
+  const settingsGrid = el('div', 'settings-grid');
+
+  const countField = makeSelect('問題数');
+  for (const [value, label] of [['10', '10問'], ['20', '20問'], ['50', '50問'], ['all', '全部']] as const) {
+    const option = el('option', '', label) as HTMLOptionElement;
+    option.value = value;
+    countField.select.append(option);
+  }
+  countField.select.value = 'all';
+  countField.select.onchange = () => {
+    settings.questionLimit = countField.select.value === 'all' ? 'all' : Number(countField.select.value);
   };
-  autoNextLabel.append(autoNextInput, document.createTextNode(' 正解時に自動で次へ'));
-  settingRow.append(shuffleLabel, autoNextLabel);
-  settingsCard.append(settingRow, el('p', 'hint', '基本はシャッフル前提です。必要なときだけ切り替えられます。'));
+
+  const rangeField = makeSelect('範囲');
+  for (const optionInfo of buildRangeOptions(questions)) {
+    const option = el('option', '', optionInfo.label) as HTMLOptionElement;
+    option.value = optionInfo.value;
+    rangeField.select.append(option);
+  }
+  const wrongOption = el('option', '', `間違いだけ (${wrongQuestions.length}問)`) as HTMLOptionElement;
+  wrongOption.value = 'wrong';
+  rangeField.select.append(wrongOption);
+  const bookmarkOption = el('option', '', `ブックマーク (${bookmarkedQuestions.length}問)`) as HTMLOptionElement;
+  bookmarkOption.value = 'bookmarked';
+  rangeField.select.append(bookmarkOption);
+  rangeField.select.onchange = () => {
+    settings.selectedRange = rangeField.select.value;
+  };
+
+  const categoryField = makeSelect('カテゴリ');
+  const allCategory = el('option', '', '全部') as HTMLOptionElement;
+  allCategory.value = 'all';
+  categoryField.select.append(allCategory);
+  for (const category of categories) {
+    const option = el('option', '', category) as HTMLOptionElement;
+    option.value = category;
+    categoryField.select.append(option);
+  }
+  categoryField.select.disabled = categories.length === 0;
+  categoryField.select.onchange = () => {
+    settings.selectedCategory = categoryField.select.value;
+  };
+
+  const answerField = makeSelect('回答形式');
+  for (const [value, label] of [['auto', '自動'], ['choice', '4択'], ['input', '入力']] as const) {
+    const option = el('option', '', label) as HTMLOptionElement;
+    option.value = value;
+    answerField.select.append(option);
+  }
+  answerField.select.onchange = () => {
+    settings.answerFormat = answerField.select.value as StudySettings['answerFormat'];
+  };
+
+  settingsGrid.append(countField.wrap, rangeField.wrap, categoryField.wrap, answerField.wrap);
+  settingsCard.append(settingsGrid);
+
+  const settingRow = el('div', 'setting-row');
+  const toggles: Array<[keyof StudySettings, string]> = [
+    ['shuffle', 'シャッフル'],
+    ['autoNext', '正解時に自動で次へ'],
+    ['showExample', '例文表示'],
+    ['showNumber', '番号表示'],
+    ['showCategory', 'カテゴリ表示']
+  ];
+  for (const [key, label] of toggles) {
+    const wrap = el('label', 'check-label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = Boolean(settings[key]);
+    input.onchange = () => {
+      (settings as Record<string, boolean>)[key] = input.checked;
+    };
+    wrap.append(input, document.createTextNode(` ${label}`));
+    settingRow.append(wrap);
+  }
+  settingsCard.append(settingRow, el('p', 'hint', '旧StudyHomeのLEAP設定に近い形です。通常はシャッフルONで使います。'));
 
   const actions = el('section', 'card action-card');
-  const start = button('シャッフルで開始', 'btn primary');
+  const start = button('開始', 'btn primary');
   const quizMount = el('div', 'quiz-mount');
 
   function rerender(): void {
     void renderModuleScreen(root, packs, moduleId, navigateHome, navigateReview, navigateGraphs);
   }
 
-  function startSession(items: Question[], mode: 'normal' | 'review'): void {
-    if (!items.length) {
+  function mountSession(session: QuizSession): void {
+    saveStoredSession(module.id, session);
+    const update = (next: QuizSession) => {
+      saveStoredSession(module.id, next);
+      mountSession(next);
+    };
+    renderInlineQuiz(quizMount, session, {
+      onSessionChange: update,
+      onComplete: () => {
+        clearStoredSession(module.id);
+        rerender();
+      }
+    });
+  }
+
+  function startSession(baseSettings: StudySettings, mode: 'normal' | 'review'): void {
+    const selected = selectSessionQuestions(questions, baseSettings, { wrongQuestionIds: wrongIds, bookmarkedQuestionIds: bookmarkIds });
+    if (!selected.length) {
       toast('出題できる問題がありません。');
       return;
     }
-    const session = createSession(module, items, settings, mode);
-    const update = (next: QuizSession) => renderInlineQuiz(quizMount, next, { onSessionChange: update, onComplete: rerender });
-    renderInlineQuiz(quizMount, session, { onSessionChange: update, onComplete: rerender });
+    const session = createSession(module, selected, runtimeSettings(baseSettings), mode);
+    mountSession(session);
   }
 
-  start.onclick = () => startSession(questions, 'normal');
+  start.onclick = () => startSession(settings, 'normal');
   actions.append(start);
+
+  if (storedSession) {
+    const resume = button(`再開 (${storedSession.index + 1}/${storedSession.questionIds.length})`, 'btn');
+    resume.onclick = () => {
+      const restoredQuestions = storedSession.questionIds.map((id) => questionsById.get(id)).filter((question): question is Question => Boolean(question));
+      const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode);
+      mountSession({ ...session, index: storedSession.index });
+    };
+    actions.append(resume);
+  }
 
   if (wrongQuestions.length) {
     const mistakes = button(`間違いだけ ${wrongQuestions.length}問`, 'btn');
-    mistakes.onclick = () => startSession(wrongQuestions, 'review');
+    mistakes.onclick = () => startSession({ ...settings, selectedRange: 'all', filter: 'wrong' }, 'review');
     actions.append(mistakes);
   }
 
   if (bookmarkedQuestions.length) {
     const bookmark = button(`ブックマーク ${bookmarkedQuestions.length}問`, 'btn');
-    bookmark.onclick = () => startSession(bookmarkedQuestions, 'review');
+    bookmark.onclick = () => startSession({ ...settings, selectedRange: 'all', filter: 'bookmarked' }, 'review');
     actions.append(bookmark);
   }
 
