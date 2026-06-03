@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.gradle.api.GradleException
 
 plugins {
     id("com.android.application")
@@ -9,6 +10,14 @@ val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
+
+val releaseSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val hasReleaseSigning = keystorePropertiesFile.exists() && releaseSigningKeys.all { key ->
+    !keystoreProperties.getProperty(key).isNullOrBlank()
+}
+
+fun releaseSigningProperty(key: String): String = keystoreProperties.getProperty(key)
+    ?: throw GradleException("Missing $key in android/keystore.properties for signed release builds.")
 
 android {
     namespace = "com.loopdeck.app"
@@ -28,11 +37,11 @@ android {
 
     signingConfigs {
         create("release") {
-            if (keystorePropertiesFile.exists()) {
-                storeFile = file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+            if (hasReleaseSigning) {
+                storeFile = file(releaseSigningProperty("storeFile"))
+                storePassword = releaseSigningProperty("storePassword")
+                keyAlias = releaseSigningProperty("keyAlias")
+                keyPassword = releaseSigningProperty("keyPassword")
             }
         }
     }
@@ -44,9 +53,20 @@ android {
         }
         release {
             isMinifyEnabled = false
-            if (keystorePropertiesFile.exists()) {
+            if (hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")
             }
+        }
+    }
+}
+
+tasks.matching { task -> task.name == "assembleRelease" || task.name == "bundleRelease" }.configureEach {
+    doFirst {
+        if (!hasReleaseSigning) {
+            throw GradleException(
+                "Signed release builds require android/keystore.properties with storeFile, storePassword, keyAlias, and keyPassword. " +
+                    "Debug builds do not need signing secrets."
+            )
         }
     }
 }
