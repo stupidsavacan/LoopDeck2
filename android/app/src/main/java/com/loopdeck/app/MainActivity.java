@@ -9,6 +9,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebChromeClient.FileChooserParams;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,6 +20,7 @@ import java.io.OutputStream;
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 2410;
     private static final int SAVE_FILE_REQUEST = 2411;
+    private static final String ASSET_BASE_URL = "file:///android_asset/loopdeck/";
 
     private ValueCallback<Uri[]> filePathCallback;
     private PendingSave pendingSave;
@@ -38,8 +40,18 @@ public class MainActivity extends Activity {
 
     public final class LoopDeckBridge {
         @JavascriptInterface
+        public boolean canUseNativeSave() {
+            return true;
+        }
+
+        @JavascriptInterface
         public void saveFile(String filename, String mimeType, String base64Data) {
             runOnUiThread(() -> startSaveFile(filename, mimeType, base64Data));
+        }
+
+        @JavascriptInterface
+        public void showToast(String message) {
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, safeToast(message), Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -56,10 +68,25 @@ public class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(false);
+        settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            settings.setSafeBrowsingEnabled(true);
+        }
 
         webView.addJavascriptInterface(new LoopDeckBridge(), "LoopDeckAndroid");
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return shouldBlockNavigation(request.getUrl());
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return shouldBlockNavigation(Uri.parse(url));
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onShowFileChooser(
@@ -88,15 +115,37 @@ public class MainActivity extends Activity {
             WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         }
 
-        webView.loadUrl("file:///android_asset/loopdeck/index.html");
+        webView.loadUrl(ASSET_BASE_URL + "index.html");
+    }
+
+    private boolean shouldBlockNavigation(Uri uri) {
+        if (uri == null) return true;
+        String url = uri.toString();
+        String scheme = uri.getScheme();
+        if ("file".equals(scheme)) return !url.startsWith(ASSET_BASE_URL);
+        if ("about".equals(scheme) || "blob".equals(scheme)) return false;
+        return true;
+    }
+
+    private String safeToast(String message) {
+        if (message == null || message.trim().isEmpty()) return "LoopDeck";
+        String compact = message.replace('\n', ' ').replace('\r', ' ').trim();
+        return compact.length() > 80 ? compact.substring(0, 80) : compact;
+    }
+
+    private String safeFilename(String filename) {
+        String fallback = "loopdeck-export";
+        if (filename == null || filename.trim().isEmpty()) return fallback;
+        String cleaned = filename.replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]", "_").trim();
+        return cleaned.isEmpty() ? fallback : cleaned;
     }
 
     private void startSaveFile(String filename, String mimeType, String base64Data) {
-        pendingSave = new PendingSave(filename, mimeType, base64Data);
+        pendingSave = new PendingSave(safeFilename(filename), mimeType, base64Data);
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType == null || mimeType.isEmpty() ? "application/octet-stream" : mimeType);
-        intent.putExtra(Intent.EXTRA_TITLE, filename == null || filename.isEmpty() ? "loopdeck-export" : filename);
+        intent.putExtra(Intent.EXTRA_TITLE, pendingSave.filename);
         try {
             startActivityForResult(intent, SAVE_FILE_REQUEST);
         } catch (Exception error) {
