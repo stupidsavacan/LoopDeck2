@@ -3,15 +3,27 @@ import type { Attempt, LoopDeckPack } from '../core/models';
 const DB_NAME = 'loopdeck-db';
 const DB_VERSION = 1;
 
+export interface LoopDeckBackup {
+  loopDeckBackupVersion: 1;
+  exportedAt: string;
+  attempts: Attempt[];
+  bookmarks: string[];
+  importedPacks: LoopDeckPack[];
+}
+
 export interface LoopDeckDb {
   addAttempt(attempt: Attempt): Promise<void>;
   getAttempts(): Promise<Attempt[]>;
   clearAttempts(): Promise<void>;
+  clearWrongAttempts(): Promise<void>;
   setBookmark(questionId: string, enabled: boolean): Promise<void>;
   getBookmarks(): Promise<string[]>;
+  clearBookmarks(): Promise<void>;
   saveImportedPack(pack: LoopDeckPack): Promise<void>;
   getImportedPacks(): Promise<LoopDeckPack[]>;
   deleteImportedPack(packId: string): Promise<void>;
+  exportUserData(): Promise<LoopDeckBackup>;
+  importUserData(backup: LoopDeckBackup): Promise<void>;
 }
 
 function openDb(): Promise<IDBDatabase> {
@@ -49,6 +61,30 @@ async function getAll<T>(storeName: string): Promise<T[]> {
   return result ?? [];
 }
 
+async function deleteAttemptsWhere(predicate: (attempt: Attempt) => boolean): Promise<void> {
+  const database = await openDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = database.transaction('attempts', 'readwrite');
+    const store = tx.objectStore('attempts');
+    const request = store.getAll();
+    request.onsuccess = () => {
+      for (const attempt of request.result as Attempt[]) {
+        if (predicate(attempt)) store.delete(attempt.attemptId);
+      }
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
+
+function validateBackup(backup: LoopDeckBackup): void {
+  if (backup.loopDeckBackupVersion !== 1) throw new Error('Unsupported LoopDeck backup version.');
+  if (!Array.isArray(backup.attempts) || !Array.isArray(backup.bookmarks) || !Array.isArray(backup.importedPacks)) {
+    throw new Error('LoopDeck backup is missing required arrays.');
+  }
+}
+
 export const db: LoopDeckDb = {
   async addAttempt(attempt) {
     await transaction('attempts', 'readwrite', (store) => store.put(attempt));
@@ -60,6 +96,10 @@ export const db: LoopDeckDb = {
 
   async clearAttempts() {
     await transaction('attempts', 'readwrite', (store) => store.clear());
+  },
+
+  async clearWrongAttempts() {
+    await deleteAttemptsWhere((attempt) => attempt.result !== 'correct');
   },
 
   async setBookmark(questionId, enabled) {
@@ -75,6 +115,10 @@ export const db: LoopDeckDb = {
     return rows.map((row) => row.questionId);
   },
 
+  async clearBookmarks() {
+    await transaction('bookmarks', 'readwrite', (store) => store.clear());
+  },
+
   async saveImportedPack(pack) {
     await transaction('packs', 'readwrite', (store) => store.put(pack));
   },
@@ -85,5 +129,22 @@ export const db: LoopDeckDb = {
 
   async deleteImportedPack(packId) {
     await transaction('packs', 'readwrite', (store) => store.delete(packId));
+  },
+
+  async exportUserData() {
+    return {
+      loopDeckBackupVersion: 1,
+      exportedAt: new Date().toISOString(),
+      attempts: await this.getAttempts(),
+      bookmarks: await this.getBookmarks(),
+      importedPacks: await this.getImportedPacks()
+    };
+  },
+
+  async importUserData(backup) {
+    validateBackup(backup);
+    for (const attempt of backup.attempts) await this.addAttempt(attempt);
+    for (const questionId of backup.bookmarks) await this.setBookmark(questionId, true);
+    for (const pack of backup.importedPacks) await this.saveImportedPack(pack);
   }
 };
