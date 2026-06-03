@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { judgeInputAnswer, judgeMultiSelectAnswer } from '../src/core/answerJudge';
+import { isNearMissAnswer, judgeInputAnswer, judgeMultiSelectAnswer } from '../src/core/answerJudge';
 import type { InputQuestion, MultiSelectQuestion } from '../src/core/models';
 
 const tokugawaQuestion: InputQuestion = {
@@ -40,6 +40,10 @@ describe('answer judging', () => {
     expect(judgeInputAnswer(tokugawaQuestion, '徳川')).toBe(false);
   });
 
+  it('rejects Japanese negation that merely contains the full answer', () => {
+    expect(judgeInputAnswer(tokugawaQuestion, '徳川家康ではなく徳川秀忠')).toBe(false);
+  });
+
   it('normalizes whitespace and simple punctuation', () => {
     expect(judgeInputAnswer(tokugawaQuestion, '  徳川家康。 ')).toBe(true);
     expect(judgeInputAnswer({ ...englishQuestion, answer: 'New York' }, 'new   york.')).toBe(true);
@@ -52,6 +56,11 @@ describe('answer judging', () => {
 
   it('does not accept English substrings inside another word', () => {
     expect(judgeInputAnswer({ ...englishQuestion, answer: 'war' }, 'reward')).toBe(false);
+  });
+
+  it('marks close wrong input as near miss without accepting it', () => {
+    expect(judgeInputAnswer(englishQuestion, 'appl')).toBe(false);
+    expect(isNearMissAnswer(englishQuestion, 'appl')).toBe(true);
   });
 });
 
