@@ -114,7 +114,7 @@ export async function renderModuleScreen(
   info.append(
     el('p', 'eyebrow', module.subject),
     el('h1', '', module.title),
-    el('p', '', module.description ?? '旧StudyHome風のインライン学習で進めます。')
+    el('p', '', module.description ?? 'インライン学習でテンポよく進めます。')
   );
   if (module.tags?.length) {
     const tags = el('div', 'tag-row');
@@ -219,7 +219,7 @@ export async function renderModuleScreen(
     wrap.append(input, document.createTextNode(` ${label}`));
     settingRow.append(wrap);
   }
-  settingsCard.append(settingRow, el('p', 'hint', '旧StudyHomeのLEAP設定に近い形です。通常はシャッフルONで使います。'));
+  settingsCard.append(settingRow, el('p', 'hint', '通常はシャッフルONで使います。必要なら問題数や範囲を絞れます。'));
 
   const actions = el('section', 'card action-card');
   const start = button('開始', 'btn primary');
