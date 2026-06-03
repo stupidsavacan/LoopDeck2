@@ -35,7 +35,8 @@ function idSet(values?: Iterable<string>): Set<string> | undefined {
 }
 
 function questionOrdinal(question: Question, index: number): number {
-  return Number.isFinite(question.number) && question.number && question.number > 0 ? question.number : index + 1;
+  const number = question.number;
+  return typeof number === 'number' && Number.isFinite(number) && number > 0 ? number : index + 1;
 }
 
 function parseRange(value: string | undefined): [number, number] | undefined {
