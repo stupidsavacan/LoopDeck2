@@ -89,7 +89,7 @@ Download the signed artifact named:
 LoopDeck-signed-release-apk
 ```
 
-The release workflow decodes the keystore only during CI, writes `android/keystore.properties` only during CI, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files. Do not commit `.jks`, `.keystore`, or `android/keystore.properties`.
+The release workflow decodes the keystore only during CI, writes `android/keystore.properties` only during CI, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files. Pull request runs skip the signed packaging step when secrets are not available; manual `workflow_dispatch` runs fail clearly if a required secret is missing. Do not commit `.jks`, `.keystore`, or `android/keystore.properties`.
 
 For signing setup notes, see:
 
