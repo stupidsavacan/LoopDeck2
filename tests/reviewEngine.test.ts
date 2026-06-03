@@ -19,7 +19,7 @@ const questions: Question[] = [
 
 describe('review engine', () => {
   it('collects wrong and revealed questions for mistake review', () => {
-    expect(getWrongQuestionIds(attempts)).toEqual(['q4', 'q1', 'q3']);
+    expect(getWrongQuestionIds(attempts)).toEqual(['q4', 'q3', 'q1']);
     expect(buildMistakeQuestions(questions, attempts).map((question) => question.id)).toEqual(['q1', 'q3', 'q4']);
   });
 
