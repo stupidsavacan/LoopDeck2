@@ -1,3 +1,4 @@
+import java.io.File
 import java.util.Properties
 import org.gradle.api.GradleException
 
@@ -11,13 +12,75 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
 
-val releaseSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
-val hasReleaseSigning = keystorePropertiesFile.exists() && releaseSigningKeys.all { key ->
-    !keystoreProperties.getProperty(key).isNullOrBlank()
+fun nonBlank(value: String?): String? = value?.trim()?.takeIf { it.isNotEmpty() }
+
+fun signingValue(vararg keys: String): String? = keys.firstNotNullOfOrNull { key ->
+    nonBlank(keystoreProperties.getProperty(key))
+        ?: nonBlank(providers.gradleProperty(key).orNull)
+        ?: nonBlank(providers.environmentVariable(key).orNull)
 }
 
-fun releaseSigningProperty(key: String): String = keystoreProperties.getProperty(key)
-    ?: throw GradleException("Missing $key in android/keystore.properties for signed release builds.")
+fun defaultReleaseKeystoreFile(): File? = listOf(
+    rootProject.file("loopdeck-release.jks"),
+    rootProject.file("release.jks"),
+    rootProject.file("app/loopdeck-release.jks"),
+    rootProject.file("../loopdeck-release.jks")
+).firstOrNull { it.exists() }
+
+fun resolveSigningFile(path: String): File {
+    val projectRelative = file(path)
+    if (projectRelative.isAbsolute) return projectRelative
+
+    val rootRelative = rootProject.file(path)
+    return if (rootRelative.exists()) rootRelative else projectRelative
+}
+
+val releaseStoreFile = signingValue(
+    "storeFile",
+    "LOOPDECK_KEYSTORE_FILE",
+    "LOOPDECK_STORE_FILE",
+    "STUDYHOME_KEYSTORE_FILE"
+)?.let(::resolveSigningFile) ?: defaultReleaseKeystoreFile()
+
+val releaseStorePassword = signingValue(
+    "storePassword",
+    "LOOPDECK_KEYSTORE_PASSWORD",
+    "LOOPDECK_STORE_PASSWORD",
+    "STUDYHOME_KEYSTORE_PASSWORD"
+)
+val releaseKeyAlias = signingValue(
+    "keyAlias",
+    "LOOPDECK_KEY_ALIAS",
+    "LOOPDECK_KEYSTORE_ALIAS",
+    "STUDYHOME_KEY_ALIAS"
+)
+val releaseKeyPassword = signingValue(
+    "keyPassword",
+    "LOOPDECK_KEY_PASSWORD",
+    "LOOPDECK_KEYSTORE_KEY_PASSWORD",
+    "STUDYHOME_KEY_PASSWORD"
+)
+
+val hasReleaseSigning = listOf(
+    releaseStoreFile?.path,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+).all { !it.isNullOrBlank() }
+
+fun requireReleaseSigning() {
+    if (!hasReleaseSigning) {
+        throw GradleException(
+            "Signed release builds require a JKS keystore plus storePassword, keyAlias, and keyPassword. " +
+                "Use android/keystore.properties or LOOPDECK_* Gradle properties/environment variables. " +
+                "Debug builds do not need release signing secrets."
+        )
+    }
+
+    if (releaseStoreFile?.exists() != true) {
+        throw GradleException("Release keystore file does not exist: ${releaseStoreFile?.path}")
+    }
+}
 
 android {
     namespace = "com.loopdeck.app"
@@ -38,10 +101,10 @@ android {
     signingConfigs {
         create("release") {
             if (hasReleaseSigning) {
-                storeFile = file(releaseSigningProperty("storeFile"))
-                storePassword = releaseSigningProperty("storePassword")
-                keyAlias = releaseSigningProperty("keyAlias")
-                keyPassword = releaseSigningProperty("keyPassword")
+                storeFile = releaseStoreFile
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
             }
         }
     }
@@ -62,12 +125,7 @@ android {
 
 tasks.matching { task -> task.name == "assembleRelease" || task.name == "bundleRelease" }.configureEach {
     doFirst {
-        if (!hasReleaseSigning) {
-            throw GradleException(
-                "Signed release builds require android/keystore.properties with storeFile, storePassword, keyAlias, and keyPassword. " +
-                    "Debug builds do not need signing secrets."
-            )
-        }
+        requireReleaseSigning()
     }
 }
 
