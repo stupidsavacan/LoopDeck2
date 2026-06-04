@@ -52,10 +52,15 @@ function parseRange(value: string | undefined): [number, number] | undefined {
 export function buildRangeOptions(questions: Question[], step = 25): StudyRangeOption[] {
   const count = questions.length;
   const options: StudyRangeOption[] = [{ value: 'all', label: `全範囲 (${count}問)` }];
-  if (count <= step) return options;
+  if (!count) return options;
 
-  for (let start = 1; start <= count; start += step) {
-    const end = Math.min(count, start + step - 1);
+  const ordinals = questions.map(questionOrdinal);
+  const first = Math.min(...ordinals);
+  const last = Math.max(...ordinals);
+  if (last - first + 1 <= step) return options;
+
+  for (let start = first; start <= last; start += step) {
+    const end = Math.min(last, start + step - 1);
     options.push({ value: `${start}-${end}`, label: `${String(start).padStart(3, '0')}〜${String(end).padStart(3, '0')}` });
   }
   return options;
