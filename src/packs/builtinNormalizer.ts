@@ -1,6 +1,7 @@
 import type { ChoiceQuestion, FolderInfo, InputQuestion, LoopDeckPack, ModuleInfo, MultiSelectQuestion, Question, QuestionType } from '../core/models';
 
 export const REVERSE_MODULE_IDS = new Set(['english_reverse', 'leap_reverse', 'leap_final_reverse']);
+const LEAP_MODULE_IDS = new Set(['leap', 'leap_final']);
 
 const DEFAULT_MODULE_DESCRIPTIONS: Record<string, string> = {
   history: '歴史総合の重要語句を短い確認問題で進めます。',
@@ -49,8 +50,9 @@ function asNumber(value: unknown): number | undefined {
   return undefined;
 }
 
-function numberFromId(id: string): number | undefined {
-  const match = /(?:^|:)(\d+)$/.exec(id);
+function leapNumberFromId(id: string, moduleId: string): number | undefined {
+  if (!LEAP_MODULE_IDS.has(moduleId)) return undefined;
+  const match = /-(\d+)$/.exec(id);
   if (!match) return undefined;
   const parsed = Number(match[1]);
   return Number.isFinite(parsed) ? parsed : undefined;
@@ -79,7 +81,7 @@ function normalizeQuestion(rawQuestion: unknown): Question | undefined {
 
   const category = asString(rawQuestion.category, asString(rawQuestion.subject)).trim();
   const example = asString(rawQuestion.example, asString(rawQuestion.exampleSentence)).trim();
-  const number = asNumber(rawQuestion.number) ?? asNumber(rawQuestion.no) ?? asNumber(rawQuestion.index) ?? numberFromId(id);
+  const number = asNumber(rawQuestion.number) ?? leapNumberFromId(id, moduleId);
   const base = {
     id,
     moduleId,
