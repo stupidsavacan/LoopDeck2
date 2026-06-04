@@ -40,10 +40,16 @@ describe('session engine', () => {
     expect(bookmarked.map((question) => question.id)).toEqual(['q1', 'q5']);
   });
 
-  it('builds StudyHome-style range and category lists', () => {
+  it('builds range and category lists', () => {
     const rangeQuestions = Array.from({ length: 55 }, (_, index) => ({ ...questions[0], id: `q${index + 1}`, number: index + 1 }));
 
     expect(buildRangeOptions(rangeQuestions).map((option) => option.value)).toEqual(['all', '1-25', '26-50', '51-55']);
     expect(listQuestionCategories(questions)).toEqual(['cat-a', 'cat-b']);
+  });
+
+  it('builds ranges from preserved original numbers instead of restarting at one', () => {
+    const offsetQuestions = Array.from({ length: 55 }, (_, index) => ({ ...questions[0], id: `q${index + 201}`, number: index + 201 }));
+
+    expect(buildRangeOptions(offsetQuestions).map((option) => option.value)).toEqual(['all', '201-225', '226-250', '251-255']);
   });
 });
