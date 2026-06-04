@@ -1,8 +1,8 @@
 {
   "packVersion": 1,
-  "packId": "studyhome-next-rescued-normal-v1",
-  "title": "StudyHome Rescued Data",
-  "description": "StudyHome-Nextから救出した通常方向教材。逆方向練習モジュールは除外済み。",
+  "packId": "loopdeck-builtin-v1",
+  "title": "LoopDeck内蔵教材",
+  "description": "シャッフル学習用の内蔵教材です。",
   "folders": [
     {
       "id": "english",
@@ -19,10 +19,6 @@
     {
       "id": "japanese",
       "title": "国語"
-    },
-    {
-      "id": "reverse",
-      "title": "逆方向練習"
     }
   ],
   "modules": [
@@ -31,11 +27,8 @@
       "folderId": "social",
       "title": "歴史総合",
       "subject": "社会",
-      "description": "StudyHome-Nextから救出した教材データ。source=history",
       "tags": [
-        "社会",
-        "StudyHomeNext",
-        "rescued"
+        "社会"
       ],
       "questionIds": [
         "history-61-B01",
@@ -233,11 +226,8 @@
       "folderId": "social",
       "title": "地理総合",
       "subject": "社会",
-      "description": "StudyHome-Nextから救出した教材データ。source=geography",
       "tags": [
-        "社会",
-        "StudyHomeNext",
-        "rescued"
+        "社会"
       ],
       "questionIds": [
         "geography-001",
@@ -394,11 +384,8 @@
       "folderId": "science",
       "title": "化学",
       "subject": "理科",
-      "description": "StudyHome-Nextから救出した教材データ。source=chemistry",
       "tags": [
-        "理科",
-        "StudyHomeNext",
-        "rescued"
+        "理科"
       ],
       "questionIds": [
         "chemistry-chem001",
@@ -584,11 +571,8 @@
       "folderId": "science",
       "title": "生物",
       "subject": "理科",
-      "description": "StudyHome-Nextから救出した教材データ。source=biology",
       "tags": [
-        "理科",
-        "StudyHomeNext",
-        "rescued"
+        "理科"
       ],
       "questionIds": [
         "biology-bio001",
@@ -677,11 +661,8 @@
       "folderId": "english",
       "title": "英語コミュニケーション",
       "subject": "英語",
-      "description": "StudyHome-Nextから救出した教材データ。source=english_comm",
       "tags": [
-        "英語",
-        "StudyHomeNext",
-        "rescued"
+        "英語"
       ],
       "questionIds": [
         "english_comm-engc001",
@@ -820,11 +801,8 @@
       "folderId": "english",
       "title": "英文暗記",
       "subject": "英語",
-      "description": "StudyHome-Nextから救出した教材データ。source=english",
       "tags": [
-        "英語",
-        "StudyHomeNext",
-        "rescued"
+        "英語"
       ],
       "questionIds": [
         "english-1",
@@ -862,11 +840,8 @@
       "folderId": "english",
       "title": "LEAP 001〜200",
       "subject": "英語",
-      "description": "StudyHome-Nextから救出した教材データ。source=leap",
       "tags": [
-        "英語",
-        "StudyHomeNext",
-        "rescued"
+        "英語"
       ],
       "questionIds": [
         "leap-1",
@@ -1076,11 +1051,8 @@
       "folderId": "english",
       "title": "LEAP 201〜300",
       "subject": "英語",
-      "description": "StudyHome-Nextから救出した教材データ。source=leap_final",
       "tags": [
-        "英語",
-        "StudyHomeNext",
-        "rescued"
+        "英語"
       ],
       "questionIds": [
         "leap_final-201",
@@ -1190,11 +1162,8 @@
       "folderId": "japanese",
       "title": "古文・動詞の活用",
       "subject": "国語",
-      "description": "StudyHome-Nextから救出した教材データ。source=kobun_conjugation",
       "tags": [
-        "国語",
-        "StudyHomeNext",
-        "rescued"
+        "国語"
       ],
       "questionIds": [
         "kobun_conjugation-rule01",
