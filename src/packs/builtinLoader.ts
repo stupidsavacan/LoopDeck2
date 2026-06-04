@@ -1,4 +1,4 @@
-import builtinQuestionPack from '../../data/builtin/studyhome_rescued.loopdeck.json';
+import builtinQuestionPack from '../../data/builtin/loopdeck_builtin.loopdeck.json';
 import type { LoopDeckPack } from '../core/models';
 import { validatePack } from './packValidator';
 import { normalizeBuiltinPack } from './builtinNormalizer';
