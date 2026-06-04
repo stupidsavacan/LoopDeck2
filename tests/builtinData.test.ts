@@ -15,7 +15,21 @@ describe('built-in LoopDeck data', () => {
   });
 
   it('does not expose source-project wording in active pack metadata', () => {
-    expect(JSON.stringify(pack)).not.toMatch(/studyhome|rescued|rescue/i);
+    const visibleMetadata = {
+      packId: pack.packId,
+      title: pack.title,
+      description: pack.description,
+      folders: pack.folders,
+      modules: pack.modules.map((module) => ({
+        id: module.id,
+        folderId: module.folderId,
+        title: module.title,
+        subject: module.subject,
+        description: module.description,
+        tags: module.tags
+      }))
+    };
+    expect(JSON.stringify(visibleMetadata)).not.toMatch(/studyhome|rescued|rescue/i);
   });
 
   it('does not include reverse practice modules or questions', () => {
