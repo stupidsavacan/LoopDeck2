@@ -1,7 +1,7 @@
-import type { Attempt, LoopDeckPack } from '../core/models';
+import type { Attempt, LoopDeckPack, ReviewCard, ReviewLog } from '../core/models';
 
 const DB_NAME = 'loopdeck-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export interface LoopDeckBackup {
   loopDeckBackupVersion: 1;
@@ -9,6 +9,8 @@ export interface LoopDeckBackup {
   attempts: Attempt[];
   bookmarks: string[];
   importedPacks: LoopDeckPack[];
+  reviewCards?: ReviewCard[];
+  reviewLogs?: ReviewLog[];
 }
 
 export interface LoopDeckDb {
@@ -22,6 +24,13 @@ export interface LoopDeckDb {
   saveImportedPack(pack: LoopDeckPack): Promise<void>;
   getImportedPacks(): Promise<LoopDeckPack[]>;
   deleteImportedPack(packId: string): Promise<void>;
+  getReviewCards(): Promise<ReviewCard[]>;
+  getReviewCard(questionId: string): Promise<ReviewCard | undefined>;
+  putReviewCard(card: ReviewCard): Promise<void>;
+  putReviewLog(log: ReviewLog): Promise<void>;
+  getReviewLogs(): Promise<ReviewLog[]>;
+  getReviewLogsForQuestion(questionId: string): Promise<ReviewLog[]>;
+  clearReviewData(): Promise<void>;
   exportUserData(): Promise<LoopDeckBackup>;
   importUserData(backup: LoopDeckBackup): Promise<void>;
 }
@@ -36,6 +45,8 @@ function openDb(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains('bookmarks')) db.createObjectStore('bookmarks', { keyPath: 'questionId' });
       if (!db.objectStoreNames.contains('packs')) db.createObjectStore('packs', { keyPath: 'packId' });
       if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('reviewCards')) db.createObjectStore('reviewCards', { keyPath: 'questionId' });
+      if (!db.objectStoreNames.contains('reviewLogs')) db.createObjectStore('reviewLogs', { keyPath: 'reviewLogId' });
     };
 
     request.onsuccess = () => resolve(request.result);
@@ -82,6 +93,12 @@ function validateBackup(backup: LoopDeckBackup): void {
   if (backup.loopDeckBackupVersion !== 1) throw new Error('Unsupported LoopDeck backup version.');
   if (!Array.isArray(backup.attempts) || !Array.isArray(backup.bookmarks) || !Array.isArray(backup.importedPacks)) {
     throw new Error('LoopDeck backup is missing required arrays.');
+  }
+  if (backup.reviewCards !== undefined && !Array.isArray(backup.reviewCards)) {
+    throw new Error('LoopDeck backup reviewCards must be an array when present.');
+  }
+  if (backup.reviewLogs !== undefined && !Array.isArray(backup.reviewLogs)) {
+    throw new Error('LoopDeck backup reviewLogs must be an array when present.');
   }
 }
 
@@ -131,13 +148,46 @@ export const db: LoopDeckDb = {
     await transaction('packs', 'readwrite', (store) => store.delete(packId));
   },
 
+  async getReviewCards() {
+    return getAll<ReviewCard>('reviewCards');
+  },
+
+  async getReviewCard(questionId) {
+    const result = await transaction<ReviewCard>('reviewCards', 'readonly', (store) => store.get(questionId));
+    return result as ReviewCard | undefined;
+  },
+
+  async putReviewCard(card) {
+    await transaction('reviewCards', 'readwrite', (store) => store.put(card));
+  },
+
+  async putReviewLog(log) {
+    await transaction('reviewLogs', 'readwrite', (store) => store.put(log));
+  },
+
+  async getReviewLogs() {
+    return getAll<ReviewLog>('reviewLogs');
+  },
+
+  async getReviewLogsForQuestion(questionId) {
+    const logs = await this.getReviewLogs();
+    return logs.filter((log) => log.questionId === questionId).sort((a, b) => Date.parse(a.reviewedAt) - Date.parse(b.reviewedAt));
+  },
+
+  async clearReviewData() {
+    await transaction('reviewCards', 'readwrite', (store) => store.clear());
+    await transaction('reviewLogs', 'readwrite', (store) => store.clear());
+  },
+
   async exportUserData() {
     return {
       loopDeckBackupVersion: 1,
       exportedAt: new Date().toISOString(),
       attempts: await this.getAttempts(),
       bookmarks: await this.getBookmarks(),
-      importedPacks: await this.getImportedPacks()
+      importedPacks: await this.getImportedPacks(),
+      reviewCards: await this.getReviewCards(),
+      reviewLogs: await this.getReviewLogs()
     };
   },
 
@@ -146,5 +196,7 @@ export const db: LoopDeckDb = {
     for (const attempt of backup.attempts) await this.addAttempt(attempt);
     for (const questionId of backup.bookmarks) await this.setBookmark(questionId, true);
     for (const pack of backup.importedPacks) await this.saveImportedPack(pack);
+    for (const card of backup.reviewCards ?? []) await this.putReviewCard(card);
+    for (const log of backup.reviewLogs ?? []) await this.putReviewLog(log);
   }
 };
