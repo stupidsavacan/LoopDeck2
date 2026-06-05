@@ -8,12 +8,37 @@ LoopDeck is a lightweight HTML / TypeScript study app for fast shuffle-based rev
 - Built-in 教材データ
 - Normal-direction-only study data; reverse-practice modules are not active
 - 1,112 usable questions
-- Basic Review Center for wrong-answer sessions
+- Review Center with SRS due review and history-based weak queues
 - Study graphs based on saved answer attempts
 - Input / choice / multi_select questions
 - Japanese answer judging that rejects partial fragments
 - JSON / `.loopdeck.zip` import and export
 - Android debug APK and signed release APK workflows
+
+## Review Scheduler
+
+LoopDeck stores raw answer attempts and per-question review state.
+
+Each question can have a `ReviewCard` with:
+
+- state: `new` / `learning` / `review` / `relearning` / `leech` / `mastered` / `suspended`
+- `dueAt`
+- `intervalDays`
+- `ease`
+- correct and wrong streaks
+- lapse count
+
+The Review Center has two layers:
+
+1. SRS due review:
+   scheduled cards, overdue cards, relearning cards, and leech cards.
+
+2. History-based weak queue:
+   questions detected from wrong answers, answer reveals, near misses, slow correct answers, and repeated wrong answers.
+
+The first scheduler is a simple SM-2-like implementation. It is designed so that FSRS-style difficulty, stability, and retrievability can be added later.
+
+Normal study still saves an `Attempt` immediately after answering. LoopDeck then automatically infers an SRS rating from the result and timing: wrong/revealed answers become `again`, slow correct answers become `hard`, normal correct answers become `good`, and very fast correct answers become `easy`. The app does not show manual rating buttons in the quiz flow.
 
 ## Removed on purpose
 
