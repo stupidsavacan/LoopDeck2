@@ -85,7 +85,7 @@ describe('Home folder grouping', () => {
   });
 
   it('falls back to その他 for unknown, empty, or missing folder ids', () => {
-    const other = folders.at(-1);
+    const other = folders[folders.length - 1];
 
     expect(other?.id).toBe('other');
     expect(other?.title).toBe('その他');
