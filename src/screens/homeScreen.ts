@@ -1,6 +1,7 @@
 import type { LoopDeckPack, ModuleInfo } from '../core/models';
 import { getVisibleBuiltinModules } from '../packs/builtinNormalizer';
 import { button, clear, el } from '../ui/dom';
+import { buildHomeFolders, homeModuleMatches, type HomeFolder } from './homeFolders';
 
 type ModuleCardMeta = {
   icon: string;
@@ -9,14 +10,6 @@ type ModuleCardMeta = {
   description: string;
   tags: string[];
   folderId: string;
-};
-
-type HomeFolder = {
-  id: string;
-  title: string;
-  description: string;
-  moduleIds: string[];
-  tags: string[];
 };
 
 const HOME_LAST_MODULE_KEY = 'loopdeck_last_module_v1';
@@ -98,23 +91,6 @@ const MODULE_CARD_META: Record<string, ModuleCardMeta> = {
   }
 };
 
-const HOME_FOLDERS: HomeFolder[] = [
-  {
-    id: 'term1_midterm',
-    title: '一学期中間テスト',
-    description: '中間テスト用にまとめた教材',
-    moduleIds: ['history', 'geography', 'chemistry', 'biology', 'leap', 'english_comm', 'kobun_conjugation', 'english'],
-    tags: ['歴史', '地理', '化学', '生物', '英単語 001〜200', '英コミュ', '動詞の活用', '英文暗記']
-  },
-  {
-    id: 'term1_final',
-    title: '一学期期末テスト',
-    description: '期末テスト用に追加していく教材',
-    moduleIds: ['leap_final'],
-    tags: ['英単語 201〜300']
-  }
-];
-
 function safeGetStorage(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -143,10 +119,7 @@ function moduleMeta(module: ModuleInfo): ModuleCardMeta {
 }
 
 function moduleMatches(module: ModuleInfo, query: string): boolean {
-  if (!query.trim()) return true;
-  const meta = moduleMeta(module);
-  const text = [module.title, module.subject, meta.subtitle, meta.description, ...meta.tags, ...(module.tags ?? [])].join(' ').toLowerCase();
-  return text.includes(query.trim().toLowerCase());
+  return homeModuleMatches(module, query, moduleMeta(module));
 }
 
 function folderOpen(folderId: string): boolean {
@@ -176,6 +149,7 @@ export function renderHomeScreen(
 
   const visibleModules = getVisibleBuiltinModules(packs.flatMap((pack) => pack.modules));
   const modulesById = new Map(visibleModules.map((module) => [module.id, module]));
+  const homeFolders = buildHomeFolders(packs, visibleModules);
 
   const screen = el('main', 'screen home-screen');
   const hero = el('section', 'hero');
@@ -299,25 +273,9 @@ export function renderHomeScreen(
 
     clear(list);
     list.className = 'folder-list';
-    const placed = new Set<string>();
-    for (const folder of HOME_FOLDERS) {
+    for (const folder of homeFolders) {
       const folderNode = renderFolder(folder);
-      if (!folderNode) continue;
-      folder.moduleIds.forEach((id) => placed.add(id));
-      list.append(folderNode);
-    }
-
-    const otherModules = visibleModules.filter((module) => !placed.has(module.id));
-    if (otherModules.length) {
-      const otherFolder: HomeFolder = {
-        id: 'other',
-        title: 'その他',
-        description: '追加で読み込んだ教材',
-        moduleIds: otherModules.map((module) => module.id),
-        tags: ['追加教材', 'LoopDeck']
-      };
-      const otherNode = renderFolder(otherFolder);
-      if (otherNode) list.append(otherNode);
+      if (folderNode) list.append(folderNode);
     }
 
     if (!list.childElementCount) {
@@ -332,7 +290,7 @@ export function renderHomeScreen(
   showAll.onclick = () => {
     search.value = '';
     query = '';
-    for (const folder of HOME_FOLDERS) setFolderOpen(folder.id, true);
+    for (const folder of homeFolders) setFolderOpen(folder.id, true);
     renderList();
   };
 
