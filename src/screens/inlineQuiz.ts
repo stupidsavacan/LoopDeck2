@@ -1,6 +1,7 @@
 import { getCorrectAnswer, isNearMissAnswer, judgeQuestion } from '../core/answerJudge';
 import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
 import { scoreAttemptDelta } from '../core/reviewEngine';
+import { applyReviewRating, createReviewCard, inferReviewRating } from '../core/scheduler';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
 import { isSafeImageAssetRef } from '../packs/assetSafety';
 import { db } from '../storage/db';
@@ -51,6 +52,16 @@ function buildAttempt(
     priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode),
     answerMode
   };
+}
+
+async function saveAttemptAndReview(attempt: Attempt): Promise<void> {
+  await db.addAttempt(attempt);
+  const currentCard = await db.getReviewCard(attempt.questionId);
+  const baseCard = currentCard ?? createReviewCard(attempt.questionId, attempt.moduleId);
+  const rating = inferReviewRating(attempt.result, attempt.elapsedMs, attempt.answerMode ?? 'input');
+  const { card, log } = applyReviewRating(baseCard, rating, attempt.result, attempt.elapsedMs, { attemptId: attempt.attemptId });
+  await db.putReviewCard(card);
+  await db.putReviewLog(log);
 }
 
 function appendResult(container: HTMLElement, question: Question, result: Attempt['result'], elapsedMs: number, nearMiss = false): void {
@@ -129,12 +140,15 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     const elapsedMs = elapsedForCurrent(session);
     const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(question) ? isNearMissAnswer(question, answer) : false;
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(question, answer) ? 'correct' : 'wrong';
+    const attempt = buildAttempt(question, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss);
     appendResult(resultArea, question, result, elapsedMs, nearMiss);
-    void db.addAttempt(buildAttempt(question, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss));
 
+    const persisted = saveAttemptAndReview(attempt);
     if (result === 'correct' && session.settings.autoNext) {
-      window.setTimeout(nextQuestion, 650);
+      void persisted.finally(() => window.setTimeout(nextQuestion, 650));
+      return;
     }
+    void persisted;
   }
 
   function nextQuestion(): void {
