@@ -1,4 +1,4 @@
-import type { AnswerResult, ReviewCard, ReviewLog, ReviewRating, ReviewState } from './models';
+import type { AnswerFormat, AnswerResult, ReviewCard, ReviewLog, ReviewRating, ReviewState } from './models';
 
 const DEFAULT_EASE = 2.5;
 const MIN_EASE = 1.3;
@@ -69,6 +69,14 @@ function isSuspended(card: ReviewCard): boolean {
 
 export function clampEase(ease: number): number {
   return Math.min(MAX_EASE, Math.max(MIN_EASE, ease));
+}
+
+export function inferReviewRating(result: AnswerResult, elapsedMs: number, answerMode: AnswerFormat = 'input'): ReviewRating {
+  if (result !== 'correct') return 'again';
+  const [fast, slow] = answerMode === 'choice' ? [4500, 12000] : [7000, 20000];
+  if (elapsedMs <= fast) return 'easy';
+  if (elapsedMs >= slow) return 'hard';
+  return 'good';
 }
 
 export function createReviewCard(questionId: string, moduleId: string, now = new Date()): ReviewCard {
