@@ -250,7 +250,7 @@ export async function renderModuleScreen(
       toast('出題できる問題がありません。');
       return;
     }
-    const session = createSession(module, selected, runtimeSettings(baseSettings), mode);
+    const session = createSession(module, selected, runtimeSettings(baseSettings), mode, questions);
     mountSession(session);
   }
 
@@ -261,7 +261,7 @@ export async function renderModuleScreen(
     const resume = button(`再開 (${storedSession.index + 1}/${storedSession.questionIds.length})`, 'btn');
     resume.onclick = () => {
       const restoredQuestions = storedSession.questionIds.map((id) => questionsById.get(id)).filter((question): question is Question => Boolean(question));
-      const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode);
+      const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode, questions);
       mountSession({ ...session, index: storedSession.index });
     };
     actions.append(resume);
