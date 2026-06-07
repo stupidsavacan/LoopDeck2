@@ -3,6 +3,7 @@ import type { ModuleInfo, Question, StudySettings } from './models';
 export interface QuizSession {
   module: ModuleInfo;
   queue: Question[];
+  choicePool: Question[];
   index: number;
   settings: StudySettings;
   startedAt: number;
@@ -117,13 +118,15 @@ export function createSession(
   module: ModuleInfo,
   questions: Question[],
   settings: StudySettings,
-  mode: 'normal' | 'review' = 'normal'
+  mode: 'normal' | 'review' = 'normal',
+  choicePool: Question[] = questions
 ): QuizSession {
   const queue = selectSessionQuestions(questions, settings);
   const now = Date.now();
   return {
     module,
     queue,
+    choicePool: [...choicePool],
     index: 0,
     settings,
     startedAt: now,
