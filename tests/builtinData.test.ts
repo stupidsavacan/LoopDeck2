@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import builtinPackData from '../data/builtin/loopdeck_builtin.loopdeck.json';
+import { buildGeneratedChoices } from '../src/core/choiceGenerator';
+import type { InputQuestion } from '../src/core/models';
 import { buildRangeOptions, createSession } from '../src/core/sessionEngine';
 import { validatePack } from '../src/packs/packValidator';
 import { getVisibleBuiltinModules, normalizeBuiltinPack, REVERSE_MODULE_IDS } from '../src/packs/builtinNormalizer';
@@ -56,6 +58,15 @@ describe('built-in LoopDeck data', () => {
     expect(leap.map((question) => question.number)).toEqual(Array.from({ length: 200 }, (_, index) => index + 1));
     expect(leapFinal.map((question) => question.number)).toEqual(Array.from({ length: 100 }, (_, index) => index + 201));
     expect(buildRangeOptions(leapFinal).map((option) => option.value)).toEqual(['all', '201-225', '226-250', '251-275', '276-300']);
+  });
+
+  it('can generate four choices for the LEAP final input dataset', () => {
+    const leapFinal = pack.questions.filter((question): question is InputQuestion => question.moduleId === 'leap_final' && question.type === 'input');
+    const choices = buildGeneratedChoices(leapFinal[0], leapFinal, 4, () => 0.25);
+
+    expect(leapFinal).toHaveLength(100);
+    expect(choices).toHaveLength(4);
+    expect(choices).toContain(leapFinal[0].answer);
   });
 
   it('can start required built-in modules', () => {
