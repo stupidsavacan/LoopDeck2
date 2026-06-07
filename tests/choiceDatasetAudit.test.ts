@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import builtinPackData from '../data/builtin/loopdeck_builtin.loopdeck.json';
 import { normalizeAnswer } from '../src/core/answerJudge';
 import { buildGeneratedChoices } from '../src/core/choiceGenerator';
+import { createSession } from '../src/core/sessionEngine';
 import { normalizeBuiltinPack } from '../src/packs/builtinNormalizer';
 
 describe('built-in choice dataset audit', () => {
@@ -30,6 +31,20 @@ describe('built-in choice dataset audit', () => {
     }
 
     expect(failures).toEqual([]);
+  });
+
+  it('keeps the full module available as the choice pool for a one-question session', () => {
+    const module = pack.modules.find((item) => item.id === 'chemistry')!;
+    const pool = pack.questions.filter((question) => question.moduleId === module.id);
+    const session = createSession(module, pool.slice(0, 1), {
+      shuffle: false,
+      autoNext: false,
+      questionLimit: 'all',
+      answerFormat: 'choice'
+    }, 'review', pool);
+
+    expect(session.queue).toHaveLength(1);
+    expect(session.choicePool).toHaveLength(pool.length);
   });
 
   it('keeps every native choice question valid', () => {
