@@ -13,6 +13,8 @@ export interface InlineQuizCallbacks {
   onComplete(): void;
 }
 
+const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
+
 function answerToText(answer: string | string[]): string {
   return Array.isArray(answer) ? answer.join(' / ') : answer;
 }
@@ -21,7 +23,7 @@ function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto
   if (question.type === 'multi_select') return 'choice';
   if (requested === 'input') return 'input';
   if (question.type === 'choice') return 'choice';
-  if (requested === 'choice' && generatedChoices?.length) return 'choice';
+  if (generatedChoices?.length) return 'choice';
   return 'input';
 }
 
@@ -125,10 +127,13 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const maybeQuestion = currentQuestion(session);
   if (!maybeQuestion) return;
   const question: Question = maybeQuestion;
-  const generatedChoices = question.type === 'input' && session.settings.answerFormat === 'choice'
+  const requestedAnswerFormat = session.settings.answerFormat ?? 'auto';
+  const shouldGenerateChoices = question.type === 'input'
+    && (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
+  const generatedChoices = question.type === 'input' && shouldGenerateChoices
     ? buildGeneratedChoices(question, session.choicePool)
     : undefined;
-  const answerMode = effectiveAnswerMode(question, session.settings.answerFormat, generatedChoices);
+  const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices);
 
   const card = el('section', 'quiz-card');
   const prompt = el('h3', 'question-prompt', question.prompt);
