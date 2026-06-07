@@ -1,4 +1,5 @@
 import { getCorrectAnswer, isNearMissAnswer, judgeQuestion } from '../core/answerJudge';
+import { buildGeneratedChoices } from '../core/choiceGenerator';
 import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
 import { scoreAttemptDelta } from '../core/reviewEngine';
 import { applyReviewRating, createReviewCard, inferReviewRating } from '../core/scheduler';
@@ -16,10 +17,11 @@ function answerToText(answer: string | string[]): string {
   return Array.isArray(answer) ? answer.join(' / ') : answer;
 }
 
-function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto'): AnswerFormat {
+function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto', generatedChoices?: string[]): AnswerFormat {
   if (question.type === 'multi_select') return 'choice';
   if (requested === 'input') return 'input';
   if (question.type === 'choice') return 'choice';
+  if (requested === 'choice' && generatedChoices?.length) return 'choice';
   return 'input';
 }
 
@@ -123,7 +125,10 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const maybeQuestion = currentQuestion(session);
   if (!maybeQuestion) return;
   const question: Question = maybeQuestion;
-  const answerMode = effectiveAnswerMode(question, session.settings.answerFormat);
+  const generatedChoices = question.type === 'input' && session.settings.answerFormat === 'choice'
+    ? buildGeneratedChoices(question, session.choicePool)
+    : undefined;
+  const answerMode = effectiveAnswerMode(question, session.settings.answerFormat, generatedChoices);
 
   const card = el('section', 'quiz-card');
   const prompt = el('h3', 'question-prompt', question.prompt);
@@ -184,9 +189,10 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     submit.onclick = () => record(input.value);
     answerArea.append(input, submit);
     window.setTimeout(() => input.focus(), 0);
-  } else if (question.type === 'choice') {
+  } else if (question.type === 'choice' || generatedChoices) {
+    const choices = question.type === 'choice' ? question.choices : generatedChoices ?? [];
     const list = el('div', 'choice-list');
-    question.choices.forEach((choice) => {
+    choices.forEach((choice) => {
       const choiceButton = button(choice, 'choice-btn');
       choiceButton.onclick = () => {
         selectedAnswer = choice;
