@@ -1,5 +1,6 @@
-import type { LoopDeckPack, ModuleInfo } from '../core/models';
+import type { ModuleInfo } from '../core/models';
 import { getVisibleBuiltinModules } from '../packs/builtinNormalizer';
+import { getActiveModules, type ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el } from '../ui/dom';
 import { buildHomeFolders, homeModuleMatches, type HomeFolder } from './homeFolders';
 
@@ -108,7 +109,17 @@ function safeSetStorage(key: string, value: string): void {
 }
 
 function moduleMeta(module: ModuleInfo): ModuleCardMeta {
-  return MODULE_CARD_META[module.id] ?? {
+  const defaultMeta = MODULE_CARD_META[module.id];
+  if (defaultMeta) {
+    return {
+      ...defaultMeta,
+      description: module.description ?? defaultMeta.description,
+      tags: module.tags?.slice(0, 4) ?? defaultMeta.tags,
+      folderId: module.folderId || defaultMeta.folderId
+    };
+  }
+
+  return {
     icon: module.title.slice(0, 1) || '教',
     accent: '#2563eb',
     subtitle: module.subject,
@@ -137,7 +148,7 @@ function displayTags(module: ModuleInfo): string[] {
 
 export function renderHomeScreen(
   root: HTMLElement,
-  packs: LoopDeckPack[],
+  packView: ResolvedPackView,
   onOpenModule: (moduleId: string) => void,
   onOpenReview: () => void,
   onOpenImport: () => void,
@@ -147,9 +158,9 @@ export function renderHomeScreen(
   safeSetStorage(HOME_IN_PLAYER_KEY, '0');
   let query = '';
 
-  const visibleModules = getVisibleBuiltinModules(packs.flatMap((pack) => pack.modules));
+  const visibleModules = getVisibleBuiltinModules(getActiveModules(packView));
   const modulesById = new Map(visibleModules.map((module) => [module.id, module]));
-  const homeFolders = buildHomeFolders(packs, visibleModules);
+  const homeFolders = buildHomeFolders(packView.packs, visibleModules);
 
   const screen = el('main', 'screen home-screen');
   const hero = el('section', 'hero');
