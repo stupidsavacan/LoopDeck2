@@ -1,18 +1,11 @@
 import { buildDailyStudyStats, buildMistakeBreakdown, buildMistakeTrend, buildModuleStudyStats } from '../core/analyticsEngine';
-import type { Attempt, LoopDeckPack } from '../core/models';
+import type { Attempt } from '../core/models';
+import { getActiveModules, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
 
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
 const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
-
-function allModules(packs: LoopDeckPack[]) {
-  return packs.flatMap((pack) => pack.modules);
-}
-
-function allQuestions(packs: LoopDeckPack[]) {
-  return packs.flatMap((pack) => pack.questions);
-}
 
 function renderHeatmap(root: HTMLElement, attempts: Attempt[]): void {
   const card = el('section', 'card graph-card');
@@ -37,8 +30,8 @@ function renderHeatmap(root: HTMLElement, attempts: Attempt[]): void {
   root.append(card);
 }
 
-function renderModuleStats(root: HTMLElement, attempts: Attempt[], packs: LoopDeckPack[]): void {
-  const stats = buildModuleStudyStats(attempts, allModules(packs)).slice(0, 8);
+function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: ResolvedPackView): void {
+  const stats = buildModuleStudyStats(attempts, getActiveModules(packView)).slice(0, 8);
   const card = el('section', 'card graph-card');
   card.innerHTML = '<h2>正答率と回答速度</h2>';
 
@@ -90,8 +83,8 @@ function renderTrend(root: HTMLElement, attempts: Attempt[]): void {
   root.append(card);
 }
 
-function renderBreakdown(root: HTMLElement, attempts: Attempt[], packs: LoopDeckPack[]): void {
-  const breakdown = buildMistakeBreakdown(attempts, allQuestions(packs));
+function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: ResolvedPackView): void {
+  const breakdown = buildMistakeBreakdown(attempts, getActiveQuestions(packView));
   const card = el('section', 'card graph-card');
   card.innerHTML = '<h2>ミスの内訳</h2>';
 
@@ -116,7 +109,7 @@ function renderBreakdown(root: HTMLElement, attempts: Attempt[], packs: LoopDeck
   root.append(card);
 }
 
-export async function renderGraphsScreen(root: HTMLElement, packs: LoopDeckPack[], navigateHome: () => void, navigateReview: () => void): Promise<void> {
+export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void, navigateReview: () => void): Promise<void> {
   clear(root);
   const attempts = await db.getAttempts();
 
@@ -140,9 +133,9 @@ export async function renderGraphsScreen(root: HTMLElement, packs: LoopDeckPack[
 
   const grid = el('section', 'graph-grid');
   renderHeatmap(grid, attempts);
-  renderModuleStats(grid, attempts, packs);
+  renderModuleStats(grid, attempts, packView);
   renderTrend(grid, attempts);
-  renderBreakdown(grid, attempts, packs);
+  renderBreakdown(grid, attempts, packView);
 
   screen.append(header, hero, grid);
   root.append(screen);
