@@ -1,18 +1,11 @@
-import type { LoopDeckPack, ModuleInfo, Question, ReviewCard, StudySettings } from '../core/models';
+import type { ModuleInfo, Question, ReviewCard, StudySettings } from '../core/models';
 import { analyzeProblems, buildMistakeQuestions, buildReviewQueue, summarizeWeakModules } from '../core/reviewEngine';
 import { bucketReviewCards, buildSrsReviewQueue, summarizeReviewSchedule } from '../core/scheduler';
 import { createSession, type QuizSession } from '../core/sessionEngine';
+import { getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
-
-function allQuestions(packs: LoopDeckPack[]): Question[] {
-  return packs.flatMap((pack) => pack.questions);
-}
-
-function moduleById(packs: LoopDeckPack[]): Map<string, ModuleInfo> {
-  return new Map(packs.flatMap((pack) => pack.modules).map((module) => [module.id, module]));
-}
 
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
 const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
@@ -28,20 +21,20 @@ function stat(label: string, value: string | number): HTMLElement {
 
 export async function renderReviewCenter(
   root: HTMLElement,
-  packs: LoopDeckPack[],
+  packView: ResolvedPackView,
   navigateHome: () => void,
   navigateGraphs: () => void
 ): Promise<void> {
   clear(root);
   const attempts = await db.getAttempts();
   const reviewCards = await db.getReviewCards();
-  const questions = allQuestions(packs);
+  const questions = getActiveQuestions(packView);
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const mistakes = buildMistakeQuestions(questions, attempts);
   const queue = buildReviewQueue(attempts, questions);
   const analyses = analyzeProblems(attempts, questions).filter((item) => item.needsAttention).slice(0, 12);
   const weak = summarizeWeakModules(attempts);
-  const modules = moduleById(packs);
+  const modules = packView.moduleById;
   const schedule = summarizeReviewSchedule(reviewCards);
   const buckets = bucketReviewCards(reviewCards);
   const srsQueue = buildSrsReviewQueue(reviewCards, new Date(), 30);
@@ -70,7 +63,7 @@ export async function renderReviewCenter(
   hero.append(stats);
 
   function rerender(): void {
-    void renderReviewCenter(root, packs, navigateHome, navigateGraphs);
+    void renderReviewCenter(root, packView, navigateHome, navigateGraphs);
   }
 
   function startReviewSession(items: Question[], title: string, moduleId = 'review-all', limit = 20, shuffle = true): void {

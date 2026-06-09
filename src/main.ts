@@ -1,7 +1,7 @@
 import './styles.css';
 import './homeFeatures.css';
-import type { LoopDeckPack } from './core/models';
 import { loadBuiltinPacks } from './packs/builtinLoader';
+import { resolveActivePacks, type ResolvedPackView } from './packs/packResolver';
 import { db } from './storage/db';
 import { renderHomeScreen } from './screens/homeScreen';
 import { renderModuleScreen } from './screens/moduleScreen';
@@ -13,7 +13,7 @@ const appRoot = document.querySelector<HTMLDivElement>('#app');
 if (!appRoot) throw new Error('Missing #app root.');
 const root: HTMLElement = appRoot;
 
-let packs: LoopDeckPack[] = [];
+let packView: ResolvedPackView = resolveActivePacks([]);
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -42,14 +42,15 @@ function run(task: () => Promise<void>): void {
 }
 
 async function loadPacks(): Promise<void> {
-  packs = [...loadBuiltinPacks(), ...(await db.getImportedPacks())];
+  const loadedPacks = [...loadBuiltinPacks(), ...(await db.getImportedPacks())];
+  packView = resolveActivePacks(loadedPacks);
 }
 
 async function showHome(): Promise<void> {
   await loadPacks();
   renderHomeScreen(
     root,
-    packs,
+    packView,
     (moduleId) => run(() => showModule(moduleId)),
     () => run(showReview),
     () => run(showImport),
@@ -59,24 +60,24 @@ async function showHome(): Promise<void> {
 
 async function showModule(moduleId: string): Promise<void> {
   await loadPacks();
-  await renderModuleScreen(root, packs, moduleId, () => run(showHome), () => run(showReview), () => run(showGraphs));
+  await renderModuleScreen(root, packView, moduleId, () => run(showHome), () => run(showReview), () => run(showGraphs));
 }
 
 async function showReview(): Promise<void> {
   await loadPacks();
-  await renderReviewCenter(root, packs, () => run(showHome), () => run(showGraphs));
+  await renderReviewCenter(root, packView, () => run(showHome), () => run(showGraphs));
 }
 
 async function showImport(): Promise<void> {
   await loadPacks();
-  await renderImportScreen(root, packs, () => run(showHome), async () => {
+  await renderImportScreen(root, packView, () => run(showHome), async () => {
     await showHome();
   });
 }
 
 async function showGraphs(): Promise<void> {
   await loadPacks();
-  await renderGraphsScreen(root, packs, () => run(showHome), () => run(showReview));
+  await renderGraphsScreen(root, packView, () => run(showHome), () => run(showReview));
 }
 
 run(showHome);
