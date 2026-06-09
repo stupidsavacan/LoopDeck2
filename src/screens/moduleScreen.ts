@@ -1,5 +1,6 @@
-import type { LoopDeckPack, ModuleInfo, Question, StudySettings } from '../core/models';
+import type { ModuleInfo, Question, StudySettings } from '../core/models';
 import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
+import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
@@ -12,12 +13,6 @@ interface StoredSession {
   mode: 'normal' | 'review';
   settings: StudySettings;
   savedAt: string;
-}
-
-function moduleQuestions(packs: LoopDeckPack[], module: ModuleInfo): Question[] {
-  const questions = packs.flatMap((pack) => pack.questions);
-  const byId = new Map(questions.map((question) => [question.id, question]));
-  return module.questionIds.map((id) => byId.get(id)).filter((question): question is Question => Boolean(question));
 }
 
 function resumeKey(moduleId: string): string {
@@ -73,21 +68,21 @@ function runtimeSettings(settings: StudySettings): StudySettings {
 
 export async function renderModuleScreen(
   root: HTMLElement,
-  packs: LoopDeckPack[],
+  packView: ResolvedPackView,
   moduleId: string,
   navigateHome: () => void,
   navigateReview: () => void,
   navigateGraphs: () => void
 ): Promise<void> {
   clear(root);
-  const foundModule = packs.flatMap((pack) => pack.modules).find((item) => item.id === moduleId);
+  const foundModule = getModuleById(packView, moduleId);
   if (!foundModule) {
     root.append(el('p', 'empty', '教材が見つかりません。'));
     return;
   }
   const module: ModuleInfo = foundModule;
 
-  const questions = moduleQuestions(packs, module);
+  const questions = getQuestionsForModule(packView, module);
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const attempts = await db.getAttempts();
   const bookmarks = await db.getBookmarks();
@@ -226,7 +221,7 @@ export async function renderModuleScreen(
   const quizMount = el('div', 'quiz-mount');
 
   function rerender(): void {
-    void renderModuleScreen(root, packs, moduleId, navigateHome, navigateReview, navigateGraphs);
+    void renderModuleScreen(root, packView, moduleId, navigateHome, navigateReview, navigateGraphs);
   }
 
   function mountSession(session: QuizSession): void {
