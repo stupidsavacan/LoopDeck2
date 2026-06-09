@@ -1,4 +1,5 @@
 import type { LoopDeckPack } from '../core/models';
+import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
 import { db, type LoopDeckBackup } from '../storage/db';
@@ -85,10 +86,27 @@ function infoList(items: string[]): HTMLUListElement {
   return list;
 }
 
-export async function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[], navigateHome: () => void, onImported: () => Promise<void>): Promise<void> {
+function unique(values: string[]): string[] {
+  return [...new Set(values.filter((value) => value.trim()))];
+}
+
+function summarizeIds(ids: string[]): string {
+  const shown = ids.slice(0, 5).join(', ');
+  return ids.length > 5 ? `${shown} ほか${ids.length - 5}件` : shown;
+}
+
+export async function renderImportScreen(
+  root: HTMLElement,
+  packView: ResolvedPackView,
+  navigateHome: () => void,
+  onImported: () => Promise<void>
+): Promise<void> {
   clear(root);
   const importedPacks = await db.getImportedPacks();
   const importedIds = new Set(importedPacks.map((pack) => pack.packId));
+  const activePackIds = new Set(getActivePacks(packView).map((pack) => pack.packId));
+  const activeModuleIds = new Set(getActiveModules(packView).map((module) => module.id));
+  const activeQuestionIds = new Set(getActiveQuestions(packView).map((question) => question.id));
 
   const screen = el('main', 'screen import-screen');
   const header = el('header', 'topbar');
@@ -113,7 +131,7 @@ export async function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[
   const packageList = el('section', 'card');
   packageList.append(el('h2', '', '現在の教材パック / 書き出し'));
   const list = el('div', 'weak-list');
-  for (const pack of packs) {
+  for (const pack of getActivePacks(packView)) {
     const row = el('div', 'weak-row pack-row');
     const meta = el('div', 'pack-meta');
     meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
@@ -213,14 +231,31 @@ export async function renderImportScreen(root: HTMLElement, packs: LoopDeckPack[
       preview.append(issueList);
 
       if (result.ok && result.pack) {
-        const summary = el('p', 'import-summary', `${result.pack.title} / ${result.pack.modules.length}教材 / ${result.pack.questions.length}問`);
-        const install = button('この教材を取り込む', 'btn primary');
+        const pack = result.pack;
+        const duplicatePackId = activePackIds.has(pack.packId);
+        const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
+        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
+        const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
+        preview.append(summary);
+
+        if (duplicatePackId) {
+          preview.append(el('p', 'issue warning', '同じIDの教材がすでにあります。上書き更新します。'));
+        } else {
+          if (duplicateModuleIds.length) {
+            preview.append(el('p', 'issue warning', `同じIDの教材がすでにあります。取り込み後は新しく取り込んだ教材が優先されます: ${summarizeIds(duplicateModuleIds)}`));
+          }
+          if (duplicateQuestionIds.length) {
+            preview.append(el('p', 'issue warning', `同じIDの問題があります。取り込み後は新しく取り込んだ問題が優先されます: ${summarizeIds(duplicateQuestionIds)}`));
+          }
+        }
+
+        const install = button(duplicatePackId ? '上書き更新する' : 'この教材を取り込む', 'btn primary');
         install.onclick = async () => {
-          await db.saveImportedPack(result.pack!);
-          toast('教材を取り込みました。');
+          await db.saveImportedPack(pack);
+          toast(duplicatePackId ? '教材を上書き更新しました。' : '教材を取り込みました。');
           await onImported();
         };
-        preview.append(summary, install);
+        preview.append(install);
       }
     } catch (error) {
       clear(preview);
