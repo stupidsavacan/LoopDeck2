@@ -34,4 +34,24 @@ describe('pack image asset resolution', () => {
     expect(merged.questions.find((item) => item.id === 'q')?.imageAsset).toBe('images/old.png');
     expect(merged.questions.find((item) => item.id === 'q__merge_1')?.imageAsset).toBe('images/new.png');
   });
+
+  it('resolves preserved and renamed incoming image questions after a same-pack merge', async () => {
+    const existing = pack('shared-pack', imageQuestion('old', 'images/old.png'));
+    const incoming = pack('shared-pack', imageQuestion('new', 'images/new.png'));
+    const merged = mergeLoopDeckPacks(existing, incoming).pack;
+    const view = resolveActivePacks([merged]);
+    const assets = new Map([
+      ['shared-pack:images/old.png', 'data:image/png;base64,b2xk'],
+      ['shared-pack:images/new.png', 'data:image/png;base64,bmV3']
+    ]);
+    const resolver = createQuestionImageAssetResolver(view, {
+      async getPackAsset(packId, path) {
+        const dataUrl = assets.get(`${packId}:${path}`);
+        return dataUrl ? { assetId: `${packId}:${path}`, packId, path, mimeType: 'image/png', dataUrl } : undefined;
+      }
+    });
+
+    expect(await resolver(view.questionById.get('q')!)).toBe('data:image/png;base64,b2xk');
+    expect(await resolver(view.questionById.get('q__merge_1')!)).toBe('data:image/png;base64,bmV3');
+  });
 });
