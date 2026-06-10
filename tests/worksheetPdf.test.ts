@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
 import type { ModuleInfo, Question } from '../src/core/models';
 import { createJapaneseToEnglishWorksheetPlan } from '../src/pdf/worksheetPlanner';
-import { generateWorksheetPdfBlob, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
+import { generateWorksheetPdfBlob, loadFontBytesFromUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
 
 const moduleInfo: ModuleInfo = {
   id: 'leap-test',
@@ -24,6 +24,19 @@ function inputQuestion(index: number): Question {
   };
 }
 
+function leapQuestion(index: number): Question {
+  return {
+    id: `leap-${index}`,
+    moduleId: moduleInfo.id,
+    type: 'input',
+    number: index,
+    prompt: 'strict',
+    answer: '\u53b3\u3057\u3044',
+    acceptableAnswers: ['\u53b3\u3057\u3044', '\u53b3\u683c\u306a'],
+    direction: 'normal'
+  };
+}
+
 function questions(count: number): Question[] {
   return Array.from({ length: count }, (_, index) => inputQuestion(index + 1));
 }
@@ -33,6 +46,10 @@ async function fonts(): Promise<WorksheetPdfFontBytes> {
   const latin = await readFile(new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url));
   return { japanese, latin };
 }
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe('fixed Japanese-to-English worksheet planner', () => {
   it('splits 100 questions into four 25-row question pages', () => {
@@ -56,6 +73,15 @@ describe('fixed Japanese-to-English worksheet planner', () => {
   it('uses the Japanese prompt as the visible question and English answer as the answer key', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [inputQuestion(1)], true);
     expect(plan.rows[0]).toMatchObject({ prompt: '\u65e5\u672c\u8a9e\u306e\u610f\u5473 1', answer: 'english-1' });
+  });
+
+  it('reverses LEAP-style English prompt and Japanese answer rows for Japanese-to-English output', () => {
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [leapQuestion(387)], true);
+    expect(plan.rows[0]).toMatchObject({
+      number: 387,
+      prompt: '\u53b3\u3057\u3044\uff1b\u53b3\u683c\u306a',
+      answer: 'strict'
+    });
   });
 
   it('preserves question numbers', () => {
@@ -105,5 +131,28 @@ describe('fixed worksheet PDF generator', () => {
     expect(blob.type).toBe('application/pdf');
     expect(blob.size).toBeGreaterThan(0);
     expect(document.getPageCount()).toBe(2);
+  });
+
+  it('falls back to XMLHttpRequest font loading when fetch fails', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      throw new TypeError('Failed to fetch');
+    }));
+
+    class FakeXMLHttpRequest {
+      responseType = '';
+      status = 0;
+      response = new Uint8Array([1, 2, 3]).buffer;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+
+      open(): void {}
+      send(): void {
+        this.onload?.();
+      }
+    }
+
+    vi.stubGlobal('XMLHttpRequest', FakeXMLHttpRequest);
+
+    await expect(loadFontBytesFromUrl('app://local-font.woff')).resolves.toEqual(new Uint8Array([1, 2, 3]));
   });
 });
