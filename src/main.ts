@@ -9,6 +9,7 @@ import { renderModuleScreen } from './screens/moduleScreen';
 import { renderReviewCenter } from './screens/reviewCenter';
 import { renderImportScreen } from './screens/importScreen';
 import { renderGraphsScreen } from './screens/graphsScreen';
+import { renderPdfWorksheetScreen } from './screens/pdfWorksheetScreen';
 
 const appRoot = document.querySelector<HTMLDivElement>('#app');
 if (!appRoot) throw new Error('Missing #app root.');
@@ -48,6 +49,22 @@ async function loadPacks(): Promise<void> {
   setActivePackAssetView(packView);
 }
 
+function addPdfWorksheetMenuItem(): void {
+  const drawer = root.querySelector('.menu-drawer');
+  if (!drawer || drawer.querySelector('[data-pdf-worksheet]')) return;
+  const item = document.createElement('button');
+  item.type = 'button';
+  item.className = 'menu-item';
+  item.dataset.pdfWorksheet = 'true';
+  const title = document.createElement('b');
+  title.textContent = 'PDF\u30d7\u30ea\u30f3\u30c8\u4f5c\u6210';
+  const description = document.createElement('span');
+  description.textContent = '\u65e5\u672c\u8a9e\u304b\u3089\u82f1\u8a9e\u306eA4\u8a9e\u5f59\u30d7\u30ea\u30f3\u30c8\u3092\u4f5c\u6210';
+  item.append(title, description);
+  item.onclick = () => run(showPdfWorksheet);
+  drawer.append(item);
+}
+
 async function showHome(): Promise<void> {
   await loadPacks();
   renderHomeScreen(
@@ -58,6 +75,7 @@ async function showHome(): Promise<void> {
     () => run(showImport),
     () => run(showGraphs)
   );
+  addPdfWorksheetMenuItem();
 }
 
 async function showModule(moduleId: string): Promise<void> {
@@ -80,6 +98,11 @@ async function showImport(): Promise<void> {
 async function showGraphs(): Promise<void> {
   await loadPacks();
   await renderGraphsScreen(root, packView, () => run(showHome), () => run(showReview));
+}
+
+async function showPdfWorksheet(): Promise<void> {
+  await loadPacks();
+  await renderPdfWorksheetScreen(root, packView, () => run(showHome));
 }
 
 run(showHome);
