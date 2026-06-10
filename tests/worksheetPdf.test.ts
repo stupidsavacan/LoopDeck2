@@ -80,7 +80,15 @@ describe('fixed Japanese-to-English worksheet planner', () => {
       answer: '\u5fb3\u5ddd\u5bb6\u5eb7'
     };
     const image: Question = { ...inputQuestion(2), id: 'image', imageAsset: 'images/map.png' };
-    const reverse: Question = { ...inputQuestion(3), id: 'reverse', direction: 'en_to_ja' };
+    const reverse: Question = {
+      id: 'reverse',
+      moduleId: moduleInfo.id,
+      type: 'input',
+      number: 203,
+      prompt: '\u65e5\u672c\u8a9e\u306e\u610f\u5473 3',
+      answer: 'english-3',
+      direction: 'en_to_ja'
+    };
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [inputQuestion(1), choice, japaneseAnswer, image, reverse], false);
 
     expect(plan.rows).toHaveLength(1);
