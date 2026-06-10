@@ -21,7 +21,7 @@ async function zipFile(questions: ReturnType<typeof question>[], images: Record<
   zip.file('modules.json', JSON.stringify(modules(questions.map((item) => item.id))));
   zip.file('questions.json', JSON.stringify(questions));
   for (const [path, base64] of Object.entries(images)) zip.file(path, base64, { base64: true });
-  const bytes = await zip.generateAsync({ type: 'uint8array' });
+  const bytes = await zip.generateAsync({ type: 'arraybuffer' });
   return new File([bytes], 'image-pack.loopdeck.zip', { type: 'application/zip' });
 }
 
