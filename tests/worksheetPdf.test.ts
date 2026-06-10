@@ -63,11 +63,28 @@ describe('fixed Japanese-to-English worksheet planner', () => {
     expect(plan.rows.map((row) => row.number)).toEqual([201, 202, 203]);
   });
 
-  it('skips unsupported question types', () => {
-    const choice: Question = { id: 'choice', moduleId: moduleInfo.id, type: 'choice', prompt: '\u9078\u629e', choices: ['a', 'b'], answer: 'a' };
-    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [inputQuestion(1), choice], false);
+  it('skips non-vocabulary, reverse-direction, image, and unsupported questions', () => {
+    const choice: Question = {
+      id: 'choice',
+      moduleId: moduleInfo.id,
+      type: 'choice',
+      prompt: '\u9078\u629e',
+      choices: ['a', 'b'],
+      answer: 'a'
+    };
+    const japaneseAnswer: Question = {
+      id: 'history',
+      moduleId: moduleInfo.id,
+      type: 'input',
+      prompt: '\u6c5f\u6238\u5e55\u5e9c\u3092\u958b\u3044\u305f\u4eba',
+      answer: '\u5fb3\u5ddd\u5bb6\u5eb7'
+    };
+    const image: Question = { ...inputQuestion(2), id: 'image', imageAsset: 'images/map.png' };
+    const reverse: Question = { ...inputQuestion(3), id: 'reverse', direction: 'en_to_ja' };
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [inputQuestion(1), choice, japaneseAnswer, image, reverse], false);
+
     expect(plan.rows).toHaveLength(1);
-    expect(plan.skippedQuestionCount).toBe(1);
+    expect(plan.skippedQuestionCount).toBe(4);
   });
 });
 
