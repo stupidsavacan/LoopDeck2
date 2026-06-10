@@ -17,8 +17,24 @@ function pack(packId: string, prompt: string): LoopDeckPack {
   };
 }
 
+function installFileTextForJSDom(): void {
+  if (typeof File.prototype.text === 'function') return;
+  Object.defineProperty(File.prototype, 'text', {
+    configurable: true,
+    value(this: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result ?? ''));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(this);
+      });
+    }
+  });
+}
+
 describe('same-packId import UI', () => {
   it('continues to offer overwrite update and merge update', async () => {
+    installFileTextForJSDom();
     const packId = 'merge-ui-image-pack';
     const existing = pack(packId, 'Existing question');
     const incoming = pack(packId, 'Incoming question');
@@ -30,7 +46,6 @@ describe('same-packId import UI', () => {
 
     const input = root.querySelector<HTMLInputElement>('input[type="file"]')!;
     const file = new File([JSON.stringify(incoming)], 'same-id.loopdeck.json', { type: 'application/json' });
-    Object.defineProperty(file, 'text', { value: async () => JSON.stringify(incoming) });
     Object.defineProperty(input, 'files', { value: [file], configurable: true });
     await input.onchange?.(new Event('change'));
 
