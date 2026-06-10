@@ -1,10 +1,11 @@
-import type { ModuleInfo, Question } from '../core/models';
+import type { LoopDeckPack, ModuleInfo, Question } from '../core/models';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
 import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
-import { getActiveModules, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
+import type { ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el, toast } from '../ui/dom';
 
 interface WorksheetModuleOption {
+  packId: string;
   module: ModuleInfo;
   questions: Question[];
   label: string;
@@ -45,17 +46,34 @@ async function savePdf(blob: Blob, filename: string): Promise<void> {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function supportedQuestions(packView: ResolvedPackView, module: ModuleInfo): Question[] {
-  return getQuestionsForModule(packView, module).filter(isJapaneseToEnglishWorksheetQuestion);
+function getPackQuestionsForModule(pack: LoopDeckPack, module: ModuleInfo): Question[] {
+  const questionsById = new Map(pack.questions.map((question) => [question.id, question]));
+  return module.questionIds.map((questionId) => questionsById.get(questionId)).filter((question): question is Question => Boolean(question));
+}
+
+function supportedQuestions(pack: LoopDeckPack, module: ModuleInfo): Question[] {
+  return getPackQuestionsForModule(pack, module).filter(isJapaneseToEnglishWorksheetQuestion);
+}
+
+function disambiguateLabels(options: WorksheetModuleOption[]): WorksheetModuleOption[] {
+  const labelCounts = new Map<string, number>();
+  for (const option of options) labelCounts.set(option.label, (labelCounts.get(option.label) ?? 0) + 1);
+  return options.map((option) => {
+    if ((labelCounts.get(option.label) ?? 0) <= 1) return option;
+    return { ...option, label: `${option.label} / ${option.packId}` };
+  });
 }
 
 function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOption[] {
-  return getActiveModules(packView)
-    .map((module) => {
-      const questions = supportedQuestions(packView, module);
-      return { module, questions, label: formatWorksheetModuleLabel(module, questions) };
-    })
-    .filter((option) => option.questions.length > 0);
+  const options: WorksheetModuleOption[] = [];
+  for (const pack of packView.packs) {
+    for (const module of pack.modules) {
+      const questions = supportedQuestions(pack, module);
+      if (!questions.length) continue;
+      options.push({ packId: pack.packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
+    }
+  }
+  return disambiguateLabels(options);
 }
 
 export async function renderPdfWorksheetScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void): Promise<void> {
