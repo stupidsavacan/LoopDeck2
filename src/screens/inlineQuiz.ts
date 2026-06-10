@@ -97,6 +97,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
 
   const question = currentQuestion(session);
   if (!question) return;
+  const activeQuestion: Question = question;
   const requestedAnswerFormat = session.settings.answerFormat ?? 'auto';
   const shouldGenerateChoices = question.type === 'input' && (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
   const generatedChoices = question.type === 'input' && shouldGenerateChoices ? buildGeneratedChoices(question, session.choicePool) : undefined;
@@ -113,10 +114,10 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     if (answered) return;
     answered = true;
     const elapsedMs = elapsedForCurrent(session);
-    const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(question) ? isNearMissAnswer(question, answer) : false;
-    const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(question, answer) ? 'correct' : 'wrong';
-    const attempt = buildAttempt(question, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss);
-    appendResult(resultArea, question, result, elapsedMs, nearMiss);
+    const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
+    const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
+    const attempt = buildAttempt(activeQuestion, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss);
+    appendResult(resultArea, activeQuestion, result, elapsedMs, nearMiss);
     const persisted = saveAttemptAndReview(attempt);
     if (result === 'correct' && session.settings.autoNext) void persisted.finally(() => window.setTimeout(nextQuestion, 650));
     else void persisted;
