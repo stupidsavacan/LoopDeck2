@@ -25,16 +25,61 @@ type WorksheetFonts = { japanese: PDFFont; latin: PDFFont };
 
 type TextRun = { text: string; font: PDFFont };
 
-async function fetchFont(url: string): Promise<Uint8Array> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Japanese PDF font could not be loaded (${response.status}).`);
-  const bytes = new Uint8Array(await response.arrayBuffer());
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function validateFontBytes(bytes: Uint8Array): Uint8Array {
   if (!bytes.length) throw new Error('Japanese PDF font is empty.');
   return bytes;
 }
 
+async function fetchFont(url: string): Promise<Uint8Array> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return validateFontBytes(new Uint8Array(await response.arrayBuffer()));
+}
+
+function xhrFont(url: string): Promise<Uint8Array> {
+  if (typeof XMLHttpRequest === 'undefined') throw new Error('XMLHttpRequest is not available.');
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+    request.onload = () => {
+      const status = request.status;
+      if (status && (status < 200 || status >= 300)) {
+        reject(new Error(`HTTP ${status}`));
+        return;
+      }
+      try {
+        resolve(validateFontBytes(new Uint8Array(request.response as ArrayBuffer)));
+      } catch (error) {
+        reject(error);
+      }
+    };
+    request.onerror = () => reject(new Error('XMLHttpRequest failed.'));
+    request.send();
+  });
+}
+
+export async function loadFontBytesFromUrl(url: string): Promise<Uint8Array> {
+  let fetchError: unknown;
+  try {
+    return await fetchFont(url);
+  } catch (error) {
+    fetchError = error;
+  }
+
+  try {
+    return await xhrFont(url);
+  } catch (xhrError) {
+    throw new Error(`Japanese PDF font could not be loaded. fetch failed: ${errorMessage(fetchError)}; xhr failed: ${errorMessage(xhrError)}`);
+  }
+}
+
 export async function loadWorksheetPdfFontBytes(): Promise<WorksheetPdfFontBytes> {
-  const [japanese, latin] = await Promise.all([fetchFont(japaneseFontUrl), fetchFont(latinFontUrl)]);
+  const [japanese, latin] = await Promise.all([loadFontBytesFromUrl(japaneseFontUrl), loadFontBytesFromUrl(latinFontUrl)]);
   return { japanese, latin };
 }
 
@@ -156,5 +201,5 @@ export async function generateWorksheetPdfBlob(plan: WorksheetPlan, providedFont
   }
 
   const bytes = await document.save();
-  return new Blob([Uint8Array.from(bytes).buffer], { type: 'application/pdf' });
+  return new Blob([bytes], { type: 'application/pdf' });
 }
