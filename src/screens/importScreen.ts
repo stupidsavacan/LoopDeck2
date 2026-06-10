@@ -10,6 +10,9 @@ declare global {
   interface Window {
     LoopDeckAndroid?: {
       saveFile(filename: string, mimeType: string, base64Data: string): void;
+      beginSaveFile?(saveId: string, filename: string, mimeType: string, expectedBytes: number, expectedChunks: number): boolean;
+      appendSaveFileChunk?(saveId: string, chunkIndex: number, base64Chunk: string): boolean;
+      finishSaveFile?(saveId: string): boolean;
       canUseNativeSave?(): boolean;
       showToast?(message: string): void;
     };
@@ -117,212 +120,145 @@ function appendMergeReport(container: HTMLElement, report: MergePackReport): voi
 export async function renderImportScreen(
   root: HTMLElement,
   packView: ResolvedPackView,
-  navigateHome: () => void,
-  onImported: () => Promise<void>
+  reloadPacks: () => Promise<ResolvedPackView>,
+  navigateHome: () => void
 ): Promise<void> {
   clear(root);
-  const importedPacks = await db.getImportedPacks();
-  const importedIds = new Set(importedPacks.map((pack) => pack.packId));
-  const activePackIds = new Set(getActivePacks(packView).map((pack) => pack.packId));
-  const activeModuleIds = new Set(getActiveModules(packView).map((module) => module.id));
-  const activeQuestionIds = new Set(getActiveQuestions(packView).map((question) => question.id));
-
   const screen = el('main', 'screen import-screen');
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');
   back.onclick = navigateHome;
   header.append(back);
 
-  const card = el('section', 'hero-card');
-  card.append(
-    el('p', 'eyebrow', 'Data / APK export'),
-    el('h1', '', '教材入出力'),
-    el('p', '', '教材パック、学習履歴、ブックマークの入出力を行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
+  const intro = el('section', 'hero-card');
+  intro.append(
+    el('p', 'eyebrow', 'Import / Export'),
+    el('h1', '', '教材・学習データ管理'),
+    el('p', '', 'LoopDeck用JSON/ZIP教材を追加したり、学習データをバックアップできます。')
   );
 
-  const input = el('input', 'file-input') as HTMLInputElement;
-  input.type = 'file';
-  input.accept = '.json,.zip,.loopdeck.zip,application/json,application/zip';
+  const importCard = el('section', 'card');
+  importCard.append(el('h2', '', '教材を追加'));
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.json,.loopdeck.json,.zip,.loopdeck.zip,application/json,application/zip';
+  fileInput.className = 'file-input';
+  const importSummary = el('div', 'import-summary');
 
-  const preview = el('section', 'card preview-card');
-  preview.append(el('h2', '', '読み込み結果'), el('p', 'empty', 'まだファイルが選ばれていません。'));
+  fileInput.onchange = async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    importSummary.textContent = '読み込み中...';
+    try {
+      const result = file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.loopdeck.zip')
+        ? await importLoopDeckZip(file)
+        : await importLoopDeckJson(file);
+      if (!result.ok || !result.pack) {
+        importSummary.textContent = '読み込みに失敗しました。';
+        renderIssues(importSummary, result.issues);
+        return;
+      }
+      const existingPack = getActivePacks(packView).find((pack) => pack.packId === result.pack?.packId);
+      const existingModuleIds = new Set(getActiveModules(packView).map((module) => module.id));
+      const incomingModuleIds = result.pack.modules.map((module) => module.id);
+      const collisions = incomingModuleIds.filter((id) => existingModuleIds.has(id));
 
-  const packageList = el('section', 'card');
-  packageList.append(el('h2', '', '現在の教材パック / 書き出し'));
-  const list = el('div', 'weak-list');
+      importSummary.replaceChildren();
+      importSummary.append(el('p', '', `読み込み成功: ${result.pack.title}`));
+      if (result.assets?.length) importSummary.append(el('p', '', `画像アセット: ${result.assets.length}件`));
+      renderIssues(importSummary, result.issues);
+
+      const actions = el('div', 'update-actions');
+      const importButton = button(existingPack ? '上書き更新する' : 'この教材を追加', 'btn primary');
+      importButton.onclick = async () => {
+        if (!result.pack) return;
+        await db.saveImportedPack(result.pack);
+        packView = await reloadPacks();
+        toast(existingPack ? '教材を上書き更新しました。' : '教材を追加しました。');
+        navigateHome();
+      };
+      actions.append(importButton);
+
+      if (existingPack) {
+        const mergeButton = button('マージ更新する', 'btn ghost');
+        mergeButton.onclick = async () => {
+          if (!result.pack) return;
+          const merged = mergeLoopDeckPacks(existingPack, result.pack);
+          await db.saveImportedPack(merged.pack);
+          packView = await reloadPacks();
+          toast('教材をマージ更新しました。');
+          appendMergeReport(importSummary, merged.report);
+        };
+        actions.append(mergeButton);
+      }
+
+      importSummary.append(actions);
+
+      if (collisions.length && !existingPack) {
+        importSummary.append(el('p', 'issue warning', `同じ教材IDがあります: ${summarizeIds(unique(collisions))}。後から読み込んだ教材が表示上優先されます。`));
+      }
+    } catch (error) {
+      importSummary.textContent = `読み込みに失敗しました：${error instanceof Error ? error.message : String(error)}`;
+    } finally {
+      fileInput.value = '';
+    }
+  };
+
+  importCard.append(fileInput, importSummary);
+
+  const exportCard = el('section', 'card');
+  exportCard.append(el('h2', '', '書き出し'));
+  const packRows = el('div', 'weak-list');
   for (const pack of getActivePacks(packView)) {
     const row = el('div', 'weak-row pack-row');
     const meta = el('div', 'pack-meta');
-    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
-
+    meta.append(el('strong', '', pack.title), el('small', '', `${pack.modules.length}教材 / ${pack.questions.length}問`));
     const actions = el('div', 'pack-actions');
-    const json = button('JSON', 'btn');
+    const json = button('JSON', 'btn ghost');
     json.onclick = () => void exportPackJson(pack);
-    const zip = button('ZIP', 'btn primary');
+    const zip = button('ZIP', 'btn ghost');
     zip.onclick = () => void exportPackZip(pack);
     actions.append(json, zip);
-    if (importedIds.has(pack.packId)) {
-      const remove = button('削除', 'btn ghost danger');
-      remove.onclick = async () => {
-        if (!window.confirm(`${pack.title} を削除します。学習履歴は残ります。`)) return;
-        await db.deleteImportedPack(pack.packId);
-        toast('インポート済みパックを削除しました。');
-        await onImported();
-      };
-      actions.append(remove);
-    }
-
     row.append(meta, actions);
-    list.append(row);
+    packRows.append(row);
   }
-  packageList.append(list);
-
-  const dataCard = el('section', 'card data-card');
-  dataCard.append(el('h2', '', '学習データ管理'));
-  const dataActions = el('div', 'data-actions');
-  const backup = button('履歴バックアップを書き出し', 'btn primary');
+  const backup = button('学習データをバックアップ', 'btn primary');
   backup.onclick = () => void exportBackup();
-  const clearHistory = button('回答履歴を全削除', 'btn ghost danger');
-  clearHistory.onclick = async () => {
-    if (!window.confirm('回答履歴をすべて削除します。ブックマークと教材パックは残ります。')) return;
-    await db.clearAttempts();
-    toast('回答履歴を削除しました。');
-  };
-  const clearWrong = button('ミス履歴だけ削除', 'btn ghost danger');
-  clearWrong.onclick = async () => {
-    if (!window.confirm('不正解・答え表示の履歴だけ削除します。')) return;
-    await db.clearWrongAttempts();
-    toast('ミス履歴を削除しました。');
-  };
-  const clearBookmarks = button('ブックマーク全削除', 'btn ghost danger');
-  clearBookmarks.onclick = async () => {
-    if (!window.confirm('ブックマークをすべて削除します。')) return;
-    await db.clearBookmarks();
-    toast('ブックマークを削除しました。');
-  };
-  dataActions.append(backup, clearHistory, clearWrong, clearBookmarks);
-  dataCard.append(dataActions, el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'));
+  exportCard.append(packRows, backup);
 
-  const apkCard = el('section', 'card');
-  apkCard.append(
-    el('h2', '', 'APK書き出し'),
-    el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
-    infoList([
-      'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
-      'signed release APK: Build Android Signed Release APK workflow の LoopDeck-signed-release-apk artifact',
-      '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
-    ])
-  );
-
-  input.onchange = async () => {
-    const file = input.files?.[0];
+  const dataCard = el('section', 'card');
+  dataCard.append(el('h2', '', '学習データ読み込み'));
+  const backupInput = document.createElement('input');
+  backupInput.type = 'file';
+  backupInput.accept = '.json,application/json';
+  backupInput.className = 'file-input';
+  const backupSummary = el('div', 'import-summary');
+  backupInput.onchange = async () => {
+    const file = backupInput.files?.[0];
     if (!file) return;
     try {
-      const result = file.name.endsWith('.zip') || file.name.endsWith('.loopdeck.zip')
-        ? await importLoopDeckZip(file)
-        : await (async () => {
-            const text = await file.text();
-            let parsed: unknown;
-            try {
-              parsed = JSON.parse(text);
-            } catch {
-              parsed = undefined;
-            }
-            if (isBackupPayload(parsed)) {
-              await db.importUserData(parsed);
-              toast('バックアップを復元しました。');
-              await onImported();
-              return undefined;
-            }
-            return importLoopDeckJson(new File([text], file.name, { type: file.type || 'application/json' }));
-          })();
-      if (!result) return;
-
-      clear(preview);
-      preview.append(el('h2', '', '読み込み結果'));
-      const issueList = el('div', 'issue-list');
-      for (const issue of result.issues) {
-        const item = el('div', `issue ${issue.level}`);
-        item.textContent = `${issue.level.toUpperCase()}: ${issue.message}${issue.path ? ` (${issue.path})` : ''}`;
-        issueList.append(item);
-      }
-      if (!result.issues.length) issueList.append(el('p', 'empty', '問題は見つかりませんでした。'));
-      preview.append(issueList);
-
-      if (result.ok && result.pack) {
-        const pack = result.pack;
-        const existingImportedPack = importedPacks.find((importedPack) => importedPack.packId === pack.packId);
-        const duplicateImportedPackId = Boolean(existingImportedPack);
-        const duplicateActivePackId = activePackIds.has(pack.packId);
-        const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
-        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
-        const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
-        preview.append(summary);
-
-        if (existingImportedPack) {
-          const previewMerge = mergeLoopDeckPacks(existingImportedPack, pack);
-          preview.append(el('p', 'issue warning', '同じIDの教材がすでにあります。上書き更新またはマージ更新を選べます。'));
-          appendMergeReport(preview, previewMerge.report);
-        } else {
-          if (duplicateActivePackId) {
-            preview.append(el('p', 'issue warning', '同じIDの教材があります。取り込み後は新しく取り込んだ教材が優先されます。'));
-          }
-          if (duplicateModuleIds.length) {
-            preview.append(el('p', 'issue warning', `同じIDの教材がすでにあります。取り込み後は新しく取り込んだ教材が優先されます: ${summarizeIds(duplicateModuleIds)}`));
-          }
-          if (duplicateQuestionIds.length) {
-            preview.append(el('p', 'issue warning', `同じIDの問題があります。取り込み後は新しく取り込んだ問題が優先されます: ${summarizeIds(duplicateQuestionIds)}`));
-          }
-        }
-
-        const install = button(duplicateImportedPackId ? '上書き更新する' : 'この教材を取り込む', 'btn primary');
-        install.onclick = async () => {
-          await db.saveImportedPack(pack);
-          toast(duplicateImportedPackId ? '教材を上書き更新しました。' : '教材を取り込みました。');
-          await onImported();
-        };
-        preview.append(install);
-
-        if (existingImportedPack) {
-          const mergeInstall = button('マージ更新する', 'btn');
-          mergeInstall.onclick = async () => {
-            const currentExistingPack = (await db.getImportedPacks()).find((importedPack) => importedPack.packId === pack.packId);
-            if (!currentExistingPack) {
-              await db.saveImportedPack(pack);
-              toast('同じIDのインポート済み教材が見つからなかったため、新規取り込みしました。');
-              await onImported();
-              return;
-            }
-
-            const { pack: mergedPack, report } = mergeLoopDeckPacks(currentExistingPack, pack);
-            await db.saveImportedPack(mergedPack);
-            toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
-            await onImported();
-          };
-          preview.append(mergeInstall);
-        }
-      }
+      const data = JSON.parse(await file.text()) as unknown;
+      if (!isBackupPayload(data)) throw new Error('LoopDeckバックアップではありません。');
+      await db.importUserData(data);
+      await reloadPacks();
+      toast('学習データを読み込みました。');
+      navigateHome();
     } catch (error) {
-      clear(preview);
-      preview.append(
-        el('h2', '', '読み込み結果'),
-        el('p', 'issue error', `読み込みに失敗しました：${error instanceof Error ? error.message : String(error)}`)
-      );
+      backupSummary.textContent = `読み込みに失敗しました：${error instanceof Error ? error.message : String(error)}`;
+    } finally {
+      backupInput.value = '';
     }
   };
+  dataCard.append(backupInput, backupSummary);
 
-  const note = el('details', 'card safe-note');
-  note.append(
-    el('summary', '', '対応ファイルと安全制限'),
-    infoList([
-      'JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。',
-      'LoopDeckバックアップJSONは回答履歴・ブックマーク・インポート済み教材を復元できます。',
-      'HTML / JavaScript / CSS は教材として実行しません。',
-      '.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。',
-      '../、..\\、絶対パス、空パス、null byte を含む危険なパスは拒否します。'
-    ])
-  );
-
-  screen.append(header, card, input, preview, packageList, dataCard, apkCard, note);
+  screen.append(header, intro, importCard, exportCard, dataCard);
   root.append(screen);
+}
+
+function renderIssues(container: HTMLElement, issues: { level: 'error' | 'warning'; message: string; path?: string }[]): void {
+  const list = el('div', 'issue-list');
+  for (const issue of issues) {
+    list.append(el('div', `issue ${issue.level}`, `${issue.level === 'error' ? 'エラー' : '警告'}: ${issue.message}${issue.path ? ` (${issue.path})` : ''}`));
+  }
+  container.append(list);
 }
