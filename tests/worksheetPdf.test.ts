@@ -1,15 +1,15 @@
 import { readFile } from 'node:fs/promises';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
 import type { ModuleInfo, Question } from '../src/core/models';
 import { createJapaneseToEnglishWorksheetPlan } from '../src/pdf/worksheetPlanner';
-import { generateWorksheetPdfBlob, loadFontBytesFromUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
+import { generateWorksheetPdfBlob, loadFontBytesFromDataUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
 
 const moduleInfo: ModuleInfo = {
   id: 'leap-test',
   folderId: 'english',
-  title: 'LEAP \u8a9e\u5f59\u30c6\u30b9\u30c8',
-  subject: '\u82f1\u8a9e',
+  title: 'LEAP 語彙テスト',
+  subject: '英語',
   questionIds: []
 };
 
@@ -19,7 +19,7 @@ function inputQuestion(index: number): Question {
     moduleId: moduleInfo.id,
     type: 'input',
     number: 200 + index,
-    prompt: `\u65e5\u672c\u8a9e\u306e\u610f\u5473 ${index}`,
+    prompt: `日本語の意味 ${index}`,
     answer: `english-${index}`
   };
 }
@@ -31,8 +31,8 @@ function leapQuestion(index: number): Question {
     type: 'input',
     number: index,
     prompt: 'strict',
-    answer: '\u53b3\u3057\u3044',
-    acceptableAnswers: ['\u53b3\u3057\u3044', '\u53b3\u683c\u306a'],
+    answer: '厳しい',
+    acceptableAnswers: ['厳しい', '厳格な'],
     direction: 'normal'
   };
 }
@@ -46,10 +46,6 @@ async function fonts(): Promise<WorksheetPdfFontBytes> {
   const latin = await readFile(new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url));
   return { japanese, latin };
 }
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
 
 describe('fixed Japanese-to-English worksheet planner', () => {
   it('splits 100 questions into four 25-row question pages', () => {
@@ -72,14 +68,14 @@ describe('fixed Japanese-to-English worksheet planner', () => {
 
   it('uses the Japanese prompt as the visible question and English answer as the answer key', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [inputQuestion(1)], true);
-    expect(plan.rows[0]).toMatchObject({ prompt: '\u65e5\u672c\u8a9e\u306e\u610f\u5473 1', answer: 'english-1' });
+    expect(plan.rows[0]).toMatchObject({ prompt: '日本語の意味 1', answer: 'english-1' });
   });
 
   it('reverses LEAP-style English prompt and Japanese answer rows for Japanese-to-English output', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [leapQuestion(387)], true);
     expect(plan.rows[0]).toMatchObject({
       number: 387,
-      prompt: '\u53b3\u3057\u3044\uff1b\u53b3\u683c\u306a',
+      prompt: '厳しい；厳格な',
       answer: 'strict'
     });
   });
@@ -94,7 +90,7 @@ describe('fixed Japanese-to-English worksheet planner', () => {
       id: 'choice',
       moduleId: moduleInfo.id,
       type: 'choice',
-      prompt: '\u9078\u629e',
+      prompt: '選択',
       choices: ['a', 'b'],
       answer: 'a'
     };
@@ -102,8 +98,8 @@ describe('fixed Japanese-to-English worksheet planner', () => {
       id: 'history',
       moduleId: moduleInfo.id,
       type: 'input',
-      prompt: '\u6c5f\u6238\u5e55\u5e9c\u3092\u958b\u3044\u305f\u4eba',
-      answer: '\u5fb3\u5ddd\u5bb6\u5eb7'
+      prompt: '江戸幕府を開いた人',
+      answer: '徳川家康'
     };
     const image: Question = { ...inputQuestion(2), id: 'image', imageAsset: 'images/map.png' };
     const reverse: Question = {
@@ -111,7 +107,7 @@ describe('fixed Japanese-to-English worksheet planner', () => {
       moduleId: moduleInfo.id,
       type: 'input',
       number: 203,
-      prompt: '\u65e5\u672c\u8a9e\u306e\u610f\u5473 3',
+      prompt: '日本語の意味 3',
       answer: 'english-3',
       direction: 'en_to_ja'
     };
@@ -133,26 +129,7 @@ describe('fixed worksheet PDF generator', () => {
     expect(document.getPageCount()).toBe(2);
   });
 
-  it('falls back to XMLHttpRequest font loading when fetch fails', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => {
-      throw new TypeError('Failed to fetch');
-    }));
-
-    class FakeXMLHttpRequest {
-      responseType = '';
-      status = 0;
-      response = new Uint8Array([1, 2, 3]).buffer;
-      onload: (() => void) | null = null;
-      onerror: (() => void) | null = null;
-
-      open(): void {}
-      send(): void {
-        this.onload?.();
-      }
-    }
-
-    vi.stubGlobal('XMLHttpRequest', FakeXMLHttpRequest);
-
-    await expect(loadFontBytesFromUrl('app://local-font.woff')).resolves.toEqual(new Uint8Array([1, 2, 3]));
+  it('decodes embedded base64 font data URLs without fetch', () => {
+    expect(loadFontBytesFromDataUrl('data:font/woff;base64,AQID')).toEqual(new Uint8Array([1, 2, 3]));
   });
 });
