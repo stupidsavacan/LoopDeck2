@@ -4,7 +4,8 @@ import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } f
 import { scoreAttemptDelta } from '../core/reviewEngine';
 import { applyReviewRating, createReviewCard, inferReviewRating } from '../core/scheduler';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
-import { isSafeImageAssetRef } from '../packs/assetSafety';
+import { isSafeImageAssetRef, isSafeImageDataUrl } from '../packs/assetSafety';
+import type { QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
 
@@ -13,7 +14,17 @@ export interface InlineQuizCallbacks {
   onComplete(): void;
 }
 
+export interface InlineQuizOptions {
+  resolveImageAsset?: QuestionImageAssetResolver;
+}
+
 const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
+// English: The image reference is preserved, but the image file could not be found.
+const IMAGE_MISSING_MESSAGE = '\u753b\u50cf\u53c2\u7167\u306f\u4fdd\u6301\u3055\u308c\u3066\u3044\u307e\u3059\u304c\u3001\u753b\u50cf\u30d5\u30a1\u30a4\u30eb\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3002';
+// English: The image reference is preserved. Display was skipped because the reference is unsafe.
+const IMAGE_UNSAFE_MESSAGE = '\u753b\u50cf\u53c2\u7167\u306f\u4fdd\u6301\u3055\u308c\u3066\u3044\u307e\u3059\u3002\u8868\u793a\u306f\u672a\u5b9f\u88c5\u307e\u305f\u306f\u5b89\u5168\u3067\u306a\u3044\u53c2\u7167\u306e\u305f\u3081\u30b9\u30ad\u30c3\u30d7\u3057\u307e\u3057\u305f\u3002';
+// English: The image reference is preserved. The image file cannot be displayed yet.
+const IMAGE_LOAD_ERROR_MESSAGE = '\u753b\u50cf\u53c2\u7167\u306f\u4fdd\u6301\u3055\u308c\u3066\u3044\u307e\u3059\u3002\u753b\u50cf\u30d5\u30a1\u30a4\u30eb\u306f\u307e\u3060\u8868\u793a\u3067\u304d\u307e\u305b\u3093\u3002';
 
 function answerToText(answer: string | string[]): string {
   return Array.isArray(answer) ? answer.join(' / ') : answer;
@@ -73,11 +84,11 @@ function appendResult(container: HTMLElement, question: Question, result: Attemp
   const correct = result === 'correct';
   const resultBox = el('div', correct ? 'result correct' : 'result wrong');
   resultBox.append(
-    el('strong', '', result === 'revealed' ? '答え表示' : correct ? '正解' : '不正解'),
-    el('span', '', `答え：${answerToText(answer)}`),
-    el('small', '', `${Math.round(elapsedMs / 100) / 10}秒`)
+    el('strong', '', result === 'revealed' ? '\u7b54\u3048\u8868\u793a' : correct ? '\u6b63\u89e3' : '\u4e0d\u6b63\u89e3'),
+    el('span', '', `\u7b54\u3048\uff1a${answerToText(answer)}`),
+    el('small', '', `${Math.round(elapsedMs / 100) / 10}\u79d2`)
   );
-  if (nearMiss) resultBox.append(el('span', 'near-miss-note', 'かなり近い答えです。復習優先度は軽めに記録しました。'));
+  if (nearMiss) resultBox.append(el('span', 'near-miss-note', '\u304b\u306a\u308a\u8fd1\u3044\u7b54\u3048\u3067\u3059\u3002\u5fa9\u7fd2\u512a\u5148\u5ea6\u306f\u8efd\u3081\u306b\u8a18\u9332\u3057\u307e\u3057\u305f\u3002'));
   container.append(resultBox);
 
   if (question.explanation) {
@@ -87,20 +98,42 @@ function appendResult(container: HTMLElement, question: Question, result: Attemp
   }
 }
 
-function renderImageReference(question: Question): HTMLElement | undefined {
+function fallback(message: string): HTMLElement {
+  return el('p', 'image-fallback', message);
+}
+
+function renderImageReference(question: Question, resolveImageAsset?: QuestionImageAssetResolver): HTMLElement | undefined {
   if (!question.imageAsset) return undefined;
-  if (!isSafeImageAssetRef(question.imageAsset)) {
-    return el('p', 'image-fallback', '画像参照は保持されています。表示は未実装または安全でない参照のためスキップしました。');
+  if (!isSafeImageAssetRef(question.imageAsset)) return fallback(IMAGE_UNSAFE_MESSAGE);
+
+  const mount = el('div', 'question-image-mount');
+  mount.append(fallback('\u753b\u50cf\u3092\u8aad\u307f\u8fbc\u3093\u3067\u3044\u307e\u3059\u3002'));
+  if (!resolveImageAsset) {
+    mount.replaceChildren(fallback(IMAGE_MISSING_MESSAGE));
+    return mount;
   }
 
-  const image = el('img', 'question-image') as HTMLImageElement;
-  image.src = question.imageAsset;
-  image.alt = '問題資料画像';
-  image.loading = 'lazy';
-  image.onerror = () => {
-    image.replaceWith(el('p', 'image-fallback', '画像参照は保持されています。画像ファイルはまだ表示できません。'));
-  };
-  return image;
+  void resolveImageAsset(question)
+    .then((dataUrl) => {
+      if (!dataUrl) {
+        mount.replaceChildren(fallback(IMAGE_MISSING_MESSAGE));
+        return;
+      }
+      if (!isSafeImageDataUrl(dataUrl)) {
+        mount.replaceChildren(fallback(IMAGE_UNSAFE_MESSAGE));
+        return;
+      }
+
+      const image = el('img', 'question-image') as HTMLImageElement;
+      image.src = dataUrl;
+      image.alt = '\u554f\u984c\u8cc7\u6599\u753b\u50cf';
+      image.loading = 'lazy';
+      image.onerror = () => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE));
+      mount.replaceChildren(image);
+    })
+    .catch(() => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE)));
+
+  return mount;
 }
 
 function renderQuizMeta(session: QuizSession, question: Question): HTMLElement {
@@ -111,13 +144,18 @@ function renderQuizMeta(session: QuizSession, question: Question): HTMLElement {
   return meta;
 }
 
-export function renderInlineQuiz(container: HTMLElement, session: QuizSession, callbacks: InlineQuizCallbacks): void {
+export function renderInlineQuiz(
+  container: HTMLElement,
+  session: QuizSession,
+  callbacks: InlineQuizCallbacks,
+  options: InlineQuizOptions = {}
+): void {
   clear(container);
 
   if (isSessionComplete(session)) {
     const done = el('div', 'quiz-card done');
-    done.append(el('h3', '', 'セッション完了'), el('p', '', `${session.queue.length}問の学習が終わりました。`));
-    const back = button('教材詳細に戻る', 'btn primary');
+    done.append(el('h3', '', '\u30bb\u30c3\u30b7\u30e7\u30f3\u5b8c\u4e86'), el('p', '', `${session.queue.length}\u554f\u306e\u5b66\u7fd2\u304c\u7d42\u308f\u308a\u307e\u3057\u305f\u3002`));
+    const back = button('\u6559\u6750\u8a73\u7d30\u306b\u623b\u308b', 'btn primary');
     back.onclick = callbacks.onComplete;
     done.append(back);
     container.append(done);
@@ -137,7 +175,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
 
   const card = el('section', 'quiz-card');
   const prompt = el('h3', 'question-prompt', question.prompt);
-  const image = renderImageReference(question);
+  const image = renderImageReference(question, options.resolveImageAsset);
   const answerArea = el('div', 'answer-area');
   const controls = el('div', 'quiz-controls');
   const resultArea = el('div', 'result-area');
@@ -165,32 +203,30 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     callbacks.onSessionChange(advanceSession(session));
   }
 
-  const bookmark = button('☆ ブックマーク', 'btn ghost bookmark-btn');
+  const bookmark = button('\u2606 \u30d6\u30c3\u30af\u30de\u30fc\u30af', 'btn ghost bookmark-btn');
   let bookmarked = false;
   void db.getBookmarks().then((bookmarks) => {
     bookmarked = bookmarks.includes(question.id);
-    bookmark.textContent = bookmarked ? '★ ブックマーク済み' : '☆ ブックマーク';
+    bookmark.textContent = bookmarked ? '\u2605 \u30d6\u30c3\u30af\u30de\u30fc\u30af\u6e08\u307f' : '\u2606 \u30d6\u30c3\u30af\u30de\u30fc\u30af';
     bookmark.classList.toggle('selected', bookmarked);
   });
   bookmark.onclick = async () => {
     bookmarked = !bookmarked;
     await db.setBookmark(question.id, bookmarked);
-    bookmark.textContent = bookmarked ? '★ ブックマーク済み' : '☆ ブックマーク';
+    bookmark.textContent = bookmarked ? '\u2605 \u30d6\u30c3\u30af\u30de\u30fc\u30af\u6e08\u307f' : '\u2606 \u30d6\u30c3\u30af\u30de\u30fc\u30af';
     bookmark.classList.toggle('selected', bookmarked);
   };
 
-  if (session.settings.showExample && question.example) {
-    answerArea.append(el('p', 'example-line', question.example));
-  }
+  if (session.settings.showExample && question.example) answerArea.append(el('p', 'example-line', question.example));
 
   if (answerMode === 'input') {
     const input = el('input', 'text-input') as HTMLInputElement;
-    input.placeholder = '答えを入力';
+    input.placeholder = '\u7b54\u3048\u3092\u5165\u529b';
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') record(input.value);
     });
     selectedAnswer = input.value;
-    const submit = button('回答する', 'btn primary');
+    const submit = button('\u56de\u7b54\u3059\u308b', 'btn primary');
     submit.onclick = () => record(input.value);
     answerArea.append(input, submit);
     window.setTimeout(() => input.focus(), 0);
@@ -223,31 +259,21 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
       };
       list.append(choiceButton);
     });
-    const submit = button('選択を確定', 'btn primary');
+    const submit = button('\u9078\u629e\u3092\u78ba\u5b9a', 'btn primary');
     submit.onclick = () => record([...selected]);
     answerArea.append(list, submit);
-  } else {
-    const input = el('input', 'text-input') as HTMLInputElement;
-    input.placeholder = '答えを入力';
-    input.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') record(input.value);
-    });
-    const submit = button('回答する', 'btn primary');
-    submit.onclick = () => record(input.value);
-    answerArea.append(input, submit);
-    window.setTimeout(() => input.focus(), 0);
   }
 
   const hintText = question.example ?? question.explanation;
-  const hint = button('ヒント', 'btn ghost');
+  const hint = button('\u30d2\u30f3\u30c8', 'btn ghost');
   hint.disabled = !hintText;
   hint.onclick = () => {
     if (!hintText || resultArea.querySelector('.hint-panel')) return;
     resultArea.prepend(el('p', 'hint-panel', hintText));
   };
-  const reveal = button('答えを見る', 'btn ghost');
+  const reveal = button('\u7b54\u3048\u3092\u898b\u308b', 'btn ghost');
   reveal.onclick = () => record(selectedAnswer, true);
-  const next = button('次へ', 'btn');
+  const next = button('\u6b21\u3078', 'btn');
   next.onclick = nextQuestion;
   controls.append(bookmark, hint, reveal, next);
 
