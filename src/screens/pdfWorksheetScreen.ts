@@ -1,7 +1,6 @@
 import type { ModuleInfo, Question } from '../core/models';
 import { buildRangeOptions, filterStudyQuestions } from '../core/sessionEngine';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
-import { generateWorksheetPdfBlob } from '../pdf/worksheetPdf';
 import { getActiveModules, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el, toast } from '../ui/dom';
 
@@ -125,6 +124,7 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
     exportButton.textContent = 'PDF\u3092\u4f5c\u6210\u4e2d...';
     try {
       const plan = createJapaneseToEnglishWorksheetPlan(module, selectedQuestions, includeAnswers.checked);
+      const { generateWorksheetPdfBlob } = await import('../pdf/worksheetPdf');
       const pdf = await generateWorksheetPdfBlob(plan);
       await savePdf(pdf, `${safeFileStem(module.title)}-${safeFileStem(plan.rangeLabel)}.pdf`);
       toast('PDF\u30d7\u30ea\u30f3\u30c8\u3092\u66f8\u304d\u51fa\u3057\u307e\u3057\u305f\u3002');
