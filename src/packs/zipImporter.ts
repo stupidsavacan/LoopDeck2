@@ -1,7 +1,15 @@
 import JSZip from 'jszip';
 import type { LoopDeckPack } from '../core/models';
-import type { PackValidationIssue, PackValidationResult } from './packTypes';
+import { extensionOf, isSafeImageAssetRef } from './assetSafety';
+import type { ImportedPackAsset, PackValidationIssue, PackValidationResult } from './packTypes';
 import { validatePack, validatePackFiles } from './packValidator';
+
+const IMAGE_MIME_TYPES: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp'
+};
 
 function validateContainerFile(file: File): PackValidationIssue[] {
   return validatePackFiles([file.name]);
@@ -14,12 +22,50 @@ async function readJson<T>(zip: JSZip, path: string): Promise<T | undefined> {
   return JSON.parse(text) as T;
 }
 
+function zipLookupPath(path: string): string {
+  return path.replace(/\\/g, '/');
+}
+
+async function readReferencedAssets(zip: JSZip, pack: LoopDeckPack, issues: PackValidationIssue[]): Promise<ImportedPackAsset[]> {
+  const assets: ImportedPackAsset[] = [];
+  const referencedPaths = new Set(pack.questions.map((question) => question.imageAsset).filter((path): path is string => Boolean(path)));
+
+  for (const path of referencedPaths) {
+    if (!isSafeImageAssetRef(path)) {
+      issues.push({ level: 'warning', message: 'Unsafe or unsupported image asset reference was not imported.', path });
+      continue;
+    }
+
+    const zipFile = zip.file(zipLookupPath(path));
+    if (!zipFile || zipFile.dir) {
+      issues.push({ level: 'warning', message: 'Referenced image asset was not found in the ZIP.', path });
+      continue;
+    }
+
+    const mimeType = IMAGE_MIME_TYPES[extensionOf(path)];
+    if (!mimeType) {
+      issues.push({ level: 'warning', message: 'Referenced image asset type is not supported.', path });
+      continue;
+    }
+
+    const base64 = await zipFile.async('base64');
+    assets.push({
+      packId: pack.packId,
+      path,
+      mimeType,
+      dataUrl: `data:${mimeType};base64,${base64}`
+    });
+  }
+
+  return assets;
+}
+
 export async function importLoopDeckZip(file: File): Promise<PackValidationResult> {
   const fileIssues = validateContainerFile(file);
   if (fileIssues.some((issue) => issue.level === 'error')) return { ok: false, issues: fileIssues };
 
   const zip = await JSZip.loadAsync(file);
-  const paths = Object.keys(zip.files);
+  const paths = Object.values(zip.files).filter((entry) => !entry.dir).map((entry) => entry.name);
   const issues: PackValidationIssue[] = [...fileIssues, ...validatePackFiles(paths)];
 
   const manifest = await readJson<Record<string, unknown>>(zip, 'manifest.json');
@@ -45,10 +91,19 @@ export async function importLoopDeckZip(file: File): Promise<PackValidationResul
   };
 
   const packResult = validatePack(pack);
+  if (!packResult.ok || !packResult.pack) {
+    return {
+      ok: false,
+      issues: [...issues, ...packResult.issues]
+    };
+  }
+
+  const assets = await readReferencedAssets(zip, packResult.pack, issues);
   return {
-    ok: packResult.ok && !issues.some((issue) => issue.level === 'error'),
+    ok: !issues.some((issue) => issue.level === 'error'),
     issues: [...issues, ...packResult.issues],
-    pack: packResult.pack
+    pack: packResult.pack,
+    assets
   };
 }
 
