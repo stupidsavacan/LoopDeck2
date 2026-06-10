@@ -1,4 +1,5 @@
 import type { LoopDeckPack } from '../core/models';
+import { mergeLoopDeckPacks, type MergePackReport } from '../packs/packMerger';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
@@ -93,6 +94,24 @@ function unique(values: string[]): string[] {
 function summarizeIds(ids: string[]): string {
   const shown = ids.slice(0, 5).join(', ');
   return ids.length > 5 ? `${shown} ほか${ids.length - 5}件` : shown;
+}
+
+function mergeReportItems(report: MergePackReport): string[] {
+  return [
+    `追加フォルダ: ${report.addedFolders}`,
+    `更新フォルダ: ${report.updatedFolders}`,
+    `追加教材: ${report.addedModules}`,
+    `マージ教材: ${report.mergedModules}`,
+    `追加問題: ${report.addedQuestions}`,
+    `競合でID変更した問題: ${report.renamedQuestions}`,
+    `同一のためスキップした問題: ${report.skippedIdenticalQuestions}`
+  ];
+}
+
+function appendMergeReport(container: HTMLElement, report: MergePackReport): void {
+  const reportBox = el('div', 'merge-report');
+  reportBox.append(el('h3', '', 'マージ更新の内容'), infoList(mergeReportItems(report)));
+  container.append(reportBox);
 }
 
 export async function renderImportScreen(
@@ -232,15 +251,22 @@ export async function renderImportScreen(
 
       if (result.ok && result.pack) {
         const pack = result.pack;
-        const duplicatePackId = activePackIds.has(pack.packId);
+        const existingImportedPack = importedPacks.find((importedPack) => importedPack.packId === pack.packId);
+        const duplicateImportedPackId = Boolean(existingImportedPack);
+        const duplicateActivePackId = activePackIds.has(pack.packId);
         const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
         const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
         const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
         preview.append(summary);
 
-        if (duplicatePackId) {
-          preview.append(el('p', 'issue warning', '同じIDの教材がすでにあります。上書き更新します。'));
+        if (existingImportedPack) {
+          const previewMerge = mergeLoopDeckPacks(existingImportedPack, pack);
+          preview.append(el('p', 'issue warning', '同じIDの教材がすでにあります。上書き更新またはマージ更新を選べます。'));
+          appendMergeReport(preview, previewMerge.report);
         } else {
+          if (duplicateActivePackId) {
+            preview.append(el('p', 'issue warning', '同じIDの教材があります。取り込み後は新しく取り込んだ教材が優先されます。'));
+          }
           if (duplicateModuleIds.length) {
             preview.append(el('p', 'issue warning', `同じIDの教材がすでにあります。取り込み後は新しく取り込んだ教材が優先されます: ${summarizeIds(duplicateModuleIds)}`));
           }
@@ -249,13 +275,32 @@ export async function renderImportScreen(
           }
         }
 
-        const install = button(duplicatePackId ? '上書き更新する' : 'この教材を取り込む', 'btn primary');
+        const install = button(duplicateImportedPackId ? '上書き更新する' : 'この教材を取り込む', 'btn primary');
         install.onclick = async () => {
           await db.saveImportedPack(pack);
-          toast(duplicatePackId ? '教材を上書き更新しました。' : '教材を取り込みました。');
+          toast(duplicateImportedPackId ? '教材を上書き更新しました。' : '教材を取り込みました。');
           await onImported();
         };
         preview.append(install);
+
+        if (existingImportedPack) {
+          const mergeInstall = button('マージ更新する', 'btn');
+          mergeInstall.onclick = async () => {
+            const currentExistingPack = (await db.getImportedPacks()).find((importedPack) => importedPack.packId === pack.packId);
+            if (!currentExistingPack) {
+              await db.saveImportedPack(pack);
+              toast('同じIDのインポート済み教材が見つからなかったため、新規取り込みしました。');
+              await onImported();
+              return;
+            }
+
+            const { pack: mergedPack, report } = mergeLoopDeckPacks(currentExistingPack, pack);
+            await db.saveImportedPack(mergedPack);
+            toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
+            await onImported();
+          };
+          preview.append(mergeInstall);
+        }
       }
     } catch (error) {
       clear(preview);
