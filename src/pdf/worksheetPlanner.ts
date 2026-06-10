@@ -1,5 +1,5 @@
 import { getCorrectAnswer } from '../core/answerJudge';
-import type { ModuleInfo, Question } from '../core/models';
+import type { InputQuestion, ModuleInfo, Question } from '../core/models';
 
 export const WORKSHEET_ROWS_PER_PAGE = 25;
 
@@ -43,10 +43,48 @@ function rangeLabel(rows: WorksheetRow[]): string {
   return first === last ? `No.${first}` : `No.${first}-${last}`;
 }
 
-export function isJapaneseToEnglishWorksheetQuestion(question: Question): boolean {
-  if (question.type !== 'input' || question.imageAsset || question.direction === 'en_to_ja') return false;
+function clean(value: string): string {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function uniqueValues(values: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values.map(clean).filter(Boolean)) {
+    if (seen.has(value)) continue;
+    seen.add(value);
+    result.push(value);
+  }
+  return result;
+}
+
+function japaneseMeanings(question: InputQuestion): string[] {
+  return uniqueValues([question.answer, ...(question.acceptableAnswers ?? [])]).filter((value) => JAPANESE_TEXT.test(value));
+}
+
+function createWorksheetRow(question: Question, fallbackIndex: number): WorksheetRow | undefined {
+  if (question.type !== 'input' || question.imageAsset || question.direction === 'en_to_ja') return undefined;
   const answer = getCorrectAnswer(question);
-  return typeof answer === 'string' && JAPANESE_TEXT.test(question.prompt) && ENGLISH_TEXT.test(answer);
+  if (typeof answer !== 'string') return undefined;
+
+  const prompt = clean(question.prompt);
+  const answerText = clean(answer);
+  const number = question.number ?? fallbackIndex + 1;
+
+  if (JAPANESE_TEXT.test(prompt) && ENGLISH_TEXT.test(answerText)) {
+    return { number, prompt, answer: answerText };
+  }
+
+  const meanings = japaneseMeanings(question);
+  if (ENGLISH_TEXT.test(prompt) && meanings.length) {
+    return { number, prompt: meanings.join('；'), answer: prompt };
+  }
+
+  return undefined;
+}
+
+export function isJapaneseToEnglishWorksheetQuestion(question: Question): boolean {
+  return Boolean(createWorksheetRow(question, 0));
 }
 
 export function createJapaneseToEnglishWorksheetPlan(
@@ -54,12 +92,11 @@ export function createJapaneseToEnglishWorksheetPlan(
   questions: Question[],
   includeAnswerKey: boolean
 ): WorksheetPlan {
-  const supported = questions.filter(isJapaneseToEnglishWorksheetQuestion);
-  const rows = supported.map((question, index): WorksheetRow => ({
-    number: question.number ?? index + 1,
-    prompt: question.prompt,
-    answer: getCorrectAnswer(question) as string
-  }));
+  const rows: WorksheetRow[] = [];
+  for (const question of questions) {
+    const row = createWorksheetRow(question, rows.length);
+    if (row) rows.push(row);
+  }
   const questionChunks = chunks(rows, WORKSHEET_ROWS_PER_PAGE);
   const questionPages = questionChunks.map((pageRows, index): WorksheetPage => ({
     kind: 'questions',
@@ -84,6 +121,6 @@ export function createJapaneseToEnglishWorksheetPlan(
     questionPages,
     answerPages,
     pages: [...questionPages, ...answerPages],
-    skippedQuestionCount: questions.length - supported.length
+    skippedQuestionCount: questions.length - rows.length
   };
 }
