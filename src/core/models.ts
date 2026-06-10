@@ -23,6 +23,7 @@ export interface ModuleInfo {
 
 export interface BaseQuestion {
   id: string;
+  originalId?: string;
   moduleId: string;
   type: QuestionType;
   prompt: string;
