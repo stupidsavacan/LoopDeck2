@@ -1,5 +1,5 @@
-import japaneseFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff?inline';
-import latinFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?inline';
+import japaneseFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff?base64';
+import latinFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?base64';
 import fontkit from '@pdf-lib/fontkit';
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from 'pdf-lib';
 import type { WorksheetPage, WorksheetPlan, WorksheetRow } from './worksheetPlanner';
