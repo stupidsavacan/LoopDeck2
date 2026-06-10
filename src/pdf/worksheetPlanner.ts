@@ -3,6 +3,9 @@ import type { ModuleInfo, Question } from '../core/models';
 
 export const WORKSHEET_ROWS_PER_PAGE = 25;
 
+const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
+const ENGLISH_TEXT = /[a-z]/i;
+
 export interface WorksheetRow {
   number: number;
   prompt: string;
@@ -41,7 +44,9 @@ function rangeLabel(rows: WorksheetRow[]): string {
 }
 
 export function isJapaneseToEnglishWorksheetQuestion(question: Question): boolean {
-  return question.type === 'input' && typeof getCorrectAnswer(question) === 'string';
+  if (question.type !== 'input' || question.imageAsset || question.direction === 'en_to_ja') return false;
+  const answer = getCorrectAnswer(question);
+  return typeof answer === 'string' && JAPANESE_TEXT.test(question.prompt) && ENGLISH_TEXT.test(answer);
 }
 
 export function createJapaneseToEnglishWorksheetPlan(
