@@ -22,7 +22,6 @@ const TEXT_COLOR = rgb(0.08, 0.11, 0.18);
 const LINE_COLOR = rgb(0.42, 0.47, 0.55);
 
 type WorksheetFonts = { japanese: PDFFont; latin: PDFFont };
-
 type TextRun = { text: string; font: PDFFont };
 
 function errorMessage(error: unknown): string {
@@ -84,7 +83,8 @@ export async function loadWorksheetPdfFontBytes(): Promise<WorksheetPdfFontBytes
 }
 
 function fontForCharacter(character: string, fonts: WorksheetFonts): PDFFont {
-  return /^[\u0000-\u024f]$/.test(character) ? fonts.latin : fonts.japanese;
+  const codePoint = character.codePointAt(0) ?? 0;
+  return codePoint <= 0x024f ? fonts.latin : fonts.japanese;
 }
 
 function textRuns(text: string, fonts: WorksheetFonts): TextRun[] {
@@ -124,8 +124,8 @@ function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: n
   if (lines.length < maxLines && current) lines.push(current);
   if (lines.join('').length < text.trim().length) {
     let last = lines[maxLines - 1] ?? '';
-    while (last && textWidth(`${last}\u2026`, fonts, size) > maxWidth) last = last.slice(0, -1);
-    lines[maxLines - 1] = `${last}\u2026`;
+    while (last && textWidth(`${last}…`, fonts, size) > maxWidth) last = last.slice(0, -1);
+    lines[maxLines - 1] = `${last}…`;
   }
   return lines;
 }
@@ -133,7 +133,7 @@ function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: n
 function fitLines(text: string, fonts: WorksheetFonts, maxWidth: number): { lines: string[]; size: number } {
   for (const size of [9, 8, 7]) {
     const lines = wrapText(text, fonts, size, maxWidth, 2);
-    if (lines.join('').replace(/\u2026$/, '').length >= text.trim().length) return { lines, size };
+    if (lines.join('').replace(/…$/, '').length >= text.trim().length) return { lines, size };
   }
   return { lines: wrapText(text, fonts, 7, maxWidth, 2), size: 7 };
 }
@@ -164,8 +164,8 @@ function drawTable(page: PDFPage, worksheetPage: WorksheetPage, fonts: Worksheet
   }
 
   drawCellText(page, 'No.', fonts, left, TABLE_TOP, NO_COLUMN_WIDTH);
-  drawCellText(page, '\u65e5\u672c\u8a9e\u306e\u610f\u5473 / \u554f\u984c', fonts, noRight, TABLE_TOP, PROMPT_COLUMN_WIDTH);
-  drawCellText(page, '\u82f1\u8a9e', fonts, promptRight, TABLE_TOP, ANSWER_COLUMN_WIDTH);
+  drawCellText(page, '日本語の意味 / 問題', fonts, noRight, TABLE_TOP, PROMPT_COLUMN_WIDTH);
+  drawCellText(page, '英語', fonts, promptRight, TABLE_TOP, ANSWER_COLUMN_WIDTH);
 
   worksheetPage.rows.forEach((row, index) => {
     const rowTop = TABLE_TOP - (index + 1) * ROW_HEIGHT;
@@ -176,16 +176,16 @@ function drawTable(page: PDFPage, worksheetPage: WorksheetPage, fonts: Worksheet
 }
 
 function drawHeader(page: PDFPage, plan: WorksheetPlan, worksheetPage: WorksheetPage, fonts: WorksheetFonts): void {
-  const kind = worksheetPage.kind === 'questions' ? '\u554f\u984c' : '\u89e3\u7b54';
+  const kind = worksheetPage.kind === 'questions' ? '問題' : '解答';
   const title = `${plan.moduleTitle}  [${kind}]`;
   const fitted = fitLines(title, fonts, A4_WIDTH - MARGIN_X * 2);
   drawMixedText(page, fitted.lines[0] ?? title, fonts, MARGIN_X, 807, 14);
-  drawMixedText(page, `${plan.rangeLabel} / 25\u554f\u3054\u3068`, fonts, MARGIN_X, 784, 9);
+  drawMixedText(page, `${plan.rangeLabel} / 25問ごと`, fonts, MARGIN_X, 784, 9);
   drawMixedText(page, `${worksheetPage.pageNumber} / ${plan.pages.length}`, fonts, A4_WIDTH - 78, 22, 8);
 }
 
 export async function generateWorksheetPdfBlob(plan: WorksheetPlan, providedFonts?: WorksheetPdfFontBytes): Promise<Blob> {
-  if (!plan.pages.length) throw new Error('PDF\u306b\u51fa\u529b\u3067\u304d\u308b\u5165\u529b\u5f0f\u306e\u554f\u984c\u304c\u3042\u308a\u307e\u305b\u3093\u3002');
+  if (!plan.pages.length) throw new Error('PDFに出力できる入力式の問題がありません。');
   const fontBytes = providedFonts ?? (await loadWorksheetPdfFontBytes());
   const document = await PDFDocument.create();
   document.registerFontkit(fontkit);
@@ -201,5 +201,5 @@ export async function generateWorksheetPdfBlob(plan: WorksheetPlan, providedFont
   }
 
   const bytes = await document.save();
-  return new Blob([bytes], { type: 'application/pdf' });
+  return new Blob([Uint8Array.from(bytes).buffer], { type: 'application/pdf' });
 }
