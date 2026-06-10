@@ -15,7 +15,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 2410;
@@ -24,17 +28,40 @@ public class MainActivity extends Activity {
 
     private ValueCallback<Uri[]> filePathCallback;
     private PendingSave pendingSave;
+    private final Map<String, PendingSaveBuffer> pendingSaveBuffers = new HashMap<>();
     private WebView webView;
 
     private static final class PendingSave {
+        final String saveId;
         final String filename;
         final String mimeType;
         final String base64Data;
+        final int expectedBytes;
 
-        PendingSave(String filename, String mimeType, String base64Data) {
+        PendingSave(String saveId, String filename, String mimeType, String base64Data, int expectedBytes) {
+            this.saveId = saveId;
             this.filename = filename;
             this.mimeType = mimeType;
             this.base64Data = base64Data;
+            this.expectedBytes = expectedBytes;
+        }
+    }
+
+    private static final class PendingSaveBuffer {
+        final String saveId;
+        final String filename;
+        final String mimeType;
+        final int expectedBytes;
+        final int expectedChunks;
+        final StringBuilder base64Data = new StringBuilder();
+        int receivedChunks = 0;
+
+        PendingSaveBuffer(String saveId, String filename, String mimeType, int expectedBytes, int expectedChunks) {
+            this.saveId = saveId;
+            this.filename = filename;
+            this.mimeType = mimeType;
+            this.expectedBytes = expectedBytes;
+            this.expectedChunks = expectedChunks;
         }
     }
 
@@ -45,8 +72,49 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public boolean beginSaveFile(String saveId, String filename, String mimeType, int expectedBytes, int expectedChunks) {
+            if (saveId == null || saveId.trim().isEmpty()) return false;
+            if (expectedChunks <= 0 || expectedChunks > 200000) return false;
+            synchronized (pendingSaveBuffers) {
+                if (pendingSaveBuffers.containsKey(saveId)) return false;
+                pendingSaveBuffers.put(saveId, new PendingSaveBuffer(saveId, safeFilename(filename), safeMimeType(mimeType), expectedBytes, expectedChunks));
+            }
+            return true;
+        }
+
+        @JavascriptInterface
+        public boolean appendSaveFileChunk(String saveId, int chunkIndex, String base64Chunk) {
+            if (saveId == null || base64Chunk == null) return false;
+            synchronized (pendingSaveBuffers) {
+                PendingSaveBuffer buffer = pendingSaveBuffers.get(saveId);
+                if (buffer == null) return false;
+                if (chunkIndex != buffer.receivedChunks) return false;
+                buffer.base64Data.append(base64Chunk);
+                buffer.receivedChunks += 1;
+            }
+            return true;
+        }
+
+        @JavascriptInterface
+        public boolean finishSaveFile(String saveId) {
+            if (saveId == null) return false;
+            final PendingSaveBuffer buffer;
+            synchronized (pendingSaveBuffers) {
+                buffer = pendingSaveBuffers.remove(saveId);
+            }
+            if (buffer == null) return false;
+            if (buffer.receivedChunks != buffer.expectedChunks) {
+                reportSaveResult(buffer.saveId, false, "SAV-A021", "保存データのchunk数が一致しません。", 0);
+                return false;
+            }
+            runOnUiThread(() -> startSaveFile(buffer.saveId, buffer.filename, buffer.mimeType, buffer.base64Data.toString(), buffer.expectedBytes));
+            return true;
+        }
+
+        @JavascriptInterface
         public void saveFile(String filename, String mimeType, String base64Data) {
-            runOnUiThread(() -> startSaveFile(filename, mimeType, base64Data));
+            String saveId = "legacy-" + System.currentTimeMillis();
+            runOnUiThread(() -> startSaveFile(saveId, filename, mimeType, base64Data, -1));
         }
 
         @JavascriptInterface
@@ -132,7 +200,7 @@ public class MainActivity extends Activity {
     private String safeToast(String message) {
         if (message == null || message.trim().isEmpty()) return "LoopDeck";
         String compact = message.replace('\n', ' ').replace('\r', ' ').trim();
-        return compact.length() > 80 ? compact.substring(0, 80) : compact;
+        return compact.length() > 140 ? compact.substring(0, 140) : compact;
     }
 
     private String safeFilename(String filename) {
@@ -142,29 +210,69 @@ public class MainActivity extends Activity {
         return cleaned.isEmpty() ? fallback : cleaned;
     }
 
-    private void startSaveFile(String filename, String mimeType, String base64Data) {
-        pendingSave = new PendingSave(safeFilename(filename), mimeType, base64Data);
+    private String safeMimeType(String mimeType) {
+        return mimeType == null || mimeType.isEmpty() ? "application/octet-stream" : mimeType;
+    }
+
+    private String errorText(Exception error) {
+        String message = error.getMessage();
+        return error.getClass().getSimpleName() + (message == null || message.isEmpty() ? "" : ": " + message);
+    }
+
+    private void reportSaveResult(String saveId, boolean ok, String code, String message, int bytes) {
+        if (webView == null || saveId == null || saveId.isEmpty()) return;
+        try {
+            JSONObject detail = new JSONObject();
+            detail.put("id", saveId);
+            detail.put("ok", ok);
+            detail.put("code", code);
+            detail.put("message", message);
+            detail.put("bytes", bytes);
+            String script = "window.dispatchEvent(new CustomEvent('loopdeck-native-save-result',{detail:" + detail.toString() + "}))";
+            webView.post(() -> webView.evaluateJavascript(script, null));
+        } catch (Exception ignored) {
+            // Best effort only. The native Toast below still exposes the error code.
+        }
+    }
+
+    private void startSaveFile(String saveId, String filename, String mimeType, String base64Data, int expectedBytes) {
+        if (base64Data == null || base64Data.isEmpty()) {
+            reportSaveResult(saveId, false, "SAV-A001", "保存データが空です。", 0);
+            Toast.makeText(this, "[SAV-A001] 保存データが空です。", Toast.LENGTH_LONG).show();
+            return;
+        }
+        pendingSave = new PendingSave(saveId, safeFilename(filename), safeMimeType(mimeType), base64Data, expectedBytes);
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(mimeType == null || mimeType.isEmpty() ? "application/octet-stream" : mimeType);
+        intent.setType(pendingSave.mimeType);
         intent.putExtra(Intent.EXTRA_TITLE, pendingSave.filename);
         try {
             startActivityForResult(intent, SAVE_FILE_REQUEST);
         } catch (Exception error) {
+            reportSaveResult(saveId, false, "SAV-A002", "保存先を開けませんでした: " + errorText(error), 0);
             pendingSave = null;
-            Toast.makeText(this, "保存先を開けませんでした。", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "[SAV-A002] 保存先を開けませんでした。", Toast.LENGTH_LONG).show();
         }
     }
 
     private void completeSaveFile(Uri uri) {
         if (pendingSave == null) return;
+        int bytesWritten = 0;
         try (OutputStream output = getContentResolver().openOutputStream(uri)) {
             if (output == null) throw new IllegalStateException("No output stream");
             byte[] bytes = Base64.decode(pendingSave.base64Data, Base64.DEFAULT);
+            if (bytes.length <= 0) throw new IllegalStateException("Decoded data is 0 bytes");
+            if (pendingSave.expectedBytes > 0 && bytes.length != pendingSave.expectedBytes) {
+                throw new IllegalStateException("Decoded bytes " + bytes.length + " did not match expected " + pendingSave.expectedBytes);
+            }
             output.write(bytes);
+            output.flush();
+            bytesWritten = bytes.length;
             Toast.makeText(this, "書き出しました。", Toast.LENGTH_SHORT).show();
+            reportSaveResult(pendingSave.saveId, true, "SAV-OK", "保存に成功しました。", bytesWritten);
         } catch (Exception error) {
-            Toast.makeText(this, "書き出しに失敗しました。", Toast.LENGTH_LONG).show();
+            reportSaveResult(pendingSave.saveId, false, "SAV-A005", "書き出しに失敗しました: " + errorText(error), bytesWritten);
+            Toast.makeText(this, "[SAV-A005] 書き出しに失敗しました。", Toast.LENGTH_LONG).show();
         } finally {
             pendingSave = null;
         }
@@ -178,6 +286,7 @@ public class MainActivity extends Activity {
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                 completeSaveFile(data.getData());
             } else {
+                if (pendingSave != null) reportSaveResult(pendingSave.saveId, false, "SAV-A004", "保存がキャンセルされました。", 0);
                 pendingSave = null;
             }
             return;
