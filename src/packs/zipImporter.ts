@@ -65,7 +65,7 @@ export async function importLoopDeckZip(file: File): Promise<PackValidationResul
   const fileIssues = validateContainerFile(file);
   if (fileIssues.some((issue) => issue.level === 'error')) return { ok: false, issues: fileIssues };
 
-  const zip = await JSZip.loadAsync(file);
+  const zip = await JSZip.loadAsync(await file.arrayBuffer());
   const paths = Object.values(zip.files).filter((entry) => !entry.dir).map((entry) => entry.name);
   const issues: PackValidationIssue[] = [...fileIssues, ...validatePackFiles(paths)];
 
