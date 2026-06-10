@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import type { LoopDeckPack } from '../src/core/models';
+import type { ImportedPackAsset } from '../src/packs/packTypes';
 import { createLoopDeckZipBytes, makePackFileStem, stringifyLoopDeckJson } from '../src/packs/zipExporter';
 
 const samplePack: LoopDeckPack = {
@@ -28,6 +29,10 @@ const samplePack: LoopDeckPack = {
   ]
 };
 
+function asset(path: string, dataUrl = 'data:image/png;base64,iVBORw0KGgo='): ImportedPackAsset {
+  return { packId: samplePack.packId, path, mimeType: 'image/png', dataUrl };
+}
+
 describe('zipExporter', () => {
   it('creates import-compatible LoopDeck zip files', async () => {
     const bytes = await createLoopDeckZipBytes(samplePack);
@@ -47,6 +52,30 @@ describe('zipExporter', () => {
     });
     expect(modules).toEqual(samplePack.modules);
     expect(questions).toEqual(samplePack.questions);
+  });
+
+  it('includes safe stored assets referenced by questions', async () => {
+    const imagePack: LoopDeckPack = {
+      ...samplePack,
+      questions: [{ ...samplePack.questions[0], imageAsset: 'images/map.png' }]
+    };
+    const bytes = await createLoopDeckZipBytes(imagePack, [asset('images/map.png'), asset('images/unreferenced.png')]);
+    const zip = await JSZip.loadAsync(bytes);
+
+    expect(zip.file('images/map.png')).not.toBeNull();
+    expect(await zip.file('images/map.png')!.async('base64')).toBe('iVBORw0KGgo=');
+    expect(zip.file('images/unreferenced.png')).toBeNull();
+  });
+
+  it('does not export unsafe or active asset references', async () => {
+    const unsafePack: LoopDeckPack = {
+      ...samplePack,
+      questions: [{ ...samplePack.questions[0], imageAsset: '../evil.png' }]
+    };
+    const bytes = await createLoopDeckZipBytes(unsafePack, [asset('../evil.png')]);
+    const zip = await JSZip.loadAsync(bytes);
+
+    expect(Object.keys(zip.files).sort()).toEqual(['manifest.json', 'modules.json', 'questions.json']);
   });
 
   it('exports full pack JSON with a trailing newline', () => {
