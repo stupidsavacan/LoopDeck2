@@ -8,6 +8,8 @@ export interface PackAssetReader {
 
 export type QuestionImageAssetResolver = (question: Question) => Promise<string | undefined>;
 
+let activePackView: ResolvedPackView | undefined;
+
 export function createQuestionImageAssetResolver(
   packView: ResolvedPackView,
   assetReader: PackAssetReader = db
@@ -19,3 +21,12 @@ export function createQuestionImageAssetResolver(
     return (await assetReader.getPackAsset(packId, question.imageAsset))?.dataUrl;
   };
 }
+
+export function setActivePackAssetView(packView: ResolvedPackView): void {
+  activePackView = packView;
+}
+
+export const resolveActiveQuestionImageAsset: QuestionImageAssetResolver = async (question) => {
+  if (!activePackView) return undefined;
+  return createQuestionImageAssetResolver(activePackView)(question);
+};
