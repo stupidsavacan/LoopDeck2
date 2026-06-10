@@ -1,8 +1,14 @@
 import type { ModuleInfo, Question } from '../core/models';
-import { buildRangeOptions, filterStudyQuestions } from '../core/sessionEngine';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
+import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
 import { getActiveModules, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el, toast } from '../ui/dom';
+
+interface WorksheetModuleOption {
+  module: ModuleInfo;
+  questions: Question[];
+  label: string;
+}
 
 function makeOption(value: string, label: string): HTMLOptionElement {
   const option = el('option', '', label) as HTMLOptionElement;
@@ -43,26 +49,35 @@ function supportedQuestions(packView: ResolvedPackView, module: ModuleInfo): Que
   return getQuestionsForModule(packView, module).filter(isJapaneseToEnglishWorksheetQuestion);
 }
 
+function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOption[] {
+  return getActiveModules(packView)
+    .map((module) => {
+      const questions = supportedQuestions(packView, module);
+      return { module, questions, label: formatWorksheetModuleLabel(module, questions) };
+    })
+    .filter((option) => option.questions.length > 0);
+}
+
 export async function renderPdfWorksheetScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void): Promise<void> {
   clear(root);
-  const modules = getActiveModules(packView).filter((module) => supportedQuestions(packView, module).length > 0);
+  const modules = worksheetModuleOptions(packView);
   const screen = el('main', 'screen pdf-worksheet-screen');
   const header = el('header', 'topbar');
-  const back = button('\u2190 \u30db\u30fc\u30e0', 'btn ghost');
+  const back = button('← ホーム', 'btn ghost');
   back.onclick = navigateHome;
   header.append(back);
 
   const intro = el('section', 'hero-card');
   intro.append(
     el('p', 'eyebrow', 'A4 / Japanese to English'),
-    el('h1', '', 'PDF\u30d7\u30ea\u30f3\u30c8\u4f5c\u6210'),
-    el('p', '', '\u65e5\u672c\u8a9e\u306e\u610f\u5473\u304b\u3089\u82f1\u8a9e\u3092\u66f8\u304f\u3001\u30c6\u30b9\u30c8\u5bfe\u7b56\u7528\u306eA4\u30d7\u30ea\u30f3\u30c8\u3092\u4f5c\u6210\u3057\u307e\u3059\u3002')
+    el('h1', '', 'PDFプリント作成'),
+    el('p', '', '日本語の意味から英語を書く、テスト対策用のA4プリントを作成します。')
   );
 
   const setup = el('section', 'card setup-card');
-  setup.append(el('h2', '', '\u51fa\u529b\u8a2d\u5b9a'));
+  setup.append(el('h2', '', '出力設定'));
   if (!modules.length) {
-    setup.append(el('p', 'empty', '\u51fa\u529b\u3067\u304d\u308b\u5165\u529b\u5f0f\u306e\u6559\u6750\u304c\u3042\u308a\u307e\u305b\u3093\u3002'));
+    setup.append(el('p', 'empty', '出力できる入力式の教材がありません。'));
     screen.append(header, intro, setup);
     root.append(screen);
     return;
@@ -71,37 +86,39 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   const grid = el('div', 'settings-grid');
   const moduleLabel = el('label', 'field-label');
   const moduleSelect = el('select', 'study-select') as HTMLSelectElement;
-  for (const module of modules) moduleSelect.append(makeOption(module.id, `${module.title} (${supportedQuestions(packView, module).length}\u554f)`));
-  moduleLabel.append(el('span', '', '\u6559\u6750'), moduleSelect);
+  modules.forEach((option, index) => moduleSelect.append(makeOption(String(index), option.label)));
+  moduleLabel.append(el('span', '', '教材'), moduleSelect);
 
   const rangeLabel = el('label', 'field-label');
   const rangeSelect = el('select', 'study-select') as HTMLSelectElement;
-  rangeLabel.append(el('span', '', '\u7bc4\u56f2'), rangeSelect);
+  rangeLabel.append(el('span', '', '範囲'), rangeSelect);
 
   const answerLabel = el('label', 'check-label');
   const includeAnswers = document.createElement('input');
   includeAnswers.type = 'checkbox';
   includeAnswers.checked = true;
-  answerLabel.append(includeAnswers, document.createTextNode(' \u89e3\u7b54\u30da\u30fc\u30b8\u3092\u4ed8\u3051\u308b'));
+  answerLabel.append(includeAnswers, document.createTextNode(' 解答ページを付ける'));
 
   const summary = el('p', 'hint');
   let selectedQuestions: Question[] = [];
 
+  function selectedModuleOption(): WorksheetModuleOption {
+    return modules[Number(moduleSelect.value)] ?? modules[0];
+  }
+
   function refreshRangeOptions(): void {
-    const module = modules.find((item) => item.id === moduleSelect.value) ?? modules[0];
-    const questions = supportedQuestions(packView, module);
-    rangeSelect.replaceChildren(...buildRangeOptions(questions).map((option) => makeOption(option.value, option.label)));
-    selectedQuestions = questions;
+    const selected = selectedModuleOption();
+    rangeSelect.replaceChildren(...buildWorksheetRangeOptions(selected.questions).map((option) => makeOption(option.value, option.label)));
+    selectedQuestions = selected.questions;
     refreshSummary();
   }
 
   function refreshSummary(): void {
-    const module = modules.find((item) => item.id === moduleSelect.value) ?? modules[0];
-    const questions = supportedQuestions(packView, module);
-    selectedQuestions = filterStudyQuestions(questions, { shuffle: false, autoNext: false, questionLimit: 'all', selectedRange: rangeSelect.value || 'all' });
+    const selected = selectedModuleOption();
+    selectedQuestions = filterWorksheetQuestionsByRange(selected.questions, rangeSelect.value || 'all');
     const questionPages = Math.ceil(selectedQuestions.length / 25);
     const totalPages = questionPages * (includeAnswers.checked ? 2 : 1);
-    summary.textContent = `${selectedQuestions.length}\u554f / ${totalPages}\u30da\u30fc\u30b8\u3002\u554f\u984c\u30da\u30fc\u30b8\u3092\u5148\u306b\u3001\u89e3\u7b54\u306f\u5f8c\u308d\u306b\u51fa\u529b\u3057\u307e\u3059\u3002`;
+    summary.textContent = `${selectedQuestions.length}問 / ${totalPages}ページ。問題ページを先に、解答は後ろに出力します。`;
   }
 
   moduleSelect.onchange = refreshRangeOptions;
@@ -113,32 +130,32 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   setup.append(grid, answerLabel, summary);
 
   const actions = el('section', 'card action-card');
-  const exportButton = button('PDF\u3092\u66f8\u304d\u51fa\u3059', 'btn primary');
+  const exportButton = button('PDFを書き出す', 'btn primary');
   exportButton.onclick = async () => {
-    const module = modules.find((item) => item.id === moduleSelect.value) ?? modules[0];
+    const selected = selectedModuleOption();
     if (!selectedQuestions.length) {
-      toast('\u51fa\u529b\u3067\u304d\u308b\u554f\u984c\u304c\u3042\u308a\u307e\u305b\u3093\u3002');
+      toast('出力できる問題がありません。');
       return;
     }
     exportButton.disabled = true;
-    exportButton.textContent = 'PDF\u3092\u4f5c\u6210\u4e2d...';
+    exportButton.textContent = 'PDFを作成中...';
     try {
-      const plan = createJapaneseToEnglishWorksheetPlan(module, selectedQuestions, includeAnswers.checked);
+      const plan = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
       const { generateWorksheetPdfBlob } = await import('../pdf/worksheetPdf');
       const pdf = await generateWorksheetPdfBlob(plan);
-      await savePdf(pdf, `${safeFileStem(module.title)}-${safeFileStem(plan.rangeLabel)}.pdf`);
-      toast('PDF\u30d7\u30ea\u30f3\u30c8\u3092\u66f8\u304d\u51fa\u3057\u307e\u3057\u305f\u3002');
+      await savePdf(pdf, `${safeFileStem(selected.label)}-${safeFileStem(plan.rangeLabel)}.pdf`);
+      toast('PDFプリントを書き出しました。');
     } catch (error) {
-      toast(`PDF\u4f5c\u6210\u306b\u5931\u6557\u3057\u307e\u3057\u305f\uff1a${error instanceof Error ? error.message : String(error)}`);
+      toast(`PDF作成に失敗しました：${error instanceof Error ? error.message : String(error)}`);
     } finally {
       exportButton.disabled = false;
-      exportButton.textContent = 'PDF\u3092\u66f8\u304d\u51fa\u3059';
+      exportButton.textContent = 'PDFを書き出す';
     }
   };
   actions.append(exportButton);
 
   const note = el('section', 'card');
-  note.append(el('h2', '', '\u5bfe\u5fdc\u7bc4\u56f2'), el('p', 'hint', 'A4\u7e26\u30fb1\u30da\u30fc\u30b825\u554f\u30fb\u65e5\u672c\u8a9e\u304b\u3089\u82f1\u8a9e\u306e\u5165\u529b\u5f0f\u554f\u984c\u306b\u5bfe\u5fdc\u3057\u3066\u3044\u307e\u3059\u3002\u9078\u629e\u554f\u984c\u30fb\u753b\u50cf\u554f\u984c\u30fb\u9006\u65b9\u5411\u306f\u51fa\u529b\u3057\u307e\u305b\u3093\u3002'));
+  note.append(el('h2', '', '対応範囲'), el('p', 'hint', 'A4縦・1ページ25問・日本語から英語の入力式問題に対応しています。選択問題・画像問題・逆方向は出力しません。'));
 
   screen.append(header, intro, setup, actions, note);
   root.append(screen);
