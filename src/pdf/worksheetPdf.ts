@@ -1,5 +1,5 @@
-import japaneseFontUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff?url';
-import latinFontUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?url';
+import japaneseFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff?inline';
+import latinFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?inline';
 import fontkit from '@pdf-lib/fontkit';
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from 'pdf-lib';
 import type { WorksheetPage, WorksheetPlan, WorksheetRow } from './worksheetPlanner';
@@ -24,62 +24,30 @@ const LINE_COLOR = rgb(0.42, 0.47, 0.55);
 type WorksheetFonts = { japanese: PDFFont; latin: PDFFont };
 type TextRun = { text: string; font: PDFFont };
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
 function validateFontBytes(bytes: Uint8Array): Uint8Array {
   if (!bytes.length) throw new Error('Japanese PDF font is empty.');
   return bytes;
 }
 
-async function fetchFont(url: string): Promise<Uint8Array> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return validateFontBytes(new Uint8Array(await response.arrayBuffer()));
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return bytes;
 }
 
-function xhrFont(url: string): Promise<Uint8Array> {
-  if (typeof XMLHttpRequest === 'undefined') throw new Error('XMLHttpRequest is not available.');
-  return new Promise((resolve, reject) => {
-    const request = new XMLHttpRequest();
-    request.open('GET', url, true);
-    request.responseType = 'arraybuffer';
-    request.onload = () => {
-      const status = request.status;
-      if (status && (status < 200 || status >= 300)) {
-        reject(new Error(`HTTP ${status}`));
-        return;
-      }
-      try {
-        resolve(validateFontBytes(new Uint8Array(request.response as ArrayBuffer)));
-      } catch (error) {
-        reject(error);
-      }
-    };
-    request.onerror = () => reject(new Error('XMLHttpRequest failed.'));
-    request.send();
-  });
-}
-
-export async function loadFontBytesFromUrl(url: string): Promise<Uint8Array> {
-  let fetchError: unknown;
-  try {
-    return await fetchFont(url);
-  } catch (error) {
-    fetchError = error;
-  }
-
-  try {
-    return await xhrFont(url);
-  } catch (xhrError) {
-    throw new Error(`Japanese PDF font could not be loaded. fetch failed: ${errorMessage(fetchError)}; xhr failed: ${errorMessage(xhrError)}`);
-  }
+export function loadFontBytesFromDataUrl(dataUrl: string): Uint8Array {
+  const marker = ';base64,';
+  const markerIndex = dataUrl.indexOf(marker);
+  if (!dataUrl.startsWith('data:') || markerIndex < 0) throw new Error('Embedded Japanese PDF font is not a base64 data URL.');
+  return validateFontBytes(base64ToBytes(dataUrl.slice(markerIndex + marker.length)));
 }
 
 export async function loadWorksheetPdfFontBytes(): Promise<WorksheetPdfFontBytes> {
-  const [japanese, latin] = await Promise.all([loadFontBytesFromUrl(japaneseFontUrl), loadFontBytesFromUrl(latinFontUrl)]);
-  return { japanese, latin };
+  return {
+    japanese: loadFontBytesFromDataUrl(japaneseFontDataUrl),
+    latin: loadFontBytesFromDataUrl(latinFontDataUrl)
+  };
 }
 
 function fontForCharacter(character: string, fonts: WorksheetFonts): PDFFont {
