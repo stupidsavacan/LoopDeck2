@@ -30,9 +30,9 @@ describe('Android native save result waiting', () => {
 
   it('times out instead of waiting forever when no native callback arrives', async () => {
     vi.useFakeTimers();
-    const waiting = waitForNativeSave('missing', 25);
+    const assertion = expect(waitForNativeSave('missing', 25)).rejects.toThrow('[SAV-A032]');
     await vi.advanceTimersByTimeAsync(25);
 
-    await expect(waiting).rejects.toThrow('[SAV-A032]');
+    await assertion;
   });
 });
