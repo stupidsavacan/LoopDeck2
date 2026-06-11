@@ -1,5 +1,8 @@
 import JSZip from 'jszip';
 import type { LoopDeckPack } from '../core/models';
+import { db } from '../storage/db';
+import { isSafeImageAssetRef, isSafeImageDataUrl } from './assetSafety';
+import type { ImportedPackAsset } from './packTypes';
 
 export interface LoopDeckZipFiles {
   manifest: {
@@ -17,13 +20,24 @@ function stringifyJson(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-function createZip(pack: LoopDeckPack): JSZip {
+function assetBase64(dataUrl: string): string {
+  return dataUrl.slice(dataUrl.indexOf(',') + 1);
+}
+
+function createZip(pack: LoopDeckPack, assets: ImportedPackAsset[] = []): JSZip {
   const zip = new JSZip();
   const files = createLoopDeckZipFiles(pack);
 
   zip.file('manifest.json', stringifyJson(files.manifest));
   zip.file('modules.json', stringifyJson(files.modules));
   zip.file('questions.json', stringifyJson(files.questions));
+
+  const referencedPaths = new Set(pack.questions.map((question) => question.imageAsset).filter((path): path is string => Boolean(path)));
+  for (const asset of assets) {
+    if (asset.packId !== pack.packId || !referencedPaths.has(asset.path)) continue;
+    if (!isSafeImageAssetRef(asset.path) || !isSafeImageDataUrl(asset.dataUrl)) continue;
+    zip.file(asset.path.replace(/\\/g, '/'), assetBase64(asset.dataUrl), { base64: true });
+  }
 
   return zip;
 }
@@ -49,16 +63,17 @@ export function stringifyLoopDeckJson(pack: LoopDeckPack): string {
   return stringifyJson(pack);
 }
 
-export async function createLoopDeckZipBlob(pack: LoopDeckPack): Promise<Blob> {
-  return createZip(pack).generateAsync({
+export async function createLoopDeckZipBlob(pack: LoopDeckPack, assets?: ImportedPackAsset[]): Promise<Blob> {
+  const availableAssets = assets ?? (await db.getImportedPackAssets());
+  return createZip(pack, availableAssets).generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
     compressionOptions: { level: 6 }
   });
 }
 
-export async function createLoopDeckZipBytes(pack: LoopDeckPack): Promise<Uint8Array> {
-  return createZip(pack).generateAsync({
+export async function createLoopDeckZipBytes(pack: LoopDeckPack, assets: ImportedPackAsset[] = []): Promise<Uint8Array> {
+  return createZip(pack, assets).generateAsync({
     type: 'uint8array',
     compression: 'DEFLATE',
     compressionOptions: { level: 6 }

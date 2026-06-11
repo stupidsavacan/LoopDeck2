@@ -6,10 +6,18 @@ export interface PackValidationIssue {
   path?: string;
 }
 
+export interface ImportedPackAsset {
+  packId: string;
+  path: string;
+  mimeType: string;
+  dataUrl: string;
+}
+
 export interface PackValidationResult {
   ok: boolean;
   issues: PackValidationIssue[];
   pack?: LoopDeckPack;
+  assets?: ImportedPackAsset[];
 }
 
 export const FORBIDDEN_EXTENSIONS = [
