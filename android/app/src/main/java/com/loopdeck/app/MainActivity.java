@@ -67,9 +67,7 @@ public class MainActivity extends Activity {
 
     public final class LoopDeckBridge {
         @JavascriptInterface
-        public boolean canUseNativeSave() {
-            return true;
-        }
+        public boolean canUseNativeSave() { return true; }
 
         @JavascriptInterface
         public boolean beginSaveFile(String saveId, String filename, String mimeType, int expectedBytes, int expectedChunks) {
@@ -87,8 +85,7 @@ public class MainActivity extends Activity {
             if (saveId == null || base64Chunk == null) return false;
             synchronized (pendingSaveBuffers) {
                 PendingSaveBuffer buffer = pendingSaveBuffers.get(saveId);
-                if (buffer == null) return false;
-                if (chunkIndex != buffer.receivedChunks) return false;
+                if (buffer == null || chunkIndex != buffer.receivedChunks) return false;
                 buffer.base64Data.append(base64Chunk);
                 buffer.receivedChunks += 1;
             }
@@ -99,9 +96,7 @@ public class MainActivity extends Activity {
         public boolean finishSaveFile(String saveId) {
             if (saveId == null) return false;
             final PendingSaveBuffer buffer;
-            synchronized (pendingSaveBuffers) {
-                buffer = pendingSaveBuffers.remove(saveId);
-            }
+            synchronized (pendingSaveBuffers) { buffer = pendingSaveBuffers.remove(saveId); }
             if (buffer == null) return false;
             if (buffer.receivedChunks != buffer.expectedChunks) {
                 reportSaveResult(buffer.saveId, false, "SAV-A021", "保存データのchunk数が一致しません。", 0);
@@ -126,7 +121,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         webView = new WebView(this);
         setContentView(webView);
 
@@ -136,39 +130,23 @@ public class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
-        // Vite builds ES modules and CSS under file:///android_asset/loopdeck/assets/.
-        // The app must allow those bundled file URLs to load, while remote/universal access stays blocked.
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            settings.setSafeBrowsingEnabled(true);
-        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) settings.setSafeBrowsingEnabled(true);
 
         webView.addJavascriptInterface(new LoopDeckBridge(), "LoopDeckAndroid");
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return shouldBlockNavigation(request.getUrl());
-            }
-
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) { return shouldBlockNavigation(request.getUrl()); }
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return shouldBlockNavigation(Uri.parse(url));
-            }
+            public boolean shouldOverrideUrlLoading(WebView view, String url) { return shouldBlockNavigation(Uri.parse(url)); }
         });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onShowFileChooser(
-                    WebView webView,
-                    ValueCallback<Uri[]> callback,
-                    FileChooserParams fileChooserParams
-            ) {
-                if (MainActivity.this.filePathCallback != null) {
-                    MainActivity.this.filePathCallback.onReceiveValue(null);
-                }
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> callback, FileChooserParams fileChooserParams) {
+                if (MainActivity.this.filePathCallback != null) MainActivity.this.filePathCallback.onReceiveValue(null);
                 MainActivity.this.filePathCallback = callback;
-
                 Intent intent = fileChooserParams.createIntent();
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 try {
@@ -181,10 +159,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        }
-
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         webView.loadUrl(ASSET_BASE_URL + "index.html");
     }
 
@@ -236,6 +211,11 @@ public class MainActivity extends Activity {
     }
 
     private void startSaveFile(String saveId, String filename, String mimeType, String base64Data, int expectedBytes) {
+        if (pendingSave != null) {
+            reportSaveResult(saveId, false, "SAV-A003", "別の保存処理が完了するまで待ってください。", 0);
+            Toast.makeText(this, "[SAV-A003] 別の保存処理が進行中です。", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (base64Data == null || base64Data.isEmpty()) {
             reportSaveResult(saveId, false, "SAV-A001", "保存データが空です。", 0);
             Toast.makeText(this, "[SAV-A001] 保存データが空です。", Toast.LENGTH_LONG).show();
@@ -281,17 +261,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == SAVE_FILE_REQUEST) {
-            if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                completeSaveFile(data.getData());
-            } else {
+            if (resultCode == RESULT_OK && data != null && data.getData() != null) completeSaveFile(data.getData());
+            else {
                 if (pendingSave != null) reportSaveResult(pendingSave.saveId, false, "SAV-A004", "保存がキャンセルされました。", 0);
                 pendingSave = null;
             }
             return;
         }
-
         if (requestCode != FILE_CHOOSER_REQUEST || filePathCallback == null) return;
 
         Uri[] results = null;
@@ -299,12 +276,8 @@ public class MainActivity extends Activity {
             if (data.getClipData() != null) {
                 int count = data.getClipData().getItemCount();
                 results = new Uri[count];
-                for (int i = 0; i < count; i++) {
-                    results[i] = data.getClipData().getItemAt(i).getUri();
-                }
-            } else if (data.getData() != null) {
-                results = new Uri[]{data.getData()};
-            }
+                for (int i = 0; i < count; i++) results[i] = data.getClipData().getItemAt(i).getUri();
+            } else if (data.getData() != null) results = new Uri[]{data.getData()};
         }
         filePathCallback.onReceiveValue(results);
         filePathCallback = null;
