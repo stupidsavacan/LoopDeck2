@@ -53,4 +53,16 @@ describe('imported pack asset storage', () => {
     expect((await db.getImportedPacks()).some((item) => item.packId === packId)).toBe(false);
     expect(await db.getAttempts()).toContainEqual(attempt);
   });
+
+  it('does not overwrite an existing same-path asset during additive merge', async () => {
+    const packId = 'storage-image-path-collision';
+    const savedPack = pack(packId);
+    await db.deleteImportedPack(packId);
+    await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/map.png', 'b2xk')]);
+
+    await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/map.png', 'bmV3')], false);
+
+    expect((await db.getPackAsset(packId, 'images/map.png'))?.dataUrl).toBe('data:image/png;base64,b2xk');
+    await db.deleteImportedPack(packId);
+  });
 });
