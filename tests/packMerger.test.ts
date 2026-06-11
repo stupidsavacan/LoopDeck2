@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LoopDeckPack, ModuleInfo, Question } from '../src/core/models';
-import { mergeLoopDeckPacks } from '../src/packs/packMerger';
+import { mergeLoopDeckPacks, mergeLoopDeckPacksIntoExisting } from '../src/packs/packMerger';
 import { validatePack } from '../src/packs/packValidator';
 
 function inputQuestion(id: string, moduleId: string, prompt: string, answer = `${prompt} answer`): Question {
@@ -214,5 +214,28 @@ describe('mergeLoopDeckPacks', () => {
 
     expect(validation.ok).toBe(true);
     expect(validation.issues).toEqual([]);
+  });
+
+  it('can merge a different-pack addon into an existing module by module id', () => {
+    const existing = pack({
+      packId: 'built-in-final',
+      title: '一学期期末テスト',
+      modules: [moduleInfo('leap_final', 'LEAP 201〜300', ['leap_final-201'])],
+      questions: [inputQuestion('leap_final-201', 'leap_final', 'ability', '能力')]
+    });
+    const incoming = pack({
+      packId: 'leap-301-400-addon',
+      title: 'LEAP 301〜400',
+      modules: [moduleInfo('leap_final', 'LEAP 301〜400', ['leap_final-301'])],
+      questions: [inputQuestion('leap_final-301', 'leap_final', 'modern', '現代の')]
+    });
+
+    const result = mergeLoopDeckPacksIntoExisting(existing, incoming);
+
+    expect(result.pack.packId).toBe('built-in-final');
+    expect(result.report.mergedModules).toBe(1);
+    expect(result.report.addedQuestions).toBe(1);
+    expect(result.pack.modules.find((module) => module.id === 'leap_final')?.questionIds).toEqual(['leap_final-201', 'leap_final-301']);
+    expect(result.pack.questions.map((question) => question.id)).toEqual(['leap_final-201', 'leap_final-301']);
   });
 });
