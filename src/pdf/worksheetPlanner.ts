@@ -5,8 +5,6 @@ export const WORKSHEET_ROWS_PER_PAGE = 25;
 
 const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
 const ENGLISH_TEXT = /[a-z]/i;
-const LEADING_ENGLISH_TERM = /^\s*([A-Za-z][A-Za-z0-9'’.\-]*(?:\s+[A-Za-z][A-Za-z0-9'’.\-]*)*)/;
-const MEANING_PROMPT = /\u306e\u610f\u5473\u306f?[\uff1f?]?\s*$/;
 
 export interface WorksheetRow {
   number: number;
@@ -64,20 +62,8 @@ function japaneseMeanings(question: InputQuestion): string[] {
   return uniqueValues([question.answer, ...(question.acceptableAnswers ?? [])]).filter((value) => JAPANESE_TEXT.test(value));
 }
 
-function englishTermFromPrompt(prompt: string): string | undefined {
-  const cleaned = clean(prompt);
-  if (!ENGLISH_TEXT.test(cleaned)) return undefined;
-  if (!JAPANESE_TEXT.test(cleaned)) return cleaned;
-  const match = LEADING_ENGLISH_TERM.exec(cleaned);
-  if (!match) return undefined;
-  const term = clean(match[1]);
-  const rest = clean(cleaned.slice(match[0].length));
-  if (!term || !MEANING_PROMPT.test(rest)) return undefined;
-  return term;
-}
-
 function createWorksheetRow(question: Question, fallbackIndex: number): WorksheetRow | undefined {
-  if (question.type !== 'input' || question.imageAsset) return undefined;
+  if (question.type !== 'input' || question.imageAsset || question.direction === 'en_to_ja') return undefined;
   const answer = getCorrectAnswer(question);
   if (typeof answer !== 'string') return undefined;
 
@@ -85,14 +71,13 @@ function createWorksheetRow(question: Question, fallbackIndex: number): Workshee
   const answerText = clean(answer);
   const number = question.number ?? fallbackIndex + 1;
 
-  if (question.direction !== 'en_to_ja' && JAPANESE_TEXT.test(prompt) && ENGLISH_TEXT.test(answerText)) {
+  if (JAPANESE_TEXT.test(prompt) && ENGLISH_TEXT.test(answerText)) {
     return { number, prompt, answer: answerText };
   }
 
   const meanings = japaneseMeanings(question);
-  const englishTerm = englishTermFromPrompt(prompt);
-  if (englishTerm && meanings.length) {
-    return { number, prompt: meanings.join('；'), answer: englishTerm };
+  if (ENGLISH_TEXT.test(prompt) && !JAPANESE_TEXT.test(prompt) && meanings.length) {
+    return { number, prompt: meanings.join('；'), answer: prompt };
   }
 
   return undefined;
@@ -131,8 +116,8 @@ export function createJapaneseToEnglishWorksheetPlan(
   return {
     moduleTitle: module.title,
     rangeLabel: rangeLabel(rows),
-    rows,
     rowsPerPage: WORKSHEET_ROWS_PER_PAGE,
+    rows,
     questionPages,
     answerPages,
     pages: [...questionPages, ...answerPages],
