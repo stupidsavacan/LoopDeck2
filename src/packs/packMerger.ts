@@ -140,12 +140,8 @@ function mergeModules(
   return Array.from(moduleById.values());
 }
 
-export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {
-  if (existingPack.packId !== incomingPack.packId) {
-    throw new Error(`Cannot merge different packIds: ${existingPack.packId} !== ${incomingPack.packId}`);
-  }
-
-  const report: MergePackReport = {
+function emptyMergeReport(): MergePackReport {
+  return {
     addedFolders: 0,
     updatedFolders: 0,
     addedModules: 0,
@@ -154,7 +150,10 @@ export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: Loo
     renamedQuestions: 0,
     skippedIdenticalQuestions: 0
   };
+}
 
+export function mergeLoopDeckPacksIntoExisting(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {
+  const report = emptyMergeReport();
   const folders = mergeFolders(existingPack.folders, incomingPack.folders, report);
   const { questions, incomingQuestionIdMap } = mergeQuestions(existingPack.questions, incomingPack.questions, report);
   const modules = mergeModules(existingPack.modules, incomingPack.modules, incomingQuestionIdMap, report);
@@ -163,12 +162,24 @@ export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: Loo
     pack: {
       packVersion: Math.max(existingPack.packVersion, incomingPack.packVersion),
       packId: existingPack.packId,
-      title: incomingPack.title,
-      description: incomingPack.description !== undefined ? incomingPack.description : existingPack.description,
+      title: existingPack.title,
+      description: existingPack.description !== undefined ? existingPack.description : incomingPack.description,
       folders,
       modules,
       questions
     },
     report
   };
+}
+
+export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {
+  if (existingPack.packId !== incomingPack.packId) {
+    throw new Error(`Cannot merge different packIds: ${existingPack.packId} !== ${incomingPack.packId}`);
+  }
+
+  return mergeLoopDeckPacksIntoExisting({
+    ...existingPack,
+    title: incomingPack.title,
+    description: incomingPack.description !== undefined ? incomingPack.description : existingPack.description
+  }, incomingPack);
 }
