@@ -19,8 +19,6 @@ export function stageMergedPackAssets(sourcePack: LoopDeckPack, mergedPack: Loop
   if (!sourceAssets) return;
 
   const assets = sourceAssets.map((asset) => ({ ...asset, packId: mergedPack.packId }));
-  assetsByExactPack.delete(sourcePack);
-  assetsByPackId.delete(sourcePack.packId);
   assetsByExactPack.set(mergedPack, { assets, replaceAssets: false });
 }
 
