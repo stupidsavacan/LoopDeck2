@@ -1,4 +1,5 @@
 import type { FolderInfo, LoopDeckPack, ModuleInfo, Question } from '../core/models';
+import { stageMergedPackAssets } from './importedAssetStaging';
 
 export interface MergePackReport {
   addedFolders: number;
@@ -51,11 +52,8 @@ function mergeFolders(existingFolders: FolderInfo[], incomingFolders: FolderInfo
   const folderById = new Map(existingFolders.map((folder) => [folder.id, folder]));
 
   for (const incomingFolder of incomingFolders) {
-    if (folderById.has(incomingFolder.id)) {
-      report.updatedFolders += 1;
-    } else {
-      report.addedFolders += 1;
-    }
+    if (folderById.has(incomingFolder.id)) report.updatedFolders += 1;
+    else report.addedFolders += 1;
     folderById.set(incomingFolder.id, incomingFolder);
   }
 
@@ -91,11 +89,7 @@ function mergeQuestions(
     }
 
     const renamedId = nextMergedQuestionId(incomingQuestion.id, usedQuestionIds);
-    const renamedQuestion: Question = {
-      ...incomingQuestion,
-      id: renamedId,
-      moduleId: incomingQuestion.moduleId
-    };
+    const renamedQuestion: Question = { ...incomingQuestion, id: renamedId, moduleId: incomingQuestion.moduleId };
     incomingQuestionIdMap.set(incomingQuestion.id, renamedId);
     questions.push(renamedQuestion);
     report.renamedQuestions += 1;
@@ -121,10 +115,7 @@ function mergeModules(
     const existingModule = moduleById.get(incomingModule.id);
 
     if (!existingModule) {
-      moduleById.set(incomingModule.id, {
-        ...incomingModule,
-        questionIds: uniqueStrings(incomingQuestionIds)
-      });
+      moduleById.set(incomingModule.id, { ...incomingModule, questionIds: uniqueStrings(incomingQuestionIds) });
       report.addedModules += 1;
       continue;
     }
@@ -157,19 +148,18 @@ export function mergeLoopDeckPacksIntoExisting(existingPack: LoopDeckPack, incom
   const folders = mergeFolders(existingPack.folders, incomingPack.folders, report);
   const { questions, incomingQuestionIdMap } = mergeQuestions(existingPack.questions, incomingPack.questions, report);
   const modules = mergeModules(existingPack.modules, incomingPack.modules, incomingQuestionIdMap, report);
-
-  return {
-    pack: {
-      packVersion: Math.max(existingPack.packVersion, incomingPack.packVersion),
-      packId: existingPack.packId,
-      title: existingPack.title,
-      description: existingPack.description !== undefined ? existingPack.description : incomingPack.description,
-      folders,
-      modules,
-      questions
-    },
-    report
+  const pack: LoopDeckPack = {
+    packVersion: Math.max(existingPack.packVersion, incomingPack.packVersion),
+    packId: existingPack.packId,
+    title: existingPack.title,
+    description: existingPack.description !== undefined ? existingPack.description : incomingPack.description,
+    folders,
+    modules,
+    questions
   };
+
+  stageMergedPackAssets(incomingPack, pack);
+  return { pack, report };
 }
 
 export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {
