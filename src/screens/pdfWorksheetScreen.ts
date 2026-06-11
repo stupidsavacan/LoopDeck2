@@ -171,12 +171,13 @@ function disambiguateLabels(options: WorksheetModuleOption[]): WorksheetModuleOp
 
 function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOption[] {
   const options: WorksheetModuleOption[] = [];
-  for (const pack of packView.packs) {
-    for (const module of pack.modules) {
-      const questions = supportedQuestions(pack, module);
-      if (!questions.length) continue;
-      options.push({ packId: pack.packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
-    }
+  for (const module of packView.modules) {
+    const packId = packView.modulePackIdById.get(module.id);
+    const pack = packId ? packView.packById.get(packId) : undefined;
+    if (!packId || !pack) continue;
+    const questions = supportedQuestions(pack, module);
+    if (!questions.length) continue;
+    options.push({ packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
   }
   return disambiguateLabels(options);
 }
