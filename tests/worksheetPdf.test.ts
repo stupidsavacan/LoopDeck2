@@ -37,9 +37,9 @@ function leapQuestion(index: number): Question {
   };
 }
 
-function importedLeapQuestion(index: number): Question {
+function messyImportedLeapQuestion(index: number): Question {
   return {
-    id: `imported-leap-${index}`,
+    id: `messy-leap-${index}`,
     moduleId: moduleInfo.id,
     type: 'input',
     number: index,
@@ -84,7 +84,7 @@ describe('fixed Japanese-to-English worksheet planner', () => {
     expect(plan.rows[0]).toMatchObject({ prompt: '日本語の意味 1', answer: 'english-1' });
   });
 
-  it('reverses LEAP-style English prompt and Japanese answer rows for Japanese-to-English output', () => {
+  it('reverses clean LEAP-style English prompt and Japanese answer rows for Japanese-to-English output', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [leapQuestion(387)], true);
     expect(plan.rows[0]).toMatchObject({
       number: 387,
@@ -93,13 +93,10 @@ describe('fixed Japanese-to-English worksheet planner', () => {
     });
   });
 
-  it('reverses imported LEAP meaning prompts even when they are marked en_to_ja', () => {
-    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [importedLeapQuestion(301)], true);
-    expect(plan.rows[0]).toMatchObject({
-      number: 301,
-      prompt: '現代の；近代的な；現代的な；近代の',
-      answer: 'modern'
-    });
+  it('does not accept messy imported LEAP prompts that should be fixed in the data file', () => {
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [messyImportedLeapQuestion(301)], true);
+    expect(plan.rows).toEqual([]);
+    expect(plan.skippedQuestionCount).toBe(1);
   });
 
   it('preserves question numbers', () => {
