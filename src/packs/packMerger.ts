@@ -1,4 +1,5 @@
 import type { FolderInfo, LoopDeckPack, ModuleInfo, Question } from '../core/models';
+import { stageMergedPackAssets } from './importedAssetStaging';
 
 export interface MergePackReport {
   addedFolders: number;
@@ -157,19 +158,18 @@ export function mergeLoopDeckPacksIntoExisting(existingPack: LoopDeckPack, incom
   const folders = mergeFolders(existingPack.folders, incomingPack.folders, report);
   const { questions, incomingQuestionIdMap } = mergeQuestions(existingPack.questions, incomingPack.questions, report);
   const modules = mergeModules(existingPack.modules, incomingPack.modules, incomingQuestionIdMap, report);
-
-  return {
-    pack: {
-      packVersion: Math.max(existingPack.packVersion, incomingPack.packVersion),
-      packId: existingPack.packId,
-      title: existingPack.title,
-      description: existingPack.description !== undefined ? existingPack.description : incomingPack.description,
-      folders,
-      modules,
-      questions
-    },
-    report
+  const pack: LoopDeckPack = {
+    packVersion: Math.max(existingPack.packVersion, incomingPack.packVersion),
+    packId: existingPack.packId,
+    title: existingPack.title,
+    description: existingPack.description !== undefined ? existingPack.description : incomingPack.description,
+    folders,
+    modules,
+    questions
   };
+
+  stageMergedPackAssets(incomingPack, pack);
+  return { pack, report };
 }
 
 export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {

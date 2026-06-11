@@ -236,6 +236,11 @@ public class MainActivity extends Activity {
     }
 
     private void startSaveFile(String saveId, String filename, String mimeType, String base64Data, int expectedBytes) {
+        if (pendingSave != null) {
+            reportSaveResult(saveId, false, "SAV-A003", "別の保存処理が完了するまで待ってください。", 0);
+            Toast.makeText(this, "[SAV-A003] 別の保存処理が進行中です。", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (base64Data == null || base64Data.isEmpty()) {
             reportSaveResult(saveId, false, "SAV-A001", "保存データが空です。", 0);
             Toast.makeText(this, "[SAV-A001] 保存データが空です。", Toast.LENGTH_LONG).show();

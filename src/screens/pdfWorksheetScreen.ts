@@ -24,7 +24,7 @@ interface WorksheetModuleOption {
   label: string;
 }
 
-interface NativeSaveResult {
+export interface NativeSaveResult {
   id: string;
   ok: boolean;
   code: string;
@@ -35,6 +35,7 @@ interface NativeSaveResult {
 type ProgressReporter = (code: string, message: string, detail?: string) => void;
 
 const ANDROID_SAVE_CHUNK_SIZE = 48_000;
+const NATIVE_SAVE_TIMEOUT_MS = 120_000;
 
 function makeOption(value: string, label: string): HTMLOptionElement {
   const option = el('option', '', label) as HTMLOptionElement;
@@ -76,16 +77,25 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-function waitForNativeSave(saveId: string): Promise<NativeSaveResult> {
+export function waitForNativeSave(saveId: string, timeoutMs = NATIVE_SAVE_TIMEOUT_MS): Promise<NativeSaveResult> {
   return new Promise((resolve, reject) => {
+    let timeoutId = 0;
+    const cleanup = () => {
+      window.removeEventListener('loopdeck-native-save-result', handler);
+      window.clearTimeout(timeoutId);
+    };
     const handler = (event: Event) => {
       const detail = (event as CustomEvent<NativeSaveResult>).detail;
       if (!detail || detail.id !== saveId) return;
-      window.removeEventListener('loopdeck-native-save-result', handler);
+      cleanup();
       if (detail.ok) resolve(detail);
       else reject(exportError(detail.code || 'SAV-E999', detail.message || 'Android保存に失敗しました。'));
     };
     window.addEventListener('loopdeck-native-save-result', handler);
+    timeoutId = window.setTimeout(() => {
+      cleanup();
+      reject(exportError('SAV-A032', 'Android保存結果を受信できませんでした。もう一度お試しください。'));
+    }, timeoutMs);
   });
 }
 
@@ -115,16 +125,15 @@ async function savePdf(blob: Blob, filename: string, progress: ProgressReporter)
       }
     }
 
-    const nativeResult = waitForNativeSave(saveId);
     progress('SAV-A030', '保存先選択画面を開いています', 'ファイル名と保存先を選んでください。');
     if (!android.finishSaveFile(saveId)) throw exportError('SAV-A031', 'Android保存処理の開始に失敗しました。');
-    const result = await nativeResult;
+    const result = await waitForNativeSave(saveId);
     progress(result.code || 'SAV-OK', 'Android保存が完了しました', `${(result.bytes ?? blob.size).toLocaleString()} bytes`);
     return;
   }
 
   if (android?.saveFile) {
-    progress('SAV-L010', '旧Android保存方式で保存します', '保存完了結果はアプリへ返りません。');
+    progress('SAV-L010', '旧Android保存方式で保存します', '保存完了結果はアプリへ戻りません。');
     android.saveFile(filename, 'application/pdf', await blobToBase64(blob));
     return;
   }
@@ -162,12 +171,13 @@ function disambiguateLabels(options: WorksheetModuleOption[]): WorksheetModuleOp
 
 function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOption[] {
   const options: WorksheetModuleOption[] = [];
-  for (const pack of packView.packs) {
-    for (const module of pack.modules) {
-      const questions = supportedQuestions(pack, module);
-      if (!questions.length) continue;
-      options.push({ packId: pack.packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
-    }
+  for (const module of packView.modules) {
+    const packId = packView.modulePackIdById.get(module.id);
+    const pack = packId ? packView.packById.get(packId) : undefined;
+    if (!packId || !pack) continue;
+    const questions = supportedQuestions(pack, module);
+    if (!questions.length) continue;
+    options.push({ packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
   }
   return disambiguateLabels(options);
 }

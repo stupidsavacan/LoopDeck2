@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
-import type { ModuleInfo, Question } from '../src/core/models';
+import type { LoopDeckPack, ModuleInfo, Question } from '../src/core/models';
 import { createSession } from '../src/core/sessionEngine';
+import { setActivePackAssetView } from '../src/packs/packAssetResolver';
+import { resolveActivePacks } from '../src/packs/packResolver';
 import { renderInlineQuiz } from '../src/screens/inlineQuiz';
+import { db } from '../src/storage/db';
 
 const moduleInfo: ModuleInfo = {
   id: 'image-module',
@@ -28,7 +31,8 @@ function session() {
 
 async function settleImageResolution(): Promise<void> {
   await Promise.resolve();
-  await Promise.resolve();
+  await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+  await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
 }
 
 describe('renderInlineQuiz image assets', () => {
@@ -44,6 +48,33 @@ describe('renderInlineQuiz image assets', () => {
     expect(image).not.toBeNull();
     expect(image?.src).toBe('data:image/png;base64,iVBORw0KGgo=');
     expect(container.querySelector('.image-fallback')).toBeNull();
+  });
+
+  it('renders an image through the active pack resolver and IndexedDB storage', async () => {
+    const pack: LoopDeckPack = {
+      packVersion: 1,
+      packId: 'inline-real-storage-pack',
+      title: 'Stored image pack',
+      folders: [{ id: 'image-folder', title: 'Images' }],
+      modules: [moduleInfo],
+      questions: [imageQuestion]
+    };
+    await db.deleteImportedPack(pack.packId);
+    await db.saveImportedPackWithAssets(pack, [{
+      packId: pack.packId,
+      path: 'images/map.png',
+      mimeType: 'image/png',
+      dataUrl: 'data:image/png;base64,iVBORw0KGgo='
+    }]);
+    setActivePackAssetView(resolveActivePacks([pack]));
+
+    const container = document.createElement('div');
+    renderInlineQuiz(container, session(), { onSessionChange() {}, onComplete() {} });
+    await settleImageResolution();
+
+    expect(container.querySelector<HTMLImageElement>('img.question-image')?.src).toBe('data:image/png;base64,iVBORw0KGgo=');
+    expect(container.querySelector('.image-fallback')).toBeNull();
+    await db.deleteImportedPack(pack.packId);
   });
 
   it('shows the missing-image fallback when the resolver returns undefined', async () => {
