@@ -103,14 +103,23 @@ async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[
     const tx = database.transaction(['packs', 'packAssets'], 'readwrite');
     tx.objectStore('packs').put(pack);
     const assetStore = tx.objectStore('packAssets');
-    const putAssets = () => { for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset)); };
-    if (replaceAssets) {
-      const request = assetStore.getAll();
-      request.onsuccess = () => {
-        for (const asset of request.result as StoredPackAsset[]) if (asset.packId === pack.packId) assetStore.delete(asset.assetId);
-        putAssets();
-      };
-    } else putAssets();
+    const request = assetStore.getAll();
+    request.onsuccess = () => {
+      const existing = request.result as StoredPackAsset[];
+      if (replaceAssets) {
+        for (const asset of existing) if (asset.packId === pack.packId) assetStore.delete(asset.assetId);
+        for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset));
+        return;
+      }
+
+      const existingIds = new Set(existing.map((asset) => asset.assetId));
+      for (const asset of assets) {
+        const stored = storedAsset(pack.packId, asset);
+        if (existingIds.has(stored.assetId)) continue;
+        assetStore.put(stored);
+        existingIds.add(stored.assetId);
+      }
+    };
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
     tx.onabort = () => reject(tx.error);
