@@ -76,10 +76,14 @@ export function isNearMissAnswer(question: InputQuestion | ChoiceQuestion, rawIn
   if (judgeInputAnswer(question, rawInput)) return false;
   const input = normalize(rawInput);
   if (!input) return false;
-  const nearest = inputCandidates(question)
-    .map((answer) => levenshtein(input, normalize(answer)))
-    .reduce((min, distance) => Math.min(min, distance), Number.POSITIVE_INFINITY);
-  return nearest <= 2;
+
+  return inputCandidates(question).some((candidate) => {
+    const answer = normalize(candidate);
+    const longestLength = Math.max(input.length, answer.length);
+    if (longestLength <= 1) return false;
+    const maximumDistance = longestLength >= 5 ? 2 : 1;
+    return levenshtein(input, answer) <= maximumDistance;
+  });
 }
 
 export function judgeChoiceAnswer(question: ChoiceQuestion, choice: string): boolean {
