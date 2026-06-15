@@ -62,6 +62,22 @@ describe('answer judging', () => {
     expect(judgeInputAnswer(englishQuestion, 'appl')).toBe(false);
     expect(isNearMissAnswer(englishQuestion, 'appl')).toBe(true);
   });
+
+  it('does not mark entirely different two-character answers as near misses', () => {
+    const shortQuestion: InputQuestion = { ...tokugawaQuestion, answer: 'あい' };
+    expect(isNearMissAnswer(shortQuestion, 'うえ')).toBe(false);
+    expect(isNearMissAnswer(shortQuestion, 'ええ')).toBe(false);
+  });
+
+  it('still marks a one-character typo in a short answer as a near miss', () => {
+    const shortQuestion: InputQuestion = { ...tokugawaQuestion, answer: 'あい' };
+    expect(isNearMissAnswer(shortQuestion, 'あえ')).toBe(true);
+  });
+
+  it('does not mark different single-character answers as near misses', () => {
+    const singleCharacterQuestion: InputQuestion = { ...tokugawaQuestion, answer: 'あ' };
+    expect(isNearMissAnswer(singleCharacterQuestion, 'い')).toBe(false);
+  });
 });
 
 describe('multi-select judging', () => {
