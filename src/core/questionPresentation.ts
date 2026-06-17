@@ -62,7 +62,8 @@ export function resolveConcreteStudyQuestionMode(
 
   const choices = CONCRETE_MODES.filter((mode) => supported.includes(mode));
   if (!choices.length) return 'as_stored';
-  return choices[Math.floor(random() * choices.length)] ?? choices[0];
+  const index = Math.min(choices.length - 1, Math.floor(random() * choices.length));
+  return choices[index]!;
 }
 
 function cloneAsStored(question: Question): Question {
