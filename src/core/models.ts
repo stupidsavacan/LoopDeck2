@@ -2,9 +2,39 @@ export type QuestionType = 'input' | 'choice' | 'multi_select';
 export type AnswerResult = 'correct' | 'wrong' | 'revealed';
 export type AnswerFormat = 'auto' | 'choice' | 'input';
 export type StudyFilter = 'all' | 'wrong' | 'bookmarked';
+export type ConcreteStudyQuestionMode = 'as_stored' | 'front_to_back' | 'back_to_front';
+export type StudyQuestionMode = ConcreteStudyQuestionMode | 'mixed';
 
 export type ReviewState = 'new' | 'learning' | 'review' | 'relearning' | 'leech' | 'mastered' | 'suspended';
 export type ReviewRating = 'again' | 'hard' | 'good' | 'easy';
+
+export type QuestionSamplePattern =
+  | 'solid'
+  | 'vertical_stripes'
+  | 'horizontal_stripes'
+  | 'diagonal_stripes'
+  | 'cross_hatch'
+  | 'dots'
+  | 'grid';
+
+export interface QuestionSampleMark {
+  label: string;
+  color: string;
+  pattern?: QuestionSamplePattern;
+  patternColor?: string;
+  description?: string;
+}
+
+export interface StudySide {
+  label: string;
+  text: string;
+  acceptableAnswers?: string[];
+}
+
+export interface TwoSidedStudyData {
+  front: StudySide;
+  back: StudySide;
+}
 
 export interface FolderInfo {
   id: string;
@@ -31,6 +61,13 @@ export interface BaseQuestion {
   category?: string;
   number?: number;
   example?: string;
+  sampleMarks?: QuestionSampleMark[];
+  /** Backward compatibility only. New packs should use sampleMarks. */
+  sampleColors?: Array<{ label: string; color: string; description?: string }>;
+  sides?: TwoSidedStudyData;
+  supportedStudyModes?: Array<'front_to_back' | 'back_to_front'>;
+  /** Runtime-only field used to remember how this question is presented in the current session. */
+  activeStudyMode?: ConcreteStudyQuestionMode;
 }
 
 export interface InputQuestion extends BaseQuestion {
@@ -79,6 +116,7 @@ export interface Attempt {
   hiddenTimeExcludedMs?: number;
   priorityDelta?: number;
   answerMode?: AnswerFormat;
+  questionMode?: ConcreteStudyQuestionMode;
 }
 
 export interface ReviewCard {
@@ -129,6 +167,7 @@ export interface StudySettings {
   selectedCategory?: string;
   filter?: StudyFilter;
   answerFormat?: AnswerFormat;
+  questionMode?: StudyQuestionMode;
   showExample?: boolean;
   showNumber?: boolean;
   showCategory?: boolean;
