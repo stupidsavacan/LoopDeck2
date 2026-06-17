@@ -76,11 +76,12 @@ function usableAnswers(answers: string[] | undefined): string[] | undefined {
 }
 
 export function presentQuestionForStudy(question: Question, mode: ConcreteStudyQuestionMode): Question {
-  if (mode === 'as_stored' || question.type !== 'input' || !hasTwoSidedStudyData(question)) return cloneAsStored(question);
+  const sides = question.sides;
+  if (mode === 'as_stored' || question.type !== 'input' || !sides || !hasTwoSidedStudyData(question)) return cloneAsStored(question);
   if (!getSupportedStudyQuestionModes(question).includes(mode)) return cloneAsStored(question);
 
-  const source = mode === 'front_to_back' ? question.sides.front : question.sides.back;
-  const target = mode === 'front_to_back' ? question.sides.back : question.sides.front;
+  const source = mode === 'front_to_back' ? sides.front : sides.back;
+  const target = mode === 'front_to_back' ? sides.back : sides.front;
 
   return {
     ...question,
