@@ -1,28 +1,61 @@
-import type { ChoiceQuestion, InputQuestion, MultiSelectQuestion, Question } from './models';
+import type { AnswerJudgingRule, ChoiceQuestion, InputQuestion, MultiSelectQuestion, Question } from './models';
 
-const EDGE_PUNCTUATION = /^[\s\"'`「」『』（）()【】\[\]。．.!！?？,，、:：;；]+|[\s\"'`「」『』（）()【】\[\]。．.!！?？,，、:：;；]+$/g;
 const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
+const EDGE_CHARS = new Set([
+  ' ', '\t', '\n', '\r', '"', "'", '`', '「', '」', '『', '』', '（', '）', '(', ')', '【', '】', '[', ']',
+  '。', '．', '.', '!', '！', '?', '？', ',', '，', '、', ':', '：', ';', '；'
+]);
+const JAPANESE_PREFIXES = ['答えは', '答えが', '答え', '正解は', '正解が', '回答は', '回答が'];
+const JAPANESE_SUFFIXES = ['です', 'である', 'だ'];
 
-const normalize = (value: string): string =>
-  value
-    .normalize('NFKC')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .replace(EDGE_PUNCTUATION, '')
-    .toLowerCase();
+function trimEdgeChars(value: string): string {
+  let start = 0;
+  let end = value.length;
+  while (start < end && EDGE_CHARS.has(value[start])) start += 1;
+  while (end > start && EDGE_CHARS.has(value[end - 1])) end -= 1;
+  return value.slice(start, end);
+}
 
-const stripJapaneseSentenceEdges = (value: string): string =>
-  normalize(value)
-    .replace(/^答え(は|が)?/, '')
-    .replace(/^(正解|回答)(は|が)?/, '')
-    .replace(/(です|である|だ)$/g, '')
-    .replace(EDGE_PUNCTUATION, '')
-    .trim();
+function compactSpaces(value: string): string {
+  return value.split(/\s+/).filter(Boolean).join(' ');
+}
 
-function containsEnglishAnswer(input: string, answer: string): boolean {
+const normalize = (value: string): string => trimEdgeChars(compactSpaces(value.normalize('NFKC').trim())).toLowerCase();
+
+function stripJapaneseSentenceEdges(value: string): string {
+  let normalized = normalize(value);
+  for (const prefix of JAPANESE_PREFIXES) {
+    if (normalized.startsWith(prefix)) normalized = normalized.slice(prefix.length);
+  }
+  for (const suffix of JAPANESE_SUFFIXES) {
+    if (normalized.endsWith(suffix)) normalized = normalized.slice(0, -suffix.length);
+  }
+  return trimEdgeChars(normalized).trim();
+}
+
+function isAsciiAlphaNumeric(char: string): boolean {
+  const code = char.toLowerCase().charCodeAt(0);
+  return (code >= 97 && code <= 122) || (code >= 48 && code <= 57);
+}
+
+function englishTokens(value: string): string[] {
+  const tokens: string[] = [];
+  let current = '';
+  for (const char of value) {
+    if (isAsciiAlphaNumeric(char)) current += char;
+    else if (current) {
+      tokens.push(current);
+      current = '';
+    }
+  }
+  if (current) tokens.push(current);
+  return tokens;
+}
+
+function containsEnglishAnswer(input: string, answer: string, caseSensitive = false): boolean {
   if (answer.length < 2) return false;
-  const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, 'i').test(input);
+  const target = caseSensitive ? answer : answer.toLowerCase();
+  return englishTokens(input).some((token) => (caseSensitive ? token : token.toLowerCase()) === target);
 }
 
 function isAcceptableJapaneseExpansion(input: string, target: string): boolean {
@@ -34,11 +67,44 @@ function isAcceptableJapaneseExpansion(input: string, target: string): boolean {
   );
 }
 
-function inputCandidates(question: InputQuestion | ChoiceQuestion): string[] {
-  return [question.answer, ...(question.acceptableAnswers ?? [])].filter((answer) => answer.trim().length > 0);
+function removePunctuation(value: string): string {
+  return Array.from(value).filter((char) => !EDGE_CHARS.has(char)).join('');
+}
+
+function normalizeForRule(value: string, rule: AnswerJudgingRule = {}): string {
+  let normalized = value.normalize('NFKC').trim();
+  if (rule.allowJapaneseSentenceEdges) normalized = stripJapaneseSentenceEdges(normalized);
+  else normalized = trimEdgeChars(compactSpaces(normalized));
+  if (rule.ignorePunctuation) normalized = removePunctuation(normalized);
+  if (rule.ignoreSpaces) normalized = normalized.split(/\s+/).join('');
+  if (!rule.caseSensitive) normalized = normalized.toLowerCase();
+  return normalized.trim();
 }
 
 export const normalizeAnswer = normalize;
+
+export function getAcceptedAnswers(question: InputQuestion | ChoiceQuestion): string[] {
+  const base = question.acceptedAnswers?.length
+    ? question.acceptedAnswers
+    : [question.answer, ...(question.acceptableAnswers ?? [])];
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const value of [question.answer, ...base]) {
+    const trimmed = value.trim();
+    if (!trimmed) continue;
+    const key = normalizeAnswer(trimmed);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(trimmed);
+  }
+
+  return result;
+}
+
+function inputCandidates(question: InputQuestion | ChoiceQuestion): string[] {
+  return getAcceptedAnswers(question);
+}
 
 export function levenshtein(left: string, right: string): number {
   if (!left) return right.length;
@@ -59,17 +125,42 @@ export function levenshtein(left: string, right: string): number {
   return previous[right.length];
 }
 
-export function judgeInputAnswer(question: InputQuestion | ChoiceQuestion, rawInput: string): boolean {
-  const input = stripJapaneseSentenceEdges(rawInput);
-  const answers = inputCandidates(question).map(stripJapaneseSentenceEdges);
-
-  if (!input) return false;
-  if (answers.some((answer) => input === answer)) return true;
-
-  return answers.some((answer) => {
-    if (JAPANESE_TEXT.test(answer)) return isAcceptableJapaneseExpansion(normalize(rawInput), answer);
-    return containsEnglishAnswer(input, answer);
+export function judgeAnswerWithRule(question: InputQuestion | ChoiceQuestion, rawInput: string): boolean {
+  const rule = question.answerJudging ?? {};
+  const mode = rule.mode ?? 'single';
+  const acceptedAnswers = getAcceptedAnswers(question);
+  const normalizedInput = normalizeForRule(rawInput, {
+    allowJapaneseSentenceEdges: rule.allowJapaneseSentenceEdges ?? mode !== 'exact_phrase',
+    ...rule
   });
+
+  if (!normalizedInput) return false;
+
+  if (mode === 'all_of') {
+    const requiredParts = rule.requiredParts?.map((part) => normalizeForRule(part, rule)).filter(Boolean) ?? [];
+    if (requiredParts.length) return requiredParts.every((part) => normalizedInput.includes(part));
+  }
+
+  const normalizedAnswers = acceptedAnswers.map((answer) => normalizeForRule(answer, rule));
+  if (normalizedAnswers.some((answer) => normalizedInput === answer)) return true;
+
+  if (mode === 'exact_phrase' || rule.caseSensitive || mode === 'numeric') return false;
+
+  if (mode === 'single' || mode === 'any_of') {
+    const legacyInput = stripJapaneseSentenceEdges(rawInput);
+    return acceptedAnswers.some((answer) => {
+      const legacyAnswer = stripJapaneseSentenceEdges(answer);
+      if (!legacyAnswer) return false;
+      if (JAPANESE_TEXT.test(legacyAnswer)) return isAcceptableJapaneseExpansion(normalize(rawInput), legacyAnswer);
+      return containsEnglishAnswer(legacyInput, legacyAnswer, rule.caseSensitive);
+    });
+  }
+
+  return false;
+}
+
+export function judgeInputAnswer(question: InputQuestion | ChoiceQuestion, rawInput: string): boolean {
+  return judgeAnswerWithRule(question, rawInput);
 }
 
 export function isNearMissAnswer(question: InputQuestion | ChoiceQuestion, rawInput: string): boolean {
@@ -87,7 +178,7 @@ export function isNearMissAnswer(question: InputQuestion | ChoiceQuestion, rawIn
 }
 
 export function judgeChoiceAnswer(question: ChoiceQuestion, choice: string): boolean {
-  return judgeInputAnswer(question, choice);
+  return judgeAnswerWithRule(question, choice);
 }
 
 export function judgeMultiSelectAnswer(question: MultiSelectQuestion, choices: string[]): boolean {
