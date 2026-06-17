@@ -32,6 +32,10 @@ export function normalizeSampleMarks(question: Question): QuestionSampleMark[] {
   }));
 }
 
+function stripe(direction: string, color: string, patternColor: string): string {
+  return `repeating-linear-gradient(${direction}, ${patternColor} 0px, ${patternColor} 2px, ${color} 2px, ${color} 8px)`;
+}
+
 function applySampleMarkStyle(swatch: HTMLElement, mark: QuestionSampleMark): void {
   const color = safeColor(mark.color, '#ffffff');
   const patternColor = safeColor(mark.patternColor, '#111827');
@@ -41,23 +45,23 @@ function applySampleMarkStyle(swatch: HTMLElement, mark: QuestionSampleMark): vo
   swatch.style.backgroundColor = color;
 
   if (pattern === 'solid') return;
-  if (pattern === 'vertical_stripes') swatch.style.backgroundImage = `repeating-linear-gradient(90deg, ${patternColor} 0 2px, ${color} 2px 8px)`;
-  if (pattern === 'horizontal_stripes') swatch.style.backgroundImage = `repeating-linear-gradient(0deg, ${patternColor} 0 2px, ${color} 2px 8px)`;
-  if (pattern === 'diagonal_stripes') swatch.style.backgroundImage = `repeating-linear-gradient(45deg, ${patternColor} 0 2px, ${color} 2px 8px)`;
+  if (pattern === 'vertical_stripes') swatch.style.backgroundImage = stripe('90deg', color, patternColor);
+  if (pattern === 'horizontal_stripes') swatch.style.backgroundImage = stripe('0deg', color, patternColor);
+  if (pattern === 'diagonal_stripes') swatch.style.backgroundImage = stripe('45deg', color, patternColor);
   if (pattern === 'cross_hatch') {
     swatch.style.backgroundImage = [
-      `repeating-linear-gradient(45deg, ${patternColor} 0 2px, transparent 2px 8px)`,
-      `repeating-linear-gradient(135deg, ${patternColor} 0 2px, ${color} 2px 8px)`
+      `repeating-linear-gradient(45deg, ${patternColor} 0px, ${patternColor} 2px, transparent 2px, transparent 8px)`,
+      stripe('135deg', color, patternColor)
     ].join(', ');
   }
   if (pattern === 'dots') {
-    swatch.style.backgroundImage = `radial-gradient(${patternColor} 20%, transparent 21%)`;
+    swatch.style.backgroundImage = `radial-gradient(circle, ${patternColor} 0px, ${patternColor} 2px, transparent 2px, transparent 5px)`;
     swatch.style.backgroundSize = '10px 10px';
   }
   if (pattern === 'grid') {
     swatch.style.backgroundImage = [
-      `repeating-linear-gradient(90deg, ${patternColor} 0 1px, transparent 1px 8px)`,
-      `repeating-linear-gradient(0deg, ${patternColor} 0 1px, ${color} 1px 8px)`
+      `repeating-linear-gradient(90deg, ${patternColor} 0px, ${patternColor} 1px, transparent 1px, transparent 8px)`,
+      `repeating-linear-gradient(0deg, ${patternColor} 0px, ${patternColor} 1px, ${color} 1px, ${color} 8px)`
     ].join(', ');
   }
 }
