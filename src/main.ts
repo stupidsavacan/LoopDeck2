@@ -1,5 +1,6 @@
 import './styles.css';
 import './homeFeatures.css';
+import './sampleMarks.css';
 import { loadBuiltinPacks } from './packs/builtinLoader';
 import { setActivePackAssetView } from './packs/packAssetResolver';
 import { resolveActivePacks, type ResolvedPackView } from './packs/packResolver';
