@@ -1,4 +1,5 @@
 import type { ModuleInfo, Question, StudySettings } from './models';
+import { presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
 
 export interface QuizSession {
   module: ModuleInfo;
@@ -121,7 +122,11 @@ export function createSession(
   mode: 'normal' | 'review' = 'normal',
   choicePool: Question[] = questions
 ): QuizSession {
-  const queue = selectSessionQuestions(questions, settings);
+  const requestedMode = settings.questionMode ?? 'as_stored';
+  const queue = selectSessionQuestions(questions, settings).map((question) => {
+    const concreteMode = resolveConcreteStudyQuestionMode(question, requestedMode);
+    return presentQuestionForStudy(question, concreteMode);
+  });
   const now = Date.now();
   return {
     module,
