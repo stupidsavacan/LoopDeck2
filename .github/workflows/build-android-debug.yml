@@ -62,6 +62,7 @@ jobs:
         run: gradle --no-daemon assembleDebug
 
       - name: Upload debug APK
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-debug-apk
