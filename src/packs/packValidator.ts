@@ -1,9 +1,23 @@
-import type { LoopDeckPack, Question } from '../core/models';
+import type { LoopDeckPack, QuestionSamplePattern, StudySide, TwoSidedStudyData } from '../core/models';
 import { extensionOf, isSafePackPath } from './assetSafety';
 import { FORBIDDEN_EXTENSIONS, type PackValidationIssue, type PackValidationResult } from './packTypes';
 
+const STUDY_MODE_VALUES = new Set(['front_to_back', 'back_to_front']);
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+const SAMPLE_PATTERNS = new Set<QuestionSamplePattern>([
+  'solid',
+  'vertical_stripes',
+  'horizontal_stripes',
+  'diagonal_stripes',
+  'cross_hatch',
+  'dots',
+  'grid'
+]);
+const SAMPLE_PROMPT_WORDS = /(色|サンプル|塗|線|縦線|横線|斜線|水玉|模様|網掛け|格子)/;
+
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === 'string');
+const isNonEmptyString = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
 
 export function validatePackFiles(paths: string[]): PackValidationIssue[] {
   const issues: PackValidationIssue[] = [];
@@ -17,6 +31,133 @@ export function validatePackFiles(paths: string[]): PackValidationIssue[] {
     if (FORBIDDEN_EXTENSIONS.includes(ext)) {
       issues.push({ level: 'error', message: `Executable or renderable file is rejected: ${ext}`, path });
     }
+  }
+
+  return issues;
+}
+
+function validateStudySide(side: unknown, questionId: unknown, sideName: 'front' | 'back'): PackValidationIssue[] {
+  const issues: PackValidationIssue[] = [];
+  if (!isObject(side)) {
+    issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides.${sideName} must be an object.` });
+    return issues;
+  }
+
+  if (!isNonEmptyString(side.label)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides.${sideName}.label is required.` });
+  if (!isNonEmptyString(side.text)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides.${sideName}.text is required.` });
+  if (side.acceptableAnswers !== undefined && !isStringArray(side.acceptableAnswers)) {
+    issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides.${sideName}.acceptableAnswers must be a string array.` });
+  }
+
+  return issues;
+}
+
+function hasAcceptableAnswers(side: StudySide | undefined): boolean {
+  return Array.isArray(side?.acceptableAnswers) && side.acceptableAnswers.some((answer) => answer.trim().length > 0);
+}
+
+function validateTwoSidedMetadata(question: Record<string, unknown>, questionId: unknown): PackValidationIssue[] {
+  const issues: PackValidationIssue[] = [];
+  const sides = question.sides;
+  const supportedStudyModes = question.supportedStudyModes;
+  let typedSides: TwoSidedStudyData | undefined;
+
+  if (sides !== undefined) {
+    if (!isObject(sides)) {
+      issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides must be an object.` });
+    } else {
+      if (!('front' in sides)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides.front is required.` });
+      if (!('back' in sides)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sides.back is required.` });
+      issues.push(...validateStudySide(sides.front, questionId, 'front'));
+      issues.push(...validateStudySide(sides.back, questionId, 'back'));
+      typedSides = sides as unknown as TwoSidedStudyData;
+    }
+  }
+
+  if (supportedStudyModes !== undefined) {
+    if (!isStringArray(supportedStudyModes)) {
+      issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} supportedStudyModes must be a string array.` });
+    } else {
+      for (const mode of supportedStudyModes) {
+        if (!STUDY_MODE_VALUES.has(mode)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} has unsupported study mode: ${mode}` });
+      }
+    }
+  }
+
+  if (sides !== undefined && supportedStudyModes === undefined) {
+    issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} has sides but no supportedStudyModes.` });
+  }
+
+  if (typedSides && isStringArray(supportedStudyModes)) {
+    if (supportedStudyModes.includes('back_to_front') && !hasAcceptableAnswers(typedSides.front)) {
+      issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} supports back_to_front but sides.front.acceptableAnswers is empty.` });
+    }
+    if (supportedStudyModes.includes('front_to_back') && !hasAcceptableAnswers(typedSides.back)) {
+      issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} supports front_to_back but sides.back.acceptableAnswers is empty.` });
+    }
+  }
+
+  return issues;
+}
+
+function validateSampleMetadata(question: Record<string, unknown>, questionId: unknown): PackValidationIssue[] {
+  const issues: PackValidationIssue[] = [];
+  const sampleMarks = question.sampleMarks;
+  const sampleColors = question.sampleColors;
+  const hasSampleMarks = Array.isArray(sampleMarks) && sampleMarks.length > 0;
+  const hasSampleColors = Array.isArray(sampleColors) && sampleColors.length > 0;
+
+  if (sampleMarks !== undefined) {
+    if (!Array.isArray(sampleMarks)) {
+      issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks must be an array.` });
+    } else {
+      for (const [index, mark] of sampleMarks.entries()) {
+        if (!isObject(mark)) {
+          issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}] must be an object.` });
+          continue;
+        }
+        if (!isNonEmptyString(mark.label)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}].label is required.` });
+        if (!isNonEmptyString(mark.color)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}].color is required.` });
+        else if (!HEX_COLOR.test(mark.color)) issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}].color must be #RRGGBB.` });
+        if (mark.pattern !== undefined && (typeof mark.pattern !== 'string' || !SAMPLE_PATTERNS.has(mark.pattern as QuestionSamplePattern))) {
+          issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}].pattern is not supported.` });
+        }
+        if (mark.patternColor !== undefined && (typeof mark.patternColor !== 'string' || !HEX_COLOR.test(mark.patternColor))) {
+          issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}].patternColor must be #RRGGBB.` });
+        }
+        if (mark.description !== undefined && typeof mark.description !== 'string') {
+          issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleMarks[${index}].description must be a string.` });
+        }
+      }
+    }
+  }
+
+  if (sampleColors !== undefined) {
+    issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} uses sampleColors; new packs should use sampleMarks.` });
+    if (!Array.isArray(sampleColors)) {
+      issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleColors must be an array.` });
+    } else {
+      for (const [index, sample] of sampleColors.entries()) {
+        if (!isObject(sample)) {
+          issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleColors[${index}] must be an object.` });
+          continue;
+        }
+        if (typeof sample.color !== 'string' || !HEX_COLOR.test(sample.color)) {
+          issues.push({ level: 'error', message: `Question ${questionId || '(unknown)'} sampleColors[${index}].color must be #RRGGBB.` });
+        }
+      }
+    }
+  }
+
+  const promptLooksLikeSample = typeof question.prompt === 'string' && SAMPLE_PROMPT_WORDS.test(question.prompt);
+  if (hasSampleMarks && !question.imageAsset) {
+    issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} has sampleMarks but no imageAsset.` });
+  }
+  if (promptLooksLikeSample && !hasSampleMarks && !hasSampleColors) {
+    issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} may need sampleMarks for color or pattern clues.` });
+  }
+  if (question.imageAsset && promptLooksLikeSample && !hasSampleMarks) {
+    issues.push({ level: 'warning', message: `Question ${questionId || '(unknown)'} has imageAsset and color or pattern wording but no sampleMarks.` });
   }
 
   return issues;
@@ -48,6 +189,9 @@ function validateQuestion(question: unknown, ids: Set<string>): PackValidationIs
   } else {
     issues.push({ level: 'error', message: `Unsupported question type: ${String(type)}` });
   }
+
+  issues.push(...validateTwoSidedMetadata(question, id));
+  issues.push(...validateSampleMetadata(question, id));
 
   return issues;
 }
@@ -86,6 +230,6 @@ export function validatePack(rawPack: unknown): PackValidationResult {
   return { ok, issues, pack: ok ? (rawPack as unknown as LoopDeckPack) : undefined };
 }
 
-export function collectAllQuestions(packs: LoopDeckPack[]): Question[] {
+export function collectAllQuestions(packs: LoopDeckPack[]): LoopDeckPack['questions'] {
   return packs.flatMap((pack) => pack.questions);
 }
