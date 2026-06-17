@@ -8,6 +8,7 @@ import { isSafeImageAssetRef, isSafeImageDataUrl } from '../packs/assetSafety';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
+import { renderSampleMarks } from '../ui/sampleMarks';
 
 export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): void; onComplete(): void; }
 export interface InlineQuizOptions { resolveImageAsset?: QuestionImageAssetResolver; }
@@ -31,8 +32,20 @@ function canJudgeNearMiss(question: Question): question is InputQuestion | Choic
 
 function buildAttempt(question: Question, result: Attempt['result'], input: string | string[], elapsedMs: number, mode: 'normal' | 'review', answerMode: AnswerFormat, nearMiss = false): Attempt {
   return {
-    attemptId: `${Date.now()}-${crypto.randomUUID()}`, questionId: question.id, moduleId: question.moduleId, answeredAt: new Date().toISOString(), result, input,
-    answer: getCorrectAnswer(question), elapsedMs, mode, nearMiss, hiddenTimeExcludedMs: 0, priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode), answerMode
+    attemptId: `${Date.now()}-${crypto.randomUUID()}`,
+    questionId: question.id,
+    moduleId: question.moduleId,
+    answeredAt: new Date().toISOString(),
+    result,
+    input,
+    answer: getCorrectAnswer(question),
+    elapsedMs,
+    mode,
+    nearMiss,
+    hiddenTimeExcludedMs: 0,
+    priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode),
+    answerMode,
+    questionMode: question.activeStudyMode ?? 'as_stored'
   };
 }
 
@@ -99,9 +112,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   if (!question) return;
   const activeQuestion: Question = question;
   const requestedAnswerFormat = session.settings.answerFormat ?? 'auto';
-  const shouldGenerateChoices = question.type === 'input' && (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
-  const generatedChoices = question.type === 'input' && shouldGenerateChoices ? buildGeneratedChoices(question, session.choicePool) : undefined;
-  const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices);
+  const shouldGenerateChoices = activeQuestion.type === 'input' && (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(activeQuestion.moduleId)));
+  const generatedChoices = activeQuestion.type === 'input' && shouldGenerateChoices ? buildGeneratedChoices(activeQuestion, session.choicePool) : undefined;
+  const answerMode = effectiveAnswerMode(activeQuestion, requestedAnswerFormat, generatedChoices);
   const card = el('section', 'quiz-card');
   const answerArea = el('div', 'answer-area');
   const controls = el('div', 'quiz-controls');
@@ -126,18 +139,18 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const bookmark = button('\u2606 \u30d6\u30c3\u30af\u30de\u30fc\u30af', 'btn ghost bookmark-btn');
   let bookmarked = false;
   void db.getBookmarks().then((bookmarks) => {
-    bookmarked = bookmarks.includes(question.id);
+    bookmarked = bookmarks.includes(activeQuestion.id);
     bookmark.textContent = bookmarked ? '\u2605 \u30d6\u30c3\u30af\u30de\u30fc\u30af\u6e08\u307f' : '\u2606 \u30d6\u30c3\u30af\u30de\u30fc\u30af';
     bookmark.classList.toggle('selected', bookmarked);
   });
   bookmark.onclick = async () => {
     bookmarked = !bookmarked;
-    await db.setBookmark(question.id, bookmarked);
+    await db.setBookmark(activeQuestion.id, bookmarked);
     bookmark.textContent = bookmarked ? '\u2605 \u30d6\u30c3\u30af\u30de\u30fc\u30af\u6e08\u307f' : '\u2606 \u30d6\u30c3\u30af\u30de\u30fc\u30af';
     bookmark.classList.toggle('selected', bookmarked);
   };
 
-  if (session.settings.showExample && question.example) answerArea.append(el('p', 'example-line', question.example));
+  if (session.settings.showExample && activeQuestion.example) answerArea.append(el('p', 'example-line', activeQuestion.example));
   if (answerMode === 'input') {
     const input = el('input', 'text-input') as HTMLInputElement;
     input.placeholder = '\u7b54\u3048\u3092\u5165\u529b';
@@ -146,18 +159,18 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     submit.onclick = () => record(input.value);
     answerArea.append(input, submit);
     window.setTimeout(() => input.focus(), 0);
-  } else if (question.type === 'choice' || generatedChoices) {
+  } else if (activeQuestion.type === 'choice' || generatedChoices) {
     const list = el('div', 'choice-list');
-    for (const choice of question.type === 'choice' ? question.choices : generatedChoices ?? []) {
+    for (const choice of activeQuestion.type === 'choice' ? activeQuestion.choices : generatedChoices ?? []) {
       const choiceButton = button(choice, 'choice-btn');
       choiceButton.onclick = () => { selectedAnswer = choice; record(choice); };
       list.append(choiceButton);
     }
     answerArea.append(list);
-  } else if (question.type === 'multi_select') {
+  } else if (activeQuestion.type === 'multi_select') {
     const selected = new Set<string>();
     const list = el('div', 'choice-list');
-    for (const choice of question.choices) {
+    for (const choice of activeQuestion.choices) {
       const choiceButton = button(choice, 'choice-btn');
       choiceButton.onclick = () => {
         if (selected.has(choice)) { selected.delete(choice); choiceButton.classList.remove('selected'); }
@@ -171,7 +184,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     answerArea.append(list, submit);
   }
 
-  const hintText = question.example ?? question.explanation;
+  const hintText = activeQuestion.example ?? activeQuestion.explanation;
   const hint = button('\u30d2\u30f3\u30c8', 'btn ghost');
   hint.disabled = !hintText;
   hint.onclick = () => { if (hintText && !resultArea.querySelector('.hint-panel')) resultArea.prepend(el('p', 'hint-panel', hintText)); };
@@ -181,8 +194,10 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   next.onclick = nextQuestion;
   controls.append(bookmark, hint, reveal, next);
 
-  card.append(renderQuizMeta(session, question), el('h3', 'question-prompt', question.prompt));
-  const image = renderImageReference(question, options.resolveImageAsset ?? resolveActiveQuestionImageAsset);
+  card.append(renderQuizMeta(session, activeQuestion), el('h3', 'question-prompt', activeQuestion.prompt));
+  const sampleMarks = renderSampleMarks(activeQuestion);
+  if (sampleMarks) card.append(sampleMarks);
+  const image = renderImageReference(activeQuestion, options.resolveImageAsset ?? resolveActiveQuestionImageAsset);
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
   container.append(card);
