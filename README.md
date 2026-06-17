@@ -7,12 +7,14 @@ LoopDeck is a lightweight HTML / TypeScript study app for fast shuffle-based rev
 - Vite + TypeScript + HTML/CSS LoopDeck web app
 - Built-in 教材データ
 - Normal-direction-only study data; reverse-practice modules are not active
+- Study-time `出題形式` support from `sides` metadata without duplicated modules
 - 1,112 usable questions
 - Review Center with SRS due review and history-based weak queues
 - Study graphs based on saved answer attempts
 - Input / choice / multi_select questions
 - Japanese answer judging that rejects partial fragments
 - JSON / `.loopdeck.zip` import and export
+- Image references with optional `sampleMarks` color and pattern chips
 - Android debug APK and signed release APK workflows
 
 ## Review Scheduler
@@ -318,9 +320,13 @@ Common fields for all questions:
 - `prompt`: question text
 - `explanation`: optional explanation shown after answering
 - `imageAsset`: optional local image reference, for example `images/map01.png`
+- `sampleMarks`: optional color/pattern chips shown near an image question
+- `sampleColors`: legacy solid-color chips; new packs should use `sampleMarks`
 - `category`: optional category used by category filtering
 - `number`: optional question number used by range filtering
 - `example`: optional example/hint line
+- `sides`: optional two-sided study data for the `出題形式` selector
+- `supportedStudyModes`: optional list containing `front_to_back` and/or `back_to_front`
 
 ##### Input question
 
@@ -346,6 +352,39 @@ Optional fields:
 
 - `acceptableAnswers`
 - `direction`: `normal`, `ja_to_en`, or `en_to_ja`
+
+##### Two-sided study metadata
+
+For input questions that should support multiple study formats, add `sides` and `supportedStudyModes`. LoopDeck displays this as `出題形式` in the module screen.
+
+```json
+{
+  "id": "leap_301_400-301",
+  "moduleId": "leap_301_400",
+  "type": "input",
+  "number": 301,
+  "prompt": "modern",
+  "answer": "現代の",
+  "acceptableAnswers": ["近代的な", "現代的な", "近代の"],
+  "sides": {
+    "front": {
+      "label": "英語",
+      "text": "modern",
+      "acceptableAnswers": ["modern"]
+    },
+    "back": {
+      "label": "日本語",
+      "text": "現代の、近代的な、現代的な、近代の",
+      "acceptableAnswers": ["現代の", "近代的な", "現代的な", "近代の"]
+    }
+  },
+  "supportedStudyModes": ["front_to_back", "back_to_front"]
+}
+```
+
+For English vocabulary packs, use `front` for the English headword and `back` for Japanese meanings. The UI label is built from `front.label` and `back.label`, so it can also express pairs such as `古語 → 現代語訳`.
+
+Do not create reverse-direction modules such as `english_reverse`, `leap_reverse`, or `leap_final_reverse`. Do not duplicate questions just to change direction. For LEAP-style numbered vocabulary, Japanese-to-English answers should accept the row's headword, not nearby synonyms from other rows.
 
 ##### Choice question
 
@@ -419,6 +458,42 @@ Use a local relative path in `imageAsset`:
 ```
 
 Do not use remote URLs such as `https://...` in `imageAsset`.
+
+For map questions that ask about a colored or patterned region, use `sampleMarks`:
+
+```json
+{
+  "id": "geo-002",
+  "moduleId": "geography-map",
+  "type": "input",
+  "prompt": "地図でサンプル表示と同じ模様の地域名を答えよ。",
+  "answer": "関東平野",
+  "imageAsset": "images/map-sample.png",
+  "sampleMarks": [
+    {
+      "label": "縦線の地域",
+      "color": "#FFFFFF",
+      "pattern": "vertical_stripes",
+      "patternColor": "#111827",
+      "description": "縦線で示された地域を答える"
+    }
+  ]
+}
+```
+
+Supported `sampleMarks.pattern` values:
+
+```text
+solid
+vertical_stripes
+horizontal_stripes
+diagonal_stripes
+cross_hatch
+dots
+grid
+```
+
+`sampleColors` is still read as a legacy solid-color form, but new packs should use `sampleMarks`.
 
 ### ID rules
 
@@ -521,5 +596,7 @@ Before importing a pack, check:
 - `input` questions have `answer`.
 - `choice` questions have at least two `choices` and an `answer`.
 - `multi_select` questions have `choices` and `correctChoices`.
+- use `sides` and `supportedStudyModes` instead of duplicated reverse-direction modules.
 - image paths are local and use `.png`, `.jpg`, `.jpeg`, or `.webp`.
+- map/image questions that depend on a color or pattern should include `sampleMarks`.
 - the ZIP root directly contains `manifest.json`, `modules.json`, and `questions.json`.
