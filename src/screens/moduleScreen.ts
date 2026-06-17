@@ -1,4 +1,5 @@
-import type { ModuleInfo, Question, StudySettings } from '../core/models';
+import type { ConcreteStudyQuestionMode, ModuleInfo, Question, StudyQuestionMode, StudySettings } from '../core/models';
+import { getModuleStudyQuestionModes, getStudyQuestionModeLabel, getSupportedStudyQuestionModes, presentQuestionForStudy } from '../core/questionPresentation';
 import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
 import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
@@ -13,32 +14,44 @@ interface StoredSession {
   mode: 'normal' | 'review';
   settings: StudySettings;
   savedAt: string;
+  questionModes?: Record<string, ConcreteStudyQuestionMode>;
 }
 
 function resumeKey(moduleId: string): string {
   return `loopdeck_session_${moduleId}`;
 }
 
+function isConcreteStudyQuestionMode(value: unknown): value is ConcreteStudyQuestionMode {
+  return value === 'as_stored' || value === 'front_to_back' || value === 'back_to_front';
+}
+
 function readStoredSession(moduleId: string, byId: Map<string, Question>): StoredSession | undefined {
   try {
     const raw = localStorage.getItem(resumeKey(moduleId));
     if (!raw) return undefined;
-    const parsed = JSON.parse(raw) as StoredSession;
-    if (!Array.isArray(parsed.questionIds) || parsed.index >= parsed.questionIds.length) return undefined;
+    const parsed = JSON.parse(raw) as Partial<StoredSession>;
+    if (!Array.isArray(parsed.questionIds) || typeof parsed.index !== 'number' || parsed.index >= parsed.questionIds.length) return undefined;
     if (!parsed.questionIds.every((id) => byId.has(id))) return undefined;
-    return parsed;
+    if (parsed.mode !== 'normal' && parsed.mode !== 'review') return undefined;
+    if (!parsed.settings) return undefined;
+    if (parsed.questionModes !== undefined && (typeof parsed.questionModes !== 'object' || parsed.questionModes === null || Array.isArray(parsed.questionModes))) return undefined;
+    return parsed as StoredSession;
   } catch {
     return undefined;
   }
 }
 
 function saveStoredSession(moduleId: string, session: QuizSession): void {
+  const questionModes: Record<string, ConcreteStudyQuestionMode> = {};
+  for (const question of session.queue) questionModes[question.id] = question.activeStudyMode ?? 'as_stored';
+
   const stored: StoredSession = {
     questionIds: session.queue.map((question) => question.id),
     index: session.index,
     mode: session.mode,
     settings: session.settings,
-    savedAt: new Date().toISOString()
+    savedAt: new Date().toISOString(),
+    questionModes
   };
   localStorage.setItem(resumeKey(moduleId), JSON.stringify(stored));
 }
@@ -63,6 +76,24 @@ function runtimeSettings(settings: StudySettings): StudySettings {
     selectedRange: 'all',
     selectedCategory: 'all',
     filter: 'all'
+  };
+}
+
+function sampleQuestionForMode(mode: StudyQuestionMode, questions: Question[]): Question | undefined {
+  if (mode === 'as_stored' || mode === 'mixed') return questions.find((question) => getSupportedStudyQuestionModes(question).length > 1);
+  return questions.find((question) => getSupportedStudyQuestionModes(question).includes(mode));
+}
+
+function restoreStoredQuestionModes(session: QuizSession, storedSession: StoredSession, questionsById: Map<string, Question>): QuizSession {
+  if (!storedSession.questionModes) return session;
+
+  return {
+    ...session,
+    queue: session.queue.map((question) => {
+      const mode = storedSession.questionModes?.[question.id];
+      if (!isConcreteStudyQuestionMode(mode)) return question;
+      return presentQuestionForStudy(questionsById.get(question.id) ?? question, mode);
+    })
   };
 }
 
@@ -91,6 +122,7 @@ export async function renderModuleScreen(
   const wrongQuestions = questions.filter((question) => wrongIds.has(question.id));
   const bookmarkedQuestions = questions.filter((question) => bookmarkIds.has(question.id));
   const categories = listQuestionCategories(questions);
+  const questionModes = getModuleStudyQuestionModes(questions);
   const storedSession = readStoredSession(module.id, questionsById);
 
   const screen = el('main', 'screen module-screen');
@@ -132,6 +164,7 @@ export async function renderModuleScreen(
     selectedCategory: 'all',
     filter: 'all',
     answerFormat: 'auto',
+    questionMode: 'as_stored',
     showExample: true,
     showNumber: true,
     showCategory: true
@@ -192,7 +225,22 @@ export async function renderModuleScreen(
     settings.answerFormat = answerField.select.value as StudySettings['answerFormat'];
   };
 
-  settingsGrid.append(countField.wrap, rangeField.wrap, categoryField.wrap, answerField.wrap);
+  const fields = [countField.wrap, rangeField.wrap, categoryField.wrap, answerField.wrap];
+  if (questionModes.length > 1) {
+    const questionModeField = makeSelect('出題形式');
+    for (const mode of questionModes) {
+      const option = el('option', '', getStudyQuestionModeLabel(mode, sampleQuestionForMode(mode, questions))) as HTMLOptionElement;
+      option.value = mode;
+      questionModeField.select.append(option);
+    }
+    questionModeField.select.value = 'as_stored';
+    questionModeField.select.onchange = () => {
+      settings.questionMode = questionModeField.select.value as StudyQuestionMode;
+    };
+    fields.push(questionModeField.wrap);
+  }
+
+  settingsGrid.append(...fields);
   settingsCard.append(settingsGrid);
 
   const settingRow = el('div', 'setting-row');
@@ -257,7 +305,7 @@ export async function renderModuleScreen(
     resume.onclick = () => {
       const restoredQuestions = storedSession.questionIds.map((id) => questionsById.get(id)).filter((question): question is Question => Boolean(question));
       const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode, questions);
-      mountSession({ ...session, index: storedSession.index });
+      mountSession({ ...restoreStoredQuestionModes(session, storedSession, questionsById), index: storedSession.index });
     };
     actions.append(resume);
   }
