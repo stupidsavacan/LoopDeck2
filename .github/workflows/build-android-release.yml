@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: loopdeck-android-release-${{ github.ref }}
@@ -151,12 +152,29 @@ jobs:
         working-directory: android
         run: gradle --no-daemon assembleRelease
 
+      - name: List release APK outputs
+        if: steps.signing.outputs.ready == 'true'
+        run: |
+          echo "APK outputs:"
+          find android/app/build/outputs -type f -name "*.apk" -print || true
+          echo "Output tree:"
+          find android/app/build/outputs -maxdepth 6 -type f -print || true
+
+      - name: Collect release APK artifacts
+        if: steps.signing.outputs.ready == 'true'
+        run: |
+          rm -rf artifacts/release-apk
+          mkdir -p artifacts/release-apk
+          find android/app/build/outputs -type f -name "*.apk" -exec cp {} artifacts/release-apk/ \;
+          echo "Collected APK artifacts:"
+          find artifacts/release-apk -type f -name "*.apk" -print
+
       - name: Upload signed release APK
         if: steps.signing.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-signed-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: artifacts/release-apk/*.apk
           if-no-files-found: error
 
       - name: Remove release signing files

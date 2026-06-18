@@ -1,4 +1,8 @@
 import type { ModuleInfo, Question, StudySettings } from '../core/models';
+import {
+  getModuleStudyQuestionModes,
+  getStudyQuestionModeLabel
+} from '../core/questionPresentation';
 import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
 import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
@@ -132,6 +136,7 @@ export async function renderModuleScreen(
     selectedCategory: 'all',
     filter: 'all',
     answerFormat: 'auto',
+    questionMode: 'as_stored',
     showExample: true,
     showNumber: true,
     showCategory: true
@@ -192,7 +197,21 @@ export async function renderModuleScreen(
     settings.answerFormat = answerField.select.value as StudySettings['answerFormat'];
   };
 
-  settingsGrid.append(countField.wrap, rangeField.wrap, categoryField.wrap, answerField.wrap);
+  const questionModeField = makeSelect('出題形式');
+  const questionModes = getModuleStudyQuestionModes(questions);
+  const sampleQuestion = questions.find((question) => question.sides) ?? questions[0];
+  for (const mode of questionModes) {
+    const option = el('option', '', getStudyQuestionModeLabel(mode, sampleQuestion)) as HTMLOptionElement;
+    option.value = mode;
+    questionModeField.select.append(option);
+  }
+  questionModeField.select.value = settings.questionMode ?? 'as_stored';
+  questionModeField.select.disabled = questionModes.length <= 1;
+  questionModeField.select.onchange = () => {
+    settings.questionMode = questionModeField.select.value as StudySettings['questionMode'];
+  };
+
+  settingsGrid.append(countField.wrap, rangeField.wrap, categoryField.wrap, answerField.wrap, questionModeField.wrap);
   settingsCard.append(settingsGrid);
 
   const settingRow = el('div', 'setting-row');
