@@ -151,12 +151,20 @@ jobs:
         working-directory: android
         run: gradle --no-daemon assembleRelease
 
+      - name: List release APK outputs
+        if: steps.signing.outputs.ready == 'true'
+        run: |
+          echo "APK outputs:"
+          find android/app/build/outputs -type f -name "*.apk" -print || true
+          echo "Output tree:"
+          find android/app/build/outputs -maxdepth 6 -type f -print || true
+
       - name: Upload signed release APK
         if: steps.signing.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-signed-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/**/*.apk
           if-no-files-found: error
 
       - name: Remove release signing files
