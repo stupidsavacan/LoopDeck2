@@ -175,23 +175,23 @@ jobs:
             exit 1
           fi
 
-      - name: Prune previous signed release APK artifacts
+      - name: Prune previous APK artifacts
         if: steps.signing.outputs.ready == 'true' && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          artifact_ids="$(gh api --paginate repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[] | select(.name == "LoopDeck-signed-release-apk") | .id')"
-          if [ -z "$artifact_ids" ]; then
-            echo "No previous signed release APK artifacts to prune."
+          artifacts="$(gh api --paginate repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[] | select(.name == "LoopDeck-debug-apk" or .name == "LoopDeck-signed-release-apk") | [.id, .name] | @tsv')"
+          if [ -z "$artifacts" ]; then
+            echo "No previous APK artifacts to prune."
             exit 0
           fi
-          while IFS= read -r artifact_id; do
+          while IFS=$'\t' read -r artifact_id artifact_name; do
             if [ -n "$artifact_id" ]; then
-              echo "Deleting previous signed release APK artifact $artifact_id"
+              echo "Deleting previous APK artifact $artifact_name ($artifact_id)"
               gh api --method DELETE "repos/${{ github.repository }}/actions/artifacts/$artifact_id"
             fi
-          done <<< "$artifact_ids"
+          done <<< "$artifacts"
 
       - name: Upload signed release APK
         if: steps.signing.outputs.ready == 'true' && github.event_name != 'pull_request'
