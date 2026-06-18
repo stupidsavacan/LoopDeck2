@@ -69,9 +69,17 @@ jobs:
           echo "Output tree:"
           find android/app/build/outputs -maxdepth 6 -type f -print || true
 
+      - name: Collect debug APK artifacts
+        run: |
+          rm -rf artifacts/debug-apk
+          mkdir -p artifacts/debug-apk
+          find android/app/build/outputs -type f -name "*.apk" -exec cp {} artifacts/debug-apk/ \;
+          echo "Collected APK artifacts:"
+          find artifacts/debug-apk -type f -name "*.apk" -print
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-debug-apk
-          path: android/app/build/outputs/apk/**/*.apk
+          path: artifacts/debug-apk/*.apk
           if-no-files-found: error
