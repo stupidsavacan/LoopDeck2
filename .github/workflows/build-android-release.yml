@@ -176,7 +176,7 @@ jobs:
           fi
 
       - name: Prune previous signed release APK artifacts
-        if: steps.signing.outputs.ready == 'true'
+        if: steps.signing.outputs.ready == 'true' && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -194,7 +194,7 @@ jobs:
           done <<< "$artifact_ids"
 
       - name: Upload signed release APK
-        if: steps.signing.outputs.ready == 'true'
+        if: steps.signing.outputs.ready == 'true' && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-signed-release-apk
