@@ -85,6 +85,7 @@ jobs:
           fi
 
       - name: Prune previous debug APK artifacts
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -102,6 +103,7 @@ jobs:
           done <<< "$artifact_ids"
 
       - name: Upload debug APK
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: LoopDeck-debug-apk
