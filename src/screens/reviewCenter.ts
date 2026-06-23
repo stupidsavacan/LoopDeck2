@@ -87,7 +87,7 @@ export async function renderReviewCenter(
       showNumber: true,
       showCategory: true
     };
-    const session = createSession(reviewModule, items, settings, 'review');
+    const session = createSession(reviewModule, items, settings, 'review', questions);
     const update = (next: QuizSession) => renderInlineQuiz(mount, next, { onSessionChange: update, onComplete: rerender });
     renderInlineQuiz(mount, session, { onSessionChange: update, onComplete: rerender });
   }

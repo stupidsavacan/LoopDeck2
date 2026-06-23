@@ -88,6 +88,10 @@ export async function renderModuleScreen(
   const module: ModuleInfo = foundModule;
 
   const questions = getQuestionsForModule(packView, module);
+  const modulePackId = packView.modulePackIdById.get(module.id);
+  const sessionQuestionPool = modulePackId
+    ? packView.questions.filter((question) => packView.questionPackIdById.get(question.id) === modulePackId)
+    : questions;
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const attempts = await db.getAttempts();
   const bookmarks = await db.getBookmarks();
@@ -265,7 +269,7 @@ export async function renderModuleScreen(
       toast('出題できる問題がありません。');
       return;
     }
-    const session = createSession(module, selected, runtimeSettings(baseSettings), mode, questions);
+    const session = createSession(module, selected, runtimeSettings(baseSettings), mode, sessionQuestionPool);
     mountSession(session);
   }
 
@@ -276,7 +280,7 @@ export async function renderModuleScreen(
     const resume = button(`再開 (${storedSession.index + 1}/${storedSession.questionIds.length})`, 'btn');
     resume.onclick = () => {
       const restoredQuestions = storedSession.questionIds.map((id) => questionsById.get(id)).filter((question): question is Question => Boolean(question));
-      const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode, questions);
+      const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode, sessionQuestionPool);
       mountSession({ ...session, index: storedSession.index });
     };
     actions.append(resume);

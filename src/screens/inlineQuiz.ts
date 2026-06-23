@@ -4,6 +4,7 @@ import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } f
 import { scoreAttemptDelta } from '../core/reviewEngine';
 import { applyReviewRating, createReviewCard, inferReviewRating } from '../core/scheduler';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
+import { buildWrongAnswerExplanation, type WrongAnswerExplanation } from '../core/wrongAnswerExplanation';
 import { isSafeImageAssetRef, isSafeImageDataUrl } from '../packs/assetSafety';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { db } from '../storage/db';
@@ -36,6 +37,37 @@ function buildAttempt(question: Question, result: Attempt['result'], input: stri
   };
 }
 
+function wrongAnswerLabel(source: WrongAnswerExplanation['source']): string {
+  return source === 'choice' ? '\u9078\u3093\u3060\u7b54\u3048\u306e\u89e3\u8aac' : '\u5165\u529b\u3057\u305f\u7b54\u3048\u306e\u89e3\u8aac';
+}
+
+function wrongAnswerFallback(source: WrongAnswerExplanation['source']): string {
+  return source === 'choice'
+    ? '\u3053\u306e\u9078\u629e\u80a2\u306f\u3001\u3053\u306e\u554f\u984c\u306e\u7b54\u3048\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002'
+    : '\u5165\u529b\u3057\u305f\u7b54\u3048\u306f\u3001\u3053\u306e\u554f\u984c\u306e\u7b54\u3048\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002';
+}
+
+function appendExplanation(container: HTMLElement, className: string, label: string, text: string): void {
+  const node = el('p', `explanation ${className}`);
+  node.append(el('strong', '', `${label}\uff1a`), document.createTextNode(text));
+  container.append(node);
+}
+
+function appendWrongAnswerExplanation(container: HTMLElement, explanation: WrongAnswerExplanation | undefined): void {
+  if (!explanation) return;
+  const label = wrongAnswerLabel(explanation.source);
+  if (!explanation.found) {
+    appendExplanation(container, 'wrong-answer-explanation', label, wrongAnswerFallback(explanation.source));
+    return;
+  }
+
+  const matched = explanation.matchedAnswer ?? explanation.value;
+  const text = explanation.explanation
+    ? `${matched}\uff1a${explanation.explanation}`
+    : `${matched} \u306f\u5225\u306e\u554f\u984c\u306e\u6b63\u89e3\u3068\u3057\u3066\u767b\u9332\u3055\u308c\u3066\u3044\u307e\u3059\u304c\u3001\u89e3\u8aac\u306f\u672a\u767b\u9332\u3067\u3059\u3002`;
+  appendExplanation(container, 'wrong-answer-explanation', label, text);
+}
+
 async function saveAttemptAndReview(attempt: Attempt): Promise<void> {
   await db.addAttempt(attempt);
   const baseCard = (await db.getReviewCard(attempt.questionId)) ?? createReviewCard(attempt.questionId, attempt.moduleId);
@@ -45,7 +77,7 @@ async function saveAttemptAndReview(attempt: Attempt): Promise<void> {
   await db.putReviewLog(log);
 }
 
-function appendResult(container: HTMLElement, question: Question, result: Attempt['result'], elapsedMs: number, nearMiss = false): void {
+function appendResult(container: HTMLElement, question: Question, result: Attempt['result'], elapsedMs: number, nearMiss = false, wrongExplanation?: WrongAnswerExplanation): void {
   const resultBox = el('div', result === 'correct' ? 'result correct' : 'result wrong');
   resultBox.append(
     el('strong', '', result === 'revealed' ? '\u7b54\u3048\u8868\u793a' : result === 'correct' ? '\u6b63\u89e3' : '\u4e0d\u6b63\u89e3'),
@@ -53,7 +85,8 @@ function appendResult(container: HTMLElement, question: Question, result: Attemp
   );
   if (nearMiss) resultBox.append(el('span', 'near-miss-note', '\u304b\u306a\u308a\u8fd1\u3044\u7b54\u3048\u3067\u3059\u3002\u5fa9\u7fd2\u512a\u5148\u5ea6\u306f\u8efd\u3081\u306b\u8a18\u9332\u3057\u307e\u3057\u305f\u3002'));
   container.append(resultBox);
-  if (question.explanation) container.append(el('p', 'explanation', question.explanation));
+  if (question.explanation) appendExplanation(container, 'correct-answer-explanation', '\u6b63\u89e3\u306e\u89e3\u8aac', question.explanation);
+  if (result === 'wrong') appendWrongAnswerExplanation(container, wrongExplanation);
 }
 
 function fallback(message: string): HTMLElement { return el('p', 'image-fallback', message); }
@@ -125,7 +158,10 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
     const attempt = buildAttempt(activeQuestion, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss);
-    appendResult(resultArea, activeQuestion, result, elapsedMs, nearMiss);
+    const wrongExplanation = !revealed && result === 'wrong' && typeof answer === 'string'
+      ? buildWrongAnswerExplanation(answerMode === 'input' ? 'input' : 'choice', answer, activeQuestion, session.choicePool.length ? session.choicePool : session.queue)
+      : undefined;
+    appendResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
     const persisted = saveAttemptAndReview(attempt);
     if (result === 'correct' && session.settings.autoNext) void persisted.finally(() => window.setTimeout(nextQuestion, 650));
     else void persisted;
