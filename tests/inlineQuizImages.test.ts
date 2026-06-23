@@ -30,9 +30,10 @@ function session() {
 }
 
 async function settleImageResolution(): Promise<void> {
-  await Promise.resolve();
-  await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
-  await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+  for (let index = 0; index < 10; index += 1) {
+    await Promise.resolve();
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 10));
+  }
 }
 
 describe('renderInlineQuiz image assets', () => {

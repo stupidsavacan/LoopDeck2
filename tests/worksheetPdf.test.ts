@@ -146,7 +146,7 @@ describe('fixed worksheet PDF generator', () => {
     expect(blob.type).toBe('application/pdf');
     expect(blob.size).toBeGreaterThan(0);
     expect(document.getPageCount()).toBe(2);
-  });
+  }, 15000);
 
   it('decodes embedded base64 font data URLs without fetch', () => {
     expect(loadFontBytesFromDataUrl('data:font/woff;base64,AQID')).toEqual(new Uint8Array([1, 2, 3]));

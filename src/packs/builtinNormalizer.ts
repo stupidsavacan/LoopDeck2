@@ -141,6 +141,9 @@ function normalizeModule(rawModule: unknown, questionsByModule: Map<string, stri
     folderId: asString(rawModule.folderId, asString(rawModule.subject, 'misc')).trim() || 'misc',
     title,
     subject,
+    color: asString(rawModule.color).trim() || undefined,
+    accent: asString(rawModule.accent).trim() || undefined,
+    accentColor: asString(rawModule.accentColor).trim() || undefined,
     description: DEFAULT_MODULE_DESCRIPTIONS[id] ?? undefined,
     tags: DEFAULT_MODULE_TAGS[id] ?? [subject],
     questionIds: declaredQuestionIds.length ? declaredQuestionIds : fallbackQuestionIds

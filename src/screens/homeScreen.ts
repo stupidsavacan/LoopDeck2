@@ -7,6 +7,7 @@ import { buildHomeFolders, homeModuleMatches, type HomeFolder } from './homeFold
 type ModuleCardMeta = {
   icon: string;
   accent: string;
+  accentColor?: string;
   subtitle: string;
   description: string;
   tags: string[];
@@ -92,6 +93,44 @@ const MODULE_CARD_META: Record<string, ModuleCardMeta> = {
   }
 };
 
+const DEFAULT_MODULE_ACCENT = '#2563eb';
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+
+const SUBJECT_COLOR_FALLBACKS: Array<{ keywords: string[]; accent: string; accentColor: string }> = [
+  { keywords: ['geography', 'geo', '地理'], accent: '#15803D', accentColor: '#DCFCE7' },
+  { keywords: ['history', 'historical', '歴史'], accent: '#92400E', accentColor: '#FEF3C7' },
+  { keywords: ['biology', 'bio', '生物'], accent: '#16A34A', accentColor: '#DCFCE7' },
+  { keywords: ['chemistry', 'chemical', '化学'], accent: '#EA580C', accentColor: '#FFEDD5' },
+  { keywords: ['english', 'leap', '英語', '英単語'], accent: '#2563EB', accentColor: '#DBEAFE' },
+  { keywords: ['kobun', 'japanese', '古文', '国語'], accent: '#9333EA', accentColor: '#F3E8FF' },
+  { keywords: ['math', '数学'], accent: '#0891B2', accentColor: '#CFFAFE' }
+];
+
+function validHexColor(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const color = value.trim();
+  return HEX_COLOR.test(color) ? color : undefined;
+}
+
+function hexToRgba(hexColor: string, alpha: number): string {
+  const red = Number.parseInt(hexColor.slice(1, 3), 16);
+  const green = Number.parseInt(hexColor.slice(3, 5), 16);
+  const blue = Number.parseInt(hexColor.slice(5, 7), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function inferModuleColors(module: ModuleInfo): { accent: string; accentColor?: string } {
+  const haystack = [
+    module.id,
+    module.title,
+    module.subject,
+    ...(module.tags ?? [])
+  ].join(' ').toLocaleLowerCase();
+
+  const fallback = SUBJECT_COLOR_FALLBACKS.find((entry) => entry.keywords.some((keyword) => haystack.includes(keyword.toLocaleLowerCase())));
+  return fallback ? { accent: fallback.accent, accentColor: fallback.accentColor } : { accent: DEFAULT_MODULE_ACCENT };
+}
+
 function safeGetStorage(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -108,11 +147,17 @@ function safeSetStorage(key: string, value: string): void {
   }
 }
 
-function moduleMeta(module: ModuleInfo): ModuleCardMeta {
+export function moduleMeta(module: ModuleInfo): ModuleCardMeta {
   const defaultMeta = MODULE_CARD_META[module.id];
+  const inferred = inferModuleColors(module);
+  const accent = validHexColor(module.color) ?? validHexColor(module.accent) ?? validHexColor(defaultMeta?.accent) ?? inferred.accent;
+  const accentColor = validHexColor(module.accentColor) ?? inferred.accentColor;
+
   if (defaultMeta) {
     return {
       ...defaultMeta,
+      accent,
+      accentColor,
       description: module.description ?? defaultMeta.description,
       tags: module.tags?.slice(0, 4) ?? defaultMeta.tags,
       folderId: module.folderId || defaultMeta.folderId
@@ -121,7 +166,8 @@ function moduleMeta(module: ModuleInfo): ModuleCardMeta {
 
   return {
     icon: module.title.slice(0, 1) || '教',
-    accent: '#2563eb',
+    accent,
+    accentColor,
     subtitle: module.subject,
     description: module.description ?? 'シャッフルで学習します。',
     tags: module.tags?.slice(0, 4) ?? [module.subject],
@@ -219,7 +265,8 @@ export function renderHomeScreen(
     const meta = moduleMeta(module);
     const card = el('button', 'module-card ready') as HTMLButtonElement;
     card.type = 'button';
-    card.style.borderColor = `${meta.accent}33`;
+    card.style.borderColor = hexToRgba(meta.accent, 0.2);
+    if (meta.accentColor) card.style.background = `linear-gradient(180deg, ${meta.accentColor}, rgba(255, 255, 255, 0.94) 70%)`;
     card.onclick = () => openModule(module.id);
 
     const top = el('div', 'card-top');

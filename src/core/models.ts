@@ -76,6 +76,9 @@ export interface ModuleInfo {
   folderId: string;
   title: string;
   subject: string;
+  color?: string;
+  accent?: string;
+  accentColor?: string;
   description?: string;
   tags?: string[];
   questionIds: string[];

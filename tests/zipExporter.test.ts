@@ -60,6 +60,19 @@ describe('zipExporter', () => {
     expect(questions).toEqual(samplePack.questions);
   });
 
+  it('exports module color metadata in modules.json', async () => {
+    const coloredPack: LoopDeckPack = {
+      ...samplePack,
+      modules: [{ ...samplePack.modules[0], color: '#15803D', accentColor: '#DCFCE7' }]
+    };
+    const bytes = await createLoopDeckZipBytes(coloredPack);
+    const zip = await JSZip.loadAsync(bytes);
+    const modules = JSON.parse(await zip.file('modules.json')!.async('string'));
+
+    expect(modules[0].color).toBe('#15803D');
+    expect(modules[0].accentColor).toBe('#DCFCE7');
+  });
+
   it('includes safe stored assets referenced by questions', async () => {
     const imagePack = withImage();
     const bytes = await createLoopDeckZipBytes(imagePack, [asset('images/map.png'), asset('images/unreferenced.png')]);
