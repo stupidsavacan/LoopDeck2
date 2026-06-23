@@ -1,5 +1,5 @@
 import type { ModuleInfo, Question, StudySettings } from './models';
-import { presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
+import { getSupportedStudyQuestionModes, presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
 
 export interface QuizSession {
   module: ModuleInfo;
@@ -80,7 +80,14 @@ export function filterStudyQuestions(questions: Question[], settings: StudySetti
 
 export function selectSessionQuestions(questions: Question[], settings: StudySettings, context: StudySelectionContext = {}): Question[] {
   const filtered = filterStudyQuestions(questions, settings, context);
-  const ordered = settings.shuffle ? shuffle(filtered) : [...filtered];
+  const requestedMode = settings.questionMode ?? 'as_stored';
+  const modeCompatible = filtered.filter((question) => {
+    if (requestedMode === 'as_stored') return true;
+    const supported = getSupportedStudyQuestionModes(question);
+    if (requestedMode === 'mixed') return supported.some((mode) => mode === 'front_to_back' || mode === 'back_to_front');
+    return supported.includes(requestedMode);
+  });
+  const ordered = settings.shuffle ? shuffle(modeCompatible) : [...modeCompatible];
   return settings.questionLimit === 'all' ? ordered : ordered.slice(0, settings.questionLimit);
 }
 

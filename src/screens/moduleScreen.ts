@@ -1,5 +1,6 @@
 import type { ModuleInfo, Question, StudySettings } from '../core/models';
 import {
+  canAutoReverseQuestion,
   getModuleStudyQuestionModes,
   getStudyQuestionModeLabel
 } from '../core/questionPresentation';
@@ -199,7 +200,7 @@ export async function renderModuleScreen(
 
   const questionModeField = makeSelect('出題形式');
   const questionModes = getModuleStudyQuestionModes(questions);
-  const sampleQuestion = questions.find((question) => question.sides) ?? questions[0];
+  const sampleQuestion = questions.find((question) => question.sides) ?? questions.find(canAutoReverseQuestion) ?? questions[0];
   for (const mode of questionModes) {
     const option = el('option', '', getStudyQuestionModeLabel(mode, sampleQuestion)) as HTMLOptionElement;
     option.value = mode;

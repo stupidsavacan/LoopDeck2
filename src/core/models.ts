@@ -103,6 +103,8 @@ export interface BaseQuestion {
     description?: string;
   }>;
   activeStudyMode?: ConcreteStudyQuestionMode;
+  autoReversed?: boolean;
+  directionLabel?: string;
 }
 
 export interface InputQuestion extends BaseQuestion {

@@ -109,10 +109,18 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let selectedAnswer: string | string[] = '';
   let answered = false;
 
+  function lockAnswerControls(): void {
+    answerArea.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input, button').forEach((control) => {
+      if (control instanceof HTMLInputElement) control.readOnly = true;
+      control.disabled = true;
+    });
+  }
+
   function nextQuestion(): void { callbacks.onSessionChange(advanceSession(session)); }
   function record(answer: string | string[], revealed = false): void {
     if (answered) return;
     answered = true;
+    lockAnswerControls();
     const elapsedMs = elapsedForCurrent(session);
     const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
@@ -141,7 +149,11 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   if (answerMode === 'input') {
     const input = el('input', 'text-input') as HTMLInputElement;
     input.placeholder = '\u7b54\u3048\u3092\u5165\u529b';
-    input.addEventListener('keydown', (event) => { if (event.key === 'Enter') record(input.value); });
+    input.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      record(input.value);
+    });
     const submit = button('\u56de\u7b54\u3059\u308b', 'btn primary');
     submit.onclick = () => record(input.value);
     answerArea.append(input, submit);

@@ -1,11 +1,154 @@
 import type { ConcreteStudyQuestionMode, InputQuestion, Question, StudyQuestionMode } from './models';
 
+const JAPANESE_RE = /[\u3040-\u30ff\u3400-\u9fff]/;
+const LATIN_RE = /[A-Za-z]/;
+const HTML_RE = /<[^>]+>/;
+const ENGLISH_TO_JAPANESE_LABEL = '\u82f1\u8a9e \u2192 \u65e5\u672c\u8a9e';
+const JAPANESE_TO_ENGLISH_LABEL = '\u65e5\u672c\u8a9e \u2192 \u82f1\u8a9e';
+
+interface AutoLanguageStudyData {
+  storedMode: 'front_to_back' | 'back_to_front';
+  reverseMode: 'front_to_back' | 'back_to_front';
+  prompt: string;
+  answerCandidates: string[];
+}
+
 function nonEmpty(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
 function cloneAsStored<T extends Question>(question: T): T {
   return { ...question, activeStudyMode: 'as_stored' };
+}
+
+function normalizeTextForLang(value: unknown): string {
+  return String(value ?? '').normalize('NFKC').replace(/<[^>]*>/g, '').trim();
+}
+
+function hasHtml(value: unknown): boolean {
+  return HTML_RE.test(String(value ?? ''));
+}
+
+function hasJapanese(value: string): boolean {
+  return JAPANESE_RE.test(value);
+}
+
+function hasLatin(value: string): boolean {
+  return LATIN_RE.test(value);
+}
+
+function isCompactVocabularyText(value: string): boolean {
+  if (!value || value.length > 64) return false;
+  if (/[.!?。！？]/.test(value)) return false;
+  const latinWords = value.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? [];
+  return latinWords.length <= 6;
+}
+
+export function isEnglishOnlyStudyText(value: unknown): boolean {
+  if (hasHtml(value)) return false;
+  const text = normalizeTextForLang(value);
+  return isCompactVocabularyText(text) && hasLatin(text) && !hasJapanese(text);
+}
+
+export function isJapaneseOnlyStudyText(value: unknown): boolean {
+  if (hasHtml(value)) return false;
+  const text = normalizeTextForLang(value);
+  return isCompactVocabularyText(text) && hasJapanese(text) && !hasLatin(text);
+}
+
+function uniqueStrings(values: unknown[]): string[] {
+  const result: string[] = [];
+  const seen = new Set<string>();
+  for (const value of values) {
+    const text = normalizeTextForLang(value);
+    if (!text) continue;
+    const key = text.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(text);
+  }
+  return result;
+}
+
+function answerCandidates(question: InputQuestion): string[] {
+  return uniqueStrings([
+    question.answer,
+    ...(question.acceptableAnswers ?? []),
+    ...(question.acceptedAnswers ?? [])
+  ]);
+}
+
+function autoLanguageStudyData(question: Question): AutoLanguageStudyData | undefined {
+  if (question.type !== 'input' || question.imageAsset) return undefined;
+  const prompt = normalizeTextForLang(question.prompt);
+  if (!prompt || hasHtml(question.prompt)) return undefined;
+
+  const candidates = answerCandidates(question);
+  const japanese = candidates.filter(isJapaneseOnlyStudyText);
+  const english = candidates.filter(isEnglishOnlyStudyText);
+
+  if (isEnglishOnlyStudyText(prompt) && japanese.length) {
+    return {
+      storedMode: 'front_to_back',
+      reverseMode: 'back_to_front',
+      prompt,
+      answerCandidates: japanese
+    };
+  }
+
+  if (isJapaneseOnlyStudyText(prompt) && english.length) {
+    return {
+      storedMode: 'back_to_front',
+      reverseMode: 'front_to_back',
+      prompt,
+      answerCandidates: english
+    };
+  }
+
+  return undefined;
+}
+
+export function canAutoReverseQuestion(question: Question): boolean {
+  return Boolean(autoLanguageStudyData(question));
+}
+
+function directionLabel(mode: 'front_to_back' | 'back_to_front'): string {
+  return mode === 'front_to_back' ? ENGLISH_TO_JAPANESE_LABEL : JAPANESE_TO_ENGLISH_LABEL;
+}
+
+function joinPromptCandidates(candidates: string[]): string {
+  return candidates.every(isJapaneseOnlyStudyText) ? candidates.join('\u30fb') : candidates.join(' / ');
+}
+
+function presentAutoLanguageQuestion(question: InputQuestion, mode: 'front_to_back' | 'back_to_front'): InputQuestion | undefined {
+  const data = autoLanguageStudyData(question);
+  if (!data) return undefined;
+
+  if (mode === data.storedMode) {
+    return {
+      ...question,
+      acceptedAnswers: data.answerCandidates,
+      activeStudyMode: mode,
+      directionLabel: directionLabel(mode)
+    };
+  }
+
+  if (mode !== data.reverseMode) return undefined;
+
+  return {
+    ...question,
+    prompt: joinPromptCandidates(data.answerCandidates),
+    answer: data.prompt,
+    acceptableAnswers: [data.prompt],
+    acceptedAnswers: [data.prompt],
+    answerJudging: {
+      ...question.answerJudging,
+      mode: 'any_of'
+    },
+    activeStudyMode: mode,
+    autoReversed: true,
+    directionLabel: directionLabel(mode)
+  };
 }
 
 export function hasTwoSidedStudyData(question: Question): boolean {
@@ -18,7 +161,15 @@ export function hasTwoSidedStudyData(question: Question): boolean {
 
 export function getSupportedStudyQuestionModes(question: Question): ConcreteStudyQuestionMode[] {
   const modes: ConcreteStudyQuestionMode[] = ['as_stored'];
-  if (!hasTwoSidedStudyData(question)) return modes;
+
+  if (!hasTwoSidedStudyData(question)) {
+    const auto = autoLanguageStudyData(question);
+    if (!auto) return modes;
+    modes.push(auto.storedMode);
+    if (auto.reverseMode !== auto.storedMode) modes.push(auto.reverseMode);
+    return modes;
+  }
+
   const supported = new Set(question.supportedStudyModes ?? []);
   if (supported.has('front_to_back')) modes.push('front_to_back');
   if (supported.has('back_to_front')) modes.push('back_to_front');
@@ -38,11 +189,12 @@ export function getModuleStudyQuestionModes(questions: Question[]): StudyQuestio
 }
 
 export function getStudyQuestionModeLabel(mode: StudyQuestionMode, sampleQuestion?: Question): string {
-  if (mode === 'as_stored') return '通常';
-  if (mode === 'mixed') return '両方まぜる';
-  const front = sampleQuestion?.sides?.front?.label?.trim() || '表';
-  const back = sampleQuestion?.sides?.back?.label?.trim() || '裏';
-  return mode === 'front_to_back' ? `${front} → ${back}` : `${back} → ${front}`;
+  if (mode === 'as_stored') return '\u901a\u5e38';
+  if (mode === 'mixed') return '\u4e21\u65b9\u5411\u30df\u30c3\u30af\u30b9';
+  if (sampleQuestion && !hasTwoSidedStudyData(sampleQuestion) && canAutoReverseQuestion(sampleQuestion)) return directionLabel(mode);
+  const front = sampleQuestion?.sides?.front?.label?.trim() || '\u8868';
+  const back = sampleQuestion?.sides?.back?.label?.trim() || '\u88cf';
+  return mode === 'front_to_back' ? `${front} \u2192 ${back}` : `${back} \u2192 ${front}`;
 }
 
 export function resolveConcreteStudyQuestionMode(
@@ -67,12 +219,11 @@ function sideAnswers(question: InputQuestion, mode: 'front_to_back' | 'back_to_f
   return answers.length ? answers : side?.text ? [side.text] : [];
 }
 
-export function presentQuestionForStudy(
-  question: Question,
-  mode: ConcreteStudyQuestionMode
-): Question {
-  if (mode === 'as_stored' || question.type !== 'input' || !hasTwoSidedStudyData(question)) {
-    return cloneAsStored(question);
+export function presentQuestionForStudy(question: Question, mode: ConcreteStudyQuestionMode): Question {
+  if (mode === 'as_stored' || question.type !== 'input') return cloneAsStored(question);
+
+  if (!hasTwoSidedStudyData(question)) {
+    return presentAutoLanguageQuestion(question, mode) ?? cloneAsStored(question);
   }
 
   if (!getSupportedStudyQuestionModes(question).includes(mode) || !question.sides) return cloneAsStored(question);
