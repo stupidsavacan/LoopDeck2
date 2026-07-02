@@ -166,6 +166,10 @@
   overflow-wrap: anywhere;
 }
 
+.home-screen > details.howto {
+  display: none;
+}
+
 .management-card .update-actions {
   display: flex;
   flex-wrap: wrap;
