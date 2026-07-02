@@ -20,6 +20,7 @@ import { renderLoading } from './ui/loading';
 const appRoot = document.querySelector<HTMLDivElement>('#app');
 if (!appRoot) throw new Error('Missing #app root.');
 const root: HTMLElement = appRoot;
+const ROUTE_LOADING_DELAY_MS = 2000;
 
 registerGlobalErrorLogging();
 
@@ -178,47 +179,53 @@ function appendHomeManagementLinks(): void {
 }
 
 async function renderRoute(route: AppRoute): Promise<void> {
-  renderLoading(root, loadingMessage(route));
-  if (route.name === 'debugLog') {
-    renderDebugLogScreen(root, () => navigate({ name: 'home' }));
-    return;
-  }
+  const loadingTimer = window.setTimeout(() => {
+    renderLoading(root, loadingMessage(route));
+  }, ROUTE_LOADING_DELAY_MS);
+  try {
+    if (route.name === 'debugLog') {
+      renderDebugLogScreen(root, () => navigate({ name: 'home' }));
+      return;
+    }
 
-  await loadPacks();
+    await loadPacks();
 
-  switch (route.name) {
-    case 'home':
-      renderHomeScreen(
-        root,
-        packView,
-        (moduleId) => navigate({ name: 'module', moduleId }),
-        () => navigate({ name: 'review' }),
-        () => navigate({ name: 'import' }),
-        () => navigate({ name: 'graphs' })
-      );
-      appendHomeManagementLinks();
-      appendMainNavigation('home');
-      return;
-    case 'module':
-      await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }));
-      appendMainNavigation('home');
-      return;
-    case 'review':
-      await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }));
-      appendMainNavigation('review');
-      return;
-    case 'import':
-      await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => navigate({ name: 'home' }));
-      appendMainNavigation(undefined);
-      return;
-    case 'graphs':
-      await renderGraphsScreen(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }));
-      appendMainNavigation('graphs');
-      return;
-    case 'pdfWorksheet':
-      await renderPdfWorksheetScreen(root, packView, () => navigate({ name: 'home' }));
-      appendMainNavigation(undefined);
-      return;
+    switch (route.name) {
+      case 'home':
+        renderHomeScreen(
+          root,
+          packView,
+          (moduleId) => navigate({ name: 'module', moduleId }),
+          () => navigate({ name: 'review' }),
+          () => navigate({ name: 'import' }),
+          () => navigate({ name: 'graphs' })
+        );
+        appendHomeManagementLinks();
+        appendMainNavigation('home');
+        return;
+      case 'module':
+        await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }));
+        appendMainNavigation('home');
+        return;
+      case 'review':
+        await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }));
+        appendMainNavigation('review');
+        return;
+      case 'import':
+        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => navigate({ name: 'home' }));
+        appendMainNavigation(undefined);
+        return;
+      case 'graphs':
+        await renderGraphsScreen(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }));
+        appendMainNavigation('graphs');
+        return;
+      case 'pdfWorksheet':
+        await renderPdfWorksheetScreen(root, packView, () => navigate({ name: 'home' }));
+        appendMainNavigation(undefined);
+        return;
+    }
+  } finally {
+    window.clearTimeout(loadingTimer);
   }
 }
 
