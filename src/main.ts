@@ -219,8 +219,6 @@ async function renderRoute(route: AppRoute): Promise<void> {
       await renderPdfWorksheetScreen(root, packView, () => navigate({ name: 'home' }));
       appendMainNavigation(undefined);
       return;
-    case 'debugLog':
-      return;
   }
 }
 
