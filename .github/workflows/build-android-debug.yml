@@ -1,12 +1,13 @@
 name: Build Android Debug APK
 
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: write
-  actions: write
 
 concurrency:
   group: loopdeck-android-${{ github.ref }}
@@ -83,24 +84,6 @@ jobs:
             echo "::error::No debug APKs were collected from android/app/build/outputs."
             exit 1
           fi
-
-      - name: Prune previous APK artifacts
-        if: github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          artifacts="$(gh api --paginate repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[] | select(.name == "LoopDeck-debug-apk" or .name == "LoopDeck-signed-release-apk") | [.id, .name] | @tsv')"
-          if [ -z "$artifacts" ]; then
-            echo "No previous APK artifacts to prune."
-            exit 0
-          fi
-          while IFS=$'\t' read -r artifact_id artifact_name; do
-            if [ -n "$artifact_id" ]; then
-              echo "Deleting previous APK artifact $artifact_name ($artifact_id)"
-              gh api --method DELETE "repos/${{ github.repository }}/actions/artifacts/$artifact_id"
-            fi
-          done <<< "$artifacts"
 
       - name: Upload debug APK to GitHub Release
         if: github.event_name != 'pull_request'
