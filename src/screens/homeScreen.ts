@@ -196,9 +196,9 @@ export function renderHomeScreen(
   root: HTMLElement,
   packView: ResolvedPackView,
   onOpenModule: (moduleId: string) => void,
-  onOpenReview: () => void,
+  _onOpenReview: () => void,
   onOpenImport: () => void,
-  onOpenGraphs: () => void
+  _onOpenGraphs: () => void
 ): void {
   clear(root);
   safeSetStorage(HOME_IN_PLAYER_KEY, '0');
@@ -210,39 +210,12 @@ export function renderHomeScreen(
 
   const screen = el('main', 'screen home-screen');
   const hero = el('section', 'hero');
-  const menuOpen = button('☰', 'menu-open');
-  menuOpen.setAttribute('aria-label', 'メニュー');
   const heroCopy = el('div', 'hero-copy');
   heroCopy.append(
     el('h1', '', '学習ホーム'),
     el('p', '', '教材をテストごとのフォルダにまとめたスマホ向けホーム。LoopDeckで軽く、すばやく学習できます。')
   );
-  hero.append(menuOpen, heroCopy);
-
-  const menu = el('div', 'utility-menu') as HTMLDivElement;
-  menu.hidden = true;
-  const backdrop = el('div', 'menu-backdrop');
-  const drawer = el('aside', 'menu-drawer');
-  drawer.setAttribute('aria-label', 'メニュー');
-  const menuHead = el('div', 'menu-head');
-  const menuClose = button('×', 'menu-close');
-  menuClose.setAttribute('aria-label', '閉じる');
-  menuHead.append(el('b', '', 'メニュー'), menuClose);
-  const reviewItem = button('', 'menu-item');
-  reviewItem.append(el('b', '', '復習センター'), el('span', '', '解答記録から復習候補を自動抽出'));
-  reviewItem.onclick = onOpenReview;
-  const graphsItem = button('', 'menu-item');
-  graphsItem.append(el('b', '', 'グラフ'), el('span', '', '学習の継続、正答率、ミス傾向を見る'));
-  graphsItem.onclick = onOpenGraphs;
-  const importItem = button('', 'menu-item');
-  importItem.append(el('b', '', '教材更新'), el('span', '', '教材パックの取り込み、書き出し、APK案内'));
-  importItem.onclick = onOpenImport;
-  drawer.append(menuHead, reviewItem, graphsItem, importItem);
-  menu.append(backdrop, drawer);
-  const closeMenu = () => { menu.hidden = true; };
-  menuOpen.onclick = () => { menu.hidden = false; };
-  menuClose.onclick = closeMenu;
-  backdrop.addEventListener('click', closeMenu);
+  hero.append(heroCopy);
 
   const toolbar = el('div', 'toolbar');
   const search = el('input', 'search') as HTMLInputElement;
@@ -309,7 +282,7 @@ export function renderHomeScreen(
       el('div', 'folder-icon', '📁'),
       titleBox,
       el('div', 'folder-count', `${modules.length}件`),
-      el('div', 'folder-chevron', isOpen ? '⌃' : '⌄')
+      el('div', 'folder-chevron', isOpen ? '▼' : '▶')
     );
 
     const content = el('div', isOpen ? 'folder-content open' : 'folder-content');
@@ -353,7 +326,7 @@ export function renderHomeScreen(
   };
 
   const notice = el('div', 'notice');
-  notice.append(el('b', '', '使い方：'), document.createTextNode('カードを押すと教材が開きます。戻るときは上の「← ホーム」。'));
+  notice.append(el('b', '', '使い方：'), document.createTextNode('カードを押すと教材が開きます。主要画面の移動は下のナビゲーションからできます。'));
 
   const update = el('details', 'howto');
   const updateBox = el('div', 'update-box');
@@ -367,7 +340,7 @@ export function renderHomeScreen(
   updateBox.querySelector('.update-actions')?.append(openImport);
   update.append(el('summary', '', '教材更新'), updateBox);
 
-  screen.append(hero, menu, toolbar, list, notice, update);
+  screen.append(hero, toolbar, list, notice, update);
   root.append(screen);
   renderList();
 }
