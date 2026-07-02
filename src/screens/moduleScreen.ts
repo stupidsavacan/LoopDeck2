@@ -79,9 +79,9 @@ export async function renderModuleScreen(
   navigateReview: () => void,
   navigateGraphs: () => void
 ): Promise<void> {
-  clear(root);
   const foundModule = getModuleById(packView, moduleId);
   if (!foundModule) {
+    clear(root);
     root.append(el('p', 'empty', '教材が見つかりません。'));
     return;
   }
@@ -102,6 +102,7 @@ export async function renderModuleScreen(
   const categories = listQuestionCategories(questions);
   const storedSession = readStoredSession(module.id, questionsById);
 
+  clear(root);
   const screen = el('main', 'screen module-screen');
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');
