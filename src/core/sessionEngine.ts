@@ -1,4 +1,4 @@
-import type { ModuleInfo, Question, StudySettings } from './models';
+import type { Attempt, ModuleInfo, Question, StudySettings } from './models';
 import { getSupportedStudyQuestionModes, presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
 
 export interface QuizSession {
@@ -10,6 +10,7 @@ export interface QuizSession {
   startedAt: number;
   currentStartedAt: number;
   mode: 'normal' | 'review';
+  attempts: Attempt[];
 }
 
 export interface StudyRangeOption { value: string; label: string; }
@@ -97,10 +98,17 @@ export function createSession(module: ModuleInfo, questions: Question[], setting
     presentQuestionForStudy(question, resolveConcreteStudyQuestionMode(question, requestedMode))
   );
   const now = Date.now();
-  return { module, queue, choicePool: [...choicePool], index: 0, settings, startedAt: now, currentStartedAt: now, mode };
+  return { module, queue, choicePool: [...choicePool], index: 0, settings, startedAt: now, currentStartedAt: now, mode, attempts: [] };
 }
 
 export function currentQuestion(session: QuizSession): Question | undefined { return session.queue[session.index]; }
 export function elapsedForCurrent(session: QuizSession): number { return Math.max(0, Date.now() - session.currentStartedAt); }
-export function advanceSession(session: QuizSession): QuizSession { return { ...session, index: session.index + 1, currentStartedAt: Date.now() }; }
+export function advanceSession(session: QuizSession, attempt?: Attempt): QuizSession {
+  return {
+    ...session,
+    index: session.index + 1,
+    currentStartedAt: Date.now(),
+    attempts: attempt ? [...session.attempts, attempt] : session.attempts
+  };
+}
 export function isSessionComplete(session: QuizSession): boolean { return session.index >= session.queue.length; }

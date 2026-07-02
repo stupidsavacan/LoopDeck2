@@ -25,7 +25,6 @@ export async function renderReviewCenter(
   navigateHome: () => void,
   navigateGraphs: () => void
 ): Promise<void> {
-  clear(root);
   const attempts = await db.getAttempts();
   const reviewCards = await db.getReviewCards();
   const questions = getActiveQuestions(packView);
@@ -40,6 +39,7 @@ export async function renderReviewCenter(
   const srsQueue = buildSrsReviewQueue(reviewCards, new Date(), 30);
   const mount = el('div', 'quiz-mount');
 
+  clear(root);
   const screen = el('main', 'screen review-screen');
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');

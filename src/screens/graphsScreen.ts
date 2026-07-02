@@ -110,8 +110,8 @@ function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: Resol
 }
 
 export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void, navigateReview: () => void): Promise<void> {
-  clear(root);
   const attempts = await db.getAttempts();
+  clear(root);
 
   const screen = el('main', 'screen graphs-screen');
   const header = el('header', 'topbar');

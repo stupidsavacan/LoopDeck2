@@ -1,3 +1,5 @@
+import { reportIssue } from '../debug/reportIssue';
+import { writeDebugLog } from '../debug/debugLog';
 import type { LoopDeckPack, ModuleInfo, Question } from '../core/models';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
 import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
@@ -183,8 +185,8 @@ function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOpti
 }
 
 export async function renderPdfWorksheetScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void): Promise<void> {
-  clear(root);
   const modules = worksheetModuleOptions(packView);
+  clear(root);
   const screen = el('main', 'screen pdf-worksheet-screen');
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');
@@ -260,17 +262,16 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   const statusCard = el('section', 'card export-status-card');
   const statusTitle = el('h2', '', '書き出し状況');
   const statusMessage = el('p', 'export-status-message', '待機中');
-  const statusCode = el('code', 'export-status-code', 'PDF-IDLE');
-  const statusDetail = el('p', 'hint export-status-detail', 'PDFを書き出すと、ここに進行状況とエラーコードが表示されます。');
+  const statusDetail = el('p', 'hint export-status-detail', 'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。');
   const statusLog = el('ol', 'export-status-log');
-  statusCard.append(statusTitle, statusMessage, statusCode, statusDetail, statusLog);
+  statusCard.append(statusTitle, statusMessage, statusDetail, statusLog);
 
   function reportProgress(code: string, message: string, detail = ''): void {
     statusMessage.textContent = message;
-    statusCode.textContent = code;
     statusDetail.textContent = detail || '詳細なし';
-    const item = el('li', '', `[${code}] ${message}${detail ? ` — ${detail}` : ''}`);
+    const item = el('li', '', `${message}${detail ? ` — ${detail}` : ''}`);
     statusLog.append(item);
+    writeDebugLog({ level: 'info', area: 'pdfWorksheet', code, userMessage: message, detail });
     while (statusLog.childElementCount > 24) statusLog.firstElementChild?.remove();
   }
 
@@ -278,11 +279,18 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
     const selected = selectedModuleOption();
     if (!selectedQuestions.length) {
       reportProgress('PDF-S000', '出力できる問題がありません', selected.label);
-      toast('[PDF-S000] 出力できる問題がありません。');
+      reportIssue({
+        level: 'warn',
+        area: 'pdfWorksheet',
+        code: 'PDF-S000',
+        userMessage: '出力できる問題がありません。',
+        detail: selected.label,
+        context: { selectedQuestionCount: selectedQuestions.length }
+      });
       return;
     }
     exportButton.disabled = true;
-    exportButton.textContent = 'PDFを作成中...';
+    exportButton.textContent = 'PDFを作成中…';
     statusLog.replaceChildren();
     try {
       reportProgress('PDF-S010', '出力設定を読み込みました', `${selected.label} / ${selectedQuestions.length}問`);
@@ -301,12 +309,21 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       const filename = `${safeFileStem(selected.label)}-${safeFileStem(plan.rangeLabel)}.pdf`;
       reportProgress('PDF-S020', '保存処理を開始します', filename);
       await savePdf(pdf, filename, reportProgress);
-      toast('[PDF-OK] PDFプリントを書き出しました。');
+      writeDebugLog({ level: 'info', area: 'pdfWorksheet', code: 'PDF-OK', userMessage: 'PDFプリントを書き出しました。', detail: filename, context: { bytes: pdf.size } });
+      toast('PDFプリントを書き出しました。');
     } catch (error) {
       const code = errorCode(error);
       const message = baseErrorMessage(error);
       reportProgress(code, 'PDF作成/保存に失敗しました', message);
-      toast(`[${code}] ${message}`);
+      reportIssue({
+        level: 'error',
+        area: 'pdfWorksheet',
+        code,
+        userMessage: 'PDFの作成に失敗しました。もう一度試してください。',
+        detail: message,
+        error,
+        context: { selectedLabel: selected.label, selectedQuestionCount: selectedQuestions.length }
+      });
     } finally {
       exportButton.disabled = false;
       exportButton.textContent = 'PDFを書き出す';
