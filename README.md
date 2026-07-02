@@ -1,58 +1,58 @@
 # LoopDeck
 
-LoopDeck is a lightweight HTML / TypeScript study app for fast shuffle-based review.
+LoopDeck は、シャッフル型の高速復習を行うための軽量な HTML / TypeScript 製学習アプリです。
 
-## What is included
+## 含まれているもの
 
-- Vite + TypeScript + HTML/CSS LoopDeck web app
-- Built-in 教材データ
-- Normal-direction-only study data; reverse-practice modules are not active
-- 1,112 usable questions
-- Review Center with SRS due review and history-based weak queues
-- Study graphs based on saved answer attempts
-- Input / choice / multi_select questions
-- Japanese answer judging that rejects partial fragments
-- JSON / `.loopdeck.zip` import and export
-- Android debug APK and signed release APK workflows
+- Vite + TypeScript + HTML/CSS で作られた LoopDeck Web アプリ
+- 内蔵教材データ
+- 通常方向のみの学習データ。逆方向練習モジュールは有効化していません
+- 利用可能な問題数: 1,112問
+- SRS の復習期限キューと履歴ベースの弱点キューを備えた復習センター
+- 保存された回答履歴をもとにした学習グラフ
+- `input` / `choice` / `multi_select` 形式の問題
+- 部分的な断片回答を不正解にする日本語回答判定
+- JSON / `.loopdeck.zip` のインポート・エクスポート
+- Android debug APK と署名付き release APK の GitHub Actions ワークフロー
 
-## Review Scheduler
+## 復習スケジューラー
 
-LoopDeck stores raw answer attempts and per-question review state.
+LoopDeck は、生の回答履歴と問題ごとの復習状態を保存します。
 
-Each question can have a `ReviewCard` with:
+各問題は、次の情報を持つ `ReviewCard` を持つことができます。
 
 - state: `new` / `learning` / `review` / `relearning` / `leech` / `mastered` / `suspended`
 - `dueAt`
 - `intervalDays`
 - `ease`
-- correct and wrong streaks
-- lapse count
+- 正解・不正解の連続回数
+- lapse count（復習失敗回数）
 
-The Review Center has two layers:
+復習センターには2つの層があります。
 
-1. SRS due review:
-   scheduled cards, overdue cards, relearning cards, and leech cards.
+1. SRS 期限到来レビュー:
+   スケジュール済みカード、期限超過カード、再学習カード、leech カードを扱います。
 
-2. History-based weak queue:
-   questions detected from wrong answers, answer reveals, near misses, slow correct answers, and repeated wrong answers.
+2. 履歴ベースの弱点キュー:
+   不正解、答え表示、ニアミス、遅い正解、連続不正解から検出された問題を扱います。
 
-The first scheduler is a simple SM-2-like implementation. It is designed so that FSRS-style difficulty, stability, and retrievability can be added later.
+1つ目のスケジューラーは、SM-2 風のシンプルな実装です。将来的に FSRS 形式の difficulty、stability、retrievability を追加できるように設計しています。
 
-Normal study still saves an `Attempt` immediately after answering. LoopDeck then automatically infers an SRS rating from the result and timing: wrong/revealed answers become `again`, slow correct answers become `hard`, normal correct answers become `good`, and very fast correct answers become `easy`. The app does not show manual rating buttons in the quiz flow.
+通常学習でも、回答直後に `Attempt` を保存します。その後 LoopDeck は、結果と回答時間から SRS レーティングを自動推定します。不正解・答え表示は `again`、遅い正解は `hard`、通常の正解は `good`、とても速い正解は `easy` になります。クイズ中に手動レーティングボタンは表示しません。
 
-## Removed on purpose
+## 意図的に削除したもの
 
-Reverse-practice modules are removed because the intended workflow is shuffled normal study.
+想定している使い方はシャッフルされた通常方向の学習なので、逆方向練習モジュールは削除しています。
 
-Removed module ids:
+削除した module id:
 
 - `english_reverse`
 - `leap_reverse`
 - `leap_final_reverse`
 
-The empty `kobun_vocab` / `古文単語` module is preserved as a 0-question reference module, but it is hidden from normal Home study cards.
+空の `kobun_vocab` / `古文単語` モジュールは、0問の参照用モジュールとして残しています。ただし、通常のホーム画面の学習カードには表示しません。
 
-## Commands
+## コマンド
 
 ```bash
 npm install
@@ -61,17 +61,17 @@ npm test
 npm run build
 ```
 
-Dependencies are pinned to stable Vite / TypeScript / Vitest versions instead of `latest`. The generated lockfile was removed because it pointed at a private/internal registry and had resolved to a broken Vite package for GitHub Actions.
+依存関係は `latest` ではなく、安定した Vite / TypeScript / Vitest のバージョンに固定しています。生成済みの lockfile は削除しました。これは private / internal registry を指しており、GitHub Actions 上で壊れた Vite パッケージに解決されていたためです。
 
 ## GitHub Actions
 
-Pushes, pull requests, and manual workflow runs use the web-only CI workflow:
+push、pull request、手動実行では、Web のみの CI ワークフローを使用します。
 
 ```text
 .github/workflows/ci.yml
 ```
 
-It runs:
+実行内容:
 
 ```text
 npm install --include=dev
@@ -79,25 +79,25 @@ npm test
 npm run build
 ```
 
-To write out an unsigned debug APK, run:
+未署名の debug APK を出力するには、次のワークフローを実行します。
 
 ```text
 .github/workflows/build-android-debug.yml
 ```
 
-Download the artifact named:
+次の名前の artifact をダウンロードします。
 
 ```text
 LoopDeck-debug-apk
 ```
 
-To write out a signed release APK, run:
+署名付き release APK を出力するには、次のワークフローを実行します。
 
 ```text
 .github/workflows/build-android-release.yml
 ```
 
-The signed release workflow requires these GitHub Actions secrets:
+署名付き release ワークフローには、次の GitHub Actions Secrets が必要です。
 
 ```text
 ANDROID_KEYSTORE_BASE64
@@ -106,60 +106,56 @@ KEY_ALIAS
 KEY_PASSWORD
 ```
 
-Download the signed artifact named:
+署名付き APK は GitHub Releases にアップロードされます。Releases から最新の `LoopDeck2-signed-release-...apk` をダウンロードしてください。
 
-```text
-LoopDeck-signed-release-apk
-```
+release ワークフローは CI 中だけ keystore をデコードし、CI 中だけ `android/keystore.properties` を作成します。その後 `assembleRelease` を実行し、署名付き APK をアップロードして、一時的な署名ファイルを削除します。`.jks`、`.keystore`、`android/keystore.properties` はコミットしないでください。
 
-The release workflow decodes the keystore only during CI, writes `android/keystore.properties` only during CI, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files. Do not commit `.jks`, `.keystore`, or `android/keystore.properties`.
-
-For signing setup notes, see:
+署名設定のメモは次を参照してください。
 
 ```text
 android/README_SIGNING.md
 ```
 
-The APK is a small Android wrapper around the bundled local Vite build. Imported study content remains data-only; LoopDeck still rejects executable/imported HTML, JavaScript, CSS, APK, shell, and unsafe paths.
+APK は、バンドルされたローカル Vite ビルドを包む小さな Android ラッパーです。インポートされた学習コンテンツはデータとしてのみ扱われます。LoopDeck は、実行可能な HTML、JavaScript、CSS、APK、shell、危険なパスを含むインポートを拒否します。
 
-## Android Studio build
+## Android Studio でのビルド
 
-Build the web assets first:
+先に Web アセットをビルドします。
 
 ```bash
 npm install
 npm run build
 ```
 
-Then open the `android/` folder in Android Studio and run `assembleDebug`.
+その後、Android Studio で `android/` フォルダを開き、`assembleDebug` を実行します。
 
-For signed local release builds, create `android/keystore.properties` from `android/keystore.properties.example` and run `assembleRelease`. Never commit the real keystore or real signing properties.
+ローカルで署名付き release ビルドを作成する場合は、`android/keystore.properties.example` から `android/keystore.properties` を作成し、`assembleRelease` を実行します。実際の keystore や署名情報は絶対にコミットしないでください。
 
-## LoopDeck Pack format
+## LoopDeck Pack 形式
 
-LoopDeck can import two教材 formats:
+LoopDeck は2種類の教材形式をインポートできます。
 
-1. a single `.loopdeck.json` file containing one full `LoopDeckPack` object
-2. a `.loopdeck.zip` file containing split JSON files and optional local images
+1. 完全な `LoopDeckPack` オブジェクトを1つ含む単体の `.loopdeck.json` ファイル
+2. 分割された JSON ファイルと任意のローカル画像を含む `.loopdeck.zip` ファイル
 
-Study content is treated as data only. Imported packs must not contain executable教材HTML, JavaScript, CSS, Android binaries, shell scripts, remote URLs, or unsafe paths.
+学習コンテンツはデータとしてのみ扱われます。インポートする pack には、実行可能な教材 HTML、JavaScript、CSS、Android バイナリ、shell script、リモート URL、危険なパスを含めてはいけません。
 
-### Option A: single JSON pack
+### Option A: 単体 JSON pack
 
-Create a file such as:
+次のようなファイルを作成します。
 
 ```text
 my-pack.loopdeck.json
 ```
 
-The file must contain one full pack object:
+このファイルには、完全な pack オブジェクトを1つ含める必要があります。
 
 ```json
 {
   "packVersion": 1,
   "packId": "my-first-pack",
-  "title": "My First Pack",
-  "description": "A small sample pack.",
+  "title": "はじめてのパック",
+  "description": "小さなサンプルパックです。",
   "folders": [
     {
       "id": "term-1-mid",
@@ -215,17 +211,17 @@ The file must contain one full pack object:
 }
 ```
 
-Then open LoopDeck's `教材入出力` screen, choose the JSON file, preview the validation result, and install it.
+その後、LoopDeck の `教材入出力` 画面を開き、JSON ファイルを選択し、検証結果をプレビューしてからインストールします。
 
 ### Option B: `.loopdeck.zip` pack
 
-Create a ZIP file such as:
+次のような ZIP ファイルを作成します。
 
 ```text
 my-pack.loopdeck.zip
 ```
 
-The ZIP root must contain:
+ZIP のルートには次を含める必要があります。
 
 ```text
 manifest.json
@@ -235,11 +231,11 @@ images/
   optional-image.png
 ```
 
-`images/` is optional. When using images, place only local image files inside the ZIP and reference them from questions with a relative path such as `images/map01.png`.
+`images/` は任意です。画像を使う場合は、ZIP 内にローカル画像ファイルだけを配置し、`images/map01.png` のような相対パスで問題から参照します。
 
 #### `manifest.json`
 
-`manifest.json` stores pack metadata and folders:
+`manifest.json` には、pack のメタデータとフォルダを保存します。
 
 ```json
 {
@@ -256,20 +252,20 @@ images/
 }
 ```
 
-Required fields:
+必須フィールド:
 
-- `packVersion`: must be `1`
-- `packId`: unique string ID for the pack
-- `title`: pack title
-- `folders`: array of folder objects
+- `packVersion`: `1` である必要があります
+- `packId`: pack の一意な文字列 ID
+- `title`: pack のタイトル
+- `folders`: folder オブジェクトの配列
 
-Optional field:
+任意フィールド:
 
 - `description`
 
 #### `modules.json`
 
-`modules.json` is an array of教材 modules:
+`modules.json` は教材モジュールの配列です。
 
 ```json
 [
@@ -285,14 +281,14 @@ Optional field:
 ]
 ```
 
-Required fields:
+必須フィールド:
 
-- `id`: unique module ID
-- `questionIds`: list of question IDs included in this module
+- `id`: 一意な module ID
+- `questionIds`: この module に含まれる question ID の一覧
 
-Recommended fields:
+推奨フィールド:
 
-- `folderId`: should match a folder ID from `manifest.json`
+- `folderId`: `manifest.json` の folder ID と一致させることを推奨します
 - `title`
 - `subject`
 - `description`
@@ -300,9 +296,9 @@ Recommended fields:
 
 #### `questions.json`
 
-`questions.json` is an array of questions.
+`questions.json` は問題の配列です。
 
-Supported question types:
+対応している問題形式:
 
 ```text
 input
@@ -310,17 +306,17 @@ choice
 multi_select
 ```
 
-Common fields for all questions:
+すべての問題に共通するフィールド:
 
-- `id`: unique question ID
-- `moduleId`: module ID that owns this question
-- `type`: `input`, `choice`, or `multi_select`
-- `prompt`: question text
-- `explanation`: optional explanation shown after answering
-- `imageAsset`: optional local image reference, for example `images/map01.png`
-- `category`: optional category used by category filtering
-- `number`: optional question number used by range filtering
-- `example`: optional example/hint line
+- `id`: 一意な question ID
+- `moduleId`: この問題を所有する module ID
+- `type`: `input`、`choice`、または `multi_select`
+- `prompt`: 問題文
+- `explanation`: 回答後に表示される任意の解説
+- `imageAsset`: 任意のローカル画像参照。例: `images/map01.png`
+- `category`: カテゴリ絞り込みで使う任意のカテゴリ
+- `number`: 範囲指定で使う任意の問題番号
+- `example`: 任意の例文・ヒント行
 
 ##### Input question
 
@@ -338,14 +334,14 @@ Common fields for all questions:
 }
 ```
 
-Required fields:
+必須フィールド:
 
 - `answer`
 
-Optional fields:
+任意フィールド:
 
 - `acceptableAnswers`
-- `direction`: `normal`, `ja_to_en`, or `en_to_ja`
+- `direction`: `normal`、`ja_to_en`、または `en_to_ja`
 
 ##### Choice question
 
@@ -363,12 +359,12 @@ Optional fields:
 }
 ```
 
-Required fields:
+必須フィールド:
 
-- `choices`: at least two choices
-- `answer`: one correct answer
+- `choices`: 2つ以上の選択肢
+- `answer`: 正解を1つ
 
-Optional field:
+任意フィールド:
 
 - `acceptableAnswers`
 
@@ -387,16 +383,16 @@ Optional field:
 }
 ```
 
-Required fields:
+必須フィールド:
 
-- `choices`: at least two choices
-- `correctChoices`: one or more correct choices
+- `choices`: 2つ以上の選択肢
+- `correctChoices`: 1つ以上の正解選択肢
 
-The answer is correct only when the selected set exactly matches `correctChoices`. Order does not matter, but missing or extra choices make the answer wrong.
+選択した集合が `correctChoices` と完全に一致した場合だけ正解になります。順序は関係ありませんが、選択漏れや余分な選択があると不正解になります。
 
-### Image files
+### 画像ファイル
 
-Images are optional. Supported image extensions are:
+画像は任意です。対応している画像拡張子は次の通りです。
 
 ```text
 .png
@@ -405,26 +401,26 @@ Images are optional. Supported image extensions are:
 .webp
 ```
 
-Use a local relative path in `imageAsset`:
+`imageAsset` にはローカル相対パスを使用します。
 
 ```json
 {
   "id": "geo-001",
   "moduleId": "geography-map",
   "type": "input",
-  "prompt": "画像の地形名を答えよ。",
+  "prompt": "画像の地形名を答えなさい。",
   "answer": "扇状地",
-  "imageAsset": "images/fan-delta.png"
+  "imageAsset": "images/fan-shaped-landform.png"
 }
 ```
 
-Do not use remote URLs such as `https://...` in `imageAsset`.
+`imageAsset` に `https://...` のようなリモート URL を使わないでください。
 
-### ID rules
+### ID ルール
 
-Use stable unique IDs.
+安定した一意な ID を使用してください。
 
-Recommended style:
+推奨スタイル:
 
 ```text
 packId: school-term-1
@@ -432,17 +428,17 @@ module id: chemistry-ion
 question id: chemistry-ion-001
 ```
 
-Rules:
+ルール:
 
-- `packId` must not be empty.
-- module `id` values must be unique inside the pack.
-- question `id` values must be unique inside the pack.
-- every question's `moduleId` should point to a module ID.
-- every module's `questionIds` should point to question IDs.
+- `packId` は空にできません。
+- module の `id` は pack 内で一意である必要があります。
+- question の `id` は pack 内で一意である必要があります。
+- 各 question の `moduleId` は module ID を指すべきです。
+- 各 module の `questionIds` は question ID を指すべきです。
 
-### Creating the ZIP
+### ZIP の作成
 
-Example folder before zipping:
+ZIP 化する前のフォルダ例:
 
 ```text
 history-mini-pack/
@@ -453,9 +449,9 @@ history-mini-pack/
     map01.png
 ```
 
-Zip the contents of the folder, not the folder itself. The ZIP root should directly contain `manifest.json`, `modules.json`, and `questions.json`.
+フォルダ自体ではなく、フォルダの中身を ZIP 化してください。ZIP のルートに `manifest.json`、`modules.json`、`questions.json` が直接入っている必要があります。
 
-Good:
+良い例:
 
 ```text
 manifest.json
@@ -464,7 +460,7 @@ questions.json
 images/map01.png
 ```
 
-Bad:
+悪い例:
 
 ```text
 history-mini-pack/manifest.json
@@ -472,11 +468,11 @@ history-mini-pack/modules.json
 history-mini-pack/questions.json
 ```
 
-### Safety rules
+### 安全ルール
 
-LoopDeck validates the pack before storing it.
+LoopDeck は pack を保存する前に検証します。
 
-Rejected file types:
+拒否されるファイル形式:
 
 ```text
 .html
@@ -496,30 +492,30 @@ Rejected file types:
 .ps1
 ```
 
-Rejected paths:
+拒否されるパス:
 
 ```text
 ../evil.json
-..\\evil.json
+..\evil.json
 /absolute/path.json
-C:\\absolute\\path.json
+C:\absolute\path.json
 https://example.com/file.json
-empty paths
-paths with null bytes
+空のパス
+null byte を含むパス
 ```
 
-LoopDeck also rejects remote URLs and unsafe image references. Imported教材HTML, JavaScript, and CSS are not executed.
+LoopDeck は、リモート URL や安全でない画像参照も拒否します。インポートされた教材 HTML、JavaScript、CSS は実行されません。
 
-### Quick checklist
+### クイックチェックリスト
 
-Before importing a pack, check:
+pack をインポートする前に、次を確認してください。
 
-- `packVersion` is `1`.
-- `packId` and `title` are not empty.
-- every module has an `id` and `questionIds`.
-- every question has `id`, `moduleId`, `type`, and `prompt`.
-- `input` questions have `answer`.
-- `choice` questions have at least two `choices` and an `answer`.
-- `multi_select` questions have `choices` and `correctChoices`.
-- image paths are local and use `.png`, `.jpg`, `.jpeg`, or `.webp`.
-- the ZIP root directly contains `manifest.json`, `modules.json`, and `questions.json`.
+- `packVersion` が `1` である。
+- `packId` と `title` が空ではない。
+- すべての module に `id` と `questionIds` がある。
+- すべての question に `id`、`moduleId`、`type`、`prompt` がある。
+- `input` 問題には `answer` がある。
+- `choice` 問題には2つ以上の `choices` と `answer` がある。
+- `multi_select` 問題には `choices` と `correctChoices` がある。
+- 画像パスがローカルで、`.png`、`.jpg`、`.jpeg`、または `.webp` を使っている。
+- ZIP のルートに `manifest.json`、`modules.json`、`questions.json` が直接入っている。
