@@ -47,7 +47,7 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(15, 118, 110, 0.92));
   box-shadow: var(--shadow);
 }
-.hero-copy { max-width: 48rem; padding-right: 52px; }
+.hero-copy { max-width: 48rem; padding-right: 0; }
 .hero h1 { margin: 0; font-size: clamp(1.65rem, 7vw, 3rem); letter-spacing: 0; }
 .hero p { margin: 8px 0 0; line-height: 1.7; color: rgba(255, 255, 255, 0.95); }
 .menu-open {
@@ -260,7 +260,7 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   background: #fff;
   line-height: 1.75;
 }
-.howto summary, .safe-note summary { font-weight: 850; cursor: pointer; }
+.howto summary, .safe-note summary { font-weight: 800; cursor: pointer; }
 .update-box {
   margin-top: 12px;
   padding: 12px;
@@ -280,7 +280,7 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   border-radius: 999px;
   background: var(--primary);
   color: #fff;
-  font-weight: 850;
+  font-weight: 800;
   line-height: 1.25;
   cursor: pointer;
 }
@@ -427,7 +427,7 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
 @media (max-width: 760px) {
   .screen { width: min(100% - 24px, 1120px); padding-top: calc(14px + var(--safe-top)); }
   .hero { min-height: 0; border-radius: 22px; padding: 18px; }
-  .hero-copy { padding-right: 50px; }
+  .hero-copy { padding-right: 0; }
   .toolbar { grid-template-columns: 1fr; }
   .filter { height: 46px; }
   .folder-head { grid-template-columns: 48px 1fr auto; }
