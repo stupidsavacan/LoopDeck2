@@ -302,9 +302,9 @@ export async function renderImportScreen(
   }
 
   chooseFile.onclick = () => input.click();
-  input.onchange = () => {
+  input.onchange = async () => {
     const file = input.files?.[0];
-    if (file) void handleFile(file);
+    if (file) await handleFile(file);
   };
 
   uploadZone.addEventListener('dragover', (event) => {
