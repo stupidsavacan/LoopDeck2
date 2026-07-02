@@ -133,7 +133,6 @@ export async function renderImportScreen(
   navigateHome: () => void,
   onImported: () => Promise<void>
 ): Promise<void> {
-  clear(root);
   const importedPacks = await db.getImportedPacks();
   const activePacks = getActivePacks(packView);
   const importedIds = new Set(importedPacks.map((pack) => pack.packId));
@@ -141,6 +140,7 @@ export async function renderImportScreen(
   const activeModuleIds = new Set(getActiveModules(packView).map((module) => module.id));
   const activeQuestionIds = new Set(getActiveQuestions(packView).map((question) => question.id));
 
+  clear(root);
   const screen = el('main', 'screen import-screen');
   const header = el('header', 'topbar');
   const back = button('← ホーム', 'btn ghost');
@@ -154,83 +154,36 @@ export async function renderImportScreen(
     el('p', '', '教材パック、学習履歴、ブックマークの入出力を行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
   );
 
-  const input = el('input', 'file-input') as HTMLInputElement;
+  const input = el('input', 'file-input visually-hidden') as HTMLInputElement;
   input.type = 'file';
   input.accept = '.json,.zip,.loopdeck.zip,application/json,application/zip';
+
+  const uploadCard = el('section', 'card upload-card');
+  const uploadTitle = el('h2', '', '教材ファイルを読み込む');
+  const uploadZone = el('div', 'upload-zone');
+  const uploadIcon = el('div', 'upload-icon', '⬆');
+  const uploadText = el('p', '', '教材ファイルをここにドロップ');
+  const uploadSub = el('p', 'hint', 'またはボタンから .json / .zip / .loopdeck.zip を選びます。');
+  const chooseFile = button('ファイルを選ぶ', 'btn primary');
+  const selectedFile = el('p', 'upload-file-name', '選択中のファイル: なし');
+  uploadZone.append(uploadIcon, uploadText, uploadSub, chooseFile, selectedFile, input);
+  uploadCard.append(uploadTitle, uploadZone);
 
   const preview = el('section', 'card preview-card');
   preview.append(el('h2', '', '読み込み結果'), el('p', 'empty', 'まだファイルが選ばれていません。'));
 
-  const packageList = el('section', 'card');
-  packageList.append(el('h2', '', '現在の教材パック / 書き出し'));
-  const list = el('div', 'weak-list');
-  for (const pack of activePacks) {
-    const row = el('div', 'weak-row pack-row');
-    const meta = el('div', 'pack-meta');
-    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
-
-    const actions = el('div', 'pack-actions');
-    const json = button('JSON', 'btn');
-    json.onclick = () => void exportPackJson(pack);
-    const zip = button('ZIP', 'btn primary');
-    zip.onclick = () => void exportPackZip(pack);
-    actions.append(json, zip);
-    if (importedIds.has(pack.packId)) {
-      const remove = button('削除', 'btn ghost danger');
-      remove.onclick = async () => {
-        if (!window.confirm(`${pack.title} を削除します。学習履歴は残ります。`)) return;
-        await db.deleteImportedPack(pack.packId);
-        toast('インポート済みパックを削除しました。');
-        await onImported();
-      };
-      actions.append(remove);
-    }
-
-    row.append(meta, actions);
-    list.append(row);
+  let importing = false;
+  function setImporting(value: boolean): void {
+    importing = value;
+    chooseFile.disabled = value;
+    chooseFile.textContent = value ? '読み込み中…' : 'ファイルを選ぶ';
+    uploadCard.classList.toggle('loading', value);
   }
-  packageList.append(list);
 
-  const dataCard = el('section', 'card data-card');
-  dataCard.append(el('h2', '', '学習データ管理'));
-  const dataActions = el('div', 'data-actions');
-  const backup = button('履歴バックアップを書き出し', 'btn primary');
-  backup.onclick = () => void exportBackup();
-  const clearHistory = button('回答履歴を全削除', 'btn ghost danger');
-  clearHistory.onclick = async () => {
-    if (!window.confirm('回答履歴をすべて削除します。ブックマークと教材パックは残ります。')) return;
-    await db.clearAttempts();
-    toast('回答履歴を削除しました。');
-  };
-  const clearWrong = button('ミス履歴だけ削除', 'btn ghost danger');
-  clearWrong.onclick = async () => {
-    if (!window.confirm('不正解・答え表示の履歴だけ削除します。')) return;
-    await db.clearWrongAttempts();
-    toast('ミス履歴を削除しました。');
-  };
-  const clearBookmarks = button('ブックマーク全削除', 'btn ghost danger');
-  clearBookmarks.onclick = async () => {
-    if (!window.confirm('ブックマークをすべて削除します。')) return;
-    await db.clearBookmarks();
-    toast('ブックマークを削除しました。');
-  };
-  dataActions.append(backup, clearHistory, clearWrong, clearBookmarks);
-  dataCard.append(dataActions, el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'));
-
-  const apkCard = el('section', 'card');
-  apkCard.append(
-    el('h2', '', 'APK書き出し'),
-    el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
-    infoList([
-      'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
-      'signed release APK: Build Android Signed Release APK workflow の LoopDeck-signed-release-apk artifact',
-      '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
-    ])
-  );
-
-  input.onchange = async () => {
-    const file = input.files?.[0];
-    if (!file) return;
+  async function handleFile(file: File): Promise<void> {
+    if (importing) return;
+    selectedFile.textContent = `選択中のファイル: ${file.name}`;
+    setImporting(true);
     try {
       const result = file.name.endsWith('.zip') || file.name.endsWith('.loopdeck.zip')
         ? await importLoopDeckZip(file)
@@ -342,8 +295,96 @@ export async function renderImportScreen(
         el('h2', '', '読み込み結果'),
         el('p', 'issue error', `読み込みに失敗しました：${error instanceof Error ? error.message : String(error)}`)
       );
+    } finally {
+      input.value = '';
+      setImporting(false);
     }
+  }
+
+  chooseFile.onclick = () => input.click();
+  input.onchange = () => {
+    const file = input.files?.[0];
+    if (file) void handleFile(file);
   };
+
+  uploadZone.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    if (!importing) uploadZone.classList.add('drag-over');
+  });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', (event) => {
+    event.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = event.dataTransfer?.files?.[0];
+    if (file) void handleFile(file);
+  });
+
+  const packageList = el('section', 'card');
+  packageList.append(el('h2', '', '現在の教材パック / 書き出し'));
+  const list = el('div', 'weak-list');
+  for (const pack of activePacks) {
+    const row = el('div', 'weak-row pack-row');
+    const meta = el('div', 'pack-meta');
+    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
+
+    const actions = el('div', 'pack-actions');
+    const json = button('JSON', 'btn');
+    json.onclick = () => void exportPackJson(pack);
+    const zip = button('ZIP', 'btn primary');
+    zip.onclick = () => void exportPackZip(pack);
+    actions.append(json, zip);
+    if (importedIds.has(pack.packId)) {
+      const remove = button('削除', 'btn ghost danger');
+      remove.onclick = async () => {
+        if (!window.confirm(`${pack.title} を削除します。学習履歴は残ります。`)) return;
+        await db.deleteImportedPack(pack.packId);
+        toast('インポート済みパックを削除しました。');
+        await onImported();
+      };
+      actions.append(remove);
+    }
+
+    row.append(meta, actions);
+    list.append(row);
+  }
+  packageList.append(list);
+
+  const dataCard = el('section', 'card data-card');
+  dataCard.append(el('h2', '', '学習データ管理'));
+  const dataActions = el('div', 'data-actions');
+  const backup = button('履歴バックアップを書き出し', 'btn primary');
+  backup.onclick = () => void exportBackup();
+  const clearHistory = button('回答履歴を全削除', 'btn ghost danger');
+  clearHistory.onclick = async () => {
+    if (!window.confirm('回答履歴をすべて削除します。ブックマークと教材パックは残ります。')) return;
+    await db.clearAttempts();
+    toast('回答履歴を削除しました。');
+  };
+  const clearWrong = button('ミス履歴だけ削除', 'btn ghost danger');
+  clearWrong.onclick = async () => {
+    if (!window.confirm('不正解・答え表示の履歴だけ削除します。')) return;
+    await db.clearWrongAttempts();
+    toast('ミス履歴を削除しました。');
+  };
+  const clearBookmarks = button('ブックマーク全削除', 'btn ghost danger');
+  clearBookmarks.onclick = async () => {
+    if (!window.confirm('ブックマークをすべて削除します。')) return;
+    await db.clearBookmarks();
+    toast('ブックマークを削除しました。');
+  };
+  dataActions.append(backup, clearHistory, clearWrong, clearBookmarks);
+  dataCard.append(dataActions, el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'));
+
+  const apkCard = el('section', 'card');
+  apkCard.append(
+    el('h2', '', 'APK書き出し'),
+    el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
+    infoList([
+      'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
+      'signed release APK: Build Android Signed Release APK workflow の LoopDeck-signed-release-apk artifact',
+      '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
+    ])
+  );
 
   const note = el('details', 'card safe-note');
   note.append(
@@ -357,6 +398,6 @@ export async function renderImportScreen(
     ])
   );
 
-  screen.append(header, card, input, preview, packageList, dataCard, apkCard, note);
+  screen.append(header, card, uploadCard, preview, packageList, dataCard, apkCard, note);
   root.append(screen);
 }
