@@ -1,5 +1,6 @@
 import './styles.css';
 import './homeFeatures.css';
+import './mobileUxFixes.css';
 import { registerGlobalErrorLogging, writeDebugLog } from './debug/debugLog';
 import { loadBuiltinPacks } from './packs/builtinLoader';
 import { setActivePackAssetView } from './packs/packAssetResolver';
