@@ -197,7 +197,7 @@ export function renderHomeScreen(
   packView: ResolvedPackView,
   onOpenModule: (moduleId: string) => void,
   _onOpenReview: () => void,
-  onOpenImport: () => void,
+  _onOpenImport: () => void,
   _onOpenGraphs: () => void
 ): void {
   clear(root);
@@ -328,19 +328,7 @@ export function renderHomeScreen(
   const notice = el('div', 'notice');
   notice.append(el('b', '', '使い方：'), document.createTextNode('カードを押すと教材が開きます。主要画面の移動は下のナビゲーションからできます。'));
 
-  const update = el('details', 'howto');
-  const updateBox = el('div', 'update-box');
-  const openImport = button('教材入出力を開く', 'tool-link');
-  openImport.onclick = onOpenImport;
-  updateBox.append(
-    el('b', '', '必要なときだけ教材を更新'),
-    el('p', 'small-note', '新しい更新パッケージZIPを受け取ったら、ここから読み込めます。APKの署名付き書き出し案内も教材入出力にまとめています。'),
-    el('div', 'update-actions')
-  );
-  updateBox.querySelector('.update-actions')?.append(openImport);
-  update.append(el('summary', '', '教材更新'), updateBox);
-
-  screen.append(hero, toolbar, list, notice, update);
+  screen.append(hero, toolbar, list, notice);
   root.append(screen);
   renderList();
 }
