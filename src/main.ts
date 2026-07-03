@@ -152,14 +152,14 @@ function appendHomeManagementLinks(): void {
 
   const management = el('section', 'card management-card');
   management.dataset.homeManagement = 'true';
-  management.append(el('h2', '', '管理・出力'));
+  management.append(el('h2', '', '教材更新・管理・出力'));
   const actions = el('div', 'update-actions');
-  const importButton = button('教材を追加・更新する', 'tool-link');
+  const importButton = button('教材入出力を開く', 'tool-link');
   importButton.onclick = () => navigate({ name: 'import' });
   const pdfButton = button('PDFプリントを作成する', 'tool-link secondary');
   pdfButton.onclick = () => navigate({ name: 'pdfWorksheet' });
   actions.append(importButton, pdfButton);
-  management.append(el('p', 'small-note', '教材更新やプリント作成は、必要なときだけここから開きます。'), actions);
+  management.append(el('p', 'small-note', '教材パックの追加・更新、バックアップ、PDFプリント作成をここにまとめています。'), actions);
   screen.append(management);
 
   const version = button('LoopDeck v0.1.0', 'version-trigger');
