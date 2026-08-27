@@ -24,14 +24,27 @@ function inlineBase64Fonts(): Plugin {
   };
 }
 
-export default defineConfig({
-  root: '.',
-  base: './',
-  plugins: [inlineBase64Fonts()],
-  server: {
-    port: 5173
-  },
-  build: {
-    outDir: 'dist'
-  }
+export default defineConfig(({ mode }) => {
+  const singleHtml = mode === 'single';
+
+  return {
+    root: '.',
+    base: './',
+    plugins: [inlineBase64Fonts()],
+    server: {
+      port: 5173
+    },
+    build: {
+      outDir: singleHtml ? 'dist-single' : 'dist',
+      cssCodeSplit: singleHtml ? false : undefined,
+      assetsInlineLimit: singleHtml ? Number.MAX_SAFE_INTEGER : undefined,
+      rollupOptions: singleHtml
+        ? {
+            output: {
+              inlineDynamicImports: true
+            }
+          }
+        : undefined
+    }
+  };
 });

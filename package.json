@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host \u0030.\u0030.\u0030.\u0030",
+    "dev": "vite --host 0.0.0.0",
     "dev:local": "vite",
     "build": "npm run typecheck && vite build",
+    "build:single": "npm run typecheck && vite build --mode single && node scripts/make-single-html.mjs dist-single LoopDeck-single.html",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
