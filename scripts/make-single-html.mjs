@@ -1,9 +1,9 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { extname, dirname, join, relative, resolve, sep } from 'node:path';
 
-const distDir = resolve(process.cwd(), 'dist');
+const distDir = resolve(process.cwd(), process.argv[2] ?? 'dist-single');
+const outputPath = resolve(process.cwd(), process.argv[3] ?? 'LoopDeck-single.html');
 const indexPath = join(distDir, 'index.html');
-const outputPath = join(distDir, 'LoopDeck-single.html');
 
 const textExtensions = new Set(['.html', '.css', '.js', '.mjs', '.cjs', '.json', '.svg', '.txt', '.xml']);
 const mimeTypes = {
@@ -100,9 +100,9 @@ async function inlineHtmlAssets() {
   await embedBinaryReferences(files);
 
   const jsFiles = files.filter((path) => ['.js', '.mjs'].includes(extname(path).toLowerCase()));
-  if (jsFiles.length > 1) {
+  if (jsFiles.length !== 1) {
     throw new Error(
-      'Single-HTML build expected one JavaScript bundle, found ' +
+      'Single-HTML build expected exactly one JavaScript bundle, found ' +
       jsFiles.length +
       ': ' +
       jsFiles.map((path) => slash(relative(distDir, path))).join(', ')
@@ -111,9 +111,14 @@ async function inlineHtmlAssets() {
 
   let html = await readFile(indexPath, 'utf8');
 
+  html = html.replace(
+    /<link\b(?=[^>]*\brel=["']modulepreload["'])[^>]*>/gi,
+    ''
+  );
+
   html = await replaceAsync(
     html,
-    /<link\b[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi,
+    /<link\b(?=[^>]*\brel=["']stylesheet["'])[^>]*\bhref=["']([^"']+)["'][^>]*>/gi,
     async (_full, href) => {
       const css = await readFile(resolveHtmlAsset(href), 'utf8');
       return '<style>\n' + css + '\n</style>';
@@ -122,7 +127,7 @@ async function inlineHtmlAssets() {
 
   html = await replaceAsync(
     html,
-    /<script\b([^>]*)src=["']([^"']+)["']([^>]*)><\/script>/gi,
+    /<script\b([^>]*)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi,
     async (_full, before, src, after) => {
       const js = await readFile(resolveHtmlAsset(src), 'utf8');
       const attrs = (before + ' ' + after)
