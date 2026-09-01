@@ -207,6 +207,7 @@ export interface ReviewLog {
 export interface StudySettings {
   shuffle: boolean;
   autoNext: boolean;
+  autoRevealAfterIdle?: boolean;
   questionLimit: number | 'all';
   selectedRange?: string;
   selectedCategory?: string;

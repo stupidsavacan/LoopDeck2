@@ -10,9 +10,9 @@ import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
 
-type ToggleSettingKey = 'shuffle' | 'autoNext' | 'showExample' | 'showNumber' | 'showCategory';
+type ToggleSettingKey = 'shuffle' | 'autoNext' | 'autoRevealAfterIdle' | 'showExample' | 'showNumber' | 'showCategory';
 
-interface StoredSession {
+export interface StoredSession {
   questionIds: string[];
   index: number;
   mode: 'normal' | 'review';
@@ -24,7 +24,7 @@ function resumeKey(moduleId: string): string {
   return `loopdeck_session_${moduleId}`;
 }
 
-function readStoredSession(moduleId: string, byId: Map<string, Question>): StoredSession | undefined {
+export function readStoredSession(moduleId: string, byId: Map<string, Question>): StoredSession | undefined {
   try {
     const raw = localStorage.getItem(resumeKey(moduleId));
     if (!raw) return undefined;
@@ -60,7 +60,7 @@ function makeSelect(labelText: string, className = 'study-select'): { wrap: HTML
   return { wrap, select };
 }
 
-function runtimeSettings(settings: StudySettings): StudySettings {
+export function runtimeSettings(settings: StudySettings): StudySettings {
   return {
     ...settings,
     shuffle: false,
@@ -137,6 +137,7 @@ export async function renderModuleScreen(
   const settings: StudySettings = {
     shuffle: true,
     autoNext: true,
+    autoRevealAfterIdle: false,
     questionLimit: 'all',
     selectedRange: 'all',
     selectedCategory: 'all',
@@ -224,6 +225,7 @@ export async function renderModuleScreen(
   const toggles: Array<[ToggleSettingKey, string]> = [
     ['shuffle', 'シャッフル'],
     ['autoNext', '正解時に自動で次へ'],
+    ['autoRevealAfterIdle', '10秒無操作で答えを表示'],
     ['showExample', '例文表示'],
     ['showNumber', '番号表示'],
     ['showCategory', 'カテゴリ表示']

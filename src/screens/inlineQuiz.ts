@@ -14,6 +14,11 @@ export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): vo
 export interface InlineQuizOptions { resolveImageAsset?: QuestionImageAssetResolver; }
 
 const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
+const AUTO_REVEAL_IDLE_MS = 10_000;
+const IDLE_CLOCK_TICK_MS = 250;
+const IDLE_CLOCK_SUSPEND_GAP_MS = 1_000;
+const renderCleanupByContainer = new WeakMap<HTMLElement, () => void>();
+const renderTokenByContainer = new WeakMap<HTMLElement, symbol>();
 // English: The image reference is preserved, but the image file could not be found.
 const IMAGE_MISSING_MESSAGE = '画像参照は保持されていますが、画像ファイルが見つかりません。';
 // English: The image reference is preserved. Display was skipped because the reference is unsafe.
@@ -171,6 +176,10 @@ function renderSessionSummary(session: QuizSession): HTMLElement {
 }
 
 export function renderInlineQuiz(container: HTMLElement, session: QuizSession, callbacks: InlineQuizCallbacks, options: InlineQuizOptions = {}): void {
+  renderCleanupByContainer.get(container)?.();
+  renderCleanupByContainer.delete(container);
+  const renderToken = Symbol('inline-quiz-render');
+  renderTokenByContainer.set(container, renderToken);
   clear(container);
   if (isSessionComplete(session)) {
     const done = el('div', 'quiz-card done');
@@ -197,6 +206,74 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let answered = false;
   let moved = false;
   let pendingAttempt: Attempt | undefined;
+  let idleTimer: number | undefined;
+  let idleLastTickAt = 0;
+  let idleRemainingMs = AUTO_REVEAL_IDLE_MS;
+  let composing = false;
+
+  function isCurrentRender(): boolean {
+    return renderTokenByContainer.get(container) === renderToken && card.isConnected && container.contains(card);
+  }
+
+  function clearIdleTimer(): void {
+    if (idleTimer === undefined) return;
+    window.clearTimeout(idleTimer);
+    idleTimer = undefined;
+  }
+
+  function cleanup(): void {
+    clearIdleTimer();
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    if (renderTokenByContainer.get(container) === renderToken) {
+      renderTokenByContainer.delete(container);
+      renderCleanupByContainer.delete(container);
+    }
+  }
+
+  function scheduleIdleReveal(): void {
+    clearIdleTimer();
+    if (!session.settings.autoRevealAfterIdle || answered || moved || composing || document.hidden) return;
+    if (!isCurrentRender()) {
+      cleanup();
+      return;
+    }
+    idleLastTickAt = Date.now();
+    idleTimer = window.setTimeout(() => {
+      idleTimer = undefined;
+      if (!session.settings.autoRevealAfterIdle || answered || moved || composing || document.hidden) return;
+      if (!isCurrentRender()) {
+        cleanup();
+        return;
+      }
+      const now = Date.now();
+      const sinceLastTick = Math.max(0, now - idleLastTickAt);
+      // A large scheduling gap indicates tab throttling or device sleep. It must not consume idle time.
+      if (sinceLastTick <= IDLE_CLOCK_SUSPEND_GAP_MS) idleRemainingMs = Math.max(0, idleRemainingMs - sinceLastTick);
+      if (idleRemainingMs === 0) record(selectedAnswer, true);
+      else scheduleIdleReveal();
+    }, Math.min(IDLE_CLOCK_TICK_MS, idleRemainingMs));
+  }
+
+  function resetIdleReveal(): void {
+    if (!session.settings.autoRevealAfterIdle || answered || moved) return;
+    idleRemainingMs = AUTO_REVEAL_IDLE_MS;
+    scheduleIdleReveal();
+  }
+
+  function handleVisibilityChange(): void {
+    if (!session.settings.autoRevealAfterIdle || answered || moved) return;
+    if (document.hidden) {
+      if (idleTimer !== undefined) {
+        const sinceLastTick = Math.max(0, Date.now() - idleLastTickAt);
+        if (sinceLastTick <= IDLE_CLOCK_SUSPEND_GAP_MS) {
+          idleRemainingMs = Math.max(0, idleRemainingMs - sinceLastTick);
+        }
+      }
+      clearIdleTimer();
+      return;
+    }
+    scheduleIdleReveal();
+  }
 
   function lockAnswerControls(): void {
     answerArea.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input, button').forEach((control) => {
@@ -208,12 +285,14 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   function nextQuestion(): void {
     if (moved) return;
     moved = true;
+    cleanup();
     callbacks.onSessionChange(advanceSession(session, pendingAttempt));
   }
 
   function record(answer: string | string[], revealed = false): void {
     if (answered) return;
     answered = true;
+    cleanup();
     lockAnswerControls();
     const elapsedMs = elapsedForCurrent(session);
     const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
@@ -247,8 +326,25 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   if (answerMode === 'input') {
     const input = el('input', 'text-input') as HTMLInputElement;
     input.placeholder = '答えを入力';
+    let lastInputValue = input.value;
+    input.addEventListener('input', () => {
+      if (composing || input.value === lastInputValue) return;
+      lastInputValue = input.value;
+      resetIdleReveal();
+    });
+    input.addEventListener('paste', resetIdleReveal);
+    input.addEventListener('compositionstart', () => {
+      composing = true;
+      clearIdleTimer();
+    });
+    input.addEventListener('compositionend', () => {
+      composing = false;
+      lastInputValue = input.value;
+      resetIdleReveal();
+    });
     input.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter') return;
+      if (composing || event.isComposing) return;
       event.preventDefault();
       record(input.value);
     });
@@ -273,6 +369,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
         if (selected.has(choice)) { selected.delete(choice); choiceButton.classList.remove('selected'); }
         else { selected.add(choice); choiceButton.classList.add('selected'); }
         selectedAnswer = [...selected];
+        resetIdleReveal();
       };
       list.append(choiceButton);
     }
@@ -284,7 +381,11 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const hintText = question.example ?? question.explanation;
   const hint = button('ヒント', 'btn ghost');
   hint.disabled = !hintText;
-  hint.onclick = () => { if (hintText && !resultArea.querySelector('.hint-panel')) resultArea.prepend(el('p', 'hint-panel', hintText)); };
+  hint.onclick = () => {
+    if (!hintText || resultArea.querySelector('.hint-panel')) return;
+    resultArea.prepend(el('p', 'hint-panel', hintText));
+    resetIdleReveal();
+  };
   const reveal = button('答えを見る', 'btn ghost');
   reveal.onclick = () => record(selectedAnswer, true);
   const next = button('次へ', 'btn');
@@ -296,4 +397,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
   container.append(card);
+  if (session.settings.autoRevealAfterIdle) {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    renderCleanupByContainer.set(container, cleanup);
+    scheduleIdleReveal();
+  }
 }
