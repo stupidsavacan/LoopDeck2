@@ -9,6 +9,11 @@ import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
+import type { AppRoute } from '../app/routes';
+import type { FlowScope } from '../flow/models';
+import { learningRepository } from '../data/learningRepository';
+import { buildModuleSnapshots } from '../flow/snapshots';
+import { renderAppHeader } from '../ui/appHeader';
 
 type ToggleSettingKey = 'shuffle' | 'autoNext' | 'autoRevealAfterIdle' | 'showExample' | 'showNumber' | 'showCategory';
 
@@ -302,5 +307,60 @@ export async function renderModuleScreen(
   }
 
   screen.append(header, info, settingsCard, actions, quizMount);
+  root.append(screen);
+}
+
+export async function renderFlowModuleScreen(
+  root: HTMLElement,
+  packView: ResolvedPackView,
+  moduleId: string,
+  navigate: (route: AppRoute) => void,
+  startScope: (scope: FlowScope, budget?: 5 | 10 | 20) => void
+): Promise<void> {
+  const module = getModuleById(packView, moduleId);
+  if (!module) {
+    clear(root);
+    const screen = el('main', 'flow-screen');
+    screen.append(renderAppHeader({ title: '教材が見つかりません', onBack: () => navigate({ name: 'library' }) }), el('p', 'empty-state', '教材パックが更新された可能性があります。'));
+    root.append(screen);
+    return;
+  }
+  const data = await learningRepository.readAll();
+  const snapshot = buildModuleSnapshots(packView, data).find((item) => item.module.id === moduleId);
+  if (!snapshot) return;
+  clear(root);
+  const screen = el('main', 'flow-screen module-detail-screen');
+  screen.append(renderAppHeader({ eyebrow: module.subject, title: module.title, subtitle: module.description, onBack: () => navigate({ name: 'library' }) }));
+  const overview = el('section', 'module-hero surface');
+  const ring = el('div', 'progress-ring');
+  const progress = snapshot.totalQuestions ? Math.round(snapshot.answeredQuestionCount / snapshot.totalQuestions * 100) : 0;
+  ring.style.setProperty('--progress', `${progress * 3.6}deg`);
+  ring.append(el('strong', '', `${progress}%`), el('span', '', '学習済み'));
+  const stats = el('div', 'module-stats');
+  for (const [value, label] of [[snapshot.totalQuestions, '問題'], [snapshot.attentionCount, '注意'], [snapshot.bookmarkCount, '保存']] as const) {
+    const stat = el('div', 'metric compact'); stat.append(el('strong', '', String(value)), el('span', '', label)); stats.append(stat);
+  }
+  overview.append(ring, stats);
+  const actions = el('div', 'primary-actions');
+  const start = button('この教材を5分', 'btn primary'); start.onclick = () => startScope({ kind: 'modules', moduleIds: [moduleId] }, 5);
+  const attention = button('苦手だけ', 'btn secondary'); attention.disabled = snapshot.attentionCount === 0; attention.onclick = () => startScope({ kind: 'attention', moduleId }, 5);
+  actions.append(start, attention);
+  overview.append(actions);
+  screen.append(overview);
+
+  const breakdown = el('section', 'section-block');
+  breakdown.append(el('div', 'section-heading', 'この教材の状態'));
+  const rows: Array<[string, string]> = [
+    ['未回答', `${snapshot.unseenCount}問`],
+    ['復習予定', `${snapshot.dueCount}問`],
+    ['苦手', `${snapshot.weakCount}問`],
+    ['直近の正答率', snapshot.attemptCount ? `${Math.round(snapshot.recentAccuracy * 100)}%` : 'まだ記録なし']
+  ];
+  const list = el('div', 'definition-list');
+  for (const [label, value] of rows) { const row = el('div', 'definition-row'); row.append(el('span', '', label), el('strong', '', value)); list.append(row); }
+  breakdown.append(list);
+  const custom = button('範囲・形式を指定する', 'btn ghost full'); custom.onclick = () => navigate({ name: 'moduleCustom', moduleId });
+  breakdown.append(custom);
+  screen.append(breakdown);
   root.append(screen);
 }

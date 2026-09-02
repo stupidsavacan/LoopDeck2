@@ -1,0 +1,68 @@
+:root {
+  --flow-bg: #f4f5ef;
+  --flow-surface: #ffffff;
+  --flow-surface-soft: #ecefe6;
+  --flow-surface-strong: #1c241f;
+  --flow-text: #18201c;
+  --flow-muted: #667068;
+  --flow-line: #d9ddd4;
+  --flow-primary: #225c43;
+  --flow-primary-hover: #184a35;
+  --flow-primary-soft: #dceadf;
+  --flow-due: #4c5db6;
+  --flow-due-soft: #e7e9f8;
+  --flow-weak: #a7582c;
+  --flow-weak-soft: #f5e6dc;
+  --flow-new: #277263;
+  --flow-new-soft: #dcefe9;
+  --flow-success: #24714a;
+  --flow-success-soft: #dff1e6;
+  --flow-danger: #aa3d42;
+  --flow-danger-soft: #f8e3e4;
+  --flow-warning: #8a641b;
+  --flow-warning-soft: #f7edd2;
+  --flow-radius-sm: 10px;
+  --flow-radius-md: 16px;
+  --flow-radius-lg: 24px;
+  --flow-radius-xl: 32px;
+  --flow-shadow-1: 0 1px 2px rgba(16,18,16,.06);
+  --flow-shadow-2: 0 10px 30px rgba(16,18,16,.12);
+  --flow-safe-top: env(safe-area-inset-top, 0px);
+  --flow-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --flow-nav-height: 72px;
+}
+
+:root[data-theme='dark'] {
+  --flow-bg: #111713;
+  --flow-surface: #1a211c;
+  --flow-surface-soft: #242c26;
+  --flow-surface-strong: #e7eee8;
+  --flow-text: #edf2ee;
+  --flow-muted: #a9b3ab;
+  --flow-line: #354039;
+  --flow-primary: #80c49b;
+  --flow-primary-hover: #9dd5b0;
+  --flow-primary-soft: #263e30;
+  --flow-due: #aeb7ff;
+  --flow-due-soft: #303552;
+  --flow-weak: #f0aa7d;
+  --flow-weak-soft: #4a3327;
+  --flow-new: #7fd4c1;
+  --flow-new-soft: #254039;
+  --flow-success: #79c99a;
+  --flow-success-soft: #233e2e;
+  --flow-danger: #f29a9e;
+  --flow-danger-soft: #4a292b;
+  --flow-warning: #e5c06a;
+  --flow-warning-soft: #413720;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --flow-bg: #111713; --flow-surface: #1a211c; --flow-surface-soft: #242c26; --flow-surface-strong: #e7eee8;
+    --flow-text: #edf2ee; --flow-muted: #a9b3ab; --flow-line: #354039; --flow-primary: #80c49b;
+    --flow-primary-hover: #9dd5b0; --flow-primary-soft: #263e30; --flow-due: #aeb7ff; --flow-due-soft: #303552;
+    --flow-weak: #f0aa7d; --flow-weak-soft: #4a3327; --flow-new: #7fd4c1; --flow-new-soft: #254039;
+    --flow-success: #79c99a; --flow-success-soft: #233e2e; --flow-danger: #f29a9e; --flow-danger-soft: #4a292b;
+  }
+}

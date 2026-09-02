@@ -2,7 +2,7 @@
 <resources>
     <style name="LoopDeckTheme" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">#eef4ff</item>
+        <item name="android:statusBarColor">#f4f5ef</item>
         <item name="android:navigationBarColor">#ffffff</item>
         <item name="android:fontFamily">sans</item>
     </style>

@@ -52,5 +52,6 @@ describe('IndexedDB migration', () => {
     expect((await db.getReviewCards()).map((card) => card.questionId)).toContain('q');
     expect((await db.getReviewLogs()).map((log) => log.reviewLogId)).toContain('legacy-log');
     expect(await db.getImportedPackAssets()).toEqual([]);
+    expect(await db.getFlowSessions()).toEqual([]);
   });
 });

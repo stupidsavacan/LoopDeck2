@@ -1,0 +1,35 @@
+.player-screen { width: min(760px, 100%); min-height: 100dvh; margin: 0 auto; padding: calc(12px + var(--flow-safe-top)) 18px calc(18px + var(--flow-safe-bottom)); display: flex; flex-direction: column; }
+.player-topbar { min-height: 48px; display: flex; align-items: center; gap: 12px; }
+.player-progress { flex: 1; height: 5px; overflow: hidden; border-radius: 999px; background: var(--flow-surface-soft); }
+.player-progress span { display: block; height: 100%; border-radius: inherit; background: var(--flow-primary); transition: width .24s ease; }
+.player-count { color: var(--flow-muted); font-size: .74rem; font-weight: 800; }
+.player-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0 20px; }
+.player-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.player-prompt { margin: 0 0 24px; font-size: clamp(1.7rem, 7vw, 2.85rem); line-height: 1.34; overflow-wrap: anywhere; }
+.player-image { width: 100%; margin: 0 0 22px; padding: 12px; border: 1px solid var(--flow-line); border-radius: var(--flow-radius-lg); background: var(--flow-surface); }
+.player-image img { display: block; width: 100%; max-height: 42dvh; object-fit: contain; border-radius: var(--flow-radius-md); }
+.player-answer-area { display: grid; gap: 12px; }
+.player-input { min-height: 60px; font-size: 1.08rem; }
+.player-submit { width: 100%; min-height: 54px; }
+.player-choice-list { display: grid; gap: 9px; }
+.player-choice { width: 100%; min-height: 54px; padding: 13px 16px; border: 1px solid var(--flow-line); border-radius: var(--flow-radius-md); background: var(--flow-surface); color: var(--flow-text); text-align: left; line-height: 1.5; overflow-wrap: anywhere; cursor: pointer; }
+.player-choice:hover, .player-choice.is-selected { border-color: var(--flow-primary); background: var(--flow-primary-soft); }
+.player-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; }
+.example-line, .hint-panel { margin: 0 0 16px; padding: 13px 15px; border-left: 3px solid var(--flow-primary); border-radius: 0 var(--flow-radius-sm) var(--flow-radius-sm) 0; background: var(--flow-primary-soft); color: var(--flow-text); }
+.feedback-screen { justify-content: center; }
+.feedback-screen::before { content: ''; position: fixed; inset: 0; z-index: -1; background: var(--flow-success-soft); }
+.feedback-screen.feedback-wrong::before, .feedback-screen.feedback-revealed::before { background: var(--flow-warning-soft); }
+.feedback-label { flex: 1; color: var(--flow-success); font-weight: 850; }.feedback-wrong .feedback-label, .feedback-revealed .feedback-label { color: var(--flow-warning); }
+.feedback-card { margin: auto 0; padding: 28px 22px; border: 1px solid var(--flow-line); border-radius: var(--flow-radius-xl); background: var(--flow-surface); box-shadow: var(--flow-shadow-2); }
+.feedback-card h1 { margin: 8px 0 18px; font-size: clamp(2rem, 9vw, 3.5rem); line-height: 1.25; overflow-wrap: anywhere; }
+.feedback-explanation, .wrong-context { padding: 14px; border-radius: var(--flow-radius-md); background: var(--flow-surface-soft); }
+.wrong-context { background: var(--flow-warning-soft); }
+.feedback-card .btn { width: 100%; margin-top: 12px; }
+.checkpoint-screen, .complete-screen { justify-content: center; }
+.checkpoint-card, .complete-card { display: grid; justify-items: center; gap: 12px; padding: 34px 22px; border-radius: var(--flow-radius-xl); background: var(--flow-surface); text-align: center; box-shadow: var(--flow-shadow-2); }
+.checkpoint-card h1, .complete-card h1 { margin: 0; font-size: 2rem; }.checkpoint-card p, .complete-card p { margin: 0; }
+.checkpoint-number { width: 112px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: var(--flow-primary-soft); color: var(--flow-primary); font-size: 3rem; font-weight: 850; }
+.complete-mark { width: 92px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: var(--flow-success-soft); color: var(--flow-success); font-size: 2.8rem; }
+.checkpoint-card .btn, .complete-card .btn { width: min(100%, 340px); }
+.complete-metrics { width: 100%; margin: 10px 0; }
+@media (max-height: 620px) { .player-content { justify-content: flex-start; padding-top: 14px; }.player-prompt { font-size: 1.55rem; margin-bottom: 16px; }.player-tools { position: sticky; bottom: 0; padding-bottom: var(--flow-safe-bottom); background: var(--flow-bg); } }

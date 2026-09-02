@@ -1,11 +1,13 @@
 import type { Attempt, LoopDeckPack, ReviewCard, ReviewLog } from '../core/models';
+import type { FlowSessionRecord } from '../flow/models';
 import { takeStagedPackAssets } from '../packs/importedAssetStaging';
 import type { ImportedPackAsset } from '../packs/packTypes';
 
 const DB_NAME = 'loopdeck-db';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 export interface StoredPackAsset extends ImportedPackAsset { assetId: string; }
+export interface StoredSetting<T = unknown> { key: string; value: T; updatedAt: string; }
 
 export interface LoopDeckBackup {
   loopDeckBackupVersion: 1;
@@ -39,6 +41,12 @@ export interface LoopDeckDb {
   getReviewLogs(): Promise<ReviewLog[]>;
   getReviewLogsForQuestion(questionId: string): Promise<ReviewLog[]>;
   clearReviewData(): Promise<void>;
+  putFlowSession(session: FlowSessionRecord): Promise<void>;
+  getFlowSession(sessionId: string): Promise<FlowSessionRecord | undefined>;
+  getFlowSessions(): Promise<FlowSessionRecord[]>;
+  deleteFlowSession(sessionId: string): Promise<void>;
+  getSetting<T>(key: string): Promise<T | undefined>;
+  putSetting<T>(key: string, value: T): Promise<void>;
   exportUserData(): Promise<LoopDeckBackup>;
   importUserData(backup: LoopDeckBackup): Promise<void>;
 }
@@ -61,6 +69,7 @@ function openDb(): Promise<IDBDatabase> {
       if (!database.objectStoreNames.contains('settings')) database.createObjectStore('settings', { keyPath: 'key' });
       if (!database.objectStoreNames.contains('reviewCards')) database.createObjectStore('reviewCards', { keyPath: 'questionId' });
       if (!database.objectStoreNames.contains('reviewLogs')) database.createObjectStore('reviewLogs', { keyPath: 'reviewLogId' });
+      if (!database.objectStoreNames.contains('flowSessions')) database.createObjectStore('flowSessions', { keyPath: 'sessionId' });
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -182,6 +191,17 @@ export const db: LoopDeckDb = {
   async clearReviewData() {
     await transaction('reviewCards', 'readwrite', (store) => store.clear());
     await transaction('reviewLogs', 'readwrite', (store) => store.clear());
+  },
+  async putFlowSession(session) { await transaction('flowSessions', 'readwrite', (store) => store.put(session)); },
+  async getFlowSession(sessionId) { return await transaction<FlowSessionRecord>('flowSessions', 'readonly', (store) => store.get(sessionId)) as FlowSessionRecord | undefined; },
+  async getFlowSessions() { return getAll<FlowSessionRecord>('flowSessions'); },
+  async deleteFlowSession(sessionId) { await transaction('flowSessions', 'readwrite', (store) => store.delete(sessionId)); },
+  async getSetting<T>(key: string) {
+    const row = await transaction<StoredSetting<T>>('settings', 'readonly', (store) => store.get(key)) as StoredSetting<T> | undefined;
+    return row?.value;
+  },
+  async putSetting<T>(key: string, value: T) {
+    await transaction('settings', 'readwrite', (store) => store.put({ key, value, updatedAt: new Date().toISOString() } satisfies StoredSetting<T>));
   },
   async exportUserData() {
     return {

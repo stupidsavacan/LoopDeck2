@@ -1,8 +1,8 @@
 import { el } from './dom';
 
 export function renderLoading(root: HTMLElement, message = '読み込み中です…'): void {
-  const screen = el('main', 'screen loading-screen');
-  const card = el('section', 'hero-card loading-card');
+  const screen = el('main', 'flow-screen loading-screen');
+  const card = el('section', 'surface loading-card');
   const spinner = el('div', 'loading-spinner');
   spinner.setAttribute('aria-hidden', 'true');
   const title = el('h1', '', message);

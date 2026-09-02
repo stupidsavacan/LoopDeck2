@@ -1,5 +1,9 @@
 node_modules/
 dist/
+dist-single/
+LoopDeck-single.html
+test-results/
+playwright-report/
 .DS_Store
 android/.gradle/
 android/local.properties

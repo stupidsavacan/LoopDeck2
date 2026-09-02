@@ -1,0 +1,30 @@
+.flow-screen {
+  width: min(760px, 100%);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(20px + var(--flow-safe-top)) 18px calc(32px + var(--flow-safe-bottom));
+}
+.flow-screen.with-bottom-nav { padding-bottom: calc(var(--flow-nav-height) + 28px + var(--flow-safe-bottom)); }
+.flow-header { margin-bottom: 22px; }
+.flow-header-row { display: flex; align-items: flex-start; gap: 12px; }
+.flow-heading { flex: 1; min-width: 0; }
+.flow-heading h1 { margin: 0; font-size: clamp(1.8rem, 7vw, 2.45rem); line-height: 1.16; }
+.flow-eyebrow { margin: 0 0 5px; color: var(--flow-primary); font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.flow-subtitle { margin: 6px 0 0; color: var(--flow-muted); font-size: .92rem; }
+.flow-bottom-nav {
+  position: fixed; z-index: 900; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: min(760px, 100%); min-height: calc(var(--flow-nav-height) + var(--flow-safe-bottom));
+  display: grid; grid-template-columns: repeat(4, 1fr); align-items: start;
+  padding: 8px 8px var(--flow-safe-bottom); border-top: 1px solid var(--flow-line);
+  background: color-mix(in srgb, var(--flow-surface) 92%, transparent); backdrop-filter: blur(18px);
+}
+.flow-nav-item { min-width: 0; min-height: 54px; display: grid; place-items: center; align-content: center; gap: 2px; border: 0; border-radius: 14px; background: transparent; color: var(--flow-muted); cursor: pointer; }
+.flow-nav-item.is-active { color: var(--flow-primary); background: var(--flow-primary-soft); }
+.flow-nav-icon { font-size: 1.25rem; line-height: 1; font-weight: 800; }
+.flow-nav-label { font-size: .68rem; font-weight: 700; white-space: nowrap; }
+.icon-button { width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; border: 1px solid var(--flow-line); border-radius: 50%; background: var(--flow-surface); color: var(--flow-text); font-size: 1.35rem; cursor: pointer; }
+@media (min-width: 1000px) {
+  .flow-screen { width: min(1040px, calc(100% - 168px)); padding-top: 38px; }
+  .flow-bottom-nav { left: 24px; top: 50%; bottom: auto; transform: translateY(-50%); width: 96px; min-height: auto; grid-template-columns: 1fr; gap: 8px; padding: 12px; border: 1px solid var(--flow-line); border-radius: 26px; box-shadow: var(--flow-shadow-2); }
+  .flow-screen.with-bottom-nav { padding-bottom: 48px; }
+}
