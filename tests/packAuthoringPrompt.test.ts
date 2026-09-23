@@ -21,12 +21,14 @@ describe('pack authoring prompt', () => {
   });
 
   it('downloads a non-empty UTF-8 text prompt from the import screen action', async () => {
+    const root = document.createElement('div');
+    await renderImportScreen(root, resolveActivePacks([]), () => {}, async () => {});
+
     const originalCreateObjectURL = Object.getOwnPropertyDescriptor(URL, 'createObjectURL');
     const originalRevokeObjectURL = Object.getOwnPropertyDescriptor(URL, 'revokeObjectURL');
     const createObjectURL = vi.fn(() => 'blob:loopdeck-authoring-prompt');
     const revokeObjectURL = vi.fn();
 
-    vi.useFakeTimers();
     try {
       Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: createObjectURL });
       Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: revokeObjectURL });
@@ -35,9 +37,10 @@ describe('pack authoring prompt', () => {
       vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function click(this: HTMLAnchorElement) {
         downloadedFilename = this.download;
       });
-
-      const root = document.createElement('div');
-      await renderImportScreen(root, resolveActivePacks([]), () => {}, async () => {});
+      vi.spyOn(window, 'setTimeout').mockImplementation(((handler: TimerHandler) => {
+        if (typeof handler === 'function') handler();
+        return 1;
+      }) as typeof window.setTimeout);
 
       const download = [...root.querySelectorAll<HTMLButtonElement>('button')]
         .find((button) => button.textContent === 'AI用Pack作成プロンプトを保存');
@@ -50,11 +53,8 @@ describe('pack authoring prompt', () => {
       expect(blob.size).toBeGreaterThan(4000);
       expect(blob.type).toBe('text/plain;charset=utf-8');
       expect(downloadedFilename).toBe('loopdeck-pack-authoring-prompt.txt');
-
-      vi.runAllTimers();
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:loopdeck-authoring-prompt');
     } finally {
-      vi.useRealTimers();
       if (originalCreateObjectURL) Object.defineProperty(URL, 'createObjectURL', originalCreateObjectURL);
       else delete (URL as unknown as { createObjectURL?: unknown }).createObjectURL;
       if (originalRevokeObjectURL) Object.defineProperty(URL, 'revokeObjectURL', originalRevokeObjectURL);
