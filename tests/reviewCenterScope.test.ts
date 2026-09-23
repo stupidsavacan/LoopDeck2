@@ -12,12 +12,11 @@ const pack: LoopDeckPack = {
   title: 'Review scope',
   folders: [{ id: 'f', title: 'Folder' }],
   modules: [
-    { id: 'recent-module', folderId: 'f', title: 'Recent module', subject: 'test', questionIds: ['recent-q'] },
-    { id: 'old-module', folderId: 'f', title: 'Old module', subject: 'test', questionIds: ['old-q'] }
+    { id: 'mixed-module', folderId: 'f', title: 'Mixed-age module', subject: 'test', questionIds: ['recent-q', 'old-q'] }
   ],
   questions: [
-    { id: 'recent-q', moduleId: 'recent-module', type: 'input', prompt: 'RECENT QUESTION', answer: 'a' },
-    { id: 'old-q', moduleId: 'old-module', type: 'input', prompt: 'OLD QUESTION', answer: 'b' }
+    { id: 'recent-q', moduleId: 'mixed-module', type: 'input', prompt: 'RECENT QUESTION', answer: 'a' },
+    { id: 'old-q', moduleId: 'mixed-module', type: 'input', prompt: 'OLD QUESTION', answer: 'b' }
   ]
 };
 
@@ -65,13 +64,13 @@ describe('Review Center scope', () => {
     sessionStorage.removeItem('loopdeck_review_scope_session_v1');
     await db.clearAttempts();
     await db.clearReviewData();
-    await db.addAttempt(attempt('recent-attempt', 'recent-q', 'recent-module', 1));
-    await db.addAttempt(attempt('old-attempt', 'old-q', 'old-module', 8));
-    await db.putReviewCard(dueCard('recent-q', 'recent-module'));
-    await db.putReviewCard(dueCard('old-q', 'old-module'));
+    await db.addAttempt(attempt('recent-attempt', 'recent-q', 'mixed-module', 1));
+    await db.addAttempt(attempt('old-attempt', 'old-q', 'mixed-module', 8));
+    await db.putReviewCard(dueCard('recent-q', 'mixed-module'));
+    await db.putReviewCard(dueCard('old-q', 'mixed-module'));
   });
 
-  it('hides stale module questions by default and restores them in all-history scope', async () => {
+  it('hides stale questions even when their module is still active and restores them in all-history scope', async () => {
     const root = document.createElement('div');
     const view = resolveActivePacks([pack]);
 
