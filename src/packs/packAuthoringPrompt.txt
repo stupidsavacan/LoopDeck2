@@ -5,7 +5,7 @@ Treat this document as a strict authoring contract. Produce content that is stru
 
 ## 1. Output target
 
-LoopDeck accepts either:
+LoopDeck accepts JSON and ZIP imports. Use these canonical LoopDeck filenames:
 
 1. one complete `.loopdeck.json` file containing a LoopDeckPack object, or
 2. one `.loopdeck.zip` whose root directly contains:
@@ -189,6 +189,8 @@ For simple compact Japanese/English vocabulary, LoopDeck can also infer reversib
 Input questions may also use:
 - `direction`: `ja_to_en`, `en_to_ja`, or `normal`.
 
+`direction` is metadata used by some presentation/export logic. It does not replace explicit `sides` + `supportedStudyModes` when reliable two-direction study is required.
+
 ## 6. Manual choice candidates for generated-choice study
 
 If an input question should have controlled distractors when LoopDeck presents it as a choice question, use:
@@ -260,8 +262,10 @@ Recommended pattern:
 
 Requirements:
 - packId is non-empty.
+- folder IDs are unique.
 - module IDs are unique.
 - question IDs are unique.
+- every module.folderId points to a real folder.
 - every question.moduleId points to a real module.
 - every module.questionIds entry points to a real question.
 - a question listed by a module should belong to that module.
@@ -303,8 +307,10 @@ Before presenting the final pack, verify:
 
 - [ ] packVersion is 1.
 - [ ] packId and title are non-empty.
+- [ ] every folder ID is unique.
 - [ ] every module ID is unique.
 - [ ] every question ID is unique.
+- [ ] every module.folderId exists.
 - [ ] every question.moduleId exists.
 - [ ] every module.questionIds entry exists.
 - [ ] every input has a non-empty answer.
