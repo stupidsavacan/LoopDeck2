@@ -109,6 +109,87 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+
+.review-scope-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.review-action-grid,
+.review-list-grid,
+.review-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-action-grid,
+.review-list-grid {
+  margin: 12px 0;
+}
+
+.review-action-grid > .card,
+.review-list-grid > .card {
+  margin: 0;
+}
+
+.review-details {
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.review-details summary,
+.review-analysis > summary {
+  color: var(--primary-dark);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.review-details[open] summary,
+.review-analysis[open] > summary {
+  margin-bottom: 10px;
+}
+
+.review-details .data-actions {
+  margin-top: 10px;
+}
+
+.review-analysis {
+  margin-top: 12px;
+}
+
+.review-analysis-grid {
+  margin-top: 14px;
+}
+
+.review-subsection {
+  min-width: 0;
+}
+
+.review-subsection h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.review-screen .priority-list,
+.review-screen .problem-list {
+  gap: 7px;
+}
+
+.review-screen .priority-row,
+.review-screen .problem-row {
+  padding: 10px 12px;
+}
+
+.review-screen .priority-row .btn {
+  flex: 0 0 auto;
+}
+
 @media (max-width: 900px) {
   .settings-grid,
   .data-actions {
@@ -118,7 +199,10 @@
 
 @media (max-width: 760px) {
   .settings-grid,
-  .data-actions {
+  .data-actions,
+  .review-action-grid,
+  .review-list-grid,
+  .review-analysis-grid {
     grid-template-columns: 1fr;
   }
 
