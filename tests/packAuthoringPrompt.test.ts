@@ -12,6 +12,8 @@ describe('pack authoring prompt', () => {
 
   it('ships a non-empty current authoring contract', () => {
     expect(packAuthoringPrompt.length).toBeGreaterThan(4000);
+    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-24');
+    expect(packAuthoringPrompt).toContain('Target LoopDeck packVersion: 1');
     expect(packAuthoringPrompt).toContain('multi_select');
     expect(packAuthoringPrompt).toContain('answerJudging');
     expect(packAuthoringPrompt).toContain('requiredParts');
