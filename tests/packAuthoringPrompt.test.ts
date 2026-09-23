@@ -26,8 +26,8 @@ describe('pack authoring prompt', () => {
 
     const originalCreateObjectURL = Object.getOwnPropertyDescriptor(URL, 'createObjectURL');
     const originalRevokeObjectURL = Object.getOwnPropertyDescriptor(URL, 'revokeObjectURL');
-    const createObjectURL = vi.fn(() => 'blob:loopdeck-authoring-prompt');
-    const revokeObjectURL = vi.fn();
+    const createObjectURL = vi.fn<(blob: Blob) => string>(() => 'blob:loopdeck-authoring-prompt');
+    const revokeObjectURL = vi.fn<(url: string) => void>();
 
     try {
       Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: createObjectURL });
@@ -49,7 +49,7 @@ describe('pack authoring prompt', () => {
       download!.click();
 
       expect(createObjectURL).toHaveBeenCalledTimes(1);
-      const blob = createObjectURL.mock.calls[0][0] as Blob;
+      const blob = createObjectURL.mock.calls[0][0];
       expect(blob.size).toBeGreaterThan(4000);
       expect(blob.type).toBe('text/plain;charset=utf-8');
       expect(downloadedFilename).toBe('loopdeck-pack-authoring-prompt.txt');
