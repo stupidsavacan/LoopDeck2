@@ -31,9 +31,39 @@ export interface ProblemAnalysis {
 
 type TimingBand = 'fast' | 'normal' | 'slow';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+export const DEFAULT_REVIEW_LOOKBACK_DAYS = 14;
+export const DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS = 4;
+
+export interface ReviewQueueOptions {
+  now?: Date;
+  halfLifeDays?: number;
+}
+
 function attemptTime(attempt: Attempt): number {
   const parsed = Date.parse(attempt.answeredAt);
   return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+export function filterRecentAttempts(
+  attempts: Attempt[],
+  now = new Date(),
+  lookbackDays = DEFAULT_REVIEW_LOOKBACK_DAYS
+): Attempt[] {
+  const cutoff = now.getTime() - Math.max(0, lookbackDays) * DAY_MS;
+  const upperBound = now.getTime();
+  return attempts.filter((attempt) => {
+    const time = attemptTime(attempt);
+    return time > 0 && time >= cutoff && time <= upperBound;
+  });
+}
+
+function recencyWeight(attempt: Attempt, now: Date, halfLifeDays?: number): number {
+  if (!halfLifeDays || halfLifeDays <= 0) return 1;
+  const time = attemptTime(attempt);
+  if (time <= 0) return 0;
+  const ageDays = Math.max(0, (now.getTime() - time) / DAY_MS);
+  return Math.pow(0.5, ageDays / halfLifeDays);
 }
 
 function answerModeFor(attempt: Pick<Attempt, 'answerMode' | 'input'>): AnswerFormat {
@@ -96,8 +126,9 @@ export function summarizeWeakModules(attempts: Attempt[]): Record<string, number
   }, {});
 }
 
-export function buildReviewQueue(attempts: Attempt[], questions: Question[]): ReviewItem[] {
+export function buildReviewQueue(attempts: Attempt[], questions: Question[], options: ReviewQueueOptions = {}): ReviewItem[] {
   const byQuestion = new Map(questions.map((question) => [question.id, question]));
+  const now = options.now ?? new Date();
   const groups = new Map<string, Attempt[]>();
   for (const attempt of attempts) {
     const records = groups.get(attempt.questionId) ?? [];
@@ -109,7 +140,11 @@ export function buildReviewQueue(attempts: Attempt[], questions: Question[]): Re
     .map(([questionId, records]) => {
       const question = byQuestion.get(questionId);
       if (!question) return undefined;
-      const score = records.reduce((total, attempt) => total + attemptDelta(attempt), 0);
+      const rawScore = records.reduce(
+        (total, attempt) => total + attemptDelta(attempt) * recencyWeight(attempt, now, options.halfLifeDays),
+        0
+      );
+      const score = Math.round(rawScore * 10) / 10;
       if (score <= 0) return undefined;
       return {
         question,
@@ -123,8 +158,8 @@ export function buildReviewQueue(attempts: Attempt[], questions: Question[]): Re
     .sort((a, b) => b.score - a.score || b.lastAttemptAt - a.lastAttemptAt);
 }
 
-export function analyzeProblems(attempts: Attempt[], questions: Question[]): ProblemAnalysis[] {
-  const queueScores = new Map(buildReviewQueue(attempts, questions).map((item) => [item.question.id, item.score]));
+export function analyzeProblems(attempts: Attempt[], questions: Question[], options: ReviewQueueOptions = {}): ProblemAnalysis[] {
+  const queueScores = new Map(buildReviewQueue(attempts, questions, options).map((item) => [item.question.id, item.score]));
   const byQuestion = new Map(questions.map((question) => [question.id, question]));
   const groups = new Map<string, Attempt[]>();
   for (const attempt of attempts) {
