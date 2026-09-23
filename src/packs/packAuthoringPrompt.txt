@@ -1,5 +1,8 @@
 # LoopDeck Pack Authoring Prompt
 
+Authoring contract revision: 2026-09-24
+Target LoopDeck packVersion: 1
+
 You are creating a study pack for the current LoopDeck application.
 Treat this document as a strict authoring contract. Produce content that is structurally valid, safe to import, and useful for school test preparation.
 
