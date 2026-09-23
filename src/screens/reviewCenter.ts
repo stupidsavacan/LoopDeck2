@@ -15,7 +15,7 @@ import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { renderInlineQuiz } from './inlineQuiz';
 
-const REVIEW_SCOPE_KEY = 'loopdeck_review_scope_v1';
+const REVIEW_SCOPE_KEY = 'loopdeck_review_scope_session_v1';
 type ReviewScope = 'recent' | 'all';
 
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
@@ -31,7 +31,7 @@ function stat(label: string, value: string | number): HTMLElement {
 
 function readReviewScope(): ReviewScope {
   try {
-    return localStorage.getItem(REVIEW_SCOPE_KEY) === 'all' ? 'all' : 'recent';
+    return sessionStorage.getItem(REVIEW_SCOPE_KEY) === 'all' ? 'all' : 'recent';
   } catch {
     return 'recent';
   }
@@ -39,7 +39,7 @@ function readReviewScope(): ReviewScope {
 
 function writeReviewScope(scope: ReviewScope): void {
   try {
-    localStorage.setItem(REVIEW_SCOPE_KEY, scope);
+    sessionStorage.setItem(REVIEW_SCOPE_KEY, scope);
   } catch {
     // Storage may be unavailable in embedded/private contexts.
   }
@@ -74,8 +74,9 @@ export async function renderReviewCenter(
   const recentAttempts = filterRecentAttempts(attempts, now, DEFAULT_REVIEW_LOOKBACK_DAYS);
   const scopedAttempts = scope === 'recent' ? recentAttempts : attempts;
   const activeModuleIds = new Set(scopedAttempts.map((attempt) => attempt.moduleId));
+  const recentQuestionIds = new Set(recentAttempts.map((attempt) => attempt.questionId));
   const scopedReviewCards = scope === 'recent'
-    ? reviewCards.filter((card) => activeModuleIds.has(card.moduleId))
+    ? reviewCards.filter((card) => recentQuestionIds.has(card.questionId))
     : reviewCards;
 
   const queue = buildReviewQueue(
