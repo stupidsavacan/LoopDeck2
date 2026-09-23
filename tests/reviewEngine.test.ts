@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeProblems, buildMistakeQuestions, buildReviewQueue, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
+import { analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
 import type { Attempt, Question } from '../src/core/models';
 
 const attempts: Attempt[] = [
@@ -39,6 +39,28 @@ describe('review engine', () => {
 
     expect(queue[0]).toMatchObject({ question: questions[0], score: 16, label: '最優先', attempts: 2 });
     expect(queue.map((item) => item.question.id)).toEqual(['q1', 'q3', 'q4']);
+  });
+
+  it('filters stale attempts out of a recent review scope', () => {
+    const now = new Date('2026-06-20T00:00:00.000Z');
+    const recent: Attempt[] = [
+      { ...attempts[0], attemptId: 'recent', answeredAt: '2026-06-13T00:00:00.000Z' },
+      { ...attempts[0], attemptId: 'old', answeredAt: '2026-06-12T23:59:59.000Z' }
+    ];
+
+    expect(filterRecentAttempts(recent, now, 7).map((attempt) => attempt.attemptId)).toEqual(['recent']);
+  });
+
+  it('weights newer weak attempts above otherwise identical older attempts', () => {
+    const now = new Date('2026-06-20T00:00:00.000Z');
+    const recencyAttempts: Attempt[] = [
+      { ...attempts[0], attemptId: 'fresh', questionId: 'q1', answeredAt: '2026-06-19T00:00:00.000Z' },
+      { ...attempts[0], attemptId: 'older', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-14T00:00:00.000Z' }
+    ];
+
+    const queue = buildReviewQueue(recencyAttempts, questions, { now, halfLifeDays: 4 });
+    expect(queue.map((item) => item.question.id)).toEqual(['q1', 'q3']);
+    expect(queue[0].score).toBeGreaterThan(queue[1].score);
   });
 
   it('analyzes repeated wrong input and near misses', () => {
