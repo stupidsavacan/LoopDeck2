@@ -55,7 +55,7 @@ describe('review engine', () => {
     const now = new Date('2026-06-20T00:00:00.000Z');
     const recencyAttempts: Attempt[] = [
       { ...attempts[0], attemptId: 'fresh', questionId: 'q1', answeredAt: '2026-06-19T00:00:00.000Z' },
-      { ...attempts[0], attemptId: 'older', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-10T00:00:00.000Z' }
+      { ...attempts[0], attemptId: 'older', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-14T00:00:00.000Z' }
     ];
 
     const queue = buildReviewQueue(recencyAttempts, questions, { now, halfLifeDays: 4 });
