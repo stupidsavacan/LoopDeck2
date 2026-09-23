@@ -72,9 +72,32 @@ describe('multi-select interaction state', () => {
     const attempts = (await db.getAttempts()).filter((attempt) => attempt.questionId === question.id);
     expect(attempts).toHaveLength(1);
     expect(attempts[0].input).toEqual(['B']);
+    expect(attempts[0].result).toBe('wrong');
     expect(options.every((button) => button.disabled)).toBe(true);
 
     optionB.click();
     expect(optionB.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('locks multi-select options after revealing the answer', async () => {
+    const container = render();
+    const options = [...container.querySelectorAll<HTMLButtonElement>('.choice-btn')];
+    const optionA = options.find((button) => button.textContent === 'A')!;
+    const reveal = [...container.querySelectorAll<HTMLButtonElement>('button')]
+      .find((button) => button.textContent === '答えを見る')!;
+
+    optionA.click();
+    expect(optionA.getAttribute('aria-pressed')).toBe('true');
+
+    reveal.click();
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+
+    expect(options.every((button) => button.disabled)).toBe(true);
+    optionA.click();
+    expect(optionA.getAttribute('aria-pressed')).toBe('true');
+
+    const attempts = (await db.getAttempts()).filter((attempt) => attempt.questionId === question.id);
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0].result).toBe('revealed');
   });
 });
