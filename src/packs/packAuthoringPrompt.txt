@@ -1,0 +1,327 @@
+# LoopDeck Pack Authoring Prompt
+
+You are creating a study pack for the current LoopDeck application.
+Treat this document as a strict authoring contract. Produce content that is structurally valid, safe to import, and useful for school test preparation.
+
+## 1. Output target
+
+LoopDeck accepts either:
+
+1. one complete `.loopdeck.json` file containing a LoopDeckPack object, or
+2. one `.loopdeck.zip` whose root directly contains:
+   - `manifest.json`
+   - `modules.json`
+   - `questions.json`
+   - optional local image files such as `images/map01.png`
+
+If images are needed, prefer the ZIP form.
+If no images are needed, a single `.loopdeck.json` is acceptable.
+
+Do not output executable content. LoopDeck study packs are data only.
+
+## 2. Required top-level model
+
+A complete single-file pack has this shape:
+
+```json
+{
+  "packVersion": 1,
+  "packId": "stable-unique-pack-id",
+  "title": "Specific pack title",
+  "description": "Optional short description",
+  "folders": [
+    { "id": "term1-final", "title": "一学期期末" }
+  ],
+  "modules": [
+    {
+      "id": "history-imperialism",
+      "folderId": "term1-final",
+      "title": "歴史総合 帝国主義とアジア",
+      "subject": "歴史総合",
+      "description": "Optional module description",
+      "tags": ["歴史", "期末"],
+      "questionIds": ["history-imperialism-001"]
+    }
+  ],
+  "questions": []
+}
+```
+
+For ZIP output:
+- `manifest.json` contains packVersion, packId, title, optional description, and folders.
+- `modules.json` is the modules array.
+- `questions.json` is the questions array.
+
+## 3. Question types
+
+Choose the type by meaning, not by convenience.
+
+### input
+
+Use when the expected answer is one clear term or short phrase.
+
+```json
+{
+  "id": "chemistry-ion-001",
+  "moduleId": "chemistry-ion",
+  "type": "input",
+  "number": 1,
+  "category": "基本",
+  "prompt": "Na+ の名称は？",
+  "answer": "ナトリウムイオン",
+  "acceptableAnswers": ["Naイオン"],
+  "explanation": "Optional concise explanation"
+}
+```
+
+Do not compress multiple independent answers into one input answer.
+
+### choice
+
+Use when exactly one displayed option is correct.
+For authored high-quality packs, normally provide 4 plausible choices manually.
+
+```json
+{
+  "id": "history-001",
+  "moduleId": "history",
+  "type": "choice",
+  "number": 1,
+  "category": "基本",
+  "prompt": "中国同盟会の中心人物は？",
+  "choices": ["孫文", "袁世凱", "蒋介石", "康有為"],
+  "answer": "孫文",
+  "explanation": "Optional concise explanation"
+}
+```
+
+Rules:
+- answer must appear in choices.
+- choices must be unique.
+- distractors must be plausible and the same conceptual category as the answer.
+- never use joke or obviously unrelated distractors.
+
+### multi_select
+
+Use when two or more independent answers are correct, including prompts such as:
+- すべて選べ
+- 2つ選べ
+- 該当するものを選べ
+- 複数の内容を列挙する問題
+
+```json
+{
+  "id": "history-002",
+  "moduleId": "history",
+  "type": "multi_select",
+  "number": 2,
+  "category": "標準",
+  "prompt": "三民主義の内容をすべて選べ。",
+  "choices": ["民族主義", "民権主義", "民生主義", "帝国主義"],
+  "correctChoices": ["民族主義", "民権主義", "民生主義"]
+}
+```
+
+Every correctChoices item must appear in choices.
+Do not add an answer field to multi_select.
+
+## 4. Accepted answers and judging
+
+For input/choice questions:
+- `acceptableAnswers` is for true equivalent variants.
+- `acceptedAnswers` may be used when an explicit full accepted-answer set is needed.
+- do not include vague related concepts, explanations, or partial answers as accepted variants.
+
+Optional `answerJudging` exists for questions that need stricter or structured matching:
+
+```json
+{
+  "answerJudging": {
+    "mode": "any_of",
+    "caseSensitive": false,
+    "ignoreSpaces": false,
+    "ignorePunctuation": false,
+    "allowJapaneseSentenceEdges": true
+  }
+}
+```
+
+Supported modes in the current model:
+- single
+- any_of
+- all_of
+- exact_phrase
+- numeric
+
+Use custom judging only when the normal answer/accepted-answer behavior is insufficient.
+
+## 5. Two-sided study / reverse practice
+
+Input questions may explicitly define both study sides:
+
+```json
+{
+  "sides": {
+    "front": {
+      "label": "英語",
+      "text": "apple",
+      "acceptableAnswers": ["apple"]
+    },
+    "back": {
+      "label": "日本語",
+      "text": "りんご",
+      "acceptableAnswers": ["リンゴ"]
+    }
+  },
+  "supportedStudyModes": ["front_to_back", "back_to_front"]
+}
+```
+
+Use this when both directions are pedagogically intended.
+For simple compact Japanese/English vocabulary, LoopDeck can also infer reversible presentation automatically, but explicit sides are preferable when ambiguity exists.
+
+Input questions may also use:
+- `direction`: `ja_to_en`, `en_to_ja`, or `normal`.
+
+## 6. Manual choice candidates for generated-choice study
+
+If an input question should have controlled distractors when LoopDeck presents it as a choice question, use:
+
+```json
+{
+  "choiceCandidates": {
+    "mode": "manual",
+    "choices": ["correct", "distractor A", "distractor B", "distractor C"],
+    "distractors": ["distractor A", "distractor B", "distractor C"],
+    "reason": "Why these distractors are educationally plausible"
+  }
+}
+```
+
+For explicit two-sided study, `sideChoiceCandidates` may provide different candidate sets for front_to_back and back_to_front.
+
+## 7. Images
+
+Optional image references use `imageAsset`:
+
+```json
+{
+  "imageAsset": "images/map01.png"
+}
+```
+
+Allowed image extensions:
+- .png
+- .jpg
+- .jpeg
+- .webp
+
+Rules:
+- path must be relative and local.
+- the referenced file must actually be included in the ZIP.
+- no remote URLs.
+- no absolute paths.
+- no `../` traversal.
+- no data: or javascript: URLs.
+- do not invent image filenames unless you also provide the image file.
+
+## 8. Safety restrictions
+
+Never put these executable/renderable files in a pack:
+- .html / .htm
+- .js / .mjs / .cjs
+- .css
+- .apk / .dex / .jar / .so
+- .exe / .bat / .cmd / .sh / .ps1
+
+Do not embed HTML or JavaScript in metadata or question text as a feature.
+Treat all text fields as plain text.
+
+## 9. ID and reference rules
+
+Use stable collision-resistant IDs.
+
+Recommended pattern:
+- packId: `school-2026-term1-final`
+- module id: `school-2026-term1-final-history-imperialism`
+- question id: `school-2026-term1-final-history-imperialism-001`
+
+Requirements:
+- packId is non-empty.
+- module IDs are unique.
+- question IDs are unique.
+- every question.moduleId points to a real module.
+- every module.questionIds entry points to a real question.
+- a question listed by a module should belong to that module.
+- do not reuse an ID for different content.
+- prefer IDs that are unlikely to collide with another imported pack.
+
+## 10. Module metadata
+
+Keep module titles specific enough to identify the test range.
+Use consistent Japanese category names where practical.
+
+Optional module presentation metadata in the current model includes:
+- color
+- accent
+- accentColor
+- description
+- tags
+
+If using colors, use normal six-digit hex colors such as `#2563EB`.
+
+## 11. Authoring workflow
+
+Before final files, do this internally or visibly when useful:
+
+1. Make a module/coverage plan.
+2. Decide the intended question type for every source fact.
+3. Write plausible manual distractors for authored choice questions.
+4. Define true accepted-answer variants.
+5. Preserve required image references.
+6. Generate stable IDs and cross-references.
+7. Self-check the complete pack.
+8. Only then emit final JSON/ZIP contents.
+
+Do not make every question input just because it is easier.
+
+## 12. Mandatory self-check
+
+Before presenting the final pack, verify:
+
+- [ ] packVersion is 1.
+- [ ] packId and title are non-empty.
+- [ ] every module ID is unique.
+- [ ] every question ID is unique.
+- [ ] every question.moduleId exists.
+- [ ] every module.questionIds entry exists.
+- [ ] every input has a non-empty answer.
+- [ ] no multiple-independent-answer prompt is encoded as input.
+- [ ] every choice answer appears in choices.
+- [ ] authored choice distractors are plausible and same-category.
+- [ ] every multi_select has at least one correct choice and all correct choices appear in choices.
+- [ ] accepted-answer variants are genuinely equivalent.
+- [ ] every imageAsset path is safe and the file exists.
+- [ ] no executable/script-like files are included.
+- [ ] all JSON is valid JSON.
+- [ ] the ZIP root, if used, directly contains manifest.json, modules.json, and questions.json.
+
+If any check fails, fix it before output.
+
+## 13. Final response behavior
+
+When the user asks you to create a LoopDeck pack:
+- use the supplied source material as the factual authority;
+- do not invent facts to fill coverage;
+- preserve requested question numbering/ranges;
+- explain any source ambiguity instead of silently guessing;
+- produce the actual final importable files, not just an example schema, when file-generation tools are available.
+
+Priority order:
+1. factual correctness
+2. correct question type
+3. valid references/schema
+4. useful distractors
+5. stable IDs
+6. safe assets
+7. importability
