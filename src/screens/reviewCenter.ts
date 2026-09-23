@@ -115,7 +115,7 @@ export async function renderReviewCenter(
       'p',
       '',
       scope === 'recent'
-        ? `最近${DEFAULT_REVIEW_LOOKBACK_DAYS}日に触った教材を中心に表示します。古い教材は自動で主画面から外れます。`
+        ? `最近${DEFAULT_REVIEW_LOOKBACK_DAYS}日に解いた問題を中心に表示します。古い問題は自動で主画面から外れます。`
         : '過去の教材を含む全履歴を表示しています。'
     )
   );
@@ -238,7 +238,7 @@ export async function renderReviewCenter(
   const srsListCard = el('section', 'card');
   srsListCard.append(el('h2', '', '今日の候補'));
   const srsList = el('div', 'priority-list');
-  for (const card of srsQueue.slice(0, 5)) {
+  for (const card of srsQueue.slice(0, 3)) {
     const question = questionsById.get(card.questionId);
     if (!question) continue;
     const row = el('div', `priority-row priority-${card.state}`);
@@ -254,16 +254,16 @@ export async function renderReviewCenter(
   }
   if (!srsList.childElementCount) {
     srsList.append(el('p', 'empty', scope === 'recent'
-      ? `最近${DEFAULT_REVIEW_LOOKBACK_DAYS}日に触った教材には、今日の復習予定がありません。`
+      ? `最近${DEFAULT_REVIEW_LOOKBACK_DAYS}日に解いた問題には、今日の復習予定がありません。`
       : '今日の復習予定はありません。'));
   }
-  if (srsQueue.length > 5) srsList.append(el('p', 'hint', `ほか ${srsQueue.length - 5}問。開始すると順番に出題します。`));
+  if (srsQueue.length > 3) srsList.append(el('p', 'hint', `ほか ${srsQueue.length - 3}問。開始すると順番に出題します。`));
   srsListCard.append(srsList);
 
   const queueCard = el('section', 'card');
   queueCard.append(el('h2', '', scope === 'recent' ? '最近の弱点候補' : '全履歴の弱点候補'));
   const queueList = el('div', 'priority-list');
-  for (const item of queue.slice(0, 5)) {
+  for (const item of queue.slice(0, 3)) {
     const row = el('div', `priority-row priority-${item.label}`);
     const meta = el('div', 'pack-meta');
     meta.append(
@@ -276,7 +276,7 @@ export async function renderReviewCenter(
     queueList.append(row);
   }
   if (!queueList.childElementCount) queueList.append(el('p', 'empty', '今の範囲には弱点候補がありません。'));
-  if (queue.length > 5) queueList.append(el('p', 'hint', `ほか ${queue.length - 5}問。弱点復習では上位20問を出題します。`));
+  if (queue.length > 3) queueList.append(el('p', 'hint', `ほか ${queue.length - 3}問。弱点復習では上位20問を出題します。`));
   queueCard.append(queueList);
 
   const listGrid = el('section', 'review-list-grid');
