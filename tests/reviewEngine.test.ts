@@ -44,11 +44,11 @@ describe('review engine', () => {
   it('filters stale attempts out of a recent review scope', () => {
     const now = new Date('2026-06-20T00:00:00.000Z');
     const recent: Attempt[] = [
-      { ...attempts[0], attemptId: 'recent', answeredAt: '2026-06-19T00:00:00.000Z' },
-      { ...attempts[0], attemptId: 'old', answeredAt: '2026-06-01T23:59:59.000Z' }
+      { ...attempts[0], attemptId: 'recent', answeredAt: '2026-06-13T00:00:00.000Z' },
+      { ...attempts[0], attemptId: 'old', answeredAt: '2026-06-12T23:59:59.000Z' }
     ];
 
-    expect(filterRecentAttempts(recent, now, 14).map((attempt) => attempt.attemptId)).toEqual(['recent']);
+    expect(filterRecentAttempts(recent, now, 7).map((attempt) => attempt.attemptId)).toEqual(['recent']);
   });
 
   it('weights newer weak attempts above otherwise identical older attempts', () => {
