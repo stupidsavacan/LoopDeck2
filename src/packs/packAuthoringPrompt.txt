@@ -103,11 +103,14 @@ Rules:
 
 ### multi_select
 
-Use when two or more independent answers are correct, including prompts such as:
+Use when the learner must select the complete applicable set rather than type one short answer.
+This is most useful when two or more answers are correct, including prompts such as:
 - すべて選べ
 - 2つ選べ
 - 該当するものを選べ
 - 複数の内容を列挙する問題
+
+The current importer requires at least one `correctChoices` item. Prefer two or more when that is the actual meaning of the source question; do not invent extra correct answers just to force a multi-select question.
 
 ```json
 {
@@ -129,7 +132,9 @@ Do not add an answer field to multi_select.
 
 For input/choice questions:
 - `acceptableAnswers` is for true equivalent variants.
-- `acceptedAnswers` may be used when an explicit full accepted-answer set is needed.
+- `acceptedAnswers` may be used when an explicit accepted-answer set is needed.
+- the primary `answer` is always accepted.
+- when a non-empty `acceptedAnswers` array is present, LoopDeck uses it instead of `acceptableAnswers` for judging, so include every intended non-primary accepted variant there.
 - do not include vague related concepts, explanations, or partial answers as accepted variants.
 
 Optional `answerJudging` exists for questions that need stricter or structured matching:
@@ -147,13 +152,14 @@ Optional `answerJudging` exists for questions that need stricter or structured m
 ```
 
 Supported modes in the current model:
-- single
-- any_of
-- all_of
-- exact_phrase
-- numeric
+- `single`: normal single-answer judging.
+- `any_of`: accept any configured accepted answer.
+- `all_of`: use `answerJudging.requiredParts`; every required part must occur in the normalized input.
+- `exact_phrase`: require an exact normalized accepted answer and do not apply the normal loose sentence-edge matching.
+- `numeric`: currently requires an exact normalized accepted answer; it does not provide numeric tolerance/range handling.
 
 Use custom judging only when the normal answer/accepted-answer behavior is insufficient.
+Do not assume undocumented tolerance, ordering, or fuzzy matching behavior.
 
 ## 5. Two-sided study / reverse practice
 
@@ -198,7 +204,13 @@ If an input question should have controlled distractors when LoopDeck presents i
 }
 ```
 
-For explicit two-sided study, `sideChoiceCandidates` may provide different candidate sets for front_to_back and back_to_front.
+Runtime rules:
+- `choices` is the actual candidate source used by LoopDeck and must include the primary correct `answer`.
+- provide at least 4 unique usable choices for a normal four-choice presentation.
+- accepted-answer variants must not be used as distractors.
+- `distractors` and `reason` are optional authoring metadata; LoopDeck's current generated-choice runtime does not use `distractors` as a separate option source.
+
+For explicit two-sided study, `sideChoiceCandidates` may provide different candidate sets for `front_to_back` and `back_to_front`, using the same structure and rules.
 
 ## 7. Images
 
