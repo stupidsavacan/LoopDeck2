@@ -92,7 +92,7 @@ describe('Review Center large-history layout bounds', () => {
     expect(listCards).toHaveLength(2);
 
     const previewRows = listCards.flatMap((card) => [...card.querySelectorAll('.priority-row')]);
-    expect(previewRows.length).toBeLessThanOrEqual(10);
+    expect(previewRows.length).toBeLessThanOrEqual(6);
 
     const analysis = root.querySelector<HTMLDetailsElement>('details.review-analysis');
     expect(analysis).not.toBeNull();
