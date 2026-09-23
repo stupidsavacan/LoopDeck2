@@ -32,7 +32,7 @@ export interface ProblemAnalysis {
 type TimingBand = 'fast' | 'normal' | 'slow';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-export const DEFAULT_REVIEW_LOOKBACK_DAYS = 14;
+export const DEFAULT_REVIEW_LOOKBACK_DAYS = 7;
 export const DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS = 4;
 
 export interface ReviewQueueOptions {
