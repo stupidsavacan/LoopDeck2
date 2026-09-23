@@ -62,7 +62,7 @@ function dueCard(questionId: string, moduleId: string): ReviewCard {
 
 describe('Review Center scope', () => {
   beforeEach(async () => {
-    localStorage.removeItem('loopdeck_review_scope_v1');
+    sessionStorage.removeItem('loopdeck_review_scope_session_v1');
     await db.clearAttempts();
     await db.clearReviewData();
     await db.addAttempt(attempt('recent-attempt', 'recent-q', 'recent-module', 1));
@@ -89,6 +89,6 @@ describe('Review Center scope', () => {
     await new Promise((resolve) => window.setTimeout(resolve, 50));
 
     expect(root.textContent).toContain('OLD QUESTION');
-    expect(localStorage.getItem('loopdeck_review_scope_v1')).toBe('all');
+    expect(sessionStorage.getItem('loopdeck_review_scope_session_v1')).toBe('all');
   });
 });
