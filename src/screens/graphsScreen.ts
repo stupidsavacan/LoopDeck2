@@ -9,7 +9,7 @@ const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
 
 function renderHeatmap(root: HTMLElement, attempts: Attempt[]): void {
   const card = el('section', 'card graph-card');
-  card.innerHTML = '<h2>学習の継続</h2>';
+  card.append(el('h2', '', '学習の継続'));
   const stats = buildDailyStudyStats(attempts, 28);
   if (!attempts.length) {
     card.append(el('p', 'empty', 'まだ学習履歴がありません。問題を解くとここに日別の記録が出ます。'));
@@ -33,7 +33,7 @@ function renderHeatmap(root: HTMLElement, attempts: Attempt[]): void {
 function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: ResolvedPackView): void {
   const stats = buildModuleStudyStats(attempts, getActiveModules(packView)).slice(0, 8);
   const card = el('section', 'card graph-card');
-  card.innerHTML = '<h2>正答率と回答速度</h2>';
+  card.append(el('h2', '', '正答率と回答速度'));
 
   if (!stats.length) {
     card.append(el('p', 'empty', 'まだ比較できる回答履歴がありません。'));
@@ -45,14 +45,16 @@ function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: Res
   for (const item of stats) {
     const row = el('div', 'module-stat-row');
     const accuracyWidth = `${Math.max(4, Math.round(item.accuracy * 100))}%`;
-    row.innerHTML = `
-      <div>
-        <strong>${item.title}</strong>
-        <small>${item.attempts}回 / 平均 ${seconds(item.averageElapsedMs)}</small>
-      </div>
-      <div class="accuracy-meter"><span style="width:${accuracyWidth}"></span></div>
-      <b>${percent(item.accuracy)}</b>
-    `;
+    const meta = el('div');
+    meta.append(
+      el('strong', '', item.title),
+      el('small', '', `${item.attempts}回 / 平均 ${seconds(item.averageElapsedMs)}`)
+    );
+    const meter = el('div', 'accuracy-meter');
+    const fill = el('span');
+    fill.style.width = accuracyWidth;
+    meter.append(fill);
+    row.append(meta, meter, el('b', '', percent(item.accuracy)));
     list.append(row);
   }
   card.append(list);
@@ -62,7 +64,7 @@ function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: Res
 function renderTrend(root: HTMLElement, attempts: Attempt[]): void {
   const trend = buildMistakeTrend(attempts, 14);
   const card = el('section', 'card graph-card');
-  card.innerHTML = '<h2>ミスの推移</h2>';
+  card.append(el('h2', '', 'ミスの推移'));
 
   if (!trend.some((item) => item.mistakes > 0)) {
     card.append(el('p', 'empty', 'まだミス履歴がありません。'));
@@ -86,7 +88,7 @@ function renderTrend(root: HTMLElement, attempts: Attempt[]): void {
 function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: ResolvedPackView): void {
   const breakdown = buildMistakeBreakdown(attempts, getActiveQuestions(packView));
   const card = el('section', 'card graph-card');
-  card.innerHTML = '<h2>ミスの内訳</h2>';
+  card.append(el('h2', '', 'ミスの内訳'));
 
   if (!breakdown.length) {
     card.append(el('p', 'empty', '分類できるミス履歴がまだありません。'));
@@ -98,11 +100,11 @@ function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: Resol
   const max = Math.max(1, ...breakdown.map((item) => item.count));
   for (const item of breakdown) {
     const row = el('div', 'breakdown-row');
-    row.innerHTML = `
-      <span>${item.label}</span>
-      <div class="breakdown-meter"><span style="width:${Math.max(8, (item.count / max) * 100)}%"></span></div>
-      <strong>${item.count}</strong>
-    `;
+    const meter = el('div', 'breakdown-meter');
+    const fill = el('span');
+    fill.style.width = `${Math.max(8, (item.count / max) * 100)}%`;
+    meter.append(fill);
+    row.append(el('span', '', item.label), meter, el('strong', '', String(item.count)));
     list.append(row);
   }
   card.append(list);
@@ -124,12 +126,18 @@ export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPa
   const hero = el('section', 'hero-card study-hero-card');
   const correct = attempts.filter((attempt) => attempt.result === 'correct').length;
   const mistakes = attempts.filter((attempt) => attempt.result !== 'correct').length;
-  hero.innerHTML = `
-    <p class="eyebrow">Study Graphs</p>
-    <h1>グラフ</h1>
-    <p>解いた履歴から、続いている日・正答率・ミスの傾向を軽く見返します。</p>
-    <div class="stats-row"><span>${attempts.length}回答</span><span>正解 ${correct}</span><span>ミス ${mistakes}</span></div>
-  `;
+  hero.append(
+    el('p', 'eyebrow', 'Study Graphs'),
+    el('h1', '', 'グラフ'),
+    el('p', '', '解いた履歴から、続いている日・正答率・ミスの傾向を軽く見返します。')
+  );
+  const stats = el('div', 'stats-row');
+  stats.append(
+    el('span', '', `${attempts.length}回答`),
+    el('span', '', `正解 ${correct}`),
+    el('span', '', `ミス ${mistakes}`)
+  );
+  hero.append(stats);
 
   const grid = el('section', 'graph-grid');
   renderHeatmap(grid, attempts);

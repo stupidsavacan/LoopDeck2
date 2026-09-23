@@ -1,5 +1,6 @@
 import type { LoopDeckPack } from '../core/models';
 import { mergeLoopDeckPacks, mergeLoopDeckPacksIntoExisting, type MergePackReport } from '../packs/packMerger';
+import packAuthoringPrompt from '../packs/packAuthoringPrompt.txt?raw';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
@@ -83,6 +84,12 @@ async function exportBackup(): Promise<void> {
   toast('バックアップを書き出しました。');
 }
 
+async function exportPackAuthoringPrompt(): Promise<void> {
+  const blob = new Blob([packAuthoringPrompt], { type: 'text/plain;charset=utf-8' });
+  await downloadBlob(blob, 'loopdeck-pack-authoring-prompt.txt');
+  toast('AI用のPack作成プロンプトを書き出しました。');
+}
+
 function infoList(items: string[]): HTMLUListElement {
   const list = document.createElement('ul');
   list.className = 'info-list';
@@ -153,6 +160,15 @@ export async function renderImportScreen(
     el('h1', '', '教材入出力'),
     el('p', '', '教材パック、学習履歴、ブックマークの入出力を行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
   );
+
+  const authoringCard = el('section', 'card');
+  authoringCard.append(
+    el('h2', '', 'AIで教材Packを作る'),
+    el('p', 'hint', 'LoopDeckの現行形式・問題タイプ・画像・安全制限をまとめた作成用プロンプトです。AIへ渡してから教材作成を依頼できます。')
+  );
+  const downloadPrompt = button('AI用Pack作成プロンプトを保存', 'btn primary');
+  downloadPrompt.onclick = () => void exportPackAuthoringPrompt();
+  authoringCard.append(downloadPrompt);
 
   const input = el('input', 'file-input visually-hidden') as HTMLInputElement;
   input.type = 'file';
@@ -398,6 +414,6 @@ export async function renderImportScreen(
     ])
   );
 
-  screen.append(header, card, uploadCard, preview, packageList, dataCard, apkCard, note);
+  screen.append(header, card, authoringCard, uploadCard, preview, packageList, dataCard, apkCard, note);
   root.append(screen);
 }

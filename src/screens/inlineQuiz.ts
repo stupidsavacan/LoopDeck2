@@ -365,9 +365,13 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     const list = el('div', 'choice-list');
     for (const choice of question.choices) {
       const choiceButton = button(choice, 'choice-btn');
+      choiceButton.setAttribute('aria-pressed', 'false');
       choiceButton.onclick = () => {
-        if (selected.has(choice)) { selected.delete(choice); choiceButton.classList.remove('selected'); }
-        else { selected.add(choice); choiceButton.classList.add('selected'); }
+        if (selected.has(choice)) selected.delete(choice);
+        else selected.add(choice);
+        const selectedNow = selected.has(choice);
+        choiceButton.classList.toggle('selected', selectedNow);
+        choiceButton.setAttribute('aria-pressed', selectedNow ? 'true' : 'false');
         selectedAnswer = [...selected];
         resetIdleReveal();
       };

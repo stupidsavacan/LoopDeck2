@@ -351,7 +351,10 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   font-weight: 800;
   cursor: pointer;
 }
-.choice-btn:hover, .choice-btn.selected { border-color: var(--primary); background: #eaf1ff; }
+.choice-btn.selected { border-color: var(--primary); background: #eaf1ff; }
+@media (hover: hover) and (pointer: fine) {
+  .choice-btn:hover { border-color: var(--primary); background: #eaf1ff; }
+}
 .result { display: grid; gap: 4px; margin-top: 12px; padding: 14px; border-radius: 14px; }
 .result.correct { background: #eaf7ee; color: var(--ok); }
 .result.wrong { background: #fff1f2; color: var(--danger); }
