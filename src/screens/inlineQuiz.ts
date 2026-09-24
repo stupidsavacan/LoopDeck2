@@ -317,7 +317,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const bookmark = button('', 'btn ghost bookmark-btn');
   let bookmarked = false;
   const renderBookmark = () => {
-    appendIconLabel(bookmark, 'bookmark', bookmarked ? 'ブックマーク済み' : 'ブックマーク');
+    const label = bookmarked ? 'ブックマーク済み' : 'ブックマーク';
+    appendIconLabel(bookmark, 'bookmark', label);
+    bookmark.setAttribute('aria-label', label);
     bookmark.classList.toggle('selected', bookmarked);
   };
   renderBookmark();
@@ -394,6 +396,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const hintText = question.example ?? question.explanation;
   const hint = button('', 'btn ghost');
   appendIconLabel(hint, 'hint', 'ヒント');
+  hint.setAttribute('aria-label', 'ヒント');
   hint.disabled = !hintText;
   hint.onclick = () => {
     if (!hintText || resultArea.querySelector('.hint-panel')) return;
@@ -402,6 +405,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   };
   const reveal = button('', 'btn ghost');
   appendIconLabel(reveal, 'eye', '答えを見る');
+  reveal.setAttribute('aria-label', '答えを見る');
   reveal.onclick = () => record(selectedAnswer, true);
 
   const tools = el('div', 'v2-quiz-tools');
