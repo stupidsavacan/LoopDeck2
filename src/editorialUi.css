@@ -1339,3 +1339,56 @@ body {
     font-size: 0.62rem !important;
   }
 }
+
+
+/* Layout hardening: keep horizontal shelves local and reserve a real nav row */
+.home-screen,
+.home-screen .folder-list,
+.home-screen .folder-shell {
+  min-width: 0;
+  max-width: 100%;
+}
+.home-screen {
+  overflow-x: clip;
+}
+.home-screen .folder-list,
+.home-screen .folder-shell {
+  overflow-x: clip !important;
+}
+.home-screen .folder-content,
+.home-screen .folder-content.open {
+  min-width: 0 !important;
+  max-width: calc(100% + 36px) !important;
+  contain: inline-size;
+}
+
+#app:has(> .bottom-nav) {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  overflow: hidden;
+  background: var(--editorial-paper);
+}
+
+#app:has(> .bottom-nav) > main.screen {
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: clip;
+  padding-bottom: 26px !important;
+  scroll-padding-bottom: 24px;
+}
+
+#app > .bottom-nav {
+  position: static !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  width: min(420px, calc(100% - 18px)) !important;
+  margin: 0 auto calc(8px + var(--safe-bottom)) !important;
+  flex: 0 0 auto;
+}
+
+.screen:has(.bottom-nav) {
+  padding-bottom: 26px !important;
+}
