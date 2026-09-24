@@ -1269,3 +1269,73 @@ body {
     width: 178px !important;
   }
 }
+
+
+/* Small-height hardening after real Chromium passes */
+.review-screen .hero-card .stats-row {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.review-screen .hero-card .stats-row::-webkit-scrollbar {
+  display: none;
+}
+.review-screen .hero-card .stats-row span {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.review-screen .review-scope-actions {
+  margin-top: 10px !important;
+}
+.review-screen .review-scope-actions .btn {
+  min-height: 36px !important;
+  padding: 7px 11px !important;
+  border-radius: 12px !important;
+}
+
+@media (max-width: 420px) {
+  .review-screen .hero-card {
+    margin-bottom: 18px !important;
+  }
+  .review-screen .hero-card h1 {
+    font-size: 2.7rem !important;
+  }
+  .review-screen .hero-card > p:not(.eyebrow) {
+    line-height: 1.5 !important;
+  }
+  .review-screen .stats-row {
+    margin-top: 10px !important;
+  }
+  .review-screen .stats-row span {
+    padding: 6px 8px !important;
+    font-size: 0.78rem !important;
+  }
+  .review-screen .action-card {
+    padding: 16px !important;
+  }
+}
+
+@media (max-height: 650px) and (max-width: 760px) {
+  .bottom-nav {
+    bottom: calc(6px + var(--safe-bottom)) !important;
+    padding: 4px !important;
+    border-radius: 19px !important;
+  }
+  .bottom-nav-item {
+    min-height: 48px !important;
+    grid-template-rows: 27px auto !important;
+    border-radius: 13px !important;
+  }
+  .bottom-nav-icon {
+    width: 27px;
+    height: 27px;
+    border-radius: 9px;
+  }
+  .bottom-nav-svg {
+    width: 16px;
+    height: 16px;
+  }
+  .bottom-nav-label {
+    font-size: 0.62rem !important;
+  }
+}
