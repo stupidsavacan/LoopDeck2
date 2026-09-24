@@ -6,6 +6,7 @@ const outputPath = resolve(process.cwd(), process.argv[3] ?? 'LoopDeck-single.ht
 const indexPath = join(distDir, 'index.html');
 
 const textExtensions = new Set(['.html', '.css', '.js', '.mjs', '.cjs', '.json', '.svg', '.txt', '.xml']);
+const runtimeSharedImageExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
 const mimeTypes = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
@@ -54,14 +55,27 @@ async function embedBinaryReferences(files) {
   const binaryFiles = files.filter((path) => !textExtensions.has(extname(path).toLowerCase()));
 
   const textContents = new Map();
+  const sharedRuntimeAssets = {};
   for (const path of textFiles) textContents.set(path, await readFile(path, 'utf8'));
 
   for (const binaryPath of binaryFiles) {
     const dataUri = dataUriFor(binaryPath, await readFile(binaryPath));
     const rootRelative = slash(relative(distDir, binaryPath));
+    const isRuntimeSharedImage =
+      rootRelative.startsWith('images/') &&
+      runtimeSharedImageExtensions.has(extname(binaryPath).toLowerCase());
+
+    if (isRuntimeSharedImage) sharedRuntimeAssets[rootRelative] = dataUri;
 
     for (const textPath of textFiles) {
       let content = textContents.get(textPath);
+      const textExt = extname(textPath).toLowerCase();
+
+      // Question.imageAsset must stay a path inside bundled JavaScript/JSON.
+      // The single-file runtime resolves that path through sharedRuntimeAssets,
+      // so one image payload is stored once instead of once per question.
+      if (isRuntimeSharedImage && ['.js', '.mjs', '.cjs', '.json'].includes(textExt)) continue;
+
       const relativeFromText = slash(relative(dirname(textPath), binaryPath));
       const candidates = new Set([
         rootRelative,
@@ -77,6 +91,7 @@ async function embedBinaryReferences(files) {
   }
 
   for (const [path, content] of textContents) await writeFile(path, content, 'utf8');
+  return sharedRuntimeAssets;
 }
 
 function resolveHtmlAsset(ref) {
@@ -97,7 +112,7 @@ async function replaceAsync(input, regex, replacer) {
 
 async function inlineHtmlAssets() {
   const files = await walk(distDir);
-  await embedBinaryReferences(files);
+  const sharedRuntimeAssets = await embedBinaryReferences(files);
 
   const jsFiles = files.filter((path) => ['.js', '.mjs'].includes(extname(path).toLowerCase()));
   if (jsFiles.length !== 1) {
@@ -110,6 +125,15 @@ async function inlineHtmlAssets() {
   }
 
   let html = await readFile(indexPath, 'utf8');
+
+  if (Object.keys(sharedRuntimeAssets).length) {
+    const serializedAssets = JSON.stringify(sharedRuntimeAssets).replace(/</g, '\\u003c');
+    const assetScript =
+      '<script>globalThis.__LOOPDECK_EMBEDDED_ASSETS__ = Object.freeze(' +
+      serializedAssets +
+      ');</script>';
+    html = html.replace(/<head(\s[^>]*)?>/i, (match) => match + '\n' + assetScript);
+  }
 
   html = html.replace(
     /<link\b(?=[^>]*\brel=["']modulepreload["'])[^>]*>/gi,
@@ -143,6 +167,19 @@ async function inlineHtmlAssets() {
   );
   if (localRef) {
     throw new Error('Single HTML still contains a local resource reference: ' + localRef[1]);
+  }
+
+  for (const [assetPath, dataUri] of Object.entries(sharedRuntimeAssets)) {
+    const payloadCount = html.split(dataUri).length - 1;
+    if (payloadCount !== 1) {
+      throw new Error(
+        'Shared runtime asset payload must appear exactly once: ' +
+        assetPath +
+        ' appeared ' +
+        payloadCount +
+        ' times'
+      );
+    }
   }
 
   await writeFile(outputPath, html, 'utf8');
