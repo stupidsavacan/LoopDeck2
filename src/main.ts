@@ -138,8 +138,8 @@ function navigate(route: AppRoute, options: { replace?: boolean } = {}): void {
 
 function appendMainNavigation(current: BottomNavSection | undefined): void {
   const screen = root.querySelector<HTMLElement>('main.screen');
-  if (!screen || screen.querySelector('.bottom-nav')) return;
-  screen.append(renderBottomNav(
+  if (!screen || root.querySelector(':scope > .bottom-nav')) return;
+  root.append(renderBottomNav(
     current,
     () => navigate({ name: 'home' }),
     () => navigate({ name: 'review' }),
