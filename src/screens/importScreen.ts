@@ -163,7 +163,7 @@ export async function renderImportScreen(
     el('p', '', '教材の追加、バックアップ、書き出しをここで管理します。')
   );
 
-  const authoringCard = el('section', 'card');
+  const authoringCard = el('section', 'card authoring-card');
   authoringCard.append(
     el('h2', '', 'AIで教材Packを作る'),
     el('p', 'hint', 'LoopDeckの現行形式・問題タイプ・画像・安全制限をまとめた作成用プロンプトです。AIへ渡してから教材作成を依頼できます。')
