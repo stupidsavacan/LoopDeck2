@@ -6,6 +6,7 @@ import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
 import { db, type LoopDeckBackup } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
+import { appendIconLabel, createUiIcon } from '../ui/icons';
 
 declare global {
   interface Window {
@@ -150,15 +151,16 @@ export async function renderImportScreen(
   clear(root);
   const screen = el('main', 'screen import-screen');
   const header = el('header', 'topbar');
-  const back = button('← ホーム', 'btn ghost');
+  const back = button('', 'btn ghost');
+  appendIconLabel(back, 'arrowLeft', 'ホーム');
   back.onclick = navigateHome;
   header.append(back);
 
   const card = el('section', 'hero-card');
   card.append(
-    el('p', 'eyebrow', 'Data / APK export'),
-    el('h1', '', '教材入出力'),
-    el('p', '', '教材パック、学習履歴、ブックマークの入出力を行います。APK の署名付き書き出しは GitHub Actions 側で安全に作成します。')
+    el('p', 'eyebrow', 'LIBRARY & DATA'),
+    el('h1', '', '教材とデータ'),
+    el('p', '', '教材の追加、バックアップ、書き出しをここで管理します。')
   );
 
   const authoringCard = el('section', 'card');
@@ -177,7 +179,8 @@ export async function renderImportScreen(
   const uploadCard = el('section', 'card upload-card');
   const uploadTitle = el('h2', '', '教材ファイルを読み込む');
   const uploadZone = el('div', 'upload-zone');
-  const uploadIcon = el('div', 'upload-icon', '⬆');
+  const uploadIcon = el('div', 'upload-icon');
+  uploadIcon.append(createUiIcon('tray', 'upload-icon-svg'));
   const uploadText = el('p', '', '教材ファイルをここにドロップ');
   const uploadSub = el('p', 'hint', 'またはボタンから .json / .zip / .loopdeck.zip を選びます。');
   const chooseFile = button('ファイルを選ぶ', 'btn primary');
@@ -388,11 +391,24 @@ export async function renderImportScreen(
     await db.clearBookmarks();
     toast('ブックマークを削除しました。');
   };
-  dataActions.append(backup, clearHistory, clearWrong, clearBookmarks);
-  dataCard.append(dataActions, el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'));
+  dataActions.append(backup);
+  const dangerZone = el('details', 'v2-danger-zone');
+  dangerZone.append(el('summary', '', 'データ削除'));
+  const dangerActions = el('div', 'v2-danger-actions');
+  dangerActions.append(clearHistory, clearWrong, clearBookmarks);
+  dangerZone.append(dangerActions);
+  dataCard.append(
+    dataActions,
+    el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'),
+    dangerZone
+  );
 
-  const apkCard = el('section', 'card');
+  const apkCard = el('details', 'card v2-dev-zone');
   apkCard.append(
+    el('summary', '', '開発者向け · APKビルド')
+  );
+  const apkBody = el('div', 'v2-dev-body');
+  apkBody.append(
     el('h2', '', 'APK書き出し'),
     el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
     infoList([
@@ -401,6 +417,7 @@ export async function renderImportScreen(
       '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
     ])
   );
+  apkCard.append(apkBody);
 
   const note = el('details', 'card safe-note');
   note.append(
