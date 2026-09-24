@@ -1,6 +1,7 @@
 import './styles.css';
 import './homeFeatures.css';
 import './mobileUxFixes.css';
+import './editorialUi.css';
 import { registerGlobalErrorLogging, writeDebugLog } from './debug/debugLog';
 import { loadBuiltinPacks } from './packs/builtinLoader';
 import { setActivePackAssetView } from './packs/packAssetResolver';
@@ -205,7 +206,6 @@ async function renderRoute(route: AppRoute): Promise<void> {
         return;
       case 'module':
         await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }));
-        appendMainNavigation('home');
         return;
       case 'review':
         await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }));
