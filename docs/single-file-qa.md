@@ -15,7 +15,7 @@ The command builds a fresh `LoopDeck-single.html` and opens its **file URL**, us
 
 For an existing release artifact, set `QA_ARTIFACT` to its absolute filename, then run `npx playwright test`. The test attachments record artifact SHA-256, Chrome version, OS platform and URL. Record the source commit and device/OS version alongside these attachments. `QA_HEADED=1` runs visible Chrome for an assisted PC pass. `QA_SCREENSHOTS=all` captures each checkpoint; by default home and quiz-result screenshots plus failure screenshots/traces are retained. Reports are in `qa-report/` and `qa-results/`; `QA_REPORT_DIR` and `QA_RESULTS_DIR` select separate run directories. Traces can contain imported fixture contents.
 
-For web-build comparison, run `npm run build`, serve `dist` with `npm run preview -- --host 127.0.0.1`, and set `QA_BASE_URL=http://127.0.0.1:4173/` before running Playwright. Keep web and single-file results separate. The shared inline-asset assertion is single-file-specific.
+For web-build comparison, run `npm run build`, serve `dist` with `npm run preview -- --host 127.0.0.1`, and set `QA_BASE_URL=http://127.0.0.1:4173/` before running Playwright. Keep web and single-file results separate. Web comparison mode does not require `LoopDeck-single.html` to exist and therefore omits the single-file SHA-256 attachment. The shared inline-asset assertion is single-file-specific.
 
 ## Automated matrix
 
