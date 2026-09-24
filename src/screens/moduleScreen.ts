@@ -116,6 +116,8 @@ export async function renderModuleScreen(
   header.append(back, review);
 
   const info = el('section', 'hero-card module-cover');
+  if (module.title.length > 24) info.classList.add('long-title');
+  if (module.title.length > 42) info.classList.add('very-long-title');
   const meta = moduleMeta(module);
   info.style.setProperty('--module-accent', meta.accent);
   info.dataset.coverGlyph = module.title.trim().slice(0, 1);
