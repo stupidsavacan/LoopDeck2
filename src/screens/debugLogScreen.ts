@@ -9,13 +9,16 @@ function formatDate(value: string): string {
 }
 
 function renderLogCard(log: DebugLogEntry): HTMLElement {
-  const card = el('article', `debug-log-card ${log.level}`);
+  const card = el('details', `debug-log-card ${log.level}`);
+  const summary = el('summary', 'debug-log-summary');
   const head = el('div', 'debug-log-head');
   head.append(el('strong', '', formatDate(log.timestamp)), el('span', '', `${log.level.toUpperCase()} / ${log.area}`));
+  const summaryMeta = el('div', 'debug-log-summary-meta');
+  if (log.code) summaryMeta.append(el('code', '', log.code));
+  if (log.userMessage) summaryMeta.append(el('span', '', log.userMessage));
+  summary.append(head, summaryMeta);
 
   const details = el('div', 'debug-log-details');
-  if (log.code) details.append(el('code', '', log.code));
-  if (log.userMessage) details.append(el('p', '', log.userMessage));
   if (log.detail) details.append(el('p', 'hint', log.detail));
   if (log.route) details.append(el('small', '', `route: ${log.route}`));
   if (log.stack) {
@@ -27,7 +30,7 @@ function renderLogCard(log: DebugLogEntry): HTMLElement {
     details.append(stackDetails);
   }
 
-  card.append(head, details);
+  card.append(summary, details);
   return card;
 }
 
