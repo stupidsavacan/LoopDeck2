@@ -180,6 +180,10 @@ function appendHomeManagementLinks(): void {
   actions.append(importButton, pdfButton);
   body.append(el('p', 'small-note', '教材パック、バックアップ、PDF出力などの補助機能です。'), actions);
   management.append(summary, body);
+  management.addEventListener('toggle', () => {
+    if (!management.open) return;
+    window.requestAnimationFrame(() => management.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' }));
+  });
   screen.append(management);
 
   const version = button('LoopDeck v0.1.0', 'version-trigger');
