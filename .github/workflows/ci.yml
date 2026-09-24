@@ -30,10 +30,14 @@ jobs:
         with:
           node-version: 20.19.0
           cache: npm
-          cache-dependency-path: package.json
+          cache-dependency-path: package-lock.json
 
       - name: Install web dependencies
-        run: npm install --include=dev
+        run: npm ci --include=dev
+
+      - name: Verify lockfile registry hosts
+        run: |
+          node -e "const lock=require('./package-lock.json'); const bad=Object.entries(lock.packages||{}).flatMap(([name,p])=>p&&p.resolved&&!p.resolved.startsWith('https://registry.npmjs.org/')?[[name,p.resolved]]:[]); if(bad.length){console.error('Unexpected registry entries:',bad); process.exit(1)}"
 
       - name: Show installed tool versions
         run: |
@@ -63,4 +67,42 @@ jobs:
           name: LoopDeck-single-html
           path: LoopDeck-single.html
           if-no-files-found: error
+          retention-days: 7
+
+  single-file-chrome-qa:
+    name: Single-file Chrome QA
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.0
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci --include=dev
+
+      - name: Show Chrome version
+        shell: powershell
+        run: |
+          $chrome = (Get-Item "C:\Program Files\Google\Chrome\Application\chrome.exe" -ErrorAction Stop).VersionInfo.ProductVersion
+          Write-Host "Google Chrome $chrome"
+
+      - name: Run single-file Chrome QA
+        run: npm run qa:chrome
+
+      - name: Upload Chrome QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-file-chrome-qa
+          path: |
+            qa-report/
+            qa-results/
+            LoopDeck-single.html
+          if-no-files-found: warn
           retention-days: 7
