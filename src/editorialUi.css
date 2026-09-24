@@ -168,9 +168,13 @@ body {
 .home-screen .folder-list {
   display: grid !important;
   gap: 34px !important;
+  min-width: 0 !important;
+  width: 100% !important;
 }
 
 .home-screen .folder-shell {
+  min-width: 0 !important;
+  width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
@@ -228,6 +232,8 @@ body {
 
 .home-screen .folder-content,
 .home-screen .folder-content.open {
+  width: 100% !important;
+  min-width: 0 !important;
   display: flex !important;
   gap: 12px !important;
   margin: 0 -18px !important;
