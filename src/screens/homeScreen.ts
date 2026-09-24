@@ -244,6 +244,7 @@ export function renderHomeScreen(
     const meta = moduleMeta(module);
     const card = el('button', 'module-card ready') as HTMLButtonElement;
     card.type = 'button';
+    card.style.setProperty('--deck-accent', meta.accent);
     card.style.borderColor = hexToRgba(meta.accent, 0.2);
     if (meta.accentColor) card.style.background = `linear-gradient(180deg, ${meta.accentColor}, rgba(255, 255, 255, 0.94) 70%)`;
     card.onclick = () => openModule(module.id);
