@@ -13,6 +13,7 @@ import { createSession, type QuizSession } from '../core/sessionEngine';
 import { getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
+import { appendIconLabel } from '../ui/icons';
 import { renderInlineQuiz } from './inlineQuiz';
 
 const REVIEW_SCOPE_KEY = 'loopdeck_review_scope_session_v1';
@@ -101,16 +102,18 @@ export async function renderReviewCenter(
   clear(root);
   const screen = el('main', 'screen review-screen');
   const header = el('header', 'topbar');
-  const back = button('← ホーム', 'btn ghost');
+  const back = button('', 'btn ghost');
+  appendIconLabel(back, 'arrowLeft', 'ホーム');
   back.onclick = navigateHome;
-  const graphs = button('グラフ', 'btn ghost');
+  const graphs = button('', 'btn ghost');
+  appendIconLabel(graphs, 'chart', '分析');
   graphs.onclick = navigateGraphs;
   header.append(back, graphs);
 
   const hero = el('section', 'hero-card');
   hero.append(
-    el('p', 'eyebrow', '復習'),
-    el('h1', '', '復習センター'),
+    el('p', 'eyebrow', 'REVIEW'),
+    el('h1', '', '復習'),
     el(
       'p',
       '',
