@@ -1,6 +1,7 @@
 import './styles.css';
 import './homeFeatures.css';
 import './mobileUxFixes.css';
+import './editorialUi.css';
 import { registerGlobalErrorLogging, writeDebugLog } from './debug/debugLog';
 import { loadBuiltinPacks } from './packs/builtinLoader';
 import { setActivePackAssetView } from './packs/packAssetResolver';
@@ -137,8 +138,8 @@ function navigate(route: AppRoute, options: { replace?: boolean } = {}): void {
 
 function appendMainNavigation(current: BottomNavSection | undefined): void {
   const screen = root.querySelector<HTMLElement>('main.screen');
-  if (!screen || screen.querySelector('.bottom-nav')) return;
-  screen.append(renderBottomNav(
+  if (!screen || root.querySelector(':scope > .bottom-nav')) return;
+  root.append(renderBottomNav(
     current,
     () => navigate({ name: 'home' }),
     () => navigate({ name: 'review' }),
@@ -205,7 +206,6 @@ async function renderRoute(route: AppRoute): Promise<void> {
         return;
       case 'module':
         await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }));
-        appendMainNavigation('home');
         return;
       case 'review':
         await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }));

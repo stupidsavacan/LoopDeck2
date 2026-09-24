@@ -2,6 +2,7 @@ import type { ModuleInfo } from '../core/models';
 import { getVisibleBuiltinModules } from '../packs/builtinNormalizer';
 import { getActiveModules, type ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el } from '../ui/dom';
+import { createUiIcon, iconNameForModule } from '../ui/icons';
 import { buildHomeFolders, homeModuleMatches, type HomeFolder } from './homeFolders';
 
 type ModuleCardMeta = {
@@ -212,17 +213,22 @@ export function renderHomeScreen(
   const hero = el('section', 'hero');
   const heroCopy = el('div', 'hero-copy');
   heroCopy.append(
-    el('h1', '', '学習ホーム'),
-    el('p', '', '教材をテストごとのフォルダにまとめたスマホ向けホーム。LoopDeckで軽く、すばやく学習できます。')
+    (() => {
+      const heading = el('h1');
+      heading.setAttribute('aria-label', '今日は、何を学ぶ？');
+      heading.append(el('span', 'home-heading-line', '今日は、'), document.createElement('br'), el('span', 'home-heading-line', '何を学ぶ？'));
+      return heading;
+    })(),
+    el('p', '', '教材を開いたら、あとは問題だけに集中。必要なものを棚から選ぶだけ。')
   );
   hero.append(heroCopy);
 
   const toolbar = el('div', 'toolbar');
   const search = el('input', 'search') as HTMLInputElement;
-  search.placeholder = '教材を検索 例：歴史、地理、化学、生物、英単語、英コミュ';
+  search.placeholder = '教材を検索';
   search.autocomplete = 'off';
   search.setAttribute('aria-label', '教材を検索');
-  const showAll = button('全部表示', 'filter');
+  const showAll = button('すべて', 'filter');
   toolbar.append(search, showAll);
 
   const list = el('section', 'folder-list');
@@ -238,13 +244,15 @@ export function renderHomeScreen(
     const meta = moduleMeta(module);
     const card = el('button', 'module-card ready') as HTMLButtonElement;
     card.type = 'button';
+    card.style.setProperty('--deck-accent', meta.accent);
     card.style.borderColor = hexToRgba(meta.accent, 0.2);
     if (meta.accentColor) card.style.background = `linear-gradient(180deg, ${meta.accentColor}, rgba(255, 255, 255, 0.94) 70%)`;
     card.onclick = () => openModule(module.id);
 
     const top = el('div', 'card-top');
-    const icon = el('div', 'module-icon', meta.icon);
+    const icon = el('div', 'module-icon');
     icon.style.background = meta.accent;
+    icon.append(createUiIcon(iconNameForModule(module), 'deck-icon-svg'));
     const title = el('div', 'title');
     title.append(el('h2', '', module.title), el('div', 'subtitle', meta.subtitle));
     top.append(icon, title);
@@ -279,10 +287,8 @@ export function renderHomeScreen(
     for (const tag of folder.tags) folderTags.append(el('span', '', tag));
     titleBox.append(folderTags);
     head.append(
-      el('div', 'folder-icon', '📁'),
       titleBox,
-      el('div', 'folder-count', `${modules.length}件`),
-      el('div', 'folder-chevron', isOpen ? '▼' : '▶')
+      el('div', 'folder-count', `${modules.length}件`)
     );
 
     const content = el('div', isOpen ? 'folder-content open' : 'folder-content');

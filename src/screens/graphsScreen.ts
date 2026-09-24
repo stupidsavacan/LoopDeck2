@@ -3,6 +3,7 @@ import type { Attempt } from '../core/models';
 import { getActiveModules, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
+import { appendIconLabel } from '../ui/icons';
 
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
 const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
@@ -117,9 +118,11 @@ export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPa
 
   const screen = el('main', 'screen graphs-screen');
   const header = el('header', 'topbar');
-  const back = button('← ホーム', 'btn ghost');
+  const back = button('', 'btn ghost');
+  appendIconLabel(back, 'arrowLeft', 'ホーム');
   back.onclick = navigateHome;
-  const review = button('復習センター', 'btn ghost');
+  const review = button('', 'btn ghost');
+  appendIconLabel(review, 'review', '復習');
   review.onclick = navigateReview;
   header.append(back, review);
 
@@ -127,9 +130,9 @@ export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPa
   const correct = attempts.filter((attempt) => attempt.result === 'correct').length;
   const mistakes = attempts.filter((attempt) => attempt.result !== 'correct').length;
   hero.append(
-    el('p', 'eyebrow', 'Study Graphs'),
-    el('h1', '', 'グラフ'),
-    el('p', '', '解いた履歴から、続いている日・正答率・ミスの傾向を軽く見返します。')
+    el('p', 'eyebrow', 'ANALYTICS'),
+    el('h1', '', '学習の記録'),
+    el('p', '', '続けた日、正答率、ミスの傾向をまとめて振り返ります。')
   );
   const stats = el('div', 'stats-row');
   stats.append(

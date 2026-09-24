@@ -9,6 +9,7 @@ import { isSafeImageAssetRef, isSafeImageDataUrl } from '../packs/assetSafety';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
+import { appendIconLabel } from '../ui/icons';
 
 export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): void; onComplete(): void; }
 export interface InlineQuizOptions { resolveImageAsset?: QuestionImageAssetResolver; }
@@ -304,24 +305,32 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
       ? buildWrongAnswerExplanation(answerMode === 'input' ? 'input' : 'choice', answer, activeQuestion, session.choicePool.length ? session.choicePool : session.queue)
       : undefined;
     appendResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
-    if (nextButton) nextButton.disabled = false;
+    if (nextButton) {
+      nextButton.disabled = false;
+      nextButton.hidden = false;
+    }
     const persisted = saveAttemptAndReview(attempt);
     if (result === 'correct' && session.settings.autoNext) void persisted.finally(() => window.setTimeout(nextQuestion, 650));
     else void persisted;
   }
 
-  const bookmark = button('☆ ブックマーク', 'btn ghost bookmark-btn');
+  const bookmark = button('', 'btn ghost bookmark-btn');
   let bookmarked = false;
+  const renderBookmark = () => {
+    const label = bookmarked ? 'ブックマーク済み' : 'ブックマーク';
+    appendIconLabel(bookmark, 'bookmark', label);
+    bookmark.setAttribute('aria-label', label);
+    bookmark.classList.toggle('selected', bookmarked);
+  };
+  renderBookmark();
   void db.getBookmarks().then((bookmarks) => {
     bookmarked = bookmarks.includes(question.id);
-    bookmark.textContent = bookmarked ? '★ ブックマーク済み' : '☆ ブックマーク';
-    bookmark.classList.toggle('selected', bookmarked);
+    renderBookmark();
   });
   bookmark.onclick = async () => {
     bookmarked = !bookmarked;
     await db.setBookmark(question.id, bookmarked);
-    bookmark.textContent = bookmarked ? '★ ブックマーク済み' : '☆ ブックマーク';
-    bookmark.classList.toggle('selected', bookmarked);
+    renderBookmark();
   };
 
   if (session.settings.showExample && question.example) answerArea.append(el('p', 'example-line', question.example));
@@ -385,22 +394,33 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   }
 
   const hintText = question.example ?? question.explanation;
-  const hint = button('ヒント', 'btn ghost');
+  const hint = button('', 'btn ghost');
+  appendIconLabel(hint, 'hint', 'ヒント');
+  hint.setAttribute('aria-label', 'ヒント');
   hint.disabled = !hintText;
   hint.onclick = () => {
     if (!hintText || resultArea.querySelector('.hint-panel')) return;
     resultArea.prepend(el('p', 'hint-panel', hintText));
     resetIdleReveal();
   };
-  const reveal = button('答えを見る', 'btn ghost');
+  const reveal = button('', 'btn ghost');
+  appendIconLabel(reveal, 'eye', '答えを見る');
+  reveal.setAttribute('aria-label', '答えを見る');
   reveal.onclick = () => record(selectedAnswer, true);
-  const next = button('次へ', 'btn');
+
+  const tools = el('div', 'v2-quiz-tools');
+  tools.append(bookmark, hint, reveal);
+
+  const next = button('', 'btn prototype-next-ready');
+  appendIconLabel(next, 'arrowRight', '次へ', 'end');
   next.disabled = true;
+  next.hidden = true;
   next.onclick = nextQuestion;
   nextButton = next;
-  controls.append(bookmark, hint, reveal, next);
+  controls.classList.add('quiz-next-controls');
+  controls.append(next);
 
-  card.append(renderQuizMeta(session, question), el('h3', 'question-prompt', question.prompt));
+  card.append(renderQuizMeta(session, question), tools, el('h3', 'question-prompt', question.prompt));
   const image = renderImageReference(question, options.resolveImageAsset ?? resolveActiveQuestionImageAsset);
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
