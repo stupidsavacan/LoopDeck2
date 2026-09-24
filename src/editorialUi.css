@@ -1444,3 +1444,35 @@ body {
     border-radius: 13px !important;
   }
 }
+
+
+/* Quiz control hardening after Chromium audit */
+.prototype-next-ready[hidden] {
+  display: none !important;
+}
+
+.v2-quiz-tools .icon-button {
+  min-width: 0;
+  flex: 1 1 0;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  gap: 5px !important;
+  white-space: nowrap;
+}
+
+.v2-quiz-tools .icon-button-label {
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .v2-quiz-tools .btn {
+    font-size: 0.64rem !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+
+  .v2-quiz-tools .icon-button-mark {
+    width: 17px;
+    height: 17px;
+  }
+}
