@@ -206,6 +206,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let answered = false;
   let moved = false;
   let pendingAttempt: Attempt | undefined;
+  let nextButton: HTMLButtonElement | undefined;
   let idleTimer: number | undefined;
   let idleLastTickAt = 0;
   let idleRemainingMs = AUTO_REVEAL_IDLE_MS;
@@ -303,6 +304,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
       ? buildWrongAnswerExplanation(answerMode === 'input' ? 'input' : 'choice', answer, activeQuestion, session.choicePool.length ? session.choicePool : session.queue)
       : undefined;
     appendResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
+    if (nextButton) nextButton.disabled = false;
     const persisted = saveAttemptAndReview(attempt);
     if (result === 'correct' && session.settings.autoNext) void persisted.finally(() => window.setTimeout(nextQuestion, 650));
     else void persisted;
@@ -393,7 +395,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const reveal = button('答えを見る', 'btn ghost');
   reveal.onclick = () => record(selectedAnswer, true);
   const next = button('次へ', 'btn');
+  next.disabled = true;
   next.onclick = nextQuestion;
+  nextButton = next;
   controls.append(bookmark, hint, reveal, next);
 
   card.append(renderQuizMeta(session, question), el('h3', 'question-prompt', question.prompt));
