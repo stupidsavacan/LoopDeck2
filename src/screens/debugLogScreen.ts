@@ -1,5 +1,6 @@
 import { clearDebugLogs, formatDebugLogsForCopy, readDebugLogs, writeDebugLog, type DebugLogEntry } from '../debug/debugLog';
 import { button, clear, el, toast } from '../ui/dom';
+import { appendIconLabel } from '../ui/icons';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -18,9 +19,12 @@ function renderLogCard(log: DebugLogEntry): HTMLElement {
   if (log.detail) details.append(el('p', 'hint', log.detail));
   if (log.route) details.append(el('small', '', `route: ${log.route}`));
   if (log.stack) {
+    const stackDetails = el('details', 'debug-stack-details');
+    const stackSummary = el('summary', '', 'スタックトレース');
     const stack = el('pre', 'debug-stack');
     stack.textContent = log.stack;
-    details.append(stack);
+    stackDetails.append(stackSummary, stack);
+    details.append(stackDetails);
   }
 
   card.append(head, details);
@@ -32,22 +36,24 @@ export function renderDebugLogScreen(root: HTMLElement, navigateHome: () => void
   const logs = readDebugLogs();
   const screen = el('main', 'screen debug-log-screen');
   const header = el('header', 'topbar');
-  const back = button('← ホーム', 'btn ghost');
+  const back = button('', 'btn ghost');
+  appendIconLabel(back, 'arrowLeft', 'ホーム');
   back.onclick = navigateHome;
   header.append(back);
 
-  const hero = el('section', 'hero-card');
+  const hero = el('section', 'hero-card debug-hero');
   hero.append(
-    el('p', 'eyebrow', 'Hidden developer tools'),
+    el('p', 'eyebrow', 'DEVELOPER / SYSTEM LOG'),
     el('h1', '', 'デバッグログ'),
-    el('p', '', '通常UIには出さない内部エラーコードや例外情報を確認できます。')
+    el('p', '', '通常UIには出さない内部エラーコードや例外情報を確認します。')
   );
   const stats = el('div', 'stats-row');
   stats.append(el('span', '', `${logs.length}件`));
   hero.append(stats);
 
-  const actions = el('section', 'card action-card');
-  const copy = button('ログをコピー', 'btn primary');
+  const actions = el('section', 'debug-actions');
+  const copy = button('', 'btn primary');
+  appendIconLabel(copy, 'copy', 'ログをコピー');
   copy.onclick = async () => {
     try {
       await navigator.clipboard.writeText(formatDebugLogsForCopy(readDebugLogs()));
@@ -65,7 +71,8 @@ export function renderDebugLogScreen(root: HTMLElement, navigateHome: () => void
     }
   };
 
-  const clearButton = button('ログを消去', 'btn ghost danger');
+  const clearButton = button('', 'btn ghost danger');
+  appendIconLabel(clearButton, 'trash', 'ログを消去');
   clearButton.onclick = () => {
     if (!window.confirm('ログをすべて消去しますか？')) return;
     clearDebugLogs();
