@@ -425,6 +425,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
   container.append(card);
+  window.requestAnimationFrame(() => {
+    container.scrollIntoView?.({ block: 'start', inline: 'nearest', behavior: 'auto' });
+  });
   if (session.settings.autoRevealAfterIdle) {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     renderCleanupByContainer.set(container, cleanup);
