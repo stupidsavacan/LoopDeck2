@@ -13,7 +13,9 @@ const test = base.extend({
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', msg => { if (msg.type() === 'error') errors.push({ text: msg.text(), location: msg.location() }); });
     if (!process.env.QA_BASE_URL) await page.route(/^https?:/, route => { network.push(route.request().url()); return route.abort(); });
-    await info.attach('environment', { body: JSON.stringify({ browser: browser.version(), url, platform: process.platform, sha256: createHash('sha256').update(await readFile(artifact)).digest('hex') }), contentType: 'application/json' });
+    const environment = { browser: browser.version(), url, platform: process.platform };
+    if (!process.env.QA_BASE_URL) environment.sha256 = createHash('sha256').update(await readFile(artifact)).digest('hex');
+    await info.attach('environment', { body: JSON.stringify(environment), contentType: 'application/json' });
     await use(page);
     expect(errors, 'unexpected console/page errors').toEqual([]);
     expect(network, 'single-file attempted network access').toEqual([]);
