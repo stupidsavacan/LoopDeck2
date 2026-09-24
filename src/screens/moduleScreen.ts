@@ -1,10 +1,10 @@
-import type { ModuleInfo, Question, StudySettings } from '../core/models';
+import type { Attempt, ConcreteStudyQuestionMode, ModuleInfo, Question, StudySettings } from '../core/models';
 import {
   canAutoReverseQuestion,
   getModuleStudyQuestionModes,
   getStudyQuestionModeLabel
 } from '../core/questionPresentation';
-import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
+import { buildRangeOptions, createSession, listQuestionCategories, restoreSession, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
 import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
@@ -14,40 +14,74 @@ import { renderInlineQuiz } from './inlineQuiz';
 
 type ToggleSettingKey = 'shuffle' | 'autoNext' | 'autoRevealAfterIdle' | 'showExample' | 'showNumber' | 'showCategory';
 
+const STORED_SESSION_VERSION = 2;
+
 export interface StoredSession {
+  version: typeof STORED_SESSION_VERSION;
   questionIds: string[];
+  questionModes: ConcreteStudyQuestionMode[];
   index: number;
   mode: 'normal' | 'review';
   settings: StudySettings;
+  attempts: Attempt[];
+  startedAt: number;
+  currentElapsedMs: number;
+  currentHiddenTimeExcludedMs: number;
   savedAt: string;
+}
+
+interface SessionTimingSnapshot {
+  currentElapsedMs: number;
+  currentHiddenTimeExcludedMs: number;
 }
 
 function resumeKey(moduleId: string): string {
   return `loopdeck_session_${moduleId}`;
 }
 
+function isConcreteStudyMode(value: unknown): value is ConcreteStudyQuestionMode {
+  return value === 'as_stored' || value === 'front_to_back' || value === 'back_to_front';
+}
+
 export function readStoredSession(moduleId: string, byId: Map<string, Question>): StoredSession | undefined {
   try {
     const raw = localStorage.getItem(resumeKey(moduleId));
     if (!raw) return undefined;
-    const parsed = JSON.parse(raw) as StoredSession;
-    if (!Array.isArray(parsed.questionIds) || parsed.index >= parsed.questionIds.length) return undefined;
-    if (!parsed.questionIds.every((id) => byId.has(id))) return undefined;
-    return parsed;
+    const parsed = JSON.parse(raw) as Partial<StoredSession>;
+    if (parsed.version !== STORED_SESSION_VERSION) return undefined;
+    if (!Array.isArray(parsed.questionIds) || !parsed.questionIds.length) return undefined;
+    if (!Array.isArray(parsed.questionModes) || parsed.questionModes.length !== parsed.questionIds.length || !parsed.questionModes.every(isConcreteStudyMode)) return undefined;
+    if (!Number.isInteger(parsed.index) || (parsed.index ?? -1) < 0 || (parsed.index ?? 0) >= parsed.questionIds.length) return undefined;
+    if (parsed.mode !== 'normal' && parsed.mode !== 'review') return undefined;
+    if (!parsed.settings || typeof parsed.settings !== 'object') return undefined;
+    if (!Array.isArray(parsed.attempts)) return undefined;
+    if (!Number.isFinite(parsed.startedAt) || !Number.isFinite(parsed.currentElapsedMs) || !Number.isFinite(parsed.currentHiddenTimeExcludedMs)) return undefined;
+    if (!parsed.questionIds.every((id) => typeof id === 'string' && byId.has(id))) return undefined;
+    return parsed as StoredSession;
   } catch {
     return undefined;
   }
 }
 
-function saveStoredSession(moduleId: string, session: QuizSession): void {
+function saveStoredSession(moduleId: string, session: QuizSession, timing?: SessionTimingSnapshot): void {
   const stored: StoredSession = {
+    version: STORED_SESSION_VERSION,
     questionIds: session.queue.map((question) => question.id),
+    questionModes: session.queue.map((question) => question.activeStudyMode ?? 'as_stored'),
     index: session.index,
     mode: session.mode,
     settings: session.settings,
+    attempts: session.attempts,
+    startedAt: session.startedAt,
+    currentElapsedMs: Math.max(0, timing?.currentElapsedMs ?? session.currentElapsedMs),
+    currentHiddenTimeExcludedMs: Math.max(0, timing?.currentHiddenTimeExcludedMs ?? session.currentHiddenTimeExcludedMs),
     savedAt: new Date().toISOString()
   };
-  localStorage.setItem(resumeKey(moduleId), JSON.stringify(stored));
+  try {
+    localStorage.setItem(resumeKey(moduleId), JSON.stringify(stored));
+  } catch {
+    // Resume persistence must not interrupt an active study session.
+  }
 }
 
 function clearStoredSession(moduleId: string): void {
@@ -268,6 +302,7 @@ export async function renderModuleScreen(
     };
     renderInlineQuiz(quizMount, session, {
       onSessionChange: update,
+      onTimingSnapshot: (timing) => saveStoredSession(module.id, session, timing),
       onComplete: () => {
         clearStoredSession(module.id);
         rerender();
@@ -291,8 +326,22 @@ export async function renderModuleScreen(
     const resume = button(`再開 (${storedSession.index + 1}/${storedSession.questionIds.length})`, 'btn');
     resume.onclick = () => {
       const restoredQuestions = storedSession.questionIds.map((id) => questionsById.get(id)).filter((question): question is Question => Boolean(question));
-      const session = createSession(module, restoredQuestions, runtimeSettings(storedSession.settings), storedSession.mode, sessionQuestionPool);
-      mountSession({ ...session, index: storedSession.index });
+      const session = restoreSession(
+        module,
+        restoredQuestions,
+        storedSession.questionModes,
+        runtimeSettings(storedSession.settings),
+        storedSession.mode,
+        {
+          index: storedSession.index,
+          attempts: storedSession.attempts,
+          startedAt: storedSession.startedAt,
+          currentElapsedMs: storedSession.currentElapsedMs,
+          currentHiddenTimeExcludedMs: storedSession.currentHiddenTimeExcludedMs
+        },
+        sessionQuestionPool
+      );
+      mountSession(session);
     };
     actions.append(resume);
   }
