@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20.19.0
           cache: npm
@@ -62,7 +62,7 @@ jobs:
           echo "Single HTML size: $(wc -c < LoopDeck-single.html) bytes"
 
       - name: Upload single-file HTML
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: LoopDeck-single-html
           path: LoopDeck-single.html
@@ -74,10 +74,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20.19.0
           cache: npm
@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload Chrome QA evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: single-file-chrome-qa
           path: |
