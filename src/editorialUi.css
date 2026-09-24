@@ -1666,12 +1666,13 @@ body {
 
 .debug-log-card {
   min-width: 0;
-  padding: 14px 15px !important;
+  padding: 0 !important;
   border: 1px solid var(--editorial-line) !important;
   border-left: 4px solid #a8b0bf !important;
   border-radius: 15px !important;
   background: #fff !important;
   box-shadow: none !important;
+  overflow: hidden;
 }
 
 .debug-log-card.error {
@@ -1684,6 +1685,22 @@ body {
 
 .debug-log-card.info {
   border-left-color: #5272d8 !important;
+}
+
+.debug-log-summary {
+  display: grid;
+  gap: 8px;
+  padding: 13px 14px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.debug-log-summary::-webkit-details-marker {
+  display: none;
+}
+
+.debug-log-card[open] > .debug-log-summary {
+  border-bottom: 1px solid var(--editorial-line);
 }
 
 .debug-log-head {
@@ -1699,22 +1716,47 @@ body {
   color: #303a4d;
 }
 
-.debug-log-details {
+.debug-log-summary-meta {
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.debug-log-details code {
-  display: inline-block;
-  margin-top: 9px;
+.debug-log-summary-meta code {
+  flex: 0 0 auto;
   padding: 4px 7px;
   border-radius: 7px;
   background: #f0f2f5;
   color: #465166;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
+}
+
+.debug-log-summary-meta span {
+  min-width: 0;
+  display: -webkit-box;
+  overflow: hidden;
+  color: #303a4d;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.debug-log-details {
+  min-width: 0;
+  padding: 12px 14px 14px;
 }
 
 .debug-log-details p {
   overflow-wrap: anywhere;
+}
+
+.debug-hero .stats-row span {
+  padding: 6px 9px !important;
+  border-radius: 9px !important;
+  background: #e8ebf1 !important;
+  color: #465166 !important;
 }
 
 .debug-stack-details {
