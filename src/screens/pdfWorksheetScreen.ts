@@ -5,6 +5,7 @@ import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuest
 import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
 import type { ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el, toast } from '../ui/dom';
+import { appendIconLabel } from '../ui/icons';
 
 declare global {
   interface Window {
@@ -189,19 +190,20 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   clear(root);
   const screen = el('main', 'screen pdf-worksheet-screen');
   const header = el('header', 'topbar');
-  const back = button('← ホーム', 'btn ghost');
+  const back = button('', 'btn ghost');
+  appendIconLabel(back, 'arrowLeft', 'ホーム');
   back.onclick = navigateHome;
   header.append(back);
 
-  const intro = el('section', 'hero-card');
+  const intro = el('section', 'hero-card worksheet-hero');
   intro.append(
-    el('p', 'eyebrow', 'A4 / Japanese to English'),
-    el('h1', '', 'PDFプリント作成'),
+    el('p', 'eyebrow', 'WORKSHEET / A4'),
+    el('h1', '', 'PDFプリント'),
     el('p', '', '日本語の意味から英語を書く、テスト対策用のA4プリントを作成します。')
   );
 
-  const setup = el('section', 'card setup-card');
-  setup.append(el('h2', '', '出力設定'));
+  const setup = el('section', 'card setup-card worksheet-setup');
+  setup.append(el('p', 'eyebrow', 'SETUP'), el('h2', '', '出力設定'));
   if (!modules.length) {
     setup.append(el('p', 'empty', '出力できる入力式の教材がありません。'));
     screen.append(header, intro, setup);
@@ -255,18 +257,22 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   grid.append(moduleLabel, rangeLabel);
   setup.append(grid, answerLabel, summary);
 
-  const actions = el('section', 'card action-card');
-  const exportButton = button('PDFを書き出す', 'btn primary');
+  const actions = el('section', 'worksheet-export-panel');
+  const exportButton = button('', 'btn primary worksheet-export-button');
+  appendIconLabel(exportButton, 'filePdf', 'PDFを書き出す');
   actions.append(exportButton);
 
-  const statusCard = el('section', 'card export-status-card');
-  const statusTitle = el('h2', '', '書き出し状況');
+  const statusCard = el('details', 'card export-status-card');
+  const statusSummary = el('summary', '', '書き出し状況');
+  const statusBody = el('div', 'export-status-body');
   const statusMessage = el('p', 'export-status-message', '待機中');
   const statusDetail = el('p', 'hint export-status-detail', 'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。');
   const statusLog = el('ol', 'export-status-log');
-  statusCard.append(statusTitle, statusMessage, statusDetail, statusLog);
+  statusBody.append(statusMessage, statusDetail, statusLog);
+  statusCard.append(statusSummary, statusBody);
 
   function reportProgress(code: string, message: string, detail = ''): void {
+    statusCard.open = true;
     statusMessage.textContent = message;
     statusDetail.textContent = detail || '詳細なし';
     const item = el('li', '', `${message}${detail ? ` — ${detail}` : ''}`);
@@ -290,7 +296,7 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       return;
     }
     exportButton.disabled = true;
-    exportButton.textContent = 'PDFを作成中…';
+    appendIconLabel(exportButton, 'filePdf', 'PDFを作成中…');
     statusLog.replaceChildren();
     try {
       reportProgress('PDF-S010', '出力設定を読み込みました', `${selected.label} / ${selectedQuestions.length}問`);
@@ -326,12 +332,15 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       });
     } finally {
       exportButton.disabled = false;
-      exportButton.textContent = 'PDFを書き出す';
+      appendIconLabel(exportButton, 'filePdf', 'PDFを書き出す');
     }
   };
 
-  const note = el('section', 'card');
-  note.append(el('h2', '', '対応範囲'), el('p', 'hint', 'A4縦・1ページ25問・日本語から英語の入力式問題に対応しています。選択問題・画像問題・逆方向は出力しません。'));
+  const note = el('details', 'card worksheet-note');
+  note.append(
+    el('summary', '', '対応範囲'),
+    el('p', 'hint', 'A4縦・1ページ25問・日本語から英語の入力式問題に対応しています。選択問題・画像問題・逆方向は出力しません。')
+  );
 
   screen.append(header, intro, setup, actions, statusCard, note);
   root.append(screen);

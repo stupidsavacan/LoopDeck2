@@ -16,6 +16,7 @@ import { renderPdfWorksheetScreen } from './screens/pdfWorksheetScreen';
 import { renderDebugLogScreen } from './screens/debugLogScreen';
 import { renderBottomNav, type BottomNavSection } from './ui/bottomNav';
 import { button, el } from './ui/dom';
+import { createUiIcon } from './ui/icons';
 import { renderLoading } from './ui/loading';
 
 const appRoot = document.querySelector<HTMLDivElement>('#app');
@@ -51,17 +52,28 @@ function renderStartupError(error: unknown): void {
   });
 
   const screen = document.createElement('main');
-  screen.className = 'screen';
+  screen.className = 'screen startup-error-screen';
   const card = document.createElement('section');
-  card.className = 'hero-card';
+  card.className = 'editorial-system-state startup-error-card';
+  const mark = document.createElement('div');
+  mark.className = 'system-state-mark error';
+  mark.textContent = '!';
+  mark.setAttribute('aria-hidden', 'true');
+  const copy = document.createElement('div');
+  copy.className = 'system-state-copy';
+  const eyebrow = document.createElement('p');
+  eyebrow.className = 'eyebrow';
+  eyebrow.textContent = 'SYSTEM ERROR';
   const title = document.createElement('h1');
   title.textContent = 'LoopDeckを起動できませんでした';
   const body = document.createElement('p');
+  body.className = 'system-error-detail';
   body.textContent = errorMessage(error);
   const hint = document.createElement('p');
   hint.className = 'hint';
-  hint.textContent = '画面が真っ白にならないよう、起動時エラーを表示しています。アプリを再起動しても続く場合はこの文面を教えてください。';
-  card.append(title, body, hint);
+  hint.textContent = 'アプリを再起動しても続く場合は、この画面の内容を確認してください。';
+  copy.append(eyebrow, title, body, hint);
+  card.append(mark, copy);
   screen.append(card);
   root.replaceChildren(screen);
   window.LoopDeckAndroid?.showToast?.('LoopDeckの起動に失敗しました。');
@@ -151,16 +163,27 @@ function appendHomeManagementLinks(): void {
   const screen = root.querySelector<HTMLElement>('main.home-screen');
   if (!screen || screen.querySelector('[data-home-management]')) return;
 
-  const management = el('section', 'card management-card');
+  const management = el('details', 'home-tools management-card');
   management.dataset.homeManagement = 'true';
-  management.append(el('h2', '', '教材更新・管理・出力'));
+  const summary = el('summary', 'home-tools-summary');
+  const summaryIcon = el('span', 'home-tools-icon');
+  summaryIcon.append(createUiIcon('toolbox', 'home-tools-svg'));
+  const summaryCopy = el('span', 'home-tools-summary-copy');
+  summaryCopy.append(el('strong', '', '教材・データ・PDF'), el('small', '', '管理ツール'));
+  summary.append(summaryIcon, summaryCopy);
+  const body = el('div', 'home-tools-body');
   const actions = el('div', 'update-actions');
-  const importButton = button('教材入出力を開く', 'tool-link');
+  const importButton = button('教材とデータを開く', 'tool-link');
   importButton.onclick = () => navigate({ name: 'import' });
-  const pdfButton = button('PDFプリントを作成する', 'tool-link secondary');
+  const pdfButton = button('PDFプリントを作る', 'tool-link secondary');
   pdfButton.onclick = () => navigate({ name: 'pdfWorksheet' });
   actions.append(importButton, pdfButton);
-  management.append(el('p', 'small-note', '教材パックの追加・更新、バックアップ、PDFプリント作成をここにまとめています。'), actions);
+  body.append(el('p', 'small-note', '教材パック、バックアップ、PDF出力などの補助機能です。'), actions);
+  management.append(summary, body);
+  management.addEventListener('toggle', () => {
+    if (!management.open) return;
+    window.requestAnimationFrame(() => management.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' }));
+  });
   screen.append(management);
 
   const version = button('LoopDeck v0.1.0', 'version-trigger');
