@@ -340,7 +340,7 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
 .quiz-card { border-color: rgba(37, 99, 235, 0.28); }
 .quiz-meta { color: var(--muted); font-weight: 800; font-size: 0.86rem; }
 .question-prompt { font-size: clamp(1.15rem, 4vw, 1.65rem); line-height: 1.45; }
-.answer-area { display: grid; gap: 12px; }
+.answer-area { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .choice-list { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
 .choice-btn {
   padding: 13px;

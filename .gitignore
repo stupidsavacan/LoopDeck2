@@ -7,3 +7,9 @@ android/keystore.properties
 android/app/build/
 *.jks
 *.keystore
+
+dist-single/
+LoopDeck-single.html
+qa-results/
+qa-report/
+qa-report-web/
