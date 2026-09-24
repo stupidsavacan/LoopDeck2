@@ -1,4 +1,4 @@
-import type { Attempt, ModuleInfo, Question, StudySettings } from './models';
+import type { Attempt, ConcreteStudyQuestionMode, ModuleInfo, Question, StudySettings } from './models';
 import { getSupportedStudyQuestionModes, presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
 
 export interface QuizSession {
@@ -9,6 +9,8 @@ export interface QuizSession {
   settings: StudySettings;
   startedAt: number;
   currentStartedAt: number;
+  currentElapsedMs: number;
+  currentHiddenTimeExcludedMs: number;
   mode: 'normal' | 'review';
   attempts: Attempt[];
 }
@@ -98,16 +100,67 @@ export function createSession(module: ModuleInfo, questions: Question[], setting
     presentQuestionForStudy(question, resolveConcreteStudyQuestionMode(question, requestedMode))
   );
   const now = Date.now();
-  return { module, queue, choicePool: [...choicePool], index: 0, settings, startedAt: now, currentStartedAt: now, mode, attempts: [] };
+  return {
+    module,
+    queue,
+    choicePool: [...choicePool],
+    index: 0,
+    settings,
+    startedAt: now,
+    currentStartedAt: now,
+    currentElapsedMs: 0,
+    currentHiddenTimeExcludedMs: 0,
+    mode,
+    attempts: []
+  };
+}
+
+export interface RestoreSessionState {
+  index: number;
+  attempts: Attempt[];
+  startedAt: number;
+  currentElapsedMs: number;
+  currentHiddenTimeExcludedMs: number;
+}
+
+export function restoreSession(
+  module: ModuleInfo,
+  questions: Question[],
+  questionModes: ConcreteStudyQuestionMode[],
+  settings: StudySettings,
+  mode: 'normal' | 'review',
+  state: RestoreSessionState,
+  choicePool: Question[] = questions
+): QuizSession {
+  if (questions.length !== questionModes.length) throw new Error('Stored session question modes do not match the saved queue.');
+  const queue = questions.map((question, index) => presentQuestionForStudy(question, questionModes[index] ?? 'as_stored'));
+  const now = Date.now();
+  return {
+    module,
+    queue,
+    choicePool: [...choicePool],
+    index: Math.max(0, Math.min(state.index, queue.length)),
+    settings,
+    startedAt: state.startedAt,
+    currentStartedAt: now,
+    currentElapsedMs: Math.max(0, state.currentElapsedMs),
+    currentHiddenTimeExcludedMs: Math.max(0, state.currentHiddenTimeExcludedMs),
+    mode,
+    attempts: [...state.attempts]
+  };
 }
 
 export function currentQuestion(session: QuizSession): Question | undefined { return session.queue[session.index]; }
-export function elapsedForCurrent(session: QuizSession): number { return Math.max(0, Date.now() - session.currentStartedAt); }
+export function elapsedForCurrent(session: QuizSession, now = Date.now()): number {
+  return Math.max(0, session.currentElapsedMs + Math.max(0, now - session.currentStartedAt));
+}
 export function advanceSession(session: QuizSession, attempt?: Attempt): QuizSession {
   return {
     ...session,
     index: session.index + 1,
     currentStartedAt: Date.now(),
+    currentElapsedMs: 0,
+    currentHiddenTimeExcludedMs: 0,
     attempts: attempt ? [...session.attempts, attempt] : session.attempts
   };
 }
