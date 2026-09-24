@@ -26,6 +26,34 @@ describe('pack image asset resolution', () => {
     expect(getPackAsset).toHaveBeenCalledWith('new-pack', 'images/map.png');
   });
 
+  it('falls back to the validated local path for built-in images', async () => {
+    const question = imageQuestion('built-in');
+    const view = resolveActivePacks([pack('loopdeck-builtin-v1', question)]);
+    const getPackAsset = vi.fn(async () => undefined);
+    const resolver = createQuestionImageAssetResolver(view, { getPackAsset });
+
+    expect(await resolver(question)).toBe('images/map.png');
+    expect(getPackAsset).toHaveBeenCalledWith('loopdeck-builtin-v1', 'images/map.png');
+  });
+
+  it('uses a single-HTML embedded asset when available for the built-in pack', async () => {
+    const question = imageQuestion('built-in');
+    const view = resolveActivePacks([pack('loopdeck-builtin-v1', question)]);
+    const globalWithAssets = globalThis as typeof globalThis & {
+      __LOOPDECK_EMBEDDED_ASSETS__?: Record<string, string>;
+    };
+    globalWithAssets.__LOOPDECK_EMBEDDED_ASSETS__ = {
+      'images/map.png': 'data:image/png;base64,iVBORw0KGgo='
+    };
+
+    try {
+      const resolver = createQuestionImageAssetResolver(view, { async getPackAsset() { return undefined; } });
+      expect(await resolver(question)).toBe('data:image/png;base64,iVBORw0KGgo=');
+    } finally {
+      delete globalWithAssets.__LOOPDECK_EMBEDDED_ASSETS__;
+    }
+  });
+
   it('keeps image paths when conflicting questions are renamed during merge', () => {
     const existing = pack('shared-pack', imageQuestion('old', 'images/old.png'));
     const incoming = pack('shared-pack', imageQuestion('new', 'images/new.png'));
