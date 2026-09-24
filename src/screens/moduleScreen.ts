@@ -8,6 +8,8 @@ import { buildRangeOptions, createSession, listQuestionCategories, selectSession
 import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
+import { appendIconLabel, createUiIcon, iconNameForModule } from '../ui/icons';
+import { moduleMeta } from './homeScreen';
 import { renderInlineQuiz } from './inlineQuiz';
 
 type ToggleSettingKey = 'shuffle' | 'autoNext' | 'autoRevealAfterIdle' | 'showExample' | 'showNumber' | 'showCategory';
@@ -104,19 +106,23 @@ export async function renderModuleScreen(
 
   clear(root);
   const screen = el('main', 'screen module-screen');
-  const header = el('header', 'topbar');
-  const back = button('← ホーム', 'btn ghost');
+  const header = el('header', 'topbar module-topbar');
+  const back = button('', 'btn ghost');
+  appendIconLabel(back, 'arrowLeft', 'ホーム');
   back.onclick = navigateHome;
-  const navActions = el('div', 'topbar-actions');
-  const review = button('復習センター', 'btn ghost');
+  const review = button('', 'btn ghost');
+  appendIconLabel(review, 'review', '復習');
   review.onclick = navigateReview;
-  const graphs = button('グラフ', 'btn ghost');
-  graphs.onclick = navigateGraphs;
-  navActions.append(review, graphs);
-  header.append(back, navActions);
+  header.append(back, review);
 
-  const info = el('section', 'hero-card');
+  const info = el('section', 'hero-card module-cover');
+  const meta = moduleMeta(module);
+  info.style.setProperty('--module-accent', meta.accent);
+  info.dataset.coverGlyph = module.title.trim().slice(0, 1);
+  const coverIcon = el('div', 'module-cover-icon');
+  coverIcon.append(createUiIcon(iconNameForModule(module), 'module-cover-svg'));
   info.append(
+    coverIcon,
     el('p', 'eyebrow', module.subject),
     el('h1', '', module.title),
     el('p', '', module.description ?? 'インライン学習でテンポよく進めます。')
@@ -243,8 +249,9 @@ export async function renderModuleScreen(
   }
   settingsCard.append(settingRow, el('p', 'hint', '通常はシャッフルONで使います。必要なら問題数や範囲を絞れます。'));
 
-  const actions = el('section', 'card action-card');
-  const start = button('開始', 'btn primary');
+  const actions = el('section', 'card action-card module-secondary-actions');
+  const start = button('', 'v2-start');
+  appendIconLabel(start, 'arrowRight', '学習を始める', 'end');
   const quizMount = el('div', 'quiz-mount');
 
   function rerender(): void {
@@ -277,7 +284,6 @@ export async function renderModuleScreen(
   }
 
   start.onclick = () => startSession(settings, 'normal');
-  actions.append(start);
 
   if (storedSession) {
     const resume = button(`再開 (${storedSession.index + 1}/${storedSession.questionIds.length})`, 'btn');
@@ -301,6 +307,39 @@ export async function renderModuleScreen(
     actions.append(bookmark);
   }
 
-  screen.append(header, info, settingsCard, actions, quizMount);
+  const quick = el('section', 'v2-quick-start');
+  const quickLabel = el('div', 'v2-quick-label');
+  quickLabel.append(el('strong', '', 'Quick Start'), el('span', '', '問題数だけ選んですぐ開始'));
+  const lengths = el('div', 'v2-lengths');
+  const quickValues: Array<[string, string]> = [['10', '10問'], ['20', '20問'], ['50', '50問'], ['all', '全部']];
+  const quickButtons: HTMLButtonElement[] = [];
+  const updateQuickSelection = () => {
+    for (const item of quickButtons) item.classList.toggle('active', item.dataset.value === countField.select.value);
+  };
+  for (const [value, label] of quickValues) {
+    const quickButton = button(label, 'v2-length');
+    quickButton.dataset.value = value;
+    quickButton.onclick = () => {
+      countField.select.value = value;
+      countField.select.dispatchEvent(new Event('change', { bubbles: true }));
+      updateQuickSelection();
+    };
+    quickButtons.push(quickButton);
+    lengths.append(quickButton);
+  }
+  countField.select.addEventListener('change', updateQuickSelection);
+  updateQuickSelection();
+  quick.append(quickLabel, lengths, start);
+
+  const customize = el('details', 'v2-customize');
+  const customizeSummary = el('summary');
+  const customizeTitle = el('span', 'v2-customize-title');
+  customizeTitle.append(createUiIcon('sliders', 'v2-customize-icon'), document.createTextNode('学習条件をカスタマイズ'));
+  customizeSummary.append(customizeTitle);
+  customize.append(customizeSummary, settingsCard);
+
+  screen.append(header, info, quick, customize);
+  if (actions.childElementCount) screen.append(actions);
+  screen.append(quizMount);
   root.append(screen);
 }
