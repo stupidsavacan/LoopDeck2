@@ -780,11 +780,13 @@ body {
 
 .choice-list {
   display: grid !important;
-  grid-template-columns: 1fr !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   gap: 9px !important;
 }
 
 .choice-btn {
+  min-width: 0;
+  overflow-wrap: anywhere;
   min-height: 58px;
   padding: 13px 16px !important;
   border: 1px solid #d8dde5 !important;
@@ -802,6 +804,7 @@ body {
 }
 
 .result-area {
+  overflow-wrap: anywhere;
   max-width: 780px;
   margin-top: 18px;
 }
