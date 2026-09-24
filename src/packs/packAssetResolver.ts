@@ -10,8 +10,6 @@ export interface PackAssetReader {
 export type QuestionImageAssetResolver = (question: Question) => Promise<string | undefined>;
 
 const BUILTIN_PACK_ID = 'loopdeck-builtin-v1';
-const EMBEDDED_ASSET_MAP_KEY = '__LOOPDECK_EMBEDDED_ASSETS__';
-
 type EmbeddedAssetGlobal = typeof globalThis & {
   __LOOPDECK_EMBEDDED_ASSETS__?: Record<string, string>;
 };
@@ -19,7 +17,7 @@ type EmbeddedAssetGlobal = typeof globalThis & {
 let activePackView: ResolvedPackView | undefined;
 
 function resolveEmbeddedAsset(path: string): string | undefined {
-  const value = (globalThis as EmbeddedAssetGlobal)[EMBEDDED_ASSET_MAP_KEY as '__LOOPDECK_EMBEDDED_ASSETS__']?.[path];
+  const value = (globalThis as EmbeddedAssetGlobal).__LOOPDECK_EMBEDDED_ASSETS__?.[path];
   return value && isSafeImageDataUrl(value) ? value : undefined;
 }
 
