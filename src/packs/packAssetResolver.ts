@@ -1,5 +1,6 @@
 import type { Question } from '../core/models';
 import { db, type StoredPackAsset } from '../storage/db';
+import { isSafeImageAssetRef, isSafeImageDataUrl } from './assetSafety';
 import { getQuestionPackId, type ResolvedPackView } from './packResolver';
 
 export interface PackAssetReader {
@@ -8,17 +9,39 @@ export interface PackAssetReader {
 
 export type QuestionImageAssetResolver = (question: Question) => Promise<string | undefined>;
 
+const BUILTIN_PACK_ID = 'loopdeck-builtin-v1';
+type EmbeddedAssetGlobal = typeof globalThis & {
+  __LOOPDECK_EMBEDDED_ASSETS__?: Record<string, string>;
+};
+
 let activePackView: ResolvedPackView | undefined;
+
+function resolveEmbeddedAsset(path: string): string | undefined {
+  const value = (globalThis as EmbeddedAssetGlobal).__LOOPDECK_EMBEDDED_ASSETS__?.[path];
+  return value && isSafeImageDataUrl(value) ? value : undefined;
+}
 
 export function createQuestionImageAssetResolver(
   packView: ResolvedPackView,
   assetReader: PackAssetReader = db
 ): QuestionImageAssetResolver {
   return async (question) => {
-    if (!question.imageAsset) return undefined;
+    const path = question.imageAsset;
+    if (!path || !isSafeImageAssetRef(path)) return undefined;
+
     const packId = getQuestionPackId(packView, question.id);
     if (!packId) return undefined;
-    return (await assetReader.getPackAsset(packId, question.imageAsset))?.dataUrl;
+
+    // Imported/overridden pack assets remain authoritative when present.
+    const stored = await assetReader.getPackAsset(packId, path);
+    if (stored?.dataUrl) return stored.dataUrl;
+
+    if (packId !== BUILTIN_PACK_ID) return undefined;
+
+    // Single-HTML builds expose each built-in image once through a shared map.
+    // Normal web/Android builds keep the validated relative path and let the
+    // browser/WebView load the file from the bundled images directory.
+    return resolveEmbeddedAsset(path) ?? path;
   };
 }
 

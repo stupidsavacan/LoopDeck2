@@ -101,11 +101,14 @@ function renderImageReference(question: Question, resolveImageAsset: QuestionIma
   if (!isSafeImageAssetRef(question.imageAsset)) return fallback(IMAGE_UNSAFE_MESSAGE);
   const mount = el('div', 'question-image-mount');
   mount.append(fallback('画像を読み込んでいます。'));
-  void resolveImageAsset(question).then((dataUrl) => {
-    if (!dataUrl) { mount.replaceChildren(fallback(IMAGE_MISSING_MESSAGE)); return; }
-    if (!isSafeImageDataUrl(dataUrl)) { mount.replaceChildren(fallback(IMAGE_UNSAFE_MESSAGE)); return; }
+  void resolveImageAsset(question).then((resolvedAsset) => {
+    if (!resolvedAsset) { mount.replaceChildren(fallback(IMAGE_MISSING_MESSAGE)); return; }
+    if (!isSafeImageDataUrl(resolvedAsset) && !isSafeImageAssetRef(resolvedAsset)) {
+      mount.replaceChildren(fallback(IMAGE_UNSAFE_MESSAGE));
+      return;
+    }
     const image = el('img', 'question-image') as HTMLImageElement;
-    image.src = dataUrl;
+    image.src = resolvedAsset;
     image.alt = '問題資料画像';
     image.loading = 'lazy';
     image.onerror = () => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE));

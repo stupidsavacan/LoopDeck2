@@ -60,6 +60,31 @@ describe('built-in LoopDeck data', () => {
     expect(buildRangeOptions(leapFinal).map((option) => option.value)).toEqual(['all', '201-225', '226-250', '251-275', '276-300']);
   });
 
+  it('keeps built-in history images as four shared path references', () => {
+    const imageAssets = pack.questions
+      .map((question) => question.imageAsset)
+      .filter((value): value is string => Boolean(value));
+    const counts = imageAssets.reduce<Record<string, number>>((acc, path) => {
+      acc[path] = (acc[path] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    expect(imageAssets).toHaveLength(32);
+    expect(Object.keys(counts).sort()).toEqual([
+      'images/history/graph63.png',
+      'images/history/map62.png',
+      'images/history/map64.png',
+      'images/history/relation63.png'
+    ]);
+    expect(counts).toEqual({
+      'images/history/map62.png': 11,
+      'images/history/graph63.png': 5,
+      'images/history/relation63.png': 6,
+      'images/history/map64.png': 10
+    });
+    expect(imageAssets.every((path) => !path.startsWith('data:'))).toBe(true);
+  });
+
   it('can generate four choices for the LEAP final input dataset', () => {
     const leapFinal = pack.questions.filter((question): question is InputQuestion => question.moduleId === 'leap_final' && question.type === 'input');
     const choices = buildGeneratedChoices(leapFinal[0], leapFinal, 4, () => 0.25);

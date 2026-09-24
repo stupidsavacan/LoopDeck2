@@ -51,6 +51,20 @@ describe('renderInlineQuiz image assets', () => {
     expect(container.querySelector('.image-fallback')).toBeNull();
   });
 
+  it('renders a validated relative built-in image path', async () => {
+    const container = document.createElement('div');
+    renderInlineQuiz(container, session(), { onSessionChange() {}, onComplete() {} }, {
+      resolveImageAsset: async () => 'images/map.png'
+    });
+
+    await settleImageResolution();
+
+    const image = container.querySelector<HTMLImageElement>('img.question-image');
+    expect(image).not.toBeNull();
+    expect(image?.getAttribute('src')).toBe('images/map.png');
+    expect(container.querySelector('.image-fallback')).toBeNull();
+  });
+
   it('renders an image through the active pack resolver and IndexedDB storage', async () => {
     const pack: LoopDeckPack = {
       packVersion: 1,
