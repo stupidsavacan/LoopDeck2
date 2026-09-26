@@ -78,6 +78,9 @@ describe('Review Center scope', () => {
 
     expect(root.textContent).toContain('RECENT QUESTION');
     expect(root.textContent).not.toContain('OLD QUESTION');
+    expect(root.textContent).not.toContain('学習中');
+    expect(root.textContent).toContain('自動の復習日程はSRSだけが決めます');
+    expect(root.textContent).toContain('SRSの次回日程は変更しません');
     expect(root.textContent).toContain('過去教材の復習予定 1問は非表示です。');
 
     const toggle = [...root.querySelectorAll<HTMLButtonElement>('button')]
