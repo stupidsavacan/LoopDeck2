@@ -20,11 +20,14 @@ async function start(page) {
   await expect(page.locator('.question-prompt')).toBeVisible();
 }
 
-test('issue #52: long unbroken choices wrap without horizontal overflow', async ({ page }) => {
-  const pageErrors = [];
-  page.on('pageerror', error => pageErrors.push(error.message));
+for (const [width, height] of [[320, 568], [360, 800]]) {
+  test(`issue #52: long unbroken choices wrap at ${width}x${height}`, async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
 
-  for (const [width, height] of [[320, 568], [360, 800]]) {
     await page.setViewportSize({ width, height });
     await go(page, 'home');
     await seed(page, false);
@@ -37,7 +40,6 @@ test('issue #52: long unbroken choices wrap without horizontal overflow', async 
 
     const choices = page.locator('.choice-btn');
     await expect(choices).toHaveCount(4);
-    const shortChoice = choices.first();
     const longChoice = choices.nth(1);
     await expect(longChoice).toContainText('長い日本語教材名');
     await expect(longChoice).toContainText('ABC');
@@ -90,7 +92,6 @@ test('issue #52: long unbroken choices wrap without horizontal overflow', async 
       scroll: document.documentElement.scrollWidth,
     }));
     expect(resultOverflow.scroll).toBeLessThanOrEqual(resultOverflow.width + 2);
-  }
-
-  expect(pageErrors).toEqual([]);
-});
+    expect(errors).toEqual([]);
+  });
+}
