@@ -118,7 +118,7 @@ function nextLeechLevel(currentCard: ReviewCard, rating: ReviewRating, nextWrong
 }
 
 function isMastered(card: ReviewCard): boolean {
-  return card.correctStreak >= 5 && card.intervalDays >= 30 && card.lapseCount === 0;
+  return card.correctStreak >= 5 && card.intervalDays >= 30;
 }
 
 function reviewLogId(questionId: string, reviewedAt: string): string {
