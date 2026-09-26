@@ -94,6 +94,13 @@ describe('SRS scheduler', () => {
     expect(result.card.state).toBe('mastered');
   });
 
+  it('historical lapses do not permanently block mastery', () => {
+    const result = applyReviewRating(card({ state: 'review', correctStreak: 4, intervalDays: 12, lapseCount: 7 }), 'good', 'correct', 7000, { now });
+
+    expect(result.card.lapseCount).toBe(7);
+    expect(result.card.state).toBe('mastered');
+  });
+
   it('suspended cards are excluded from due queue', () => {
     const dueCard = card({ state: 'review', dueAt: now.toISOString(), intervalDays: 1 });
     const suspended = card({ questionId: 'q2', state: 'suspended', suspended: true, dueAt: now.toISOString(), intervalDays: 1 });
