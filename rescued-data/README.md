@@ -1,33 +1,20 @@
-# StudyHome data rescue for LoopDeck
+# StudyHome rescue archive
 
-This folder contains rescued StudyHome-Next教材データ converted for LoopDeck.
+This directory is **archive/provenance only**. LoopDeck does not load runtime data from `rescued-data/`.
 
-## What changed in this v0.2 rescue
+## Current source of truth
 
-- Reverse-practice modules were removed because normal shuffled study is the intended workflow.
-- Empty `kobun_vocab` was omitted from the usable LoopDeck pack because it had 0 questions.
-- Raw original data is still preserved under `rescued-data/raw/`.
+- Built-in runtime pack: `data/builtin/loopdeck_builtin.loopdeck.json`
+- Built-in runtime images: `public/images/history/`
+- Android packaged web assets: generated from `dist/` into `android/app/src/main/assets/loopdeck/` by Gradle `preBuild`; they are not maintained in Git
 
-## Usable files
+## Archived rescue material
 
-- `rescued-data/loopdeck/StudyHomeNext_normal_only.loopdeck.json`
-- `rescued-data/loopdeck/StudyHomeNext_normal_only.loopdeck.zip`
-- `data/builtin/builtin.json` is the same normal-only rescued pack and is loaded as LoopDeck built-in data.
+- `rescued-data/raw/StudyHomeNext_question_bank.raw.json`: rescued StudyHome-Next question-bank source used during migration
+- `rescued-data/raw/assets/`: rescued original image binaries kept for provenance
+- `rescued-data/loopdeck/by_module/`: per-module conversion outputs kept for audit/history
+- `rescued-data/reports/`: conversion/count reports
 
-## Counts
+The active built-in pack contains 1,112 usable questions. Reverse-practice modules are not part of the active pack, and the empty legacy vocabulary module is not exposed as a normal study module.
 
-| Module | Questions |
-| --- | ---: |
-| 歴史総合 (`history`) | 188 |
-| 地理総合 (`geography`) | 147 |
-| 化学 (`chemistry`) | 176 |
-| 生物 (`biology`) | 79 |
-| 英語コミュニケーション (`english_comm`) | 129 |
-| 英文暗記 (`english`) | 28 |
-| LEAP 001〜200 (`leap`) | 200 |
-| LEAP 201〜300 (`leap_final`) | 100 |
-| 古文・動詞の活用 (`kobun_conjugation`) | 65 |
-
-Total usable questions: **1112**.
-
-Removed reverse modules: `english_reverse, leap_final_reverse, leap_reverse`.
+Do not edit files in this archive to change application behavior. Changes to built-in study content belong in the active runtime pack/assets above, with any provenance update made explicitly when needed.

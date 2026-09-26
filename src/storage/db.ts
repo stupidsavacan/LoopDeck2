@@ -3,7 +3,7 @@ import { takeStagedPackAssets } from '../packs/importedAssetStaging';
 import type { ImportedPackAsset } from '../packs/packTypes';
 
 const DB_NAME = 'loopdeck-db';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 export interface StoredPackAsset extends ImportedPackAsset { assetId: string; }
 
@@ -58,9 +58,9 @@ function openDb(): Promise<IDBDatabase> {
       if (!database.objectStoreNames.contains('bookmarks')) database.createObjectStore('bookmarks', { keyPath: 'questionId' });
       if (!database.objectStoreNames.contains('packs')) database.createObjectStore('packs', { keyPath: 'packId' });
       if (!database.objectStoreNames.contains('packAssets')) database.createObjectStore('packAssets', { keyPath: 'assetId' });
-      if (!database.objectStoreNames.contains('settings')) database.createObjectStore('settings', { keyPath: 'key' });
       if (!database.objectStoreNames.contains('reviewCards')) database.createObjectStore('reviewCards', { keyPath: 'questionId' });
       if (!database.objectStoreNames.contains('reviewLogs')) database.createObjectStore('reviewLogs', { keyPath: 'reviewLogId' });
+      if (database.objectStoreNames.contains('settings')) database.deleteObjectStore('settings');
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);

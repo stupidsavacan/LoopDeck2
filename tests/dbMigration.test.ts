@@ -29,7 +29,7 @@ function completeTransaction(transaction: IDBTransaction): Promise<void> {
 }
 
 describe('IndexedDB migration', () => {
-  it('adds packAssets at v3 without losing legacy learning data', async () => {
+  it('migrates legacy data while removing the obsolete settings store', async () => {
     const legacy = await openLegacyDatabase();
     const transaction = legacy.transaction(['attempts', 'bookmarks', 'packs', 'reviewCards', 'reviewLogs'], 'readwrite');
     transaction.objectStore('attempts').put({
@@ -52,5 +52,13 @@ describe('IndexedDB migration', () => {
     expect((await db.getReviewCards()).map((card) => card.questionId)).toContain('q');
     expect((await db.getReviewLogs()).map((log) => log.reviewLogId)).toContain('legacy-log');
     expect(await db.getImportedPackAssets()).toEqual([]);
+
+    const upgraded = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    expect(upgraded.objectStoreNames.contains('settings')).toBe(false);
+    upgraded.close();
   });
 });
