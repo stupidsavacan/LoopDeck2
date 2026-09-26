@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ReviewCard } from '../src/core/models';
-import { applyReviewRating, buildSrsReviewQueue, clampEase, createReviewCard, inferReviewRating } from '../src/core/scheduler';
+import { applyReviewRating, bucketReviewCards, buildSrsReviewQueue, clampEase, createReviewCard, inferReviewRating } from '../src/core/scheduler';
 
 const now = new Date('2026-06-05T09:00:00.000Z');
 
@@ -54,18 +54,36 @@ describe('SRS scheduler', () => {
     expect(clampEase(9)).toBe(3.0);
   });
 
-  it('totalWrong threshold creates leech', () => {
+  it('historical totalWrong alone does not make leech permanent', () => {
     const result = applyReviewRating(card({ totalWrong: 4 }), 'again', 'wrong', 1000, { now });
 
     expect(result.card.totalWrong).toBe(5);
+    expect(result.card.leechLevel).toBe(1);
+    expect(result.card.state).toBe('relearning');
+  });
+
+  it('recent repeated failures create a recoverable leech state', () => {
+    const result = applyReviewRating(card({ wrongStreak: 2, totalWrong: 2, leechLevel: 2 }), 'again', 'wrong', 1000, { now });
+
+    expect(result.card.wrongStreak).toBe(3);
+    expect(result.card.leechLevel).toBe(3);
     expect(result.card.state).toBe('leech');
   });
 
-  it('wrongStreak threshold creates leech', () => {
-    const result = applyReviewRating(card({ wrongStreak: 2, totalWrong: 2 }), 'again', 'wrong', 1000, { now });
+  it('a correct answer releases a leech even when historical counters stay high', () => {
+    const result = applyReviewRating(card({ state: 'leech', leechLevel: 3, totalWrong: 12, lapseCount: 7, wrongStreak: 3 }), 'good', 'correct', 9000, { now });
 
-    expect(result.card.wrongStreak).toBe(3);
-    expect(result.card.state).toBe('leech');
+    expect(result.card.totalWrong).toBe(12);
+    expect(result.card.lapseCount).toBe(7);
+    expect(result.card.leechLevel).toBe(2);
+    expect(result.card.state).toBe('review');
+  });
+
+  it('treats legacy learning cards as relearning in the due buckets', () => {
+    const legacyLearning = card({ state: 'learning', dueAt: now.toISOString() });
+    const buckets = bucketReviewCards([legacyLearning], now);
+
+    expect(buckets.relearning.map((item) => item.questionId)).toEqual(['q1']);
   });
 
   it('mastered conditions create mastered', () => {
