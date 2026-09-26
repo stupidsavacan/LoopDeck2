@@ -7,49 +7,10 @@ import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
 import { db, type LoopDeckBackup } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
-
-declare global {
-  interface Window {
-    LoopDeckAndroid?: {
-      saveFile(filename: string, mimeType: string, base64Data: string): void;
-      beginSaveFile?(saveId: string, filename: string, mimeType: string, expectedBytes: number, expectedChunks: number): boolean;
-      appendSaveFileChunk?(saveId: string, chunkIndex: number, base64Chunk: string): boolean;
-      finishSaveFile?(saveId: string): boolean;
-      canUseNativeSave?(): boolean;
-      showToast?(message: string): void;
-    };
-  }
-}
-
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      const comma = result.indexOf(',');
-      resolve(comma >= 0 ? result.slice(comma + 1) : result);
-    };
-    reader.onerror = () => reject(reader.error ?? new Error('Failed to read export file.'));
-    reader.readAsDataURL(blob);
-  });
-}
+import { saveBlob } from '../platform/nativeFileSave';
 
 async function downloadBlob(blob: Blob, filename: string): Promise<void> {
-  if (window.LoopDeckAndroid?.saveFile) {
-    window.LoopDeckAndroid.saveFile(filename, blob.type || 'application/octet-stream', await blobToBase64(blob));
-    toast('保存先を選んでください。');
-    return;
-  }
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.style.display = 'none';
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  await saveBlob(blob, filename);
 }
 
 function isBackupPayload(value: unknown): value is LoopDeckBackup {
