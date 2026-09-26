@@ -6,6 +6,7 @@ const MAX_EASE = 3.0;
 const AGAIN_DELAY_MINUTES = 10;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const ESTIMATED_SECONDS_PER_CARD = 20;
+const LEECH_PRESSURE_THRESHOLD = 3;
 
 export interface ApplyReviewOptions {
   now?: Date;
@@ -19,7 +20,6 @@ export interface ReviewScheduleResult {
 
 export interface ReviewBuckets {
   relearning: ReviewCard[];
-  learning: ReviewCard[];
   overdue: ReviewCard[];
   dueToday: ReviewCard[];
   leech: ReviewCard[];
@@ -30,7 +30,6 @@ export interface ReviewScheduleSummary {
   total: number;
   dueToday: number;
   overdue: number;
-  learning: number;
   relearning: number;
   leech: number;
   mastered: number;
@@ -110,8 +109,12 @@ function nextIntervalDays(previousIntervalDays: number, ease: number, rating: Re
   return 0;
 }
 
-function isLeech(card: ReviewCard): boolean {
-  return card.lapseCount >= 3 || card.totalWrong >= 5 || card.wrongStreak >= 3;
+function nextLeechLevel(currentCard: ReviewCard, rating: ReviewRating, nextWrongStreak: number): number {
+  const currentPressure = Math.min(LEECH_PRESSURE_THRESHOLD, Math.max(0, currentCard.leechLevel));
+  if (rating === 'again') {
+    return Math.min(LEECH_PRESSURE_THRESHOLD, Math.max(currentPressure + 1, nextWrongStreak));
+  }
+  return Math.max(0, currentPressure - 1);
 }
 
 function isMastered(card: ReviewCard): boolean {
@@ -160,9 +163,9 @@ export function applyReviewRating(
     next.state = 'review';
   }
 
-  if (isLeech(next)) {
+  next.leechLevel = nextLeechLevel(currentCard, rating, next.wrongStreak);
+  if (rating === 'again' && next.leechLevel >= LEECH_PRESSURE_THRESHOLD) {
     next.state = 'leech';
-    next.leechLevel = Math.max(next.leechLevel, next.lapseCount, Math.floor(next.totalWrong / 2), next.wrongStreak);
   } else if (isMastered(next)) {
     next.state = 'mastered';
   }
@@ -194,7 +197,6 @@ export function applyReviewRating(
 export function bucketReviewCards(cards: ReviewCard[], now = new Date()): ReviewBuckets {
   const buckets: ReviewBuckets = {
     relearning: [],
-    learning: [],
     overdue: [],
     dueToday: [],
     leech: [],
@@ -208,8 +210,7 @@ export function bucketReviewCards(cards: ReviewCard[], now = new Date()): Review
     const due = dueTime(card);
     if (due === undefined || due > todayEnd) continue;
 
-    if (card.state === 'relearning') buckets.relearning.push(card);
-    else if (card.state === 'learning') buckets.learning.push(card);
+    if (card.state === 'relearning' || card.state === 'learning') buckets.relearning.push(card);
     else if (card.state === 'leech') buckets.leech.push(card);
     else if (card.state === 'mastered') buckets.masteredDue.push(card);
     else if (due < todayStart) buckets.overdue.push(card);
@@ -218,7 +219,6 @@ export function bucketReviewCards(cards: ReviewCard[], now = new Date()): Review
 
   const byDue = (a: ReviewCard, b: ReviewCard): number => (dueTime(a) ?? 0) - (dueTime(b) ?? 0);
   buckets.relearning.sort(byDue);
-  buckets.learning.sort(byDue);
   buckets.overdue.sort(byDue);
   buckets.dueToday.sort(byDue);
   buckets.leech.sort((a, b) => b.leechLevel - a.leechLevel || byDue(a, b));
@@ -230,7 +230,6 @@ export function buildSrsReviewQueue(cards: ReviewCard[], now = new Date(), limit
   const buckets = bucketReviewCards(cards, now);
   return [
     ...buckets.relearning,
-    ...buckets.learning,
     ...buckets.overdue,
     ...buckets.dueToday,
     ...buckets.leech,
@@ -241,13 +240,12 @@ export function buildSrsReviewQueue(cards: ReviewCard[], now = new Date(), limit
 export function summarizeReviewSchedule(cards: ReviewCard[], now = new Date()): ReviewScheduleSummary {
   const active = cards.filter((card) => !isSuspended(card));
   const buckets = bucketReviewCards(active, now);
-  const dueToday = buckets.relearning.length + buckets.learning.length + buckets.overdue.length + buckets.dueToday.length + buckets.leech.length + buckets.masteredDue.length;
+  const dueToday = buckets.relearning.length + buckets.overdue.length + buckets.dueToday.length + buckets.leech.length + buckets.masteredDue.length;
   return {
     total: active.length,
     dueToday,
     overdue: buckets.overdue.length,
-    learning: active.filter((card) => card.state === 'learning').length,
-    relearning: active.filter((card) => card.state === 'relearning').length,
+    relearning: active.filter((card) => card.state === 'relearning' || card.state === 'learning').length,
     leech: active.filter((card) => card.state === 'leech').length,
     mastered: active.filter((card) => card.state === 'mastered').length,
     estimatedMinutes: Math.ceil((dueToday * ESTIMATED_SECONDS_PER_CARD) / 60)
