@@ -50,62 +50,6 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
 .hero-copy { max-width: 48rem; padding-right: 0; }
 .hero h1 { margin: 0; font-size: clamp(1.65rem, 7vw, 3rem); letter-spacing: 0; }
 .hero p { margin: 8px 0 0; line-height: 1.7; color: rgba(255, 255, 255, 0.95); }
-.menu-open {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 2;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-size: 1.28rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-.utility-menu[hidden] { display: none; }
-.utility-menu { position: fixed; inset: 0; z-index: 1300; }
-.menu-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.38); }
-.menu-drawer {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: min(86vw, 340px);
-  height: 100%;
-  padding: calc(18px + var(--safe-top)) 14px calc(18px + var(--safe-bottom));
-  background: #fff;
-  box-shadow: -16px 0 38px rgba(15, 23, 42, 0.18);
-}
-.menu-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 1.15rem; }
-.menu-close {
-  width: 42px;
-  height: 42px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  color: #475467;
-  font-size: 1.35rem;
-  cursor: pointer;
-}
-.menu-item {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 10px;
-  padding: 14px;
-  text-align: left;
-  border: 1px solid #bfdbfe;
-  border-radius: 18px;
-  background: #eff6ff;
-  color: #1e3a8a;
-  cursor: pointer;
-}
-.menu-item span { color: #475467; font-size: 0.86rem; line-height: 1.45; }
 
 .toolbar {
   display: grid;
@@ -162,15 +106,6 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   text-align: left;
   cursor: pointer;
 }
-.folder-icon {
-  width: 58px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  border-radius: 20px;
-  background: #eff6ff;
-  font-size: 1.6rem;
-}
 .folder-titlebox h2 { margin: 0; font-size: 1.25rem; }
 .folder-titlebox p { margin: 4px 0 0; color: var(--muted); line-height: 1.55; }
 .folder-tags, .tags, .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -192,7 +127,6 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   color: var(--primary-dark);
   font-weight: 900;
 }
-.folder-chevron { color: var(--muted); font-weight: 900; font-size: 1.1rem; }
 .folder-content { display: none; padding: 0 14px 14px; }
 .folder-content.open, .module-grid {
   display: grid;
@@ -252,7 +186,7 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   line-height: 1.7;
   font-size: 0.93rem;
 }
-.howto, .safe-note {
+.safe-note {
   margin-top: 14px;
   padding: 14px;
   border: 1px solid var(--line);
@@ -260,15 +194,8 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   background: #fff;
   line-height: 1.75;
 }
-.howto summary, .safe-note summary { font-weight: 800; cursor: pointer; }
-.update-box {
-  margin-top: 12px;
-  padding: 12px;
-  border: 1px dashed #bfdbfe;
-  border-radius: 16px;
-  background: #f8fbff;
-}
-.update-actions, .pack-actions, .hero-actions, .topbar, .action-card, .quiz-controls, .setting-row, .stats-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.safe-note summary { font-weight: 800; cursor: pointer; }
+.update-actions, .pack-actions, .topbar, .action-card, .quiz-controls, .setting-row, .stats-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .update-actions { margin: 10px 0; }
 .tool-link {
   display: inline-flex;
@@ -307,7 +234,6 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
 .hero-card p { margin: 0; line-height: 1.65; color: var(--muted); }
 .eyebrow { color: var(--primary-dark); font-size: 0.78rem; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
 .topbar { justify-content: space-between; margin: 0 0 12px; }
-.topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .card h2 { margin: 0 0 12px; font-size: 1.1rem; }
 .stats-row { margin-top: 14px; }
 .stats-row span {
@@ -434,7 +360,6 @@ button { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
   .toolbar { grid-template-columns: 1fr; }
   .filter { height: 46px; }
   .folder-head { grid-template-columns: 48px 1fr auto; }
-  .folder-icon { width: 48px; height: 48px; border-radius: 16px; }
   .folder-count { display: none; }
   .folder-content.open, .module-grid, .choice-list, .graph-grid { grid-template-columns: 1fr; }
   .folder-content.open { padding: 0 10px 12px; }

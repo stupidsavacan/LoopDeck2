@@ -413,7 +413,7 @@ export async function renderImportScreen(
     el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
     infoList([
       'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
-      'signed release APK: Build Android Signed Release APK workflow の LoopDeck-signed-release-apk artifact',
+      'signed release APK: Build Android Signed Release APK workflow が GitHub Releases に公開する LoopDeck2-signed-release-...apk',
       '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
     ])
   );
