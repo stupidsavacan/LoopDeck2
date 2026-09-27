@@ -48,7 +48,7 @@ describe('real image asset regression flows', () => {
 
     const imported = await importLoopDeckZip(await zipFile(value, { 'images/pixel.png': PNG_BASE64 }));
     expect(imported.ok).toBe(true);
-    await db.saveImportedPack(imported.pack!);
+    await db.saveImportedPackWithAssets(imported.pack!, imported.assets ?? [], 'replace');
 
     const storedPack = (await db.getImportedPacks()).find((item) => item.packId === value.packId)!;
     const view = resolveActivePacks([storedPack]);
@@ -68,11 +68,11 @@ describe('real image asset regression flows', () => {
     const target = pack('audit-module-merge-target', 'q-existing', 'images/existing.png');
     const addon = pack('audit-module-merge-addon', 'q-addon', 'images/addon.png');
     await db.deleteImportedPack(target.packId);
-    await db.saveImportedPackWithAssets(target, [asset(target.packId, 'images/existing.png')]);
+    await db.saveImportedPackWithAssets(target, [asset(target.packId, 'images/existing.png')], 'replace');
 
     const imported = await importLoopDeckZip(await zipFile(addon, { 'images/addon.png': PNG_BASE64 }));
     const merged = mergeLoopDeckPacksIntoExisting(target, imported.pack!).pack;
-    await db.saveImportedPack(merged);
+    await db.saveImportedPackWithAssets(merged, imported.assets ?? [], 'upsert');
 
     expect(await db.getPackAsset(target.packId, 'images/existing.png')).toBeDefined();
     expect((await db.getPackAsset(target.packId, 'images/addon.png'))?.dataUrl).toBe(`data:image/png;base64,${PNG_BASE64}`);
@@ -84,7 +84,7 @@ describe('real image asset regression flows', () => {
   it('preserves image assets through user-data backup export and import', async () => {
     const value = pack('audit-image-backup', 'q-backup', 'images/backup.png');
     await db.deleteImportedPack(value.packId);
-    await db.saveImportedPackWithAssets(value, [asset(value.packId, 'images/backup.png')]);
+    await db.saveImportedPackWithAssets(value, [asset(value.packId, 'images/backup.png')], 'replace');
 
     const backup = await db.exportUserData();
     await db.deleteImportedPack(value.packId);
