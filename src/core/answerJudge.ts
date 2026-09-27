@@ -125,9 +125,9 @@ export function levenshtein(left: string, right: string): number {
     current[0] = i + 1;
     for (let j = 0; j < right.length; j += 1) {
       const insertion = current[j] + 1;
-      const deletion = previous[j + 1];
+      const deletion = previous[j + 1] + 1;
       const substitution = previous[j] + (left[i] === right[j] ? 0 : 1);
-      current[j + 1] = Math.min(insertion, deletion + 1, substitution);
+      current[j + 1] = Math.min(insertion, deletion, substitution);
     }
     previous = current;
   }
