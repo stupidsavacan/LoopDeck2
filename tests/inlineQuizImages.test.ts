@@ -80,7 +80,7 @@ describe('renderInlineQuiz image assets', () => {
       path: 'images/map.png',
       mimeType: 'image/png',
       dataUrl: 'data:image/png;base64,iVBORw0KGgo='
-    }]);
+    }], 'replace');
     setActivePackAssetView(resolveActivePacks([pack]));
 
     const container = document.createElement('div');
