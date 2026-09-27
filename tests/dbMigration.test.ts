@@ -33,12 +33,24 @@ describe('IndexedDB migration', () => {
     const legacy = await openLegacyDatabase();
     const transaction = legacy.transaction(['attempts', 'bookmarks', 'packs', 'reviewCards', 'reviewLogs'], 'readwrite');
     transaction.objectStore('attempts').put({
-      attemptId: 'legacy-attempt', questionId: 'q', moduleId: 'm', answeredAt: '2026-01-01T00:00:00.000Z',
-      result: 'wrong', input: 'x', answer: 'y', elapsedMs: 1000, mode: 'normal'
+      attemptId: 'legacy-attempt',
+      questionId: 'q',
+      moduleId: 'm',
+      answeredAt: '2026-01-01T00:00:00.000Z',
+      result: 'wrong',
+      input: 'x',
+      answer: 'y',
+      elapsedMs: 1000,
+      mode: 'normal'
     });
     transaction.objectStore('bookmarks').put({ questionId: 'q', createdAt: '2026-01-01T00:00:00.000Z' });
     transaction.objectStore('packs').put({
-      packVersion: 1, packId: 'legacy-pack', title: 'Legacy', folders: [], modules: [], questions: []
+      packVersion: 1,
+      packId: 'legacy-pack',
+      title: 'Legacy',
+      folders: [],
+      modules: [],
+      questions: []
     });
     transaction.objectStore('reviewCards').put({ questionId: 'q', moduleId: 'm' });
     transaction.objectStore('reviewLogs').put({ reviewLogId: 'legacy-log', questionId: 'q', moduleId: 'm' });

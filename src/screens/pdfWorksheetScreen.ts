@@ -15,7 +15,6 @@ interface WorksheetModuleOption {
   label: string;
 }
 
-
 function makeOption(value: string, label: string): HTMLOptionElement {
   const option = el('option', '', label) as HTMLOptionElement;
   option.value = value;
@@ -23,7 +22,15 @@ function makeOption(value: string, label: string): HTMLOptionElement {
 }
 
 function safeFileStem(value: string): string {
-  return value.normalize('NFKC').replace(/[<>:"/\\|?*\u0000-\u001f]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 80) || 'worksheet';
+  return (
+    value
+      .normalize('NFKC')
+      .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, '-')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 80) || 'worksheet'
+  );
 }
 
 function exportError(code: string, message: string, cause?: unknown): Error {
@@ -158,7 +165,11 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   const statusSummary = el('summary', '', '書き出し状況');
   const statusBody = el('div', 'export-status-body');
   const statusMessage = el('p', 'export-status-message', '待機中');
-  const statusDetail = el('p', 'hint export-status-detail', 'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。');
+  const statusDetail = el(
+    'p',
+    'hint export-status-detail',
+    'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。'
+  );
   const statusLog = el('ol', 'export-status-log');
   statusBody.append(statusMessage, statusDetail, statusLog);
   statusCard.append(statusSummary, statusBody);
@@ -211,7 +222,14 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       const filename = `${safeFileStem(selected.label)}-${safeFileStem(plan.rangeLabel)}.pdf`;
       reportProgress('PDF-S020', '保存処理を開始します', filename);
       await savePdf(pdf, filename, reportProgress);
-      writeDebugLog({ level: 'info', area: 'pdfWorksheet', code: 'PDF-OK', userMessage: 'PDFプリントを書き出しました。', detail: filename, context: { bytes: pdf.size } });
+      writeDebugLog({
+        level: 'info',
+        area: 'pdfWorksheet',
+        code: 'PDF-OK',
+        userMessage: 'PDFプリントを書き出しました。',
+        detail: filename,
+        context: { bytes: pdf.size }
+      });
       toast('PDFプリントを書き出しました。');
     } catch (error) {
       const code = errorCode(error);

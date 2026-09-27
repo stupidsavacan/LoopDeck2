@@ -38,13 +38,20 @@ function writeReviewScope(scope: ReviewScope): void {
 
 function reviewStateLabel(card: ReviewCard): string {
   switch (card.state) {
-    case 'learning': return '再学習';
-    case 'relearning': return '再学習';
-    case 'leech': return '重点復習';
-    case 'mastered': return '習得済み';
-    case 'suspended': return '停止中';
-    case 'new': return '新規';
-    default: return '復習';
+    case 'learning':
+      return '再学習';
+    case 'relearning':
+      return '再学習';
+    case 'leech':
+      return '重点復習';
+    case 'mastered':
+      return '習得済み';
+    case 'suspended':
+      return '停止中';
+    case 'new':
+      return '新規';
+    default:
+      return '復習';
   }
 }
 
@@ -62,18 +69,8 @@ export async function renderReviewCenter(
   const questions = getActiveQuestions(packView);
   const modules = packView.moduleById;
   const scope = readReviewScope();
-  const {
-    questionsById,
-    activeModuleIds,
-    queue,
-    mistakes,
-    analyses,
-    weak,
-    schedule,
-    buckets,
-    srsQueue,
-    hiddenDueCount
-  } = buildReviewCenterModel(attempts, reviewCards, questions, scope);
+  const { questionsById, activeModuleIds, queue, mistakes, analyses, weak, schedule, buckets, srsQueue, hiddenDueCount } =
+    buildReviewCenterModel(attempts, reviewCards, questions, scope);
   const mount = el('div', 'quiz-mount');
 
   clear(root);
@@ -181,13 +178,24 @@ export async function renderReviewCenter(
     rerender();
   };
   srsActions.append(overdue, leech, reset);
-  srsDetails.append(detailedStats, srsActions, el('p', 'hint', '自動の復習日程はSRSだけが決めます。重点復習は直近の失敗が続いたときに入り、正解すると通常の復習へ戻れます。'));
+  srsDetails.append(
+    detailedStats,
+    srsActions,
+    el('p', 'hint', '自動の復習日程はSRSだけが決めます。重点復習は直近の失敗が続いたときに入り、正解すると通常の復習へ戻れます。')
+  );
   srsCard.append(srsDetails);
 
   const weakActionCard = el('section', 'card action-card');
   weakActionCard.append(el('h2', '', scope === 'recent' ? '最近の弱点' : '履歴から見つけた弱点'));
   const startWeak = button('弱点を復習する', 'btn primary');
-  startWeak.onclick = () => startReviewSession(queue.map((item) => item.question), '弱点復習', 'history-weak-queue', 20, true);
+  startWeak.onclick = () =>
+    startReviewSession(
+      queue.map((item) => item.question),
+      '弱点復習',
+      'history-weak-queue',
+      20,
+      true
+    );
   weakActionCard.append(
     startWeak,
     el(
@@ -203,7 +211,12 @@ export async function renderReviewCenter(
   weakDetails.append(el('summary', '', '回答履歴の管理'));
   const clearWrong = button('ミス履歴だけ消す', 'btn ghost danger');
   clearWrong.onclick = async () => {
-    if (!window.confirm('不正解・答え表示の回答履歴だけ削除します。SRSの次回予定・状態は別データなので残り、「今日の復習」に同じ問題が残ることがあります。')) return;
+    if (
+      !window.confirm(
+        '不正解・答え表示の回答履歴だけ削除します。SRSの次回予定・状態は別データなので残り、「今日の復習」に同じ問題が残ることがあります。'
+      )
+    )
+      return;
     await db.clearWrongAttempts();
     toast('ミス履歴を削除しました。SRSの復習予定は変更していません。');
     rerender();
@@ -227,14 +240,21 @@ export async function renderReviewCenter(
       el('small', '', `${modules.get(card.moduleId)?.title ?? card.moduleId} / ${reviewStateLabel(card)} / 間隔 ${card.intervalDays}日`)
     );
     const one = button('この問題を復習', 'btn');
-    one.onclick = () => startReviewSession([question], modules.get(card.moduleId)?.title ?? '問題別復習', `srs-${card.questionId}`, 1, false);
+    one.onclick = () =>
+      startReviewSession([question], modules.get(card.moduleId)?.title ?? '問題別復習', `srs-${card.questionId}`, 1, false);
     row.append(meta, one);
     srsList.append(row);
   }
   if (!srsList.childElementCount) {
-    srsList.append(el('p', 'empty', scope === 'recent'
-      ? `最近${DEFAULT_REVIEW_LOOKBACK_DAYS}日に解いた問題には、今日の復習予定がありません。`
-      : '今日の復習予定はありません。'));
+    srsList.append(
+      el(
+        'p',
+        'empty',
+        scope === 'recent'
+          ? `最近${DEFAULT_REVIEW_LOOKBACK_DAYS}日に解いた問題には、今日の復習予定がありません。`
+          : '今日の復習予定はありません。'
+      )
+    );
   }
   if (srsQueue.length > 3) srsList.append(el('p', 'hint', `ほか ${srsQueue.length - 3}問。開始すると順番に出題します。`));
   srsListCard.append(srsList);
@@ -250,7 +270,14 @@ export async function renderReviewCenter(
       el('small', '', `${modules.get(item.question.moduleId)?.title ?? item.question.moduleId} / ${item.label}`)
     );
     const one = button('この問題から復習', 'btn');
-    one.onclick = () => startReviewSession([item.question], modules.get(item.question.moduleId)?.title ?? '問題別復習', `review-${item.question.id}`, 1, false);
+    one.onclick = () =>
+      startReviewSession(
+        [item.question],
+        modules.get(item.question.moduleId)?.title ?? '問題別復習',
+        `review-${item.question.id}`,
+        1,
+        false
+      );
     row.append(meta, one);
     queueList.append(row);
   }
@@ -268,7 +295,9 @@ export async function renderReviewCenter(
   const weakSection = el('section', 'review-subsection');
   weakSection.append(el('h3', '', 'ミスが多い教材'));
   const weakList = el('div', 'weak-list');
-  const rows = Object.entries(weak).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const rows = Object.entries(weak)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
   for (const [currentModuleId, count] of rows) {
     const module = modules.get(currentModuleId);
     const moduleMistakes = mistakes.filter((question) => question.moduleId === currentModuleId);
@@ -295,7 +324,11 @@ export async function renderReviewCenter(
     for (const tag of item.mistakeTags.slice(0, 3)) tags.append(el('span', 'tag', tag));
     meta.append(
       el('span', '', item.question.prompt),
-      el('small', '', `${module?.title ?? item.question.moduleId} / 正答率 ${percent(item.accuracy)} / 平均 ${seconds(item.averageElapsedMs)}`),
+      el(
+        'small',
+        '',
+        `${module?.title ?? item.question.moduleId} / 正答率 ${percent(item.accuracy)} / 平均 ${seconds(item.averageElapsedMs)}`
+      ),
       tags
     );
     row.append(meta);

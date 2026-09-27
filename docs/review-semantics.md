@@ -10,13 +10,13 @@ SRS owns automatic scheduling. It decides `dueAt`, interval, ease, and the state
 
 Normal runtime states are:
 
-| State | Meaning | Normal entry | Normal exit |
-| --- | --- | --- | --- |
-| `new` | no scheduled review yet | card creation | first rated answer -> `review` or `relearning` |
-| `review` | scheduled normal review | correct answer | correct stays `review`; repeated recent failures can enter `leech` |
-| `relearning` | retry after a failed answer | `again` | correct -> `review`; repeated recent failures can enter `leech` |
-| `leech` | recent failure pressure is high; needs focused review | recent repeated `again` ratings | a correct answer -> `review` |
-| `mastered` | long correct streak with a long interval | stable correct answers | failure -> `relearning` |
+| State        | Meaning                                               | Normal entry                    | Normal exit                                                        |
+| ------------ | ----------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------ |
+| `new`        | no scheduled review yet                               | card creation                   | first rated answer -> `review` or `relearning`                     |
+| `review`     | scheduled normal review                               | correct answer                  | correct stays `review`; repeated recent failures can enter `leech` |
+| `relearning` | retry after a failed answer                           | `again`                         | correct -> `review`; repeated recent failures can enter `leech`    |
+| `leech`      | recent failure pressure is high; needs focused review | recent repeated `again` ratings | a correct answer -> `review`                                       |
+| `mastered`   | long correct streak with a long interval              | stable correct answers          | failure -> `relearning`                                            |
 
 `leechLevel` is a bounded recent-failure pressure signal. Historical `totalWrong` and `lapseCount` remain analytics counters; they do not permanently force `leech` or permanently prevent `mastered`.
 

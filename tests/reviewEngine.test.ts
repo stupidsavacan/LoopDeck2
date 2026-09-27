@@ -1,13 +1,78 @@
 import { describe, expect, it } from 'vitest';
-import { aggregateReviewAttempts, analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
+import {
+  aggregateReviewAttempts,
+  analyzeProblems,
+  buildMistakeQuestions,
+  buildReviewQueue,
+  filterRecentAttempts,
+  getWrongQuestionIds,
+  scoreAttemptDelta,
+  summarizeWeakModules
+} from '../src/core/reviewEngine';
 import type { Attempt, Question } from '../src/core/models';
 
 const attempts: Attempt[] = [
-  { attemptId: 'a1', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-02T00:00:00.000Z', result: 'wrong', input: 'x', answer: 'a', elapsedMs: 100, mode: 'normal', answerMode: 'input' },
-  { attemptId: 'a2', questionId: 'q2', moduleId: 'm1', answeredAt: '2026-06-02T00:01:00.000Z', result: 'correct', input: 'b', answer: 'b', elapsedMs: 100, mode: 'normal', answerMode: 'input' },
-  { attemptId: 'a3', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-02T00:02:00.000Z', result: 'revealed', input: '', answer: 'c', elapsedMs: 100, mode: 'review', answerMode: 'choice' },
-  { attemptId: 'a4', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-02T00:03:00.000Z', result: 'wrong', input: 'x', answer: 'a', elapsedMs: 500, mode: 'review', answerMode: 'input' },
-  { attemptId: 'a5', questionId: 'q4', moduleId: 'm2', answeredAt: '2026-06-02T00:04:00.000Z', result: 'wrong', input: 'appl', answer: 'apple', elapsedMs: 5000, mode: 'normal', nearMiss: true, answerMode: 'input' }
+  {
+    attemptId: 'a1',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:00:00.000Z',
+    result: 'wrong',
+    input: 'x',
+    answer: 'a',
+    elapsedMs: 100,
+    mode: 'normal',
+    answerMode: 'input'
+  },
+  {
+    attemptId: 'a2',
+    questionId: 'q2',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:01:00.000Z',
+    result: 'correct',
+    input: 'b',
+    answer: 'b',
+    elapsedMs: 100,
+    mode: 'normal',
+    answerMode: 'input'
+  },
+  {
+    attemptId: 'a3',
+    questionId: 'q3',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:02:00.000Z',
+    result: 'revealed',
+    input: '',
+    answer: 'c',
+    elapsedMs: 100,
+    mode: 'review',
+    answerMode: 'choice'
+  },
+  {
+    attemptId: 'a4',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:03:00.000Z',
+    result: 'wrong',
+    input: 'x',
+    answer: 'a',
+    elapsedMs: 500,
+    mode: 'review',
+    answerMode: 'input'
+  },
+  {
+    attemptId: 'a5',
+    questionId: 'q4',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:04:00.000Z',
+    result: 'wrong',
+    input: 'appl',
+    answer: 'apple',
+    elapsedMs: 5000,
+    mode: 'normal',
+    nearMiss: true,
+    answerMode: 'input'
+  }
 ];
 
 const questions: Question[] = [

@@ -71,8 +71,12 @@ describe('wrong answer explanation lookup', () => {
   });
 
   it('finds acceptable and accepted answers from other questions', () => {
-    expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, [current, otherModule])?.matchedQuestionId).toBe('q-geography');
-    expect(buildWrongAnswerExplanation('input', '\u8449\u7dd1\u4f53', current, [current, otherSameModule])?.explanation).toContain('\u5149\u5408\u6210');
+    expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, [current, otherModule])?.matchedQuestionId).toBe(
+      'q-geography'
+    );
+    expect(buildWrongAnswerExplanation('input', '\u8449\u7dd1\u4f53', current, [current, otherSameModule])?.explanation).toContain(
+      '\u5149\u5408\u6210'
+    );
   });
 
   it('reuses a prebuilt answer index while preserving same-module priority', () => {

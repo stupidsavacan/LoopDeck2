@@ -2,8 +2,39 @@ import type { AnswerJudgingRule, ChoiceQuestion, InputQuestion, MultiSelectQuest
 
 const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
 const EDGE_CHARS = new Set([
-  ' ', '\t', '\n', '\r', '"', "'", '`', '「', '」', '『', '』', '（', '）', '(', ')', '【', '】', '[', ']',
-  '。', '．', '.', '!', '！', '?', '？', ',', '，', '、', ':', '：', ';', '；'
+  ' ',
+  '\t',
+  '\n',
+  '\r',
+  '"',
+  "'",
+  '`',
+  '「',
+  '」',
+  '『',
+  '』',
+  '（',
+  '）',
+  '(',
+  ')',
+  '【',
+  '】',
+  '[',
+  ']',
+  '。',
+  '．',
+  '.',
+  '!',
+  '！',
+  '?',
+  '？',
+  ',',
+  '，',
+  '、',
+  ':',
+  '：',
+  ';',
+  '；'
 ]);
 const JAPANESE_PREFIXES = ['答えは', '答えが', '答え', '正解は', '正解が', '回答は', '回答が'];
 const JAPANESE_SUFFIXES = ['です', 'である', 'だ'];
@@ -62,13 +93,13 @@ function isAcceptableJapaneseExpansion(input: string, target: string): boolean {
   if (!JAPANESE_TEXT.test(target) || target.length < 2 || input.length <= target.length) return false;
   const prefixes = ['', '答えは', '答えが', '正解は', '正解が', '回答は', '回答が'];
   const suffixes = ['', 'です', 'だ', 'である'];
-  return prefixes.some((prefix) =>
-    suffixes.some((suffix) => (prefix || suffix) && input === `${prefix}${target}${suffix}`)
-  );
+  return prefixes.some((prefix) => suffixes.some((suffix) => (prefix || suffix) && input === `${prefix}${target}${suffix}`));
 }
 
 function removePunctuation(value: string): string {
-  return Array.from(value).filter((char) => !EDGE_CHARS.has(char)).join('');
+  return Array.from(value)
+    .filter((char) => !EDGE_CHARS.has(char))
+    .join('');
 }
 
 function normalizeForRule(value: string, rule: AnswerJudgingRule = {}): string {
@@ -84,9 +115,7 @@ function normalizeForRule(value: string, rule: AnswerJudgingRule = {}): string {
 export const normalizeAnswer = normalize;
 
 export function getAcceptedAnswers(question: InputQuestion | ChoiceQuestion): string[] {
-  const base = question.acceptedAnswers?.length
-    ? question.acceptedAnswers
-    : [question.answer, ...(question.acceptableAnswers ?? [])];
+  const base = question.acceptedAnswers?.length ? question.acceptedAnswers : [question.answer, ...(question.acceptableAnswers ?? [])];
   const result: string[] = [];
   const seen = new Set<string>();
 

@@ -96,11 +96,7 @@ export function isJapaneseToEnglishWorksheetQuestion(question: Question): boolea
   return Boolean(createWorksheetRow(question, 0));
 }
 
-export function createJapaneseToEnglishWorksheetPlan(
-  module: ModuleInfo,
-  questions: Question[],
-  includeAnswerKey: boolean
-): WorksheetPlan {
+export function createJapaneseToEnglishWorksheetPlan(module: ModuleInfo, questions: Question[], includeAnswerKey: boolean): WorksheetPlan {
   const rows: WorksheetRow[] = [];
   for (const question of questions) {
     const row = createWorksheetRow(question, rows.length);

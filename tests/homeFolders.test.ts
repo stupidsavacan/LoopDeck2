@@ -29,16 +29,36 @@ function pack(overrides: Partial<LoopDeckPack>): LoopDeckPack {
 describe('Home folder grouping', () => {
   const history = module({ id: 'history', folderId: 'term1_midterm', title: '歴史総合', subject: '社会' });
   const leapFinal = module({ id: 'leap_final', folderId: 'term1_final', title: 'LEAP 201〜300', subject: '英語' });
-  const finalChemistry = module({ id: 'term1_final_chemistry', folderId: 'term1_final', title: '化学 期末', subject: '理科', tags: ['化学', '期末'] });
-  const term2Chemistry = module({ id: 'term2_midterm_chemistry', folderId: 'term2_midterm', title: '化学 2学期中間', subject: '理科', tags: ['化学', '2学期中間'] });
+  const finalChemistry = module({
+    id: 'term1_final_chemistry',
+    folderId: 'term1_final',
+    title: '化学 期末',
+    subject: '理科',
+    tags: ['化学', '期末']
+  });
+  const term2Chemistry = module({
+    id: 'term2_midterm_chemistry',
+    folderId: 'term2_midterm',
+    title: '化学 2学期中間',
+    subject: '理科',
+    tags: ['化学', '2学期中間']
+  });
   const unknownFolder = module({ id: 'mystery_math', folderId: 'unknown_folder', title: '数学 追加', subject: '数学' });
   const emptyFolder = module({ id: 'empty_folder_module', folderId: '', title: '空フォルダ教材', subject: '追加' });
-  const missingFolder = { id: 'missing_folder_module', title: 'フォルダ未設定教材', subject: '追加', questionIds: ['missing-q1'] } as ModuleInfo;
+  const missingFolder = {
+    id: 'missing_folder_module',
+    title: 'フォルダ未設定教材',
+    subject: '追加',
+    questionIds: ['missing-q1']
+  } as ModuleInfo;
 
   const packs = [
     pack({
       packId: 'loopdeck-builtin-v1',
-      folders: [{ id: 'term1_midterm', title: '一学期中間テスト', description: '中間' }, { id: 'term1_final', title: '一学期期末テスト', description: '期末' }],
+      folders: [
+        { id: 'term1_midterm', title: '一学期中間テスト', description: '中間' },
+        { id: 'term1_final', title: '一学期期末テスト', description: '期末' }
+      ],
       modules: [history, leapFinal]
     }),
     pack({

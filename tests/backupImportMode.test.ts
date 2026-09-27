@@ -43,7 +43,12 @@ describe('backup import UI semantics', () => {
     const importUserData = vi.spyOn(db, 'importUserData').mockResolvedValue();
     const root = document.createElement('div');
     document.body.append(root);
-    await renderImportScreen(root, resolveActivePacks([]), () => {}, async () => {});
+    await renderImportScreen(
+      root,
+      resolveActivePacks([]),
+      () => {},
+      async () => {}
+    );
 
     const input = root.querySelector<HTMLInputElement>('input[type="file"]')!;
     const file = new File([JSON.stringify(backup)], 'backup.json', { type: 'application/json' });

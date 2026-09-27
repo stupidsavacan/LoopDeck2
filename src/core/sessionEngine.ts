@@ -19,8 +19,14 @@ export interface QuizSession {
   attempts: Attempt[];
 }
 
-export interface StudyRangeOption { value: string; label: string; }
-export interface StudySelectionContext { wrongQuestionIds?: Iterable<string>; bookmarkedQuestionIds?: Iterable<string>; }
+export interface StudyRangeOption {
+  value: string;
+  label: string;
+}
+export interface StudySelectionContext {
+  wrongQuestionIds?: Iterable<string>;
+  bookmarkedQuestionIds?: Iterable<string>;
+}
 
 function shuffle<T>(items: T[]): T[] {
   const copied = [...items];
@@ -31,7 +37,9 @@ function shuffle<T>(items: T[]): T[] {
   return copied;
 }
 
-function idSet(values?: Iterable<string>): Set<string> | undefined { return values ? new Set(values) : undefined; }
+function idSet(values?: Iterable<string>): Set<string> | undefined {
+  return values ? new Set(values) : undefined;
+}
 function questionOrdinal(question: Question, index: number): number {
   return typeof question.number === 'number' && Number.isFinite(question.number) && question.number > 0 ? question.number : index + 1;
 }
@@ -98,7 +106,13 @@ export function selectSessionQuestions(questions: Question[], settings: StudySet
   return settings.questionLimit === 'all' ? ordered : ordered.slice(0, settings.questionLimit);
 }
 
-export function createSession(module: ModuleInfo, questions: Question[], settings: StudySettings, mode: 'normal' | 'review' = 'normal', choicePool: Question[] = questions): QuizSession {
+export function createSession(
+  module: ModuleInfo,
+  questions: Question[],
+  settings: StudySettings,
+  mode: 'normal' | 'review' = 'normal',
+  choicePool: Question[] = questions
+): QuizSession {
   const requestedMode = settings.questionMode ?? 'as_stored';
   const queue = selectSessionQuestions(questions, settings).map((question) =>
     presentQuestionForStudy(question, resolveConcreteStudyQuestionMode(question, requestedMode))
@@ -123,7 +137,9 @@ export function createSession(module: ModuleInfo, questions: Question[], setting
   };
 }
 
-export function currentQuestion(session: QuizSession): Question | undefined { return session.queue[session.index]; }
+export function currentQuestion(session: QuizSession): Question | undefined {
+  return session.queue[session.index];
+}
 export function elapsedForCurrent(session: QuizSession, excludedMs = 0): number {
   return session.currentElapsedMs + Math.max(0, Date.now() - session.currentStartedAt - Math.max(0, excludedMs));
 }
@@ -137,4 +153,6 @@ export function advanceSession(session: QuizSession, attempt?: Attempt): QuizSes
     attempts: attempt ? [...session.attempts, attempt] : session.attempts
   };
 }
-export function isSessionComplete(session: QuizSession): boolean { return session.index >= session.queue.length; }
+export function isSessionComplete(session: QuizSession): boolean {
+  return session.index >= session.queue.length;
+}

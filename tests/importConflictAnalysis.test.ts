@@ -4,7 +4,9 @@ import { analyzeImportConflicts } from '../src/packs/importConflictAnalysis';
 
 function pack(packId: string, moduleId: string, questionId: string): LoopDeckPack {
   return {
-    packVersion: 1, packId, title: packId,
+    packVersion: 1,
+    packId,
+    title: packId,
     folders: [{ id: 'f', title: 'Folder' }],
     modules: [{ id: moduleId, folderId: 'f', title: moduleId, subject: 'test', questionIds: [questionId] }],
     questions: [{ id: questionId, moduleId, type: 'input', prompt: questionId, answer: 'a' }]

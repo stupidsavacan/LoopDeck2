@@ -142,8 +142,17 @@ export async function renderImportScreen(
     uploadCard.classList.toggle('loading', value);
   }
 
-  async function importBackupFromUi(backup: LoopDeckBackup, mode: BackupImportMode, replaceButton: HTMLButtonElement, mergeButton: HTMLButtonElement): Promise<void> {
-    if (mode === 'replace' && !window.confirm('現在の回答履歴・ブックマーク・インポート教材・SRS復習データを、このバックアップの内容で置き換えます。続けますか？')) return;
+  async function importBackupFromUi(
+    backup: LoopDeckBackup,
+    mode: BackupImportMode,
+    replaceButton: HTMLButtonElement,
+    mergeButton: HTMLButtonElement
+  ): Promise<void> {
+    if (
+      mode === 'replace' &&
+      !window.confirm('現在の回答履歴・ブックマーク・インポート教材・SRS復習データを、このバックアップの内容で置き換えます。続けますか？')
+    )
+      return;
     replaceButton.disabled = true;
     mergeButton.disabled = true;
     try {
@@ -171,8 +180,16 @@ export async function renderImportScreen(
     clear(preview);
     preview.append(
       el('h2', '', 'バックアップを読み込む'),
-      el('p', 'import-summary', `書き出し日時: ${backup.exportedAt} / 回答${backup.attempts.length}件 / ブックマーク${backup.bookmarks.length}件 / 教材${backup.importedPacks.length}件`),
-      el('p', 'hint', '「置き換え復元」は現在の学習データを消してバックアップの状態に合わせます。「マージ」は現在データを残し、バックアップ内の同じIDだけ上書きします。')
+      el(
+        'p',
+        'import-summary',
+        `書き出し日時: ${backup.exportedAt} / 回答${backup.attempts.length}件 / ブックマーク${backup.bookmarks.length}件 / 教材${backup.importedPacks.length}件`
+      ),
+      el(
+        'p',
+        'hint',
+        '「置き換え復元」は現在の学習データを消してバックアップの状態に合わせます。「マージ」は現在データを残し、バックアップ内の同じIDだけ上書きします。'
+      )
     );
     const replace = button('現在データを置き換えて復元', 'btn ghost danger');
     const merge = button('現在データにマージ', 'btn primary');
@@ -236,24 +253,47 @@ export async function renderImportScreen(
             preview.append(el('p', 'issue warning', '同じIDのパックがあります。取り込み後は新しく取り込んだ教材が優先されます。'));
           }
           if (duplicateModuleIds.length) {
-            preview.append(el('p', 'issue warning', `同じIDの教材があります: ${summarizeIds(duplicateModuleIds)}。通常取り込みでは上書き扱いになるため、必要なら教材マージ更新を選んでください。`));
+            preview.append(
+              el(
+                'p',
+                'issue warning',
+                `同じIDの教材があります: ${summarizeIds(duplicateModuleIds)}。通常取り込みでは上書き扱いになるため、必要なら教材マージ更新を選んでください。`
+              )
+            );
           }
           if (moduleMergeTarget) {
             const previewMerge = mergeLoopDeckPacksIntoExisting(moduleMergeTarget, pack);
             const sharedIds = sharedModuleIds(moduleMergeTarget, pack);
-            preview.append(el('p', 'issue warning', `教材マージ更新できます。対象: ${moduleMergeTarget.title} / 教材ID: ${summarizeIds(sharedIds)}`));
+            preview.append(
+              el('p', 'issue warning', `教材マージ更新できます。対象: ${moduleMergeTarget.title} / 教材ID: ${summarizeIds(sharedIds)}`)
+            );
             appendMergeReport(preview, previewMerge.report);
           }
           if (duplicateQuestionIds.length) {
-            preview.append(el('p', 'issue warning', `同じIDの問題があります。マージ時は同一内容ならスキップ、内容違いならID変更して追加します: ${summarizeIds(duplicateQuestionIds)}`));
+            preview.append(
+              el(
+                'p',
+                'issue warning',
+                `同じIDの問題があります。マージ時は同一内容ならスキップ、内容違いならID変更して追加します: ${summarizeIds(duplicateQuestionIds)}`
+              )
+            );
           }
         }
 
         if (directIdentityIssues.length) {
-          preview.append(el('p', 'issue error', `別パックとしては取り込めません: ${directIdentityIssues.map((issue) => issue.message).join(' / ')}`));
+          preview.append(
+            el('p', 'issue error', `別パックとしては取り込めません: ${directIdentityIssues.map((issue) => issue.message).join(' / ')}`)
+          );
         }
 
-        const install = button(duplicateImportedPackId ? '上書き更新する' : duplicateModuleIds.length ? '別パックとして取り込む（上書き注意）' : 'この教材を取り込む', duplicateModuleIds.length ? 'btn ghost danger' : 'btn primary');
+        const install = button(
+          duplicateImportedPackId
+            ? '上書き更新する'
+            : duplicateModuleIds.length
+              ? '別パックとして取り込む（上書き注意）'
+              : 'この教材を取り込む',
+          duplicateModuleIds.length ? 'btn ghost danger' : 'btn primary'
+        );
         install.disabled = directIdentityIssues.length > 0;
         install.onclick = async () => {
           const latestActive = getActivePacks(packView);
@@ -286,7 +326,9 @@ export async function renderImportScreen(
               return;
             }
             await db.saveImportedPackWithAssets(mergedPack, assets, 'upsert');
-            toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
+            toast(
+              `教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`
+            );
             await onImported();
           };
           preview.append(mergeInstall);
@@ -296,7 +338,8 @@ export async function renderImportScreen(
           const moduleMergeInstall = button('教材マージ更新する', 'btn primary');
           moduleMergeInstall.onclick = async () => {
             const currentImportedPacks = await db.getImportedPacks();
-            const currentTarget = currentImportedPacks.find((importedPack) => importedPack.packId === moduleMergeTarget.packId) ?? moduleMergeTarget;
+            const currentTarget =
+              currentImportedPacks.find((importedPack) => importedPack.packId === moduleMergeTarget.packId) ?? moduleMergeTarget;
             const { pack: mergedPack, report } = mergeLoopDeckPacksIntoExisting(currentTarget, pack);
             const identityIssues = validateActivePackIdentities([...activePacks, mergedPack]).filter((issue) => issue.level === 'error');
             if (identityIssues.length) {
@@ -304,7 +347,9 @@ export async function renderImportScreen(
               return;
             }
             await db.saveImportedPackWithAssets(mergedPack, assets, 'upsert');
-            toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
+            toast(
+              `教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`
+            );
             await onImported();
           };
           preview.append(moduleMergeInstall);
@@ -346,7 +391,10 @@ export async function renderImportScreen(
   for (const pack of activePacks) {
     const row = el('div', 'weak-row pack-row');
     const meta = el('div', 'pack-meta');
-    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
+    meta.append(
+      el('span', '', pack.title),
+      el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`)
+    );
 
     const actions = el('div', 'pack-actions');
     const json = button('JSON', 'btn');
@@ -406,13 +454,15 @@ export async function renderImportScreen(
   );
 
   const apkCard = el('details', 'card v2-dev-zone');
-  apkCard.append(
-    el('summary', '', '開発者向け · APKビルド')
-  );
+  apkCard.append(el('summary', '', '開発者向け · APKビルド'));
   const apkBody = el('div', 'v2-dev-body');
   apkBody.append(
     el('h2', '', 'APK書き出し'),
-    el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
+    el(
+      'p',
+      'hint',
+      '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'
+    ),
     infoList([
       'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
       'signed release APK: Build Android Signed Release APK workflow が GitHub Releases に公開する LoopDeck2-signed-release-...apk',

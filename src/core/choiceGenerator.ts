@@ -50,7 +50,7 @@ export function getManualChoiceCandidates(question: Question): string[] | undefi
   const mode = question.activeStudyMode;
   const manual =
     mode === 'front_to_back' || mode === 'back_to_front'
-      ? question.sideChoiceCandidates?.[mode] ?? question.choiceCandidates
+      ? (question.sideChoiceCandidates?.[mode] ?? question.choiceCandidates)
       : question.choiceCandidates;
   if (!manual || manual.mode !== 'manual') return undefined;
 

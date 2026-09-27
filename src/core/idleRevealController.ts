@@ -44,19 +44,24 @@ export function createIdleRevealController(options: IdleRevealControllerOptions)
     clearTimer();
     if (disposed || !visible || composing || !options.isEligible()) return;
     lastTickAt = now();
-    timer = window.setTimeout(() => {
-      timer = undefined;
-      if (disposed || !visible || composing || !options.isEligible()) return;
-      const elapsed = Math.max(0, now() - lastTickAt);
-      if (elapsed <= suspendGapMs) remainingMs = Math.max(0, remainingMs - elapsed);
-      else options.onSuspend?.(elapsed);
-      if (remainingMs === 0) options.onReveal();
-      else schedule();
-    }, Math.min(tickMs, remainingMs));
+    timer = window.setTimeout(
+      () => {
+        timer = undefined;
+        if (disposed || !visible || composing || !options.isEligible()) return;
+        const elapsed = Math.max(0, now() - lastTickAt);
+        if (elapsed <= suspendGapMs) remainingMs = Math.max(0, remainingMs - elapsed);
+        else options.onSuspend?.(elapsed);
+        if (remainingMs === 0) options.onReveal();
+        else schedule();
+      },
+      Math.min(tickMs, remainingMs)
+    );
   };
 
   return {
-    start() { schedule(); },
+    start() {
+      schedule();
+    },
     reset() {
       if (disposed || !options.isEligible()) return;
       remainingMs = options.timeoutMs;

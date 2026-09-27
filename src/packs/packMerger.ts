@@ -153,11 +153,13 @@ function emptyMergeReport(): MergePackReport {
   };
 }
 
-
 function validatedMergeResult(pack: LoopDeckPack, report: MergePackReport): MergePackResult {
   const validation = validatePack(pack);
   if (!validation.ok) {
-    const detail = validation.issues.filter((issue) => issue.level === 'error').map((issue) => issue.message).join('; ');
+    const detail = validation.issues
+      .filter((issue) => issue.level === 'error')
+      .map((issue) => issue.message)
+      .join('; ');
     throw new Error(`Merged pack is invalid: ${detail}`);
   }
   return { pack, report };
@@ -186,9 +188,12 @@ export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: Loo
     throw new Error(`Cannot merge different packIds: ${existingPack.packId} !== ${incomingPack.packId}`);
   }
 
-  return mergeLoopDeckPacksIntoExisting({
-    ...existingPack,
-    title: incomingPack.title,
-    description: incomingPack.description !== undefined ? incomingPack.description : existingPack.description
-  }, incomingPack);
+  return mergeLoopDeckPacksIntoExisting(
+    {
+      ...existingPack,
+      title: incomingPack.title,
+      description: incomingPack.description !== undefined ? incomingPack.description : existingPack.description
+    },
+    incomingPack
+  );
 }

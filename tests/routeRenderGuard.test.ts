@@ -71,7 +71,13 @@ describe('route render ownership', () => {
     const root = document.createElement('div');
     root.textContent = 'newer route';
     let current = true;
-    const pending = renderGraphsScreen(root, resolveActivePacks([]), () => {}, () => {}, () => current);
+    const pending = renderGraphsScreen(
+      root,
+      resolveActivePacks([]),
+      () => {},
+      () => {},
+      () => current
+    );
 
     current = false;
     resolveAttempts([]);

@@ -17,12 +17,7 @@ export interface TwoSidedStudyData {
   back: StudySide;
 }
 
-export type AnswerJudgingMode =
-  | 'single'
-  | 'any_of'
-  | 'all_of'
-  | 'exact_phrase'
-  | 'numeric';
+export type AnswerJudgingMode = 'single' | 'any_of' | 'all_of' | 'exact_phrase' | 'numeric';
 
 export interface AnswerJudgingRule {
   mode?: AnswerJudgingMode;

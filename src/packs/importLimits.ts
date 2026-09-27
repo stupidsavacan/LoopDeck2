@@ -14,11 +14,13 @@ function formatMiB(bytes: number): string {
 
 export function validateImportFileSize(file: File): PackValidationIssue[] {
   if (file.size <= MAX_IMPORT_FILE_BYTES) return [];
-  return [{
-    level: 'error',
-    message: `Import file is too large. Maximum size is ${formatMiB(MAX_IMPORT_FILE_BYTES)}.`,
-    path: file.name
-  }];
+  return [
+    {
+      level: 'error',
+      message: `Import file is too large. Maximum size is ${formatMiB(MAX_IMPORT_FILE_BYTES)}.`,
+      path: file.name
+    }
+  ];
 }
 
 export function estimateBase64DecodedBytes(value: string): number {

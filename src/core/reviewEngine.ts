@@ -70,11 +70,7 @@ function attemptTime(attempt: Attempt): number {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-export function filterRecentAttempts(
-  attempts: Attempt[],
-  now = new Date(),
-  lookbackDays = DEFAULT_REVIEW_LOOKBACK_DAYS
-): Attempt[] {
+export function filterRecentAttempts(attempts: Attempt[], now = new Date(), lookbackDays = DEFAULT_REVIEW_LOOKBACK_DAYS): Attempt[] {
   const cutoff = now.getTime() - Math.max(0, lookbackDays) * DAY_MS;
   const upperBound = now.getTime();
   return attempts.filter((attempt) => {
@@ -103,12 +99,7 @@ export function timingBand(elapsedMs: number, answerMode: AnswerFormat = 'input'
   return 'normal';
 }
 
-export function scoreAttemptDelta(
-  result: AnswerResult,
-  nearMiss: boolean,
-  elapsedMs: number,
-  answerMode: AnswerFormat = 'input'
-): number {
+export function scoreAttemptDelta(result: AnswerResult, nearMiss: boolean, elapsedMs: number, answerMode: AnswerFormat = 'input'): number {
   if (result === 'revealed') return 10;
   if (result === 'wrong' && nearMiss) return 4;
   if (result === 'wrong') return timingBand(elapsedMs, answerMode) === 'fast' ? 8 : 6;
@@ -215,18 +206,21 @@ export function analyzeProblems(
       if (nearMissCount) tags.push(`ニアミス ${nearMissCount}回`);
       if (wrongRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'fast')) tags.push('即答ミス');
       if (wrongRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow')) tags.push('長考して誤答');
-      if (correctRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow')) tags.push('正解だが想起が遅い');
+      if (correctRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow'))
+        tags.push('正解だが想起が遅い');
 
-      const wrongAnswerPatterns = [...wrongRecords
-        .reduce<Map<string, WrongAnswerPattern>>((acc, attempt) => {
-          const key = wrongAnswerPatternKey(question, attempt.input);
-          if (!key) return acc;
-          const current = acc.get(key);
-          if (current) current.count += 1;
-          else acc.set(key, { answer: stringifyAnswer(attempt.input).trim(), count: 1 });
-          return acc;
-        }, new Map())
-        .values()]
+      const wrongAnswerPatterns = [
+        ...wrongRecords
+          .reduce<Map<string, WrongAnswerPattern>>((acc, attempt) => {
+            const key = wrongAnswerPatternKey(question, attempt.input);
+            if (!key) return acc;
+            const current = acc.get(key);
+            if (current) current.count += 1;
+            else acc.set(key, { answer: stringifyAnswer(attempt.input).trim(), count: 1 });
+            return acc;
+          }, new Map())
+          .values()
+      ]
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
       if (wrongAnswerPatterns.some((pattern) => pattern.count >= 2)) tags.push('同じ誤答を反復');
@@ -259,5 +253,7 @@ export function analyzeProblems(
       } satisfies ProblemAnalysis;
     })
     .filter((item): item is ProblemAnalysis => Boolean(item))
-    .sort((a, b) => Number(b.needsAttention) - Number(a.needsAttention) || b.reviewScore - a.reviewScore || b.lastAttemptAt - a.lastAttemptAt);
+    .sort(
+      (a, b) => Number(b.needsAttention) - Number(a.needsAttention) || b.reviewScore - a.reviewScore || b.lastAttemptAt - a.lastAttemptAt
+    );
 }

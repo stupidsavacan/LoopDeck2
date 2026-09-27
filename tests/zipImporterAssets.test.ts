@@ -26,10 +26,9 @@ async function zipFile(questions: ReturnType<typeof question>[], images: Record<
 
 describe('ZIP image asset import', () => {
   it('imports referenced PNG assets and ignores unreferenced images', async () => {
-    const result = await importLoopDeckZip(await zipFile(
-      [question('q1', 'images/map.png')],
-      { 'images/map.png': 'iVBORw0KGgo=', 'images/unused.png': 'iVBORw0KGgo=' }
-    ));
+    const result = await importLoopDeckZip(
+      await zipFile([question('q1', 'images/map.png')], { 'images/map.png': 'iVBORw0KGgo=', 'images/unused.png': 'iVBORw0KGgo=' })
+    );
 
     expect(result.ok).toBe(true);
     expect(result.assets).toHaveLength(1);

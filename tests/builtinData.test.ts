@@ -66,9 +66,7 @@ describe('built-in LoopDeck data', () => {
   });
 
   it('keeps built-in history images as four shared path references', () => {
-    const imageAssets = pack.questions
-      .map((question) => question.imageAsset)
-      .filter((value): value is string => Boolean(value));
+    const imageAssets = pack.questions.map((question) => question.imageAsset).filter((value): value is string => Boolean(value));
     const counts = imageAssets.reduce<Record<string, number>>((acc, path) => {
       acc[path] = (acc[path] ?? 0) + 1;
       return acc;
@@ -91,7 +89,9 @@ describe('built-in LoopDeck data', () => {
   });
 
   it('can generate four choices for the LEAP final input dataset', () => {
-    const leapFinal = pack.questions.filter((question): question is InputQuestion => question.moduleId === 'leap_final' && question.type === 'input');
+    const leapFinal = pack.questions.filter(
+      (question): question is InputQuestion => question.moduleId === 'leap_final' && question.type === 'input'
+    );
     const choices = buildGeneratedChoices(leapFinal[0], leapFinal, 4, () => 0.25);
 
     expect(leapFinal).toHaveLength(100);

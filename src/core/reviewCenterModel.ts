@@ -48,9 +48,7 @@ export function buildReviewCenterModel(
   const scopedAttempts = scope === 'recent' ? recentAttempts : attempts;
   const activeModuleIds = new Set(scopedAttempts.map((attempt) => attempt.moduleId));
   const recentQuestionIds = new Set(recentAttempts.map((attempt) => attempt.questionId));
-  const scopedReviewCards = scope === 'recent'
-    ? reviewCards.filter((card) => recentQuestionIds.has(card.questionId))
-    : reviewCards;
+  const scopedReviewCards = scope === 'recent' ? reviewCards.filter((card) => recentQuestionIds.has(card.questionId)) : reviewCards;
   const scoreOptions = scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {};
   const aggregation = aggregateReviewAttempts(scopedAttempts);
   const queue = buildReviewQueue(scopedAttempts, questions, scoreOptions, aggregation);

@@ -73,7 +73,11 @@ export function renderHomeScreen(
     (() => {
       const heading = el('h1');
       heading.setAttribute('aria-label', '今日は、何を学ぶ？');
-      heading.append(el('span', 'home-heading-line', '今日は、'), document.createElement('br'), el('span', 'home-heading-line', '何を学ぶ？'));
+      heading.append(
+        el('span', 'home-heading-line', '今日は、'),
+        document.createElement('br'),
+        el('span', 'home-heading-line', '何を学ぶ？')
+      );
       return heading;
     })(),
     el('p', '', '教材を開いたら、あとは問題だけに集中。必要なものを棚から選ぶだけ。')
@@ -143,10 +147,7 @@ export function renderHomeScreen(
     const folderTags = el('div', 'folder-tags');
     for (const tag of folder.tags) folderTags.append(el('span', '', tag));
     titleBox.append(folderTags);
-    head.append(
-      titleBox,
-      el('div', 'folder-count', `${modules.length}件`)
-    );
+    head.append(titleBox, el('div', 'folder-count', `${modules.length}件`));
 
     const content = el('div', isOpen ? 'folder-content open' : 'folder-content');
     if (isOpen) for (const module of modules) content.append(renderModuleCard(module));
@@ -189,7 +190,10 @@ export function renderHomeScreen(
   };
 
   const notice = el('div', 'notice');
-  notice.append(el('b', '', '使い方：'), document.createTextNode('カードを押すと教材が開きます。主要画面の移動は下のナビゲーションからできます。'));
+  notice.append(
+    el('b', '', '使い方：'),
+    document.createTextNode('カードを押すと教材が開きます。主要画面の移動は下のナビゲーションからできます。')
+  );
 
   screen.append(hero, toolbar, list, notice);
   root.append(screen);

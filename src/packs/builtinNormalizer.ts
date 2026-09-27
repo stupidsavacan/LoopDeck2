@@ -1,4 +1,13 @@
-import type { ChoiceQuestion, FolderInfo, InputQuestion, LoopDeckPack, ModuleInfo, MultiSelectQuestion, Question, QuestionType } from '../core/models';
+import type {
+  ChoiceQuestion,
+  FolderInfo,
+  InputQuestion,
+  LoopDeckPack,
+  ModuleInfo,
+  MultiSelectQuestion,
+  Question,
+  QuestionType
+} from '../core/models';
 
 export const REVERSE_MODULE_IDS = new Set(['english_reverse', 'leap_reverse', 'leap_final_reverse']);
 const LEAP_MODULE_IDS = new Set(['leap', 'leap_final']);
@@ -103,7 +112,8 @@ const EMPTY_KOBUN_VOCAB: ModuleInfo = {
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const asString = (value: unknown, fallback = ''): string => (typeof value === 'string' ? value : fallback);
-const asStringArray = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []);
+const asStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 
 function asNumber(value: unknown): number | undefined {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
@@ -163,7 +173,9 @@ function normalizeQuestion(rawQuestion: unknown): Question | undefined {
       ...base,
       type,
       choices: asStringArray(rawQuestion.choices),
-      correctChoices: asStringArray(rawQuestion.correctChoices).length ? asStringArray(rawQuestion.correctChoices) : asStringArray(rawQuestion.answers)
+      correctChoices: asStringArray(rawQuestion.correctChoices).length
+        ? asStringArray(rawQuestion.correctChoices)
+        : asStringArray(rawQuestion.answers)
     };
     return question;
   }
@@ -208,9 +220,12 @@ function normalizeModule(rawModule: unknown, questionsByModule: Map<string, stri
     title,
     subject,
     subtitle: asString(rawModule.subtitle).trim() || presentation?.subtitle,
-    preferredAnswerFormat: rawModule.preferredAnswerFormat === 'auto' || rawModule.preferredAnswerFormat === 'choice' || rawModule.preferredAnswerFormat === 'input'
-      ? rawModule.preferredAnswerFormat
-      : undefined,
+    preferredAnswerFormat:
+      rawModule.preferredAnswerFormat === 'auto' ||
+      rawModule.preferredAnswerFormat === 'choice' ||
+      rawModule.preferredAnswerFormat === 'input'
+        ? rawModule.preferredAnswerFormat
+        : undefined,
     color: asString(rawModule.color).trim() || undefined,
     accent: asString(rawModule.accent).trim() || presentation?.accent,
     accentColor: asString(rawModule.accentColor).trim() || undefined,

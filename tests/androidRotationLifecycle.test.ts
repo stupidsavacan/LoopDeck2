@@ -9,11 +9,6 @@ describe('Android rotation lifecycle', () => {
     expect(activity).toBeDefined();
 
     const configChanges = activity?.match(/android:configChanges="([^"]+)"/)?.[1].split('|') ?? [];
-    expect(configChanges).toEqual(expect.arrayContaining([
-      'orientation',
-      'screenSize',
-      'smallestScreenSize',
-      'screenLayout'
-    ]));
+    expect(configChanges).toEqual(expect.arrayContaining(['orientation', 'screenSize', 'smallestScreenSize', 'screenLayout']));
   });
 });

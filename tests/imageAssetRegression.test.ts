@@ -29,12 +29,15 @@ function asset(packId: string, path: string, base64 = PNG_BASE64): ImportedPackA
 
 async function zipFile(value: LoopDeckPack, images: Record<string, string>): Promise<File> {
   const zip = new JSZip();
-  zip.file('manifest.json', JSON.stringify({
-    packVersion: value.packVersion,
-    packId: value.packId,
-    title: value.title,
-    folders: value.folders
-  }));
+  zip.file(
+    'manifest.json',
+    JSON.stringify({
+      packVersion: value.packVersion,
+      packId: value.packId,
+      title: value.title,
+      folders: value.folders
+    })
+  );
   zip.file('modules.json', JSON.stringify(value.modules));
   zip.file('questions.json', JSON.stringify(value.questions));
   for (const [path, base64] of Object.entries(images)) zip.file(path, base64, { base64: true });
@@ -59,7 +62,9 @@ describe('real image asset regression flows', () => {
     const exportedZip = await JSZip.loadAsync(await exported.arrayBuffer());
     expect(await exportedZip.file('images/pixel.png')!.async('base64')).toBe(PNG_BASE64);
 
-    const reimported = await importLoopDeckZip(new File([await exported.arrayBuffer()], 'round-trip.loopdeck.zip', { type: 'application/zip' }));
+    const reimported = await importLoopDeckZip(
+      new File([await exported.arrayBuffer()], 'round-trip.loopdeck.zip', { type: 'application/zip' })
+    );
     expect(reimported.assets?.[0]?.dataUrl).toBe(`data:image/png;base64,${PNG_BASE64}`);
     await db.deleteImportedPack(value.packId);
   });

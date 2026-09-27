@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { ReviewCard } from '../src/core/models';
-import { applyReviewRating, bucketReviewCards, buildSrsReviewQueue, clampEase, createReviewCard, inferReviewRating } from '../src/core/scheduler';
+import {
+  applyReviewRating,
+  bucketReviewCards,
+  buildSrsReviewQueue,
+  clampEase,
+  createReviewCard,
+  inferReviewRating
+} from '../src/core/scheduler';
 
 const now = new Date('2026-06-05T09:00:00.000Z');
 
@@ -71,7 +78,13 @@ describe('SRS scheduler', () => {
   });
 
   it('a correct answer releases a leech even when historical counters stay high', () => {
-    const result = applyReviewRating(card({ state: 'leech', leechLevel: 3, totalWrong: 12, lapseCount: 7, wrongStreak: 3 }), 'good', 'correct', 9000, { now });
+    const result = applyReviewRating(
+      card({ state: 'leech', leechLevel: 3, totalWrong: 12, lapseCount: 7, wrongStreak: 3 }),
+      'good',
+      'correct',
+      9000,
+      { now }
+    );
 
     expect(result.card.totalWrong).toBe(12);
     expect(result.card.lapseCount).toBe(7);
@@ -95,7 +108,13 @@ describe('SRS scheduler', () => {
   });
 
   it('historical lapses do not permanently block mastery', () => {
-    const result = applyReviewRating(card({ state: 'review', correctStreak: 4, intervalDays: 12, lapseCount: 7 }), 'good', 'correct', 7000, { now });
+    const result = applyReviewRating(
+      card({ state: 'review', correctStreak: 4, intervalDays: 12, lapseCount: 7 }),
+      'good',
+      'correct',
+      7000,
+      { now }
+    );
 
     expect(result.card.lapseCount).toBe(7);
     expect(result.card.state).toBe('mastered');

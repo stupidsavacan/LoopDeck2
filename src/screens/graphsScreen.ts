@@ -1,4 +1,10 @@
-import { buildAnalyticsOverview, type DailyStudyStat, type MistakeBreakdownItem, type MistakeTrendPoint, type ModuleStudyStat } from '../core/analyticsEngine';
+import {
+  buildAnalyticsOverview,
+  type DailyStudyStat,
+  type MistakeBreakdownItem,
+  type MistakeTrendPoint,
+  type ModuleStudyStat
+} from '../core/analyticsEngine';
 import { getActiveModules, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
@@ -45,10 +51,7 @@ function renderModuleStats(root: HTMLElement, stats: ModuleStudyStat[]): void {
     const row = el('div', 'module-stat-row');
     const accuracyWidth = `${Math.max(4, Math.round(item.accuracy * 100))}%`;
     const meta = el('div');
-    meta.append(
-      el('strong', '', item.title),
-      el('small', '', `${item.attempts}回 / 平均 ${seconds(item.averageElapsedMs)}`)
-    );
+    meta.append(el('strong', '', item.title), el('small', '', `${item.attempts}回 / 平均 ${seconds(item.averageElapsedMs)}`));
     const meter = el('div', 'accuracy-meter');
     const fill = el('span');
     fill.style.width = accuracyWidth;
@@ -108,7 +111,13 @@ function renderBreakdown(root: HTMLElement, breakdown: MistakeBreakdownItem[]): 
   root.append(card);
 }
 
-export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void, navigateReview: () => void, isCurrent: () => boolean = () => true): Promise<void> {
+export async function renderGraphsScreen(
+  root: HTMLElement,
+  packView: ResolvedPackView,
+  navigateHome: () => void,
+  navigateReview: () => void,
+  isCurrent: () => boolean = () => true
+): Promise<void> {
   if (!isCurrent()) return;
   const attempts = await db.getAttempts();
   if (!isCurrent()) return;

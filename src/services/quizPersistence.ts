@@ -13,7 +13,6 @@ export function buildReviewPersistence(attempt: Attempt, existingCard?: ReviewCa
 }
 
 export async function persistAttemptAndReview(attempt: Attempt, store: QuizPersistenceStore): Promise<void> {
-
   const existingCard = await store.getReviewCard(attempt.questionId);
   const { card, log } = buildReviewPersistence(attempt, existingCard);
   await store.saveAttemptWithReview(attempt, card, log);

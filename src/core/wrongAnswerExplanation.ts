@@ -35,7 +35,10 @@ function uniqueNonEmpty(values: unknown[]): string[] {
   const result: string[] = [];
   const seen = new Set<string>();
   for (const value of values) {
-    const text = String(value ?? '').normalize('NFKC').replace(TAG_RE, '').trim();
+    const text = String(value ?? '')
+      .normalize('NFKC')
+      .replace(TAG_RE, '')
+      .trim();
     if (!text) continue;
     const key = normalizeWrongAnswerLookup(text);
     if (!key || seen.has(key)) continue;
@@ -86,7 +89,9 @@ export function findQuestionByAnswer(
   if (!normalizedValue) return undefined;
 
   const matches = (lookupIndex ?? buildWrongAnswerLookupIndex(allQuestions)).get(normalizedValue) ?? [];
-  const sameModule = matches.find((match) => match.question.id !== currentQuestion.id && match.question.moduleId === currentQuestion.moduleId);
+  const sameModule = matches.find(
+    (match) => match.question.id !== currentQuestion.id && match.question.moduleId === currentQuestion.moduleId
+  );
   if (sameModule) return sameModule;
   return matches.find((match) => match.question.id !== currentQuestion.id && match.question.moduleId !== currentQuestion.moduleId);
 }

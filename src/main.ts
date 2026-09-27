@@ -81,7 +81,9 @@ function renderStartupError(error: unknown): void {
   root.replaceChildren(screen);
 }
 
-function invalidatePackView(): void { packViewLoaded = false; }
+function invalidatePackView(): void {
+  packViewLoaded = false;
+}
 
 async function loadPacks(): Promise<ResolvedPackView> {
   if (packViewLoaded) return packView;
@@ -101,13 +103,20 @@ function startRouteRender(route: AppRoute): void {
 
 function routeToUrl(route: AppRoute): string {
   switch (route.name) {
-    case 'home': return '#home';
-    case 'module': return `#module/${encodeURIComponent(route.moduleId)}`;
-    case 'review': return '#review';
-    case 'import': return '#import';
-    case 'graphs': return '#graphs';
-    case 'pdfWorksheet': return '#pdf-worksheet';
-    case 'debugLog': return '#debug-log';
+    case 'home':
+      return '#home';
+    case 'module':
+      return `#module/${encodeURIComponent(route.moduleId)}`;
+    case 'review':
+      return '#review';
+    case 'import':
+      return '#import';
+    case 'graphs':
+      return '#graphs';
+    case 'pdfWorksheet':
+      return '#pdf-worksheet';
+    case 'debugLog':
+      return '#debug-log';
   }
 }
 
@@ -135,18 +144,33 @@ function routeFromUrl(): AppRoute {
 function isAppRoute(value: unknown): value is AppRoute {
   if (typeof value !== 'object' || value === null) return false;
   const route = value as Partial<AppRoute>;
-  return route.name === 'home' || route.name === 'review' || route.name === 'import' || route.name === 'graphs' || route.name === 'pdfWorksheet' || route.name === 'debugLog' || (route.name === 'module' && typeof route.moduleId === 'string');
+  return (
+    route.name === 'home' ||
+    route.name === 'review' ||
+    route.name === 'import' ||
+    route.name === 'graphs' ||
+    route.name === 'pdfWorksheet' ||
+    route.name === 'debugLog' ||
+    (route.name === 'module' && typeof route.moduleId === 'string')
+  );
 }
 
 function loadingMessage(route: AppRoute): string {
   switch (route.name) {
-    case 'home': return '教材を読み込んでいます…';
-    case 'module': return '教材情報を読み込んでいます…';
-    case 'review': return '復習データを読み込んでいます…';
-    case 'graphs': return '学習記録を集計しています…';
-    case 'import': return '教材データを読み込んでいます…';
-    case 'pdfWorksheet': return 'PDF作成画面を準備しています…';
-    case 'debugLog': return 'デバッグログを読み込んでいます…';
+    case 'home':
+      return '教材を読み込んでいます…';
+    case 'module':
+      return '教材情報を読み込んでいます…';
+    case 'review':
+      return '復習データを読み込んでいます…';
+    case 'graphs':
+      return '学習記録を集計しています…';
+    case 'import':
+      return '教材データを読み込んでいます…';
+    case 'pdfWorksheet':
+      return 'PDF作成画面を準備しています…';
+    case 'debugLog':
+      return 'デバッグログを読み込んでいます…';
   }
 }
 
@@ -161,12 +185,14 @@ function navigate(route: AppRoute, options: { replace?: boolean } = {}): void {
 function appendMainNavigation(current: BottomNavSection | undefined): void {
   const screen = root.querySelector<HTMLElement>('main.screen');
   if (!screen || root.querySelector(':scope > .bottom-nav')) return;
-  root.append(renderBottomNav(
-    current,
-    () => navigate({ name: 'home' }),
-    () => navigate({ name: 'review' }),
-    () => navigate({ name: 'graphs' })
-  ));
+  root.append(
+    renderBottomNav(
+      current,
+      () => navigate({ name: 'home' }),
+      () => navigate({ name: 'review' }),
+      () => navigate({ name: 'graphs' })
+    )
+  );
 }
 
 function appendHomeManagementLinks(): void {
@@ -203,7 +229,9 @@ function appendHomeManagementLinks(): void {
   version.onclick = () => {
     tapCount += 1;
     window.clearTimeout(resetTimer);
-    resetTimer = window.setTimeout(() => { tapCount = 0; }, 5000);
+    resetTimer = window.setTimeout(() => {
+      tapCount = 0;
+    }, 5000);
     if (tapCount >= 7) {
       tapCount = 0;
       navigate({ name: 'debugLog' });
@@ -246,20 +274,49 @@ async function renderRoute(route: AppRoute, lease: RouteRenderLease): Promise<vo
         appendMainNavigation('home');
         return;
       case 'module':
-        await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }), isCurrent);
+        await renderModuleScreen(
+          root,
+          packView,
+          route.moduleId,
+          () => navigate({ name: 'home' }),
+          () => navigate({ name: 'review' }),
+          () => navigate({ name: 'graphs' }),
+          isCurrent
+        );
         return;
       case 'review':
-        await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }), isCurrent);
+        await renderReviewCenter(
+          root,
+          packView,
+          () => navigate({ name: 'home' }),
+          () => navigate({ name: 'graphs' }),
+          isCurrent
+        );
         if (!isCurrent()) return;
         appendMainNavigation('review');
         return;
       case 'import':
-        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => { invalidatePackView(); navigate({ name: 'home' }); }, isCurrent);
+        await renderImportScreen(
+          root,
+          packView,
+          () => navigate({ name: 'home' }),
+          async () => {
+            invalidatePackView();
+            navigate({ name: 'home' });
+          },
+          isCurrent
+        );
         if (!isCurrent()) return;
         appendMainNavigation(undefined);
         return;
       case 'graphs':
-        await renderGraphsScreen(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), isCurrent);
+        await renderGraphsScreen(
+          root,
+          packView,
+          () => navigate({ name: 'home' }),
+          () => navigate({ name: 'review' }),
+          isCurrent
+        );
         if (!isCurrent()) return;
         appendMainNavigation('graphs');
         return;

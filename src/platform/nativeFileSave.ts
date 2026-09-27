@@ -51,7 +51,10 @@ function blobChunkToBase64(blob: Blob): Promise<string> {
   });
 }
 
-function createNativeSaveWaiter(saveId: string, timeoutMs = NATIVE_SAVE_TIMEOUT_MS): {
+function createNativeSaveWaiter(
+  saveId: string,
+  timeoutMs = NATIVE_SAVE_TIMEOUT_MS
+): {
   promise: Promise<NativeSaveResult>;
   cancel: () => void;
 } {

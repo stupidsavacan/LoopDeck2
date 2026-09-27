@@ -11,9 +11,7 @@ const pack: LoopDeckPack = {
   packId: 'review-scope-pack',
   title: 'Review scope',
   folders: [{ id: 'f', title: 'Folder' }],
-  modules: [
-    { id: 'mixed-module', folderId: 'f', title: 'Mixed-age module', subject: 'test', questionIds: ['recent-q', 'old-q'] }
-  ],
+  modules: [{ id: 'mixed-module', folderId: 'f', title: 'Mixed-age module', subject: 'test', questionIds: ['recent-q', 'old-q'] }],
   questions: [
     { id: 'recent-q', moduleId: 'mixed-module', type: 'input', prompt: 'RECENT QUESTION', answer: 'a' },
     { id: 'old-q', moduleId: 'mixed-module', type: 'input', prompt: 'OLD QUESTION', answer: 'b' }
@@ -74,7 +72,12 @@ describe('Review Center scope', () => {
     const root = document.createElement('div');
     const view = resolveActivePacks([pack]);
 
-    await renderReviewCenter(root, view, () => {}, () => {});
+    await renderReviewCenter(
+      root,
+      view,
+      () => {},
+      () => {}
+    );
 
     expect(root.textContent).toContain('RECENT QUESTION');
     expect(root.textContent).not.toContain('OLD QUESTION');
@@ -83,8 +86,7 @@ describe('Review Center scope', () => {
     expect(root.textContent).toContain('SRSの次回日程は変更しません');
     expect(root.textContent).toContain('過去教材の復習予定 1問は非表示です。');
 
-    const toggle = [...root.querySelectorAll<HTMLButtonElement>('button')]
-      .find((button) => button.textContent === '過去の教材も表示');
+    const toggle = [...root.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '過去の教材も表示');
     expect(toggle).toBeDefined();
 
     toggle!.click();

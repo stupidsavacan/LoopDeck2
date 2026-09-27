@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildAnalyticsOverview, buildDailyStudyStats, buildMistakeBreakdown, buildMistakeTrend, buildModuleStudyStats } from '../src/core/analyticsEngine';
+import {
+  buildAnalyticsOverview,
+  buildDailyStudyStats,
+  buildMistakeBreakdown,
+  buildMistakeTrend,
+  buildModuleStudyStats
+} from '../src/core/analyticsEngine';
 import type { Attempt, ModuleInfo, Question } from '../src/core/models';
 
 const modules: ModuleInfo[] = [
@@ -15,11 +21,61 @@ const questions: Question[] = [
 ];
 
 const attempts: Attempt[] = [
-  { attemptId: 'a1', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-01T00:00:00.000Z', result: 'wrong', input: ['A'], answer: ['A', 'B'], elapsedMs: 1200, mode: 'normal' },
-  { attemptId: 'a2', questionId: 'q2', moduleId: 'm1', answeredAt: '2026-06-01T00:01:00.000Z', result: 'correct', input: 'h', answer: 'H', elapsedMs: 8000, mode: 'normal' },
-  { attemptId: 'a3', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-02T00:02:00.000Z', result: 'revealed', input: '', answer: 'A', elapsedMs: 500, mode: 'review' },
-  { attemptId: 'a4', questionId: 'q4', moduleId: 'm2', answeredAt: '2026-06-02T00:03:00.000Z', result: 'correct', input: '徳川家康', answer: '徳川家康', elapsedMs: 12000, mode: 'normal' },
-  { attemptId: 'a5', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-02T00:04:00.000Z', result: 'wrong', input: ['B', 'C'], answer: ['A', 'B'], elapsedMs: 1500, mode: 'review' }
+  {
+    attemptId: 'a1',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-01T00:00:00.000Z',
+    result: 'wrong',
+    input: ['A'],
+    answer: ['A', 'B'],
+    elapsedMs: 1200,
+    mode: 'normal'
+  },
+  {
+    attemptId: 'a2',
+    questionId: 'q2',
+    moduleId: 'm1',
+    answeredAt: '2026-06-01T00:01:00.000Z',
+    result: 'correct',
+    input: 'h',
+    answer: 'H',
+    elapsedMs: 8000,
+    mode: 'normal'
+  },
+  {
+    attemptId: 'a3',
+    questionId: 'q3',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:02:00.000Z',
+    result: 'revealed',
+    input: '',
+    answer: 'A',
+    elapsedMs: 500,
+    mode: 'review'
+  },
+  {
+    attemptId: 'a4',
+    questionId: 'q4',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:03:00.000Z',
+    result: 'correct',
+    input: '徳川家康',
+    answer: '徳川家康',
+    elapsedMs: 12000,
+    mode: 'normal'
+  },
+  {
+    attemptId: 'a5',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:04:00.000Z',
+    result: 'wrong',
+    input: ['B', 'C'],
+    answer: ['A', 'B'],
+    elapsedMs: 1500,
+    mode: 'review'
+  }
 ];
 
 describe('analytics engine', () => {

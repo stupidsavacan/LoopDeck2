@@ -13,17 +13,36 @@ function attempt(questionId: string, daysAgo: number): Attempt {
     questionId,
     moduleId: 'm',
     answeredAt: new Date(Date.UTC(2026, 8, 27) - daysAgo * 86400000).toISOString(),
-    result: 'wrong', input: 'x', answer: 'a', elapsedMs: 1000, mode: 'normal', answerMode: 'input'
+    result: 'wrong',
+    input: 'x',
+    answer: 'a',
+    elapsedMs: 1000,
+    mode: 'normal',
+    answerMode: 'input'
   };
 }
 
 function card(questionId: string): ReviewCard {
   const now = '2026-09-27T00:00:00.000Z';
   return {
-    questionId, moduleId: 'm', state: 'review', dueAt: '2026-09-26T00:00:00.000Z',
-    lastReviewedAt: now, firstReviewedAt: now, intervalDays: 1, ease: 2.5,
-    totalReviews: 1, totalCorrect: 0, totalWrong: 1, correctStreak: 0, wrongStreak: 1,
-    lapseCount: 0, leechLevel: 0, suspended: false, createdAt: now, updatedAt: now
+    questionId,
+    moduleId: 'm',
+    state: 'review',
+    dueAt: '2026-09-26T00:00:00.000Z',
+    lastReviewedAt: now,
+    firstReviewedAt: now,
+    intervalDays: 1,
+    ease: 2.5,
+    totalReviews: 1,
+    totalCorrect: 0,
+    totalWrong: 1,
+    correctStreak: 0,
+    wrongStreak: 1,
+    lapseCount: 0,
+    leechLevel: 0,
+    suspended: false,
+    createdAt: now,
+    updatedAt: now
   };
 }
 
