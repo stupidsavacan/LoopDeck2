@@ -96,9 +96,12 @@ export async function renderImportScreen(
   root: HTMLElement,
   packView: ResolvedPackView,
   navigateHome: () => void,
-  onImported: () => Promise<void>
+  onImported: () => Promise<void>,
+  isCurrent: () => boolean = () => true
 ): Promise<void> {
+  if (!isCurrent()) return;
   const importedPacks = await db.getImportedPacks();
+  if (!isCurrent()) return;
   const activePacks = getActivePacks(packView);
   const importedIds = new Set(importedPacks.map((pack) => pack.packId));
   const activePackIds = new Set(activePacks.map((pack) => pack.packId));

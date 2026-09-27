@@ -112,8 +112,10 @@ function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: Resol
   root.append(card);
 }
 
-export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void, navigateReview: () => void): Promise<void> {
+export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void, navigateReview: () => void, isCurrent: () => boolean = () => true): Promise<void> {
+  if (!isCurrent()) return;
   const attempts = await db.getAttempts();
+  if (!isCurrent()) return;
   clear(root);
 
   const screen = el('main', 'screen graphs-screen');

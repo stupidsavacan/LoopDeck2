@@ -18,6 +18,7 @@ import { renderBottomNav, type BottomNavSection } from './ui/bottomNav';
 import { button, el } from './ui/dom';
 import { createUiIcon } from './ui/icons';
 import { renderLoading } from './ui/loading';
+import { RouteRenderCoordinator, type RouteRenderLease } from './ui/routeRenderGuard';
 
 const appRoot = document.querySelector<HTMLDivElement>('#app');
 if (!appRoot) throw new Error('Missing #app root.');
@@ -27,6 +28,7 @@ const ROUTE_LOADING_DELAY_MS = 2000;
 registerGlobalErrorLogging();
 
 let packView: ResolvedPackView = resolveActivePacks([]);
+const routeRenderCoordinator = new RouteRenderCoordinator();
 
 export type AppRoute =
   | { name: 'home' }
@@ -78,14 +80,19 @@ function renderStartupError(error: unknown): void {
   root.replaceChildren(screen);
 }
 
-function run(task: () => Promise<void>): void {
-  void task().catch(renderStartupError);
+async function loadPacks(): Promise<ResolvedPackView> {
+  const loadedPacks = [...loadBuiltinPacks(), ...(await db.getImportedPacks())];
+  return resolveActivePacks(loadedPacks);
 }
 
-async function loadPacks(): Promise<void> {
-  const loadedPacks = [...loadBuiltinPacks(), ...(await db.getImportedPacks())];
-  packView = resolveActivePacks(loadedPacks);
-  setActivePackAssetView(packView);
+function startRouteRender(route: AppRoute): void {
+  const lease = routeRenderCoordinator.begin();
+  root.inert = true;
+  root.setAttribute('aria-busy', 'true');
+  void renderRoute(route, lease).catch((error) => {
+    if (!lease.isCurrent()) return;
+    renderStartupError(error);
+  });
 }
 
 function routeToUrl(route: AppRoute): string {
@@ -144,7 +151,7 @@ function navigate(route: AppRoute, options: { replace?: boolean } = {}): void {
   const sameRoute = window.location.hash === url;
   if (options.replace) history.replaceState(route, '', url);
   else if (!sameRoute) history.pushState(route, '', url);
-  run(() => renderRoute(route));
+  startRouteRender(route);
 }
 
 function appendMainNavigation(current: BottomNavSection | undefined): void {
@@ -201,20 +208,26 @@ function appendHomeManagementLinks(): void {
   screen.append(version);
 }
 
-async function renderRoute(route: AppRoute): Promise<void> {
+async function renderRoute(route: AppRoute, lease: RouteRenderLease): Promise<void> {
   const loadingTimer = window.setTimeout(() => {
+    if (!lease.isCurrent()) return;
     renderLoading(root, loadingMessage(route));
   }, ROUTE_LOADING_DELAY_MS);
   try {
     if (route.name === 'debugLog') {
-      renderDebugLogScreen(root, () => navigate({ name: 'home' }));
+      if (lease.isCurrent()) renderDebugLogScreen(root, () => navigate({ name: 'home' }));
       return;
     }
 
-    await loadPacks();
+    const nextPackView = await loadPacks();
+    if (!lease.isCurrent()) return;
+    packView = nextPackView;
+    setActivePackAssetView(packView);
 
+    const isCurrent = () => lease.isCurrent();
     switch (route.name) {
       case 'home':
+        if (!isCurrent()) return;
         renderHomeScreen(
           root,
           packView,
@@ -223,37 +236,47 @@ async function renderRoute(route: AppRoute): Promise<void> {
           () => navigate({ name: 'import' }),
           () => navigate({ name: 'graphs' })
         );
+        if (!isCurrent()) return;
         appendHomeManagementLinks();
         appendMainNavigation('home');
         return;
       case 'module':
-        await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }));
+        await renderModuleScreen(root, packView, route.moduleId, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), () => navigate({ name: 'graphs' }), isCurrent);
         return;
       case 'review':
-        await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }));
+        await renderReviewCenter(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'graphs' }), isCurrent);
+        if (!isCurrent()) return;
         appendMainNavigation('review');
         return;
       case 'import':
-        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => navigate({ name: 'home' }));
+        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => navigate({ name: 'home' }), isCurrent);
+        if (!isCurrent()) return;
         appendMainNavigation(undefined);
         return;
       case 'graphs':
-        await renderGraphsScreen(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }));
+        await renderGraphsScreen(root, packView, () => navigate({ name: 'home' }), () => navigate({ name: 'review' }), isCurrent);
+        if (!isCurrent()) return;
         appendMainNavigation('graphs');
         return;
       case 'pdfWorksheet':
+        if (!isCurrent()) return;
         await renderPdfWorksheetScreen(root, packView, () => navigate({ name: 'home' }));
+        if (!isCurrent()) return;
         appendMainNavigation(undefined);
         return;
     }
   } finally {
     window.clearTimeout(loadingTimer);
+    if (lease.isCurrent()) {
+      root.inert = false;
+      root.removeAttribute('aria-busy');
+    }
   }
 }
 
 window.addEventListener('popstate', (event) => {
   const route = isAppRoute(event.state) ? event.state : routeFromUrl();
-  run(() => renderRoute(route));
+  startRouteRender(route);
 });
 
 const initialRoute = routeFromUrl();

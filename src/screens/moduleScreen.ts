@@ -166,8 +166,10 @@ export async function renderModuleScreen(
   moduleId: string,
   navigateHome: () => void,
   navigateReview: () => void,
-  navigateGraphs: () => void
+  navigateGraphs: () => void,
+  isCurrent: () => boolean = () => true
 ): Promise<void> {
+  if (!isCurrent()) return;
   const foundModule = getModuleById(packView, moduleId);
   if (!foundModule) {
     clear(root);
@@ -184,6 +186,7 @@ export async function renderModuleScreen(
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const attempts = await db.getAttempts();
   const bookmarks = await db.getBookmarks();
+  if (!isCurrent()) return;
   const wrongIds = new Set(attempts.filter((attempt) => attempt.result !== 'correct').map((attempt) => attempt.questionId));
   const bookmarkIds = new Set(bookmarks);
   const wrongQuestions = questions.filter((question) => wrongIds.has(question.id));
@@ -344,7 +347,7 @@ export async function renderModuleScreen(
   const quizMount = el('div', 'quiz-mount');
 
   function rerender(): void {
-    void renderModuleScreen(root, packView, moduleId, navigateHome, navigateReview, navigateGraphs);
+    void renderModuleScreen(root, packView, moduleId, navigateHome, navigateReview, navigateGraphs, isCurrent);
   }
 
   function mountSession(session: QuizSession): void {
