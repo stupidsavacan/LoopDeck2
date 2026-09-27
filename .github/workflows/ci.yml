@@ -46,6 +46,9 @@ jobs:
           npx vite --version
           npx vitest --version
 
+      - name: Check TypeScript architecture
+        run: npm run check:architecture
+
       - name: Run web tests
         run: npm test
 
