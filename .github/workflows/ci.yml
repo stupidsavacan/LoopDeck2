@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -45,6 +47,15 @@ jobs:
           npm --version
           npx vite --version
           npx vitest --version
+
+      - name: Check changed-file formatting
+        run: npm run format:check
+
+      - name: Run lint guardrails
+        run: npm run lint
+
+      - name: Report readability hotspots
+        run: npm run readability
 
       - name: Run web tests
         run: npm test
