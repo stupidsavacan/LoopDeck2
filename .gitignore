@@ -5,6 +5,7 @@ android/.gradle/
 android/local.properties
 android/keystore.properties
 android/app/build/
+android/app/src/main/assets/loopdeck/
 *.jks
 *.keystore
 
