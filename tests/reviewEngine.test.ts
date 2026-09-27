@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
+import { aggregateReviewAttempts, analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
 import type { Attempt, Question } from '../src/core/models';
 
 const attempts: Attempt[] = [
@@ -78,6 +78,14 @@ describe('review engine', () => {
     const analysis = analyzeProblems(normalizedAttempts, normalizedQuestions);
     expect(analysis.find((item) => item.question.id === 'q1')?.wrongAnswerPatterns).toEqual([{ answer: 'Apple.', count: 2 }]);
     expect(analysis.find((item) => item.question.id === 'q-multi')?.wrongAnswerPatterns).toEqual([{ answer: 'B  / Ａ', count: 2 }]);
+  });
+
+  it('reuses one attempt aggregation without changing review results', () => {
+    const aggregation = aggregateReviewAttempts(attempts);
+    expect(buildReviewQueue(attempts, questions, {}, aggregation)).toEqual(buildReviewQueue(attempts, questions));
+    expect(buildMistakeQuestions(questions, attempts, aggregation)).toEqual(buildMistakeQuestions(questions, attempts));
+    expect(summarizeWeakModules(attempts, aggregation)).toEqual(summarizeWeakModules(attempts));
+    expect(analyzeProblems(attempts, questions, {}, aggregation)).toEqual(analyzeProblems(attempts, questions));
   });
 
   it('analyzes repeated wrong input and near misses', () => {

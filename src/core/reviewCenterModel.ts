@@ -1,5 +1,6 @@
 import type { Attempt, Question, ReviewCard } from './models';
 import {
+  aggregateReviewAttempts,
   analyzeProblems,
   buildMistakeQuestions,
   buildReviewQueue,
@@ -51,12 +52,13 @@ export function buildReviewCenterModel(
     ? reviewCards.filter((card) => recentQuestionIds.has(card.questionId))
     : reviewCards;
   const scoreOptions = scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {};
-  const queue = buildReviewQueue(scopedAttempts, questions, scoreOptions);
-  const mistakes = buildMistakeQuestions(questions, scopedAttempts);
-  const analyses = analyzeProblems(scopedAttempts, questions, scoreOptions)
+  const aggregation = aggregateReviewAttempts(scopedAttempts);
+  const queue = buildReviewQueue(scopedAttempts, questions, scoreOptions, aggregation);
+  const mistakes = buildMistakeQuestions(questions, scopedAttempts, aggregation);
+  const analyses = analyzeProblems(scopedAttempts, questions, scoreOptions, aggregation)
     .filter((item) => item.needsAttention)
     .slice(0, 8);
-  const weak = summarizeWeakModules(scopedAttempts);
+  const weak = summarizeWeakModules(scopedAttempts, aggregation);
   const schedule = summarizeReviewSchedule(scopedReviewCards, now);
   const allSchedule = summarizeReviewSchedule(reviewCards, now);
   const buckets = bucketReviewCards(scopedReviewCards, now);

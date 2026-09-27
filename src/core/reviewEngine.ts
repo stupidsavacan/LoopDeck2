@@ -41,6 +41,30 @@ export interface ReviewQueueOptions {
   halfLifeDays?: number;
 }
 
+export interface ReviewAttemptAggregation {
+  byQuestion: ReadonlyMap<string, readonly Attempt[]>;
+  wrongQuestionIds: ReadonlySet<string>;
+  weakModules: Readonly<Record<string, number>>;
+}
+
+export function aggregateReviewAttempts(attempts: Attempt[]): ReviewAttemptAggregation {
+  const byQuestion = new Map<string, Attempt[]>();
+  const wrongQuestionIds = new Set<string>();
+  const weakModules: Record<string, number> = {};
+
+  for (const attempt of attempts) {
+    const records = byQuestion.get(attempt.questionId) ?? [];
+    records.push(attempt);
+    byQuestion.set(attempt.questionId, records);
+    if (attempt.result !== 'correct') {
+      wrongQuestionIds.add(attempt.questionId);
+      weakModules[attempt.moduleId] = (weakModules[attempt.moduleId] ?? 0) + 1;
+    }
+  }
+
+  return { byQuestion, wrongQuestionIds, weakModules };
+}
+
 function attemptTime(attempt: Attempt): number {
   const parsed = Date.parse(attempt.answeredAt);
   return Number.isNaN(parsed) ? 0 : parsed;
@@ -122,12 +146,13 @@ export function getWrongQuestionIds(attempts: Attempt[]): string[] {
   return [...new Set(wrong)].reverse();
 }
 
-export function buildMistakeQuestions(allQuestions: Question[], attempts: Attempt[]): Question[] {
-  const wrongIds = new Set(getWrongQuestionIds(attempts));
+export function buildMistakeQuestions(allQuestions: Question[], attempts: Attempt[], aggregation?: ReviewAttemptAggregation): Question[] {
+  const wrongIds = aggregation?.wrongQuestionIds ?? new Set(getWrongQuestionIds(attempts));
   return allQuestions.filter((question) => wrongIds.has(question.id));
 }
 
-export function summarizeWeakModules(attempts: Attempt[]): Record<string, number> {
+export function summarizeWeakModules(attempts: Attempt[], aggregation?: ReviewAttemptAggregation): Record<string, number> {
+  if (aggregation) return { ...aggregation.weakModules };
   return attempts.reduce<Record<string, number>>((acc, attempt) => {
     if (attempt.result === 'correct') return acc;
     acc[attempt.moduleId] = (acc[attempt.moduleId] ?? 0) + 1;
@@ -135,17 +160,16 @@ export function summarizeWeakModules(attempts: Attempt[]): Record<string, number
   }, {});
 }
 
-export function buildReviewQueue(attempts: Attempt[], questions: Question[], options: ReviewQueueOptions = {}): ReviewItem[] {
+export function buildReviewQueue(
+  attempts: Attempt[],
+  questions: Question[],
+  options: ReviewQueueOptions = {},
+  aggregation: ReviewAttemptAggregation = aggregateReviewAttempts(attempts)
+): ReviewItem[] {
   const byQuestion = new Map(questions.map((question) => [question.id, question]));
   const now = options.now ?? new Date();
-  const groups = new Map<string, Attempt[]>();
-  for (const attempt of attempts) {
-    const records = groups.get(attempt.questionId) ?? [];
-    records.push(attempt);
-    groups.set(attempt.questionId, records);
-  }
 
-  return [...groups.entries()]
+  return [...aggregation.byQuestion.entries()]
     .map(([questionId, records]) => {
       const question = byQuestion.get(questionId);
       if (!question) return undefined;
@@ -167,21 +191,20 @@ export function buildReviewQueue(attempts: Attempt[], questions: Question[], opt
     .sort((a, b) => b.score - a.score || b.lastAttemptAt - a.lastAttemptAt);
 }
 
-export function analyzeProblems(attempts: Attempt[], questions: Question[], options: ReviewQueueOptions = {}): ProblemAnalysis[] {
-  const queueScores = new Map(buildReviewQueue(attempts, questions, options).map((item) => [item.question.id, item.score]));
+export function analyzeProblems(
+  attempts: Attempt[],
+  questions: Question[],
+  options: ReviewQueueOptions = {},
+  aggregation: ReviewAttemptAggregation = aggregateReviewAttempts(attempts)
+): ProblemAnalysis[] {
+  const queueScores = new Map(buildReviewQueue(attempts, questions, options, aggregation).map((item) => [item.question.id, item.score]));
   const byQuestion = new Map(questions.map((question) => [question.id, question]));
-  const groups = new Map<string, Attempt[]>();
-  for (const attempt of attempts) {
-    const records = groups.get(attempt.questionId) ?? [];
-    records.push(attempt);
-    groups.set(attempt.questionId, records);
-  }
 
-  return [...groups.entries()]
+  return [...aggregation.byQuestion.entries()]
     .map(([questionId, rawRecords]) => {
       const question = byQuestion.get(questionId);
       if (!question) return undefined;
-      const records = rawRecords.sort((a, b) => attemptTime(a) - attemptTime(b));
+      const records = [...rawRecords].sort((a, b) => attemptTime(a) - attemptTime(b));
       const wrongRecords = records.filter((attempt) => attempt.result === 'wrong');
       const correctRecords = records.filter((attempt) => attempt.result === 'correct');
       const revealedRecords = records.filter((attempt) => attempt.result === 'revealed');

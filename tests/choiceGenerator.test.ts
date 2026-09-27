@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildGeneratedChoices } from '../src/core/choiceGenerator';
+import { buildChoiceCandidateIndex, buildGeneratedChoices } from '../src/core/choiceGenerator';
 import type { InputQuestion } from '../src/core/models';
 
 const questions: InputQuestion[] = [
@@ -29,5 +29,11 @@ describe('generated four-choice answers', () => {
 
   it('returns undefined when there are not enough safe distractors', () => {
     expect(buildGeneratedChoices(questions[0], questions.slice(0, 3), 4, fixedRandom)).toBeUndefined();
+  });
+
+  it('reuses a prebuilt candidate index without changing generated choices', () => {
+    const index = buildChoiceCandidateIndex(questions);
+    expect(buildGeneratedChoices(questions[0], questions, 4, fixedRandom, index))
+      .toEqual(buildGeneratedChoices(questions[0], questions, 4, fixedRandom));
   });
 });

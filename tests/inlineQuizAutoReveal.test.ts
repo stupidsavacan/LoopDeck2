@@ -76,7 +76,7 @@ function render(question: Question, overrides: Partial<StudySettings> = {}): { c
   document.body.append(container);
   const attempts: Attempt[] = [];
   vi.spyOn(db, 'addAttempt').mockImplementation(async (attempt) => { attempts.push(attempt); });
-  vi.spyOn(db, 'getBookmarks').mockResolvedValue([]);
+  vi.spyOn(db, 'hasBookmark').mockResolvedValue(false);
   vi.spyOn(db, 'getReviewCard').mockResolvedValue(undefined);
   vi.spyOn(db, 'putReviewCard').mockResolvedValue();
   vi.spyOn(db, 'putReviewLog').mockResolvedValue();

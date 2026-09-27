@@ -67,8 +67,26 @@ function textRuns(text: string, fonts: WorksheetFonts): TextRun[] {
   return runs;
 }
 
+const characterWidthCache = new WeakMap<PDFFont, Map<string, number>>();
+
+function characterWidth(character: string, font: PDFFont, size: number): number {
+  let cache = characterWidthCache.get(font);
+  if (!cache) {
+    cache = new Map<string, number>();
+    characterWidthCache.set(font, cache);
+  }
+  const key = `${size}:${character}`;
+  const cached = cache.get(key);
+  if (cached !== undefined) return cached;
+  const width = font.widthOfTextAtSize(character, size);
+  cache.set(key, width);
+  return width;
+}
+
 function textWidth(text: string, fonts: WorksheetFonts, size: number): number {
-  return textRuns(text, fonts).reduce((width, run) => width + run.font.widthOfTextAtSize(run.text, size), 0);
+  let width = 0;
+  for (const character of text) width += characterWidth(character, fontForCharacter(character, fonts), size);
+  return width;
 }
 
 function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: number, y: number, size: number): void {
@@ -80,15 +98,20 @@ function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: nu
 }
 
 function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: number): string[] {
-  const source = text.trim();
-  if (!source) return [];
+  const trimmed = text.trim();
   const lines: string[] = [];
   let current = '';
-  for (const character of source) {
-    if (textWidth(current + character, fonts, size) <= maxWidth || !current) current += character;
-    else {
+  let currentWidth = 0;
+  for (const character of trimmed) {
+    const width = characterWidth(character, fontForCharacter(character, fonts), size);
+    if (currentWidth + width <= maxWidth || !current) {
+      current += character;
+      currentWidth += width;
+    } else {
       lines.push(current);
       current = character;
+      currentWidth = width;
+
     }
   }
   if (current) lines.push(current);

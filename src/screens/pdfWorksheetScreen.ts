@@ -1,6 +1,6 @@
 import { reportIssue } from '../debug/reportIssue';
 import { writeDebugLog } from '../debug/debugLog';
-import type { LoopDeckPack, ModuleInfo, Question } from '../core/models';
+import type { ModuleInfo, Question } from '../core/models';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
 import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
 import type { ResolvedPackView } from '../packs/packResolver';
@@ -47,13 +47,11 @@ async function savePdf(blob: Blob, filename: string, progress: SaveProgressRepor
   await saveBlob(blob, filename, { idPrefix: 'worksheet', progress });
 }
 
-function getPackQuestionsForModule(pack: LoopDeckPack, module: ModuleInfo): Question[] {
-  const questionsById = new Map(pack.questions.map((question) => [question.id, question]));
-  return module.questionIds.map((questionId) => questionsById.get(questionId)).filter((question): question is Question => Boolean(question));
-}
-
-function supportedQuestions(pack: LoopDeckPack, module: ModuleInfo): Question[] {
-  return getPackQuestionsForModule(pack, module).filter(isJapaneseToEnglishWorksheetQuestion);
+function supportedQuestions(module: ModuleInfo, questionsById: ReadonlyMap<string, Question>): Question[] {
+  return module.questionIds
+    .map((questionId) => questionsById.get(questionId))
+    .filter((question): question is Question => Boolean(question))
+    .filter(isJapaneseToEnglishWorksheetQuestion);
 }
 
 function disambiguateLabels(options: WorksheetModuleOption[]): WorksheetModuleOption[] {
@@ -71,7 +69,7 @@ function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOpti
     const packId = packView.modulePackIdById.get(module.id);
     const pack = packId ? packView.packById.get(packId) : undefined;
     if (!packId || !pack) continue;
-    const questions = supportedQuestions(pack, module);
+    const questions = supportedQuestions(module, packView.questionById);
     if (!questions.length) continue;
     options.push({ packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
   }

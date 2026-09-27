@@ -65,7 +65,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   const activeQuestion: Question = question;
   const requestedAnswerFormat = session.settings.answerFormat ?? 'auto';
   const shouldGenerateChoices = question.type === 'input' && (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
-  const generatedChoices = question.type === 'input' && shouldGenerateChoices ? buildGeneratedChoices(question, session.choicePool) : undefined;
+  const generatedChoices = question.type === 'input' && shouldGenerateChoices ? buildGeneratedChoices(question, session.choicePool, 4, Math.random, session.choiceCandidateIndex) : undefined;
   const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices);
   const card = el('section', 'quiz-card');
   const answerArea = el('div', 'answer-area');
@@ -167,7 +167,13 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     pendingAttempt = attempt;
     callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
     const wrongExplanation = !revealed && result === 'wrong' && typeof answer === 'string'
-      ? buildWrongAnswerExplanation(answerMode === 'input' ? 'input' : 'choice', answer, activeQuestion, session.choicePool.length ? session.choicePool : session.queue)
+      ? buildWrongAnswerExplanation(
+          answerMode === 'input' ? 'input' : 'choice',
+          answer,
+          activeQuestion,
+          session.choicePool.length ? session.choicePool : session.queue,
+          session.wrongAnswerLookupIndex
+        )
       : undefined;
     appendQuizResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
     if (nextButton) {
@@ -188,8 +194,8 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     bookmark.classList.toggle('selected', bookmarked);
   };
   renderBookmark();
-  void db.getBookmarks().then((bookmarks) => {
-    bookmarked = bookmarks.includes(question.id);
+  void db.hasBookmark(question.id).then((enabled) => {
+    bookmarked = enabled;
     renderBookmark();
   });
   bookmark.onclick = async () => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import builtinPackData from '../data/builtin/loopdeck_builtin.loopdeck.json';
 import { buildGeneratedChoices } from '../src/core/choiceGenerator';
+import { loadBuiltinPacks } from '../src/packs/builtinLoader';
 import type { InputQuestion } from '../src/core/models';
 import { buildRangeOptions, createSession } from '../src/core/sessionEngine';
 import { validatePack } from '../src/packs/packValidator';
@@ -8,6 +9,10 @@ import { getVisibleBuiltinModules, normalizeBuiltinPack, REVERSE_MODULE_IDS } fr
 
 describe('built-in LoopDeck data', () => {
   const pack = normalizeBuiltinPack(builtinPackData);
+
+  it('caches the normalized and validated built-in pack for the app lifetime', () => {
+    expect(loadBuiltinPacks()).toBe(loadBuiltinPacks());
+  });
 
   it('loads as the active valid built-in dataset', () => {
     const result = validatePack(pack);

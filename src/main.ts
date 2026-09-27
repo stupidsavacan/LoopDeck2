@@ -29,6 +29,7 @@ registerGlobalErrorLogging();
 
 let packView: ResolvedPackView = resolveActivePacks([]);
 const routeRenderCoordinator = new RouteRenderCoordinator();
+let packViewLoaded = false;
 
 export type AppRoute =
   | { name: 'home' }
@@ -80,7 +81,10 @@ function renderStartupError(error: unknown): void {
   root.replaceChildren(screen);
 }
 
+function invalidatePackView(): void { packViewLoaded = false; }
+
 async function loadPacks(): Promise<ResolvedPackView> {
+  if (packViewLoaded) return packView;
   const loadedPacks = [...loadBuiltinPacks(), ...(await db.getImportedPacks())];
   return resolveActivePacks(loadedPacks);
 }
@@ -222,6 +226,7 @@ async function renderRoute(route: AppRoute, lease: RouteRenderLease): Promise<vo
     const nextPackView = await loadPacks();
     if (!lease.isCurrent()) return;
     packView = nextPackView;
+    packViewLoaded = true;
     setActivePackAssetView(packView);
 
     const isCurrent = () => lease.isCurrent();
@@ -249,7 +254,7 @@ async function renderRoute(route: AppRoute, lease: RouteRenderLease): Promise<vo
         appendMainNavigation('review');
         return;
       case 'import':
-        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => navigate({ name: 'home' }), isCurrent);
+        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => { invalidatePackView(); navigate({ name: 'home' }); }, isCurrent);
         if (!isCurrent()) return;
         appendMainNavigation(undefined);
         return;
