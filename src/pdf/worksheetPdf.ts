@@ -2,7 +2,7 @@ import japaneseFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-jap
 import latinFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?base64';
 import fontkit from '@pdf-lib/fontkit';
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from 'pdf-lib';
-import type { WorksheetPage, WorksheetPlan, WorksheetRow } from './worksheetPlanner';
+import type { WorksheetPage, WorksheetPlan } from './worksheetPlanner';
 
 export interface WorksheetPdfFontBytes {
   japanese: Uint8Array;
