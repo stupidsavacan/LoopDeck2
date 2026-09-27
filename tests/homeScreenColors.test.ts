@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import type { LoopDeckPack, ModuleInfo } from '../src/core/models';
 import { resolveActivePacks } from '../src/packs/packResolver';
-import { moduleMeta, renderHomeScreen } from '../src/screens/homeScreen';
+import { renderHomeScreen } from '../src/screens/homeScreen';
+import { moduleMeta } from '../src/ui/modulePresentation';
 
 function moduleInfo(overrides: Partial<ModuleInfo> = {}): ModuleInfo {
   return {
