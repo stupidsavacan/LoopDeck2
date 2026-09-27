@@ -1,6 +1,6 @@
 # LoopDeck Pack Authoring Prompt
 
-Authoring contract revision: 2026-09-24
+Authoring contract revision: 2026-09-27
 Target LoopDeck packVersion: 1
 
 You are creating a study pack for the current LoopDeck application.
@@ -233,14 +233,103 @@ Allowed image extensions:
 - .jpeg
 - .webp
 
-Rules:
+### 7.1 Safe image references
+
+The following rules are the minimum import/safety contract, not the complete quality bar for image questions:
 - path must be relative and local.
-- the referenced file must actually be included in the ZIP.
+- the referenced file must actually be included in the ZIP. Placeholder filenames are not acceptable final output.
 - no remote URLs.
 - no absolute paths.
 - no `../` traversal.
 - no data: or javascript: URLs.
-- do not invent image filenames unless you also provide the image file.
+- do not invent image filenames unless you also provide the actual image file.
+
+### 7.2 Source authority and image fidelity
+
+When the user supplies an image, worksheet, map, graph, diagram, or screenshot, treat that supplied visual as factual authority for any question derived from it.
+- prefer preserving and reusing the source image rather than redrawing it.
+- cropping, rotation correction, contrast cleanup, and format conversion are allowed only when they do not alter labels, scale, values, relationships, sequence, or factual meaning.
+- never invent missing labels, map locations, graph values, legends, arrows, relationships, or other visual facts.
+- if a required visual fact is unreadable or ambiguous, report the ambiguity instead of guessing.
+- do not claim built-in-equivalent image-question quality unless you can actually create or inspect the referenced image file.
+
+### 7.3 Constructing questions from figures
+
+Only create an image-backed question when the image materially contributes to answering it. A question should require the learner to inspect a visible feature, not merely carry an unrelated illustration.
+
+For each image question:
+- point the prompt to a specific visible feature such as a label, location, line, bar, legend, relationship, sequence, region, arrow, or marked point.
+- do not state the answer verbatim in the prompt.
+- for choice questions, normally provide 4 unique plausible choices in the same semantic class as the correct answer and plausible for that exact figure/context.
+- accepted-answer variants must not also appear as distractors.
+- explanations must say why the answer matches the visible figure or source context; do not merely repeat “X is correct.”
+
+A single authoritative figure may and should be reused for multiple targeted questions when it contains multiple independently testable facts. Do not make a duplicate image file per question.
+
+### 7.4 Asset quality
+
+Final output must contain the actual referenced image files. Before finalizing:
+- keep labels, text, legends, lines, and marked regions legible at normal LoopDeck phone-scale display.
+- use sensible crop, contrast, and image format choices without adding decorative content that obscures the source.
+- store a shared figure once and reference the same stable neutral path from every question that uses it, for example `images/history/map64.png`.
+- do not create multiple byte-identical or visually identical copies solely to give each question its own filename.
+
+### 7.5 Generated or reconstructed visuals
+
+Do not generate a factual map, graph, or diagram from imagination when the supplied source can be preserved.
+
+If reconstruction is genuinely necessary from supplied structured data:
+1. reproduce only values, labels, categories, and relationships verified by that data;
+2. do not fill gaps with assumed values or invented annotations;
+3. inspect the completed visual;
+4. self-check every label/value/relationship referenced by a question against the completed asset before final output.
+
+### 7.6 Canonical shared-figure example
+
+The built-in pattern is one real figure referenced by several targeted questions, not one asset per question. For example, if a verified map contains three visible labels A, B, and C, the final ZIP can contain one `images/history/map01.png` and questions such as:
+
+```json
+[
+  {
+    "id": "history-map-001",
+    "moduleId": "history",
+    "type": "choice",
+    "category": "地図問題",
+    "prompt": "地図中Aに示された地域はどれか。",
+    "imageAsset": "images/history/map01.png",
+    "choices": ["地域甲", "地域乙", "地域丙", "地域丁"],
+    "answer": "地域甲",
+    "acceptableAnswers": ["地域甲", "甲地域"],
+    "explanation": "地図中Aの位置とラベルは地域甲を示している。"
+  },
+  {
+    "id": "history-map-002",
+    "moduleId": "history",
+    "type": "choice",
+    "category": "地図問題",
+    "prompt": "地図中Bに示された地域はどれか。",
+    "imageAsset": "images/history/map01.png",
+    "choices": ["地域乙", "地域甲", "地域丁", "地域丙"],
+    "answer": "地域乙",
+    "acceptableAnswers": ["地域乙", "乙地域"],
+    "explanation": "地図中Bの位置とラベルは地域乙を示している。"
+  },
+  {
+    "id": "history-map-003",
+    "moduleId": "history",
+    "type": "choice",
+    "category": "地図問題",
+    "prompt": "地図中Cに示された地域はどれか。",
+    "imageAsset": "images/history/map01.png",
+    "choices": ["地域丙", "地域丁", "地域甲", "地域乙"],
+    "answer": "地域丙",
+    "acceptableAnswers": ["地域丙", "丙地域"],
+    "explanation": "地図中Cの位置とラベルは地域丙を示している。"
+  }
+]
+```
+
+This is a structural example only: never substitute invented labels or facts for the user's real source material.
 
 ## 8. Safety restrictions
 
@@ -297,10 +386,12 @@ Before final files, do this internally or visibly when useful:
 2. Decide the intended question type for every source fact.
 3. Write plausible manual distractors for authored choice questions.
 4. Define true accepted-answer variants.
-5. Preserve required image references.
-6. Generate stable IDs and cross-references.
-7. Self-check the complete pack.
-8. Only then emit final JSON/ZIP contents.
+5. Preserve required image sources and decide which questions genuinely require them.
+6. Reuse one verified figure for multiple questions when appropriate; do not duplicate shared assets.
+7. Inspect every distinct image asset and verify every referenced visual fact.
+8. Generate stable IDs and cross-references.
+9. Self-check the complete pack.
+10. Only then emit final JSON/ZIP contents.
 
 Do not make every question input just because it is easier.
 
@@ -322,7 +413,14 @@ Before presenting the final pack, verify:
 - [ ] authored choice distractors are plausible and same-category.
 - [ ] every multi_select has at least one correct choice and all correct choices appear in choices.
 - [ ] accepted-answer variants are genuinely equivalent.
-- [ ] every imageAsset path is safe and the file exists.
+- [ ] every imageAsset path is safe and the actual referenced file exists in the ZIP; no placeholder filename remains.
+- [ ] every distinct image asset is legible at normal app display size.
+- [ ] every label, region, value, legend, line, relationship, sequence, or other visual fact referenced by a question is actually visible or otherwise verified from the supplied source.
+- [ ] every image-backed question materially requires the image and is answerable from verified source context.
+- [ ] every image-backed answer and explanation agrees with the figure.
+- [ ] image-question choices are unique, plausible, same-category, and do not contain accepted-answer aliases as distractors.
+- [ ] shared figures are stored once and referenced by multiple questions instead of duplicated per question.
+- [ ] no factual visual content was invented to fill an unreadable or missing source detail.
 - [ ] no executable/script-like files are included.
 - [ ] all JSON is valid JSON.
 - [ ] the ZIP root, if used, directly contains manifest.json, modules.json, and questions.json.

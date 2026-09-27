@@ -12,7 +12,7 @@ describe('pack authoring prompt', () => {
 
   it('ships a non-empty current authoring contract', () => {
     expect(packAuthoringPrompt.length).toBeGreaterThan(4000);
-    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-24');
+    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-27');
     expect(packAuthoringPrompt).toContain('Target LoopDeck packVersion: 1');
     expect(packAuthoringPrompt).toContain('multi_select');
     expect(packAuthoringPrompt).toContain('answerJudging');
@@ -20,6 +20,19 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('supportedStudyModes');
     expect(packAuthoringPrompt).toContain('choiceCandidates');
     expect(packAuthoringPrompt).toContain('manifest.json');
+  });
+
+  it('defines a source-grounded image-question quality contract', () => {
+    expect(packAuthoringPrompt).toContain('minimum import/safety contract, not the complete quality bar');
+    expect(packAuthoringPrompt).toContain('treat that supplied visual as factual authority');
+    expect(packAuthoringPrompt).toContain('never invent missing labels, map locations, graph values, legends, arrows, relationships');
+    expect(packAuthoringPrompt).toContain('image materially contributes to answering it');
+    expect(packAuthoringPrompt).toContain('4 unique plausible choices in the same semantic class');
+    expect(packAuthoringPrompt).toContain('store a shared figure once and reference the same stable neutral path');
+    expect(packAuthoringPrompt).toContain('no placeholder filename remains');
+    expect(packAuthoringPrompt).toContain('legible at normal app display size');
+    expect(packAuthoringPrompt).toContain('images/history/map01.png');
+    expect(packAuthoringPrompt.match(/\"imageAsset\": \"images\/history\/map01\.png\"/g)).toHaveLength(3);
   });
 
   it('downloads a non-empty UTF-8 text prompt from the import screen action', async () => {
