@@ -4,22 +4,51 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import packAuthoringPrompt from '../src/packs/packAuthoringPrompt.txt?raw';
 import { resolveActivePacks } from '../src/packs/packResolver';
 import { renderImportScreen } from '../src/screens/importScreen';
+import { ALLOWED_IMAGE_EXTENSIONS, FORBIDDEN_EXTENSIONS } from '../src/packs/packTypes';
 
 describe('pack authoring prompt', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('ships a non-empty current authoring contract', () => {
+  it('ships a non-empty current authoring contract with semantic drift guards', () => {
     expect(packAuthoringPrompt.length).toBeGreaterThan(4000);
-    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-24');
+    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-27');
     expect(packAuthoringPrompt).toContain('Target LoopDeck packVersion: 1');
-    expect(packAuthoringPrompt).toContain('multi_select');
+
+    for (const questionType of ['input', 'choice', 'multi_select']) {
+      expect(packAuthoringPrompt).toContain(`### ${questionType}`);
+    }
+    for (const mode of ['single', 'any_of', 'all_of', 'exact_phrase', 'numeric']) {
+      expect(packAuthoringPrompt).toContain(`\`${mode}\``);
+    }
+    for (const direction of ['ja_to_en', 'en_to_ja', 'normal']) {
+      expect(packAuthoringPrompt).toContain(`\`${direction}\``);
+    }
+    for (const extension of ALLOWED_IMAGE_EXTENSIONS) expect(packAuthoringPrompt).toContain(extension);
+    for (const extension of FORBIDDEN_EXTENSIONS) expect(packAuthoringPrompt).toContain(extension);
+
     expect(packAuthoringPrompt).toContain('answerJudging');
     expect(packAuthoringPrompt).toContain('requiredParts');
     expect(packAuthoringPrompt).toContain('supportedStudyModes');
     expect(packAuthoringPrompt).toContain('choiceCandidates');
+    expect(packAuthoringPrompt).toContain('sideChoiceCandidates');
+    expect(packAuthoringPrompt).toContain('example');
     expect(packAuthoringPrompt).toContain('manifest.json');
+
+    // #41 quality contract: path safety alone is insufficient.
+    expect(packAuthoringPrompt).toContain('treat a user-supplied worksheet/map/graph/image as factual authority');
+    expect(packAuthoringPrompt).toContain('never invent missing labels, values, legends, locations, or relationships');
+    expect(packAuthoringPrompt).toContain('one authoritative figure may and should be reused for multiple targeted questions');
+    expect(packAuthoringPrompt).toContain('legible at normal phone-scale display');
+    expect(packAuthoringPrompt).toContain('for every distinct imageAsset');
+
+    // High-risk runtime semantics that can yield an importable but wrong pack.
+    expect(packAuthoringPrompt).toContain('active modules/questions are also resolved by ID across active packs');
+    expect(packAuthoringPrompt).toContain('Merge import preserves existing same-path assets');
+    expect(packAuthoringPrompt).toContain('A pack that imports successfully can still behave incorrectly');
+    expect(packAuthoringPrompt).toContain('a JSON-only pack cannot carry a local image payload');
+    expect(packAuthoringPrompt).toContain('activeStudyMode');
   });
 
   it('downloads a non-empty UTF-8 text prompt from the import screen action', async () => {
