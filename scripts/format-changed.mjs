@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import process from 'node:process';
 
 const write = process.argv.includes('--write');
-const supported = /\.(?:css|html|json|md|mjs|ts|ya?ml)$/i;
+const supported = /\.(?:css|json|md|ts)$/i;
 const prettierVersion = '3.9.9';
 
 function git(args) {
