@@ -24,7 +24,8 @@ export async function seed(page, volume = true) {
   if (!volume) { data.attempts = []; data.reviewCards = []; data.bookmarks = []; }
   await page.evaluate(async ({ data, longText }) => {
     const database = await new Promise((resolve, reject) => {
-      const r = indexedDB.open('loopdeck-db', 3); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error);
+      // Open the database at its existing version so QA follows production schema upgrades.
+      const r = indexedDB.open('loopdeck-db'); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error);
     });
     const assets = [];
     const dimensions = [[2400, 120], [120, 2400], [512, 512], [4096, 4096], [8, 8], [1000, 700]];
