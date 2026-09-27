@@ -1,10 +1,11 @@
 import type { LoopDeckPack } from '../core/models';
+import { writeDebugLog } from '../debug/debugLog';
 import { mergeLoopDeckPacks, mergeLoopDeckPacksIntoExisting, type MergePackReport } from '../packs/packMerger';
 import packAuthoringPrompt from '../packs/packAuthoringPrompt.txt?raw';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
-import { db, type LoopDeckBackup } from '../storage/db';
+import { db, type BackupImportMode, type LoopDeckBackup } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
 
@@ -199,6 +200,47 @@ export async function renderImportScreen(
     uploadCard.classList.toggle('loading', value);
   }
 
+  async function importBackupFromUi(backup: LoopDeckBackup, mode: BackupImportMode, replaceButton: HTMLButtonElement, mergeButton: HTMLButtonElement): Promise<void> {
+    if (mode === 'replace' && !window.confirm('現在の回答履歴・ブックマーク・インポート教材・SRS復習データを、このバックアップの内容で置き換えます。続けますか？')) return;
+    replaceButton.disabled = true;
+    mergeButton.disabled = true;
+    try {
+      await db.importUserData(backup, mode);
+      toast(mode === 'replace' ? 'バックアップから置き換え復元しました。' : 'バックアップを現在データへマージしました。');
+      await onImported();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      writeDebugLog({
+        level: 'error',
+        area: 'backupImport',
+        code: 'BACKUP-IMPORT-FAILED',
+        userMessage: 'バックアップの読み込みに失敗しました。',
+        detail,
+        stack: error instanceof Error ? error.stack : undefined,
+        context: { mode, exportedAt: backup.exportedAt }
+      });
+      toast(`バックアップの読み込みに失敗しました：${detail}`);
+      replaceButton.disabled = false;
+      mergeButton.disabled = false;
+    }
+  }
+
+  function renderBackupImport(backup: LoopDeckBackup): void {
+    clear(preview);
+    preview.append(
+      el('h2', '', 'バックアップを読み込む'),
+      el('p', 'import-summary', `書き出し日時: ${backup.exportedAt} / 回答${backup.attempts.length}件 / ブックマーク${backup.bookmarks.length}件 / 教材${backup.importedPacks.length}件`),
+      el('p', 'hint', '「置き換え復元」は現在の学習データを消してバックアップの状態に合わせます。「マージ」は現在データを残し、バックアップ内の同じIDだけ上書きします。')
+    );
+    const replace = button('現在データを置き換えて復元', 'btn ghost danger');
+    const merge = button('現在データにマージ', 'btn primary');
+    replace.onclick = () => void importBackupFromUi(backup, 'replace', replace, merge);
+    merge.onclick = () => void importBackupFromUi(backup, 'merge', replace, merge);
+    const actions = el('div', 'data-actions');
+    actions.append(replace, merge);
+    preview.append(actions);
+  }
+
   async function handleFile(file: File): Promise<void> {
     if (importing) return;
     selectedFile.textContent = `選択中のファイル: ${file.name}`;
@@ -215,9 +257,7 @@ export async function renderImportScreen(
               parsed = undefined;
             }
             if (isBackupPayload(parsed)) {
-              await db.importUserData(parsed);
-              toast('バックアップを復元しました。');
-              await onImported();
+              renderBackupImport(parsed);
               return undefined;
             }
             return importLoopDeckJson(new File([text], file.name, { type: file.type || 'application/json' }));
@@ -242,7 +282,7 @@ export async function renderImportScreen(
         const duplicateImportedPackId = Boolean(existingImportedPack);
         const duplicateActivePackId = activePackIds.has(pack.packId);
         const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
-        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
+        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(question.id)));
         const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
         preview.append(summary);
 
@@ -399,7 +439,7 @@ export async function renderImportScreen(
   dangerZone.append(dangerActions);
   dataCard.append(
     dataActions,
-    el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'),
+    el('p', 'hint', 'JSONバックアップを読み込むと、「現在データを置き換えて復元」または「現在データにマージ」を選べます。'),
     dangerZone
   );
 
@@ -424,7 +464,7 @@ export async function renderImportScreen(
     el('summary', '', '対応ファイルと安全制限'),
     infoList([
       'JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。',
-      'LoopDeckバックアップJSONは回答履歴・ブックマーク・インポート済み教材を復元できます。',
+      'LoopDeckバックアップJSONは、置き換え復元とマージ読み込みを明示的に選べます。',
       'HTML / JavaScript / CSS は教材として実行しません。',
       '.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。',
       '../、..\\、絶対パス、空パス、null byte を含む危険なパスは拒否します。'
