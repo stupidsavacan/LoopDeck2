@@ -68,13 +68,15 @@ export function validatePack(rawPack: unknown): PackValidationResult {
     for (const question of rawPack.questions) issues.push(...validateQuestion(question, questionIds));
   }
 
+  const moduleIds = new Set<string>();
+  const modules: Record<string, unknown>[] = [];
   if (Array.isArray(rawPack.modules)) {
-    const moduleIds = new Set<string>();
     for (const module of rawPack.modules) {
       if (!isObject(module)) {
         issues.push({ level: 'error', message: 'Module must be an object.' });
         continue;
       }
+      modules.push(module);
       if (typeof module.id !== 'string' || !module.id.trim()) issues.push({ level: 'error', message: 'Module id is required.' });
       if (typeof module.id === 'string' && moduleIds.has(module.id)) issues.push({ level: 'error', message: `Duplicate module id: ${module.id}` });
       if (typeof module.id === 'string') moduleIds.add(module.id);
@@ -82,8 +84,61 @@ export function validatePack(rawPack: unknown): PackValidationResult {
     }
   }
 
+  const questionsById = new Map<string, Record<string, unknown>>();
+  if (Array.isArray(rawPack.questions)) {
+    for (const question of rawPack.questions) {
+      if (!isObject(question) || typeof question.id !== 'string') continue;
+      questionsById.set(question.id, question);
+      if (typeof question.moduleId === 'string' && !moduleIds.has(question.moduleId)) {
+        issues.push({ level: 'error', message: `Question ${question.id} references missing module: ${question.moduleId}` });
+      }
+    }
+  }
+
+  for (const module of modules) {
+    if (typeof module.id !== 'string' || !isStringArray(module.questionIds)) continue;
+    for (const questionId of module.questionIds) {
+      const question = questionsById.get(questionId);
+      if (!question) {
+        issues.push({ level: 'error', message: `Module ${module.id} references missing question: ${questionId}` });
+        continue;
+      }
+      if (question.moduleId !== module.id) {
+        issues.push({ level: 'error', message: `Module ${module.id} references question ${questionId} owned by module ${String(question.moduleId)}.` });
+      }
+    }
+  }
+
   const ok = !issues.some((issue) => issue.level === 'error');
   return { ok, issues, pack: ok ? (rawPack as unknown as LoopDeckPack) : undefined };
+}
+
+
+/**
+ * Question IDs are global user-data keys (attempts, bookmarks and review data),
+ * so two active packIds may not own the same question ID. A later pack with the
+ * same packId is a full replacement and is deduplicated before this check.
+ */
+export function validateActivePackIdentities(packs: LoopDeckPack[]): PackValidationIssue[] {
+  const latestByPackId = new Map<string, LoopDeckPack>();
+  for (const pack of packs) latestByPackId.set(pack.packId, pack);
+
+  const ownerByQuestionId = new Map<string, string>();
+  const issues: PackValidationIssue[] = [];
+  for (const pack of latestByPackId.values()) {
+    for (const question of pack.questions) {
+      const previousOwner = ownerByQuestionId.get(question.id);
+      if (previousOwner && previousOwner !== pack.packId) {
+        issues.push({
+          level: 'error',
+          message: `Question id must be globally unique across active packs: ${question.id} (${previousOwner}, ${pack.packId})`
+        });
+        continue;
+      }
+      ownerByQuestionId.set(question.id, pack.packId);
+    }
+  }
+  return issues;
 }
 
 export function collectAllQuestions(packs: LoopDeckPack[]): Question[] {

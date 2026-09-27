@@ -69,6 +69,8 @@ export type ReviewRating = 'again' | 'hard' | 'good' | 'easy';
 export interface FolderInfo {
   id: string;
   title: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface ModuleInfo {
@@ -76,6 +78,8 @@ export interface ModuleInfo {
   folderId: string;
   title: string;
   subject: string;
+  subtitle?: string;
+  preferredAnswerFormat?: AnswerFormat;
   color?: string;
   accent?: string;
   accentColor?: string;
