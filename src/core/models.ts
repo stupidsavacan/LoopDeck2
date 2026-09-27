@@ -17,23 +17,6 @@ export interface TwoSidedStudyData {
   back: StudySide;
 }
 
-export type QuestionSamplePattern =
-  | 'solid'
-  | 'vertical_stripes'
-  | 'horizontal_stripes'
-  | 'diagonal_stripes'
-  | 'cross_hatch'
-  | 'dots'
-  | 'grid';
-
-export interface QuestionSampleMark {
-  label: string;
-  color: string;
-  pattern?: QuestionSamplePattern;
-  patternColor?: string;
-  description?: string;
-}
-
 export type AnswerJudgingMode =
   | 'single'
   | 'any_of'
@@ -96,12 +79,6 @@ export interface BaseQuestion {
   example?: string;
   sides?: TwoSidedStudyData;
   supportedStudyModes?: Array<'front_to_back' | 'back_to_front'>;
-  sampleMarks?: QuestionSampleMark[];
-  sampleColors?: Array<{
-    label: string;
-    color: string;
-    description?: string;
-  }>;
   activeStudyMode?: ConcreteStudyQuestionMode;
   autoReversed?: boolean;
   directionLabel?: string;
@@ -217,10 +194,4 @@ export interface StudySettings {
   showExample?: boolean;
   showNumber?: boolean;
   showCategory?: boolean;
-}
-
-export interface AppState {
-  packs: LoopDeckPack[];
-  selectedModuleId?: string;
-  searchQuery: string;
 }
