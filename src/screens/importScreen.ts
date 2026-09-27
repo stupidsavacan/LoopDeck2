@@ -282,7 +282,7 @@ export async function renderImportScreen(
         const duplicateImportedPackId = Boolean(existingImportedPack);
         const duplicateActivePackId = activePackIds.has(pack.packId);
         const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
-        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(question.id)));
+        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
         const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
         preview.append(summary);
 
