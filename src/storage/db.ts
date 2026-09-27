@@ -164,6 +164,7 @@ async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<voi
   });
 }
 
+
 async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], replaceAssets: boolean): Promise<void> {
   await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
     tx.objectStore('packs').put(pack);
