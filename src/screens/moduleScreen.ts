@@ -150,7 +150,7 @@ export async function renderModuleScreen(
     selectedRange: 'all',
     selectedCategory: 'all',
     filter: 'all',
-    answerFormat: 'auto',
+    answerFormat: module.preferredAnswerFormat ?? 'auto',
     questionMode: 'as_stored',
     showExample: true,
     showNumber: true,
@@ -208,6 +208,7 @@ export async function renderModuleScreen(
     option.value = value;
     answerField.select.append(option);
   }
+  answerField.select.value = settings.answerFormat ?? 'auto';
   answerField.select.onchange = () => {
     settings.answerFormat = answerField.select.value as StudySettings['answerFormat'];
   };
