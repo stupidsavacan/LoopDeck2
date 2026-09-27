@@ -253,9 +253,3 @@ export function summarizeReviewSchedule(cards: ReviewCard[], now = new Date()): 
     estimatedMinutes: Math.ceil((dueToday * ESTIMATED_SECONDS_PER_CARD) / 60)
   };
 }
-
-export function reviewCardsForState(cards: ReviewCard[], state: ReviewState, now = new Date()): ReviewCard[] {
-  return cards
-    .filter((card) => !isSuspended(card) && card.state === state && dueTime(card) !== undefined && (dueTime(card) ?? Number.POSITIVE_INFINITY) <= endOfToday(now))
-    .sort((a, b) => (dueTime(a) ?? 0) - (dueTime(b) ?? 0));
-}
