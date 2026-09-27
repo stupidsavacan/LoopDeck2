@@ -76,7 +76,6 @@ function renderStartupError(error: unknown): void {
   card.append(mark, copy);
   screen.append(card);
   root.replaceChildren(screen);
-  window.LoopDeckAndroid?.showToast?.('LoopDeckの起動に失敗しました。');
 }
 
 function run(task: () => Promise<void>): void {
