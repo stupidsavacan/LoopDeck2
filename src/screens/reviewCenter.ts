@@ -62,10 +62,13 @@ export async function renderReviewCenter(
   root: HTMLElement,
   packView: ResolvedPackView,
   navigateHome: () => void,
-  navigateGraphs: () => void
+  navigateGraphs: () => void,
+  isCurrent: () => boolean = () => true
 ): Promise<void> {
+  if (!isCurrent()) return;
   const attempts = await db.getAttempts();
   const reviewCards = await db.getReviewCards();
+  if (!isCurrent()) return;
   const questions = getActiveQuestions(packView);
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const modules = packView.moduleById;
@@ -142,7 +145,7 @@ export async function renderReviewCenter(
   hero.append(stats, scopeActions);
 
   function rerender(): void {
-    void renderReviewCenter(root, packView, navigateHome, navigateGraphs);
+    void renderReviewCenter(root, packView, navigateHome, navigateGraphs, isCurrent);
   }
 
   function startReviewSession(items: Question[], title: string, moduleId = 'review-all', limit = 20, shuffle = true): void {
