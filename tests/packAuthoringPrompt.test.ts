@@ -35,6 +35,10 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('sideChoiceCandidates');
     expect(packAuthoringPrompt).toContain('example');
     expect(packAuthoringPrompt).toContain('manifest.json');
+    expect(packAuthoringPrompt).toContain('whole JSON/ZIP/backup file: at most 32 MiB');
+    expect(packAuthoringPrompt).toContain('ZIP entry count: at most 256 entries');
+    expect(packAuthoringPrompt).toContain('preferredAnswerFormat');
+    expect(packAuthoringPrompt).toContain('broken folder/module/question cross-references');
 
     // #41 quality contract: path safety alone is insufficient.
     expect(packAuthoringPrompt).toContain('treat a user-supplied worksheet/map/graph/image as factual authority');
@@ -44,8 +48,8 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('for every distinct imageAsset');
 
     // High-risk runtime semantics that can yield an importable but wrong pack.
-    expect(packAuthoringPrompt).toContain('active modules/questions are also resolved by ID across active packs');
-    expect(packAuthoringPrompt).toContain('Merge import preserves existing same-path assets');
+    expect(packAuthoringPrompt).toContain('Question IDs must be globally unique across different active packIds');
+    expect(packAuthoringPrompt).toContain('Merge import upserts assets');
     expect(packAuthoringPrompt).toContain('A pack that imports successfully can still behave incorrectly');
     expect(packAuthoringPrompt).toContain('a JSON-only pack cannot carry a local image payload');
     expect(packAuthoringPrompt).toContain('activeStudyMode');
@@ -53,7 +57,12 @@ describe('pack authoring prompt', () => {
 
   it('downloads a non-empty UTF-8 text prompt from the import screen action', async () => {
     const root = document.createElement('div');
-    await renderImportScreen(root, resolveActivePacks([]), () => {}, async () => {});
+    await renderImportScreen(
+      root,
+      resolveActivePacks([]),
+      () => {},
+      async () => {}
+    );
 
     const originalCreateObjectURL = Object.getOwnPropertyDescriptor(URL, 'createObjectURL');
     const originalRevokeObjectURL = Object.getOwnPropertyDescriptor(URL, 'revokeObjectURL');
@@ -73,8 +82,9 @@ describe('pack authoring prompt', () => {
         return 1;
       }) as typeof window.setTimeout);
 
-      const download = [...root.querySelectorAll<HTMLButtonElement>('button')]
-        .find((button) => button.textContent === 'AI用Pack作成プロンプトを保存');
+      const download = [...root.querySelectorAll<HTMLButtonElement>('button')].find(
+        (button) => button.textContent === 'AI用Pack作成プロンプトを保存'
+      );
       expect(download).toBeDefined();
 
       download!.click();

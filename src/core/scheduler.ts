@@ -1,4 +1,4 @@
-import type { AnswerFormat, AnswerResult, ReviewCard, ReviewLog, ReviewRating, ReviewState } from './models';
+import type { AnswerFormat, AnswerResult, ReviewCard, ReviewLog, ReviewRating } from './models';
 import { endOfLocalCalendarDay, startOfLocalCalendarDay } from './calendarDay';
 
 const DEFAULT_EASE = 2.5;
@@ -221,19 +221,17 @@ export function bucketReviewCards(cards: ReviewCard[], now = new Date()): Review
 
 export function buildSrsReviewQueue(cards: ReviewCard[], now = new Date(), limit = 30): ReviewCard[] {
   const buckets = bucketReviewCards(cards, now);
-  return [
-    ...buckets.relearning,
-    ...buckets.overdue,
-    ...buckets.dueToday,
-    ...buckets.leech,
-    ...buckets.masteredDue
-  ].slice(0, Math.max(0, limit));
+  return [...buckets.relearning, ...buckets.overdue, ...buckets.dueToday, ...buckets.leech, ...buckets.masteredDue].slice(
+    0,
+    Math.max(0, limit)
+  );
 }
 
 export function summarizeReviewSchedule(cards: ReviewCard[], now = new Date()): ReviewScheduleSummary {
   const active = cards.filter((card) => !isSuspended(card));
   const buckets = bucketReviewCards(active, now);
-  const dueToday = buckets.relearning.length + buckets.overdue.length + buckets.dueToday.length + buckets.leech.length + buckets.masteredDue.length;
+  const dueToday =
+    buckets.relearning.length + buckets.overdue.length + buckets.dueToday.length + buckets.leech.length + buckets.masteredDue.length;
   return {
     total: active.length,
     dueToday,

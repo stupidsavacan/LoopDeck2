@@ -11,7 +11,7 @@ import type {
 import { isSafeImageDataUrl, isSafeImageAssetRef, extensionOf } from '../packs/assetSafety';
 import { estimateBase64DecodedBytes, MAX_BACKUP_COLLECTION_ITEMS, MAX_IMAGE_ASSET_BYTES } from '../packs/importLimits';
 import { validatePack } from '../packs/packValidator';
-import type { LoopDeckBackup, StoredPackAsset } from './db';
+import type { LoopDeckBackup, StoredPackAsset } from './storageTypes';
 
 const ANSWER_RESULTS = new Set<AnswerResult>(['correct', 'wrong', 'revealed']);
 const ATTEMPT_MODES = new Set(['normal', 'review']);
@@ -63,10 +63,16 @@ function parseAttempt(value: unknown, index: number): Attempt {
   if (!nonNegativeNumber(value.elapsedMs)) fail(`${path}.elapsedMs must be a non-negative finite number.`);
   if (typeof value.mode !== 'string' || !ATTEMPT_MODES.has(value.mode)) fail(`${path}.mode is unsupported.`);
   if (value.nearMiss !== undefined && typeof value.nearMiss !== 'boolean') fail(`${path}.nearMiss must be boolean.`);
-  if (value.hiddenTimeExcludedMs !== undefined && !nonNegativeNumber(value.hiddenTimeExcludedMs)) fail(`${path}.hiddenTimeExcludedMs must be non-negative.`);
+  if (value.hiddenTimeExcludedMs !== undefined && !nonNegativeNumber(value.hiddenTimeExcludedMs))
+    fail(`${path}.hiddenTimeExcludedMs must be non-negative.`);
   if (value.priorityDelta !== undefined && !finiteNumber(value.priorityDelta)) fail(`${path}.priorityDelta must be finite.`);
-  if (value.answerMode !== undefined && (typeof value.answerMode !== 'string' || !ANSWER_FORMATS.has(value.answerMode as AnswerFormat))) fail(`${path}.answerMode is unsupported.`);
-  if (value.questionMode !== undefined && (typeof value.questionMode !== 'string' || !QUESTION_MODES.has(value.questionMode as ConcreteStudyQuestionMode))) fail(`${path}.questionMode is unsupported.`);
+  if (value.answerMode !== undefined && (typeof value.answerMode !== 'string' || !ANSWER_FORMATS.has(value.answerMode as AnswerFormat)))
+    fail(`${path}.answerMode is unsupported.`);
+  if (
+    value.questionMode !== undefined &&
+    (typeof value.questionMode !== 'string' || !QUESTION_MODES.has(value.questionMode as ConcreteStudyQuestionMode))
+  )
+    fail(`${path}.questionMode is unsupported.`);
 
   return {
     attemptId: value.attemptId,
@@ -92,8 +98,19 @@ function parseReviewCard(value: unknown, index: number): ReviewCard {
   if (!nonEmptyString(value.questionId)) fail(`${path}.questionId is required.`);
   if (!nonEmptyString(value.moduleId)) fail(`${path}.moduleId is required.`);
   if (typeof value.state !== 'string' || !REVIEW_STATES.has(value.state as ReviewState)) fail(`${path}.state is unsupported.`);
-  for (const key of ['dueAt', 'lastReviewedAt', 'firstReviewedAt'] as const) if (!validNullableDate(value[key])) fail(`${path}.${key} must be null or a valid date.`);
-  for (const key of ['intervalDays', 'ease', 'totalReviews', 'totalCorrect', 'totalWrong', 'correctStreak', 'wrongStreak', 'lapseCount', 'leechLevel'] as const) {
+  for (const key of ['dueAt', 'lastReviewedAt', 'firstReviewedAt'] as const)
+    if (!validNullableDate(value[key])) fail(`${path}.${key} must be null or a valid date.`);
+  for (const key of [
+    'intervalDays',
+    'ease',
+    'totalReviews',
+    'totalCorrect',
+    'totalWrong',
+    'correctStreak',
+    'wrongStreak',
+    'lapseCount',
+    'leechLevel'
+  ] as const) {
     if (!nonNegativeNumber(value[key])) fail(`${path}.${key} must be a non-negative finite number.`);
   }
   if (typeof value.suspended !== 'boolean') fail(`${path}.suspended must be boolean.`);
@@ -129,9 +146,11 @@ function parseReviewLog(value: unknown, index: number): ReviewLog {
   if (!validDate(value.reviewedAt)) fail(`${path}.reviewedAt must be a valid date.`);
   if (typeof value.rating !== 'string' || !REVIEW_RATINGS.has(value.rating as ReviewRating)) fail(`${path}.rating is unsupported.`);
   if (typeof value.result !== 'string' || !ANSWER_RESULTS.has(value.result as AnswerResult)) fail(`${path}.result is unsupported.`);
-  if (typeof value.previousState !== 'string' || !REVIEW_STATES.has(value.previousState as ReviewState)) fail(`${path}.previousState is unsupported.`);
+  if (typeof value.previousState !== 'string' || !REVIEW_STATES.has(value.previousState as ReviewState))
+    fail(`${path}.previousState is unsupported.`);
   if (typeof value.nextState !== 'string' || !REVIEW_STATES.has(value.nextState as ReviewState)) fail(`${path}.nextState is unsupported.`);
-  if (!validNullableDate(value.previousDueAt) || !validNullableDate(value.nextDueAt)) fail(`${path}.previousDueAt/nextDueAt must be null or valid dates.`);
+  if (!validNullableDate(value.previousDueAt) || !validNullableDate(value.nextDueAt))
+    fail(`${path}.previousDueAt/nextDueAt must be null or valid dates.`);
   for (const key of ['previousIntervalDays', 'nextIntervalDays', 'previousEase', 'nextEase', 'elapsedMs'] as const) {
     if (!nonNegativeNumber(value[key])) fail(`${path}.${key} must be a non-negative finite number.`);
   }
@@ -194,7 +213,10 @@ export function validateBackupPayload(value: unknown): LoopDeckBackup {
   const importedPacks = rawPacks.map((pack, index) => {
     const result = validatePack(pack);
     if (!result.ok || !result.pack) {
-      const detail = result.issues.filter((entry) => entry.level === 'error').map((entry) => entry.message).join('; ');
+      const detail = result.issues
+        .filter((entry) => entry.level === 'error')
+        .map((entry) => entry.message)
+        .join('; ');
       fail(`importedPacks[${index}] failed pack validation: ${detail || 'invalid pack'}`);
     }
     return result.pack;
@@ -202,7 +224,9 @@ export function validateBackupPayload(value: unknown): LoopDeckBackup {
   const packIds = new Set(importedPacks.map((pack) => pack.packId));
   if (packIds.size !== importedPacks.length) fail('importedPacks contains duplicate packId values.');
 
-  const importedPackAssets = optionalArray(value.importedPackAssets, 'importedPackAssets').map((asset, index) => parseStoredAsset(asset, index, packIds));
+  const importedPackAssets = optionalArray(value.importedPackAssets, 'importedPackAssets').map((asset, index) =>
+    parseStoredAsset(asset, index, packIds)
+  );
   const reviewCards = optionalArray(value.reviewCards, 'reviewCards').map(parseReviewCard);
   const reviewLogs = optionalArray(value.reviewLogs, 'reviewLogs').map(parseReviewLog);
 

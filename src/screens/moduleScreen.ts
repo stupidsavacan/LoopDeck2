@@ -1,3 +1,5 @@
+import { buildChoiceCandidateIndex } from '../core/choiceGenerator';
+import { buildWrongAnswerLookupIndex } from '../core/wrongAnswerExplanation';
 import type { Attempt, ConcreteStudyQuestionMode, ModuleInfo, Question, StudySettings } from '../core/models';
 import {
   canAutoReverseQuestion,
@@ -57,7 +59,8 @@ function normalizeLegacyStoredSession(parsed: LegacyStoredSession, byId: Map<str
   if (parsed.settings.questionMode === 'mixed') return undefined;
   const requestedMode = parsed.settings.questionMode ?? 'as_stored';
   const questions = parsed.questionIds.map((questionId) => {
-    const question = byId.get(questionId)!;
+    const question = byId.get(questionId);
+    if (!question) throw new Error('Stored question is unavailable.');
     return { questionId, questionMode: resolveConcreteStudyQuestionMode(question, requestedMode) };
   });
   const parsedSavedAt = Date.parse(parsed.savedAt);
@@ -81,13 +84,25 @@ export function readStoredSession(moduleId: string, byId: Map<string, Question>)
     if (!raw) return undefined;
     const parsed = JSON.parse(raw) as Partial<StoredSession> & Partial<LegacyStoredSession>;
     if (parsed.version !== 2) return normalizeLegacyStoredSession(parsed as LegacyStoredSession, byId);
-    if (!Array.isArray(parsed.questions) || typeof parsed.index !== 'number' || parsed.index < 0 || parsed.index > parsed.questions.length) return undefined;
-    if (!parsed.questions.every((item) => item && typeof item.questionId === 'string' && byId.has(item.questionId) && isConcreteStudyQuestionMode(item.questionMode))) return undefined;
+    if (!Array.isArray(parsed.questions) || typeof parsed.index !== 'number' || parsed.index < 0 || parsed.index > parsed.questions.length)
+      return undefined;
+    if (
+      !parsed.questions.every(
+        (item) => item && typeof item.questionId === 'string' && byId.has(item.questionId) && isConcreteStudyQuestionMode(item.questionMode)
+      )
+    )
+      return undefined;
     if (!parsed.settings || typeof parsed.settings !== 'object') return undefined;
     if (parsed.mode !== 'normal' && parsed.mode !== 'review') return undefined;
     if (typeof parsed.startedAt !== 'number' || !Number.isFinite(parsed.startedAt)) return undefined;
-    if (typeof parsed.currentElapsedMs !== 'number' || !Number.isFinite(parsed.currentElapsedMs) || parsed.currentElapsedMs < 0) return undefined;
-    if (typeof parsed.currentHiddenTimeExcludedMs !== 'number' || !Number.isFinite(parsed.currentHiddenTimeExcludedMs) || parsed.currentHiddenTimeExcludedMs < 0) return undefined;
+    if (typeof parsed.currentElapsedMs !== 'number' || !Number.isFinite(parsed.currentElapsedMs) || parsed.currentElapsedMs < 0)
+      return undefined;
+    if (
+      typeof parsed.currentHiddenTimeExcludedMs !== 'number' ||
+      !Number.isFinite(parsed.currentHiddenTimeExcludedMs) ||
+      parsed.currentHiddenTimeExcludedMs < 0
+    )
+      return undefined;
     if (!Array.isArray(parsed.attempts)) return undefined;
     if (typeof parsed.savedAt !== 'string') return undefined;
     return parsed as StoredSession;
@@ -96,7 +111,12 @@ export function readStoredSession(moduleId: string, byId: Map<string, Question>)
   }
 }
 
-export function restoreStoredSession(module: ModuleInfo, stored: StoredSession, byId: Map<string, Question>, choicePool: Question[]): QuizSession | undefined {
+export function restoreStoredSession(
+  module: ModuleInfo,
+  stored: StoredSession,
+  byId: Map<string, Question>,
+  choicePool: Question[]
+): QuizSession | undefined {
   const queue: Question[] = [];
   for (const item of stored.questions) {
     const question = byId.get(item.questionId);
@@ -107,6 +127,8 @@ export function restoreStoredSession(module: ModuleInfo, stored: StoredSession, 
     module,
     queue,
     choicePool: [...choicePool],
+    choiceCandidateIndex: buildChoiceCandidateIndex(choicePool),
+    wrongAnswerLookupIndex: buildWrongAnswerLookupIndex(choicePool.length ? choicePool : queue),
     index: stored.index,
     settings: runtimeSettings(stored.settings),
     startedAt: stored.startedAt,
@@ -252,7 +274,12 @@ export async function renderModuleScreen(
   const settingsGrid = el('div', 'settings-grid');
 
   const countField = makeSelect('問題数');
-  for (const [value, label] of [['10', '10問'], ['20', '20問'], ['50', '50問'], ['all', '全部']] as const) {
+  for (const [value, label] of [
+    ['10', '10問'],
+    ['20', '20問'],
+    ['50', '50問'],
+    ['all', '全部']
+  ] as const) {
     const option = el('option', '', label) as HTMLOptionElement;
     option.value = value;
     countField.select.append(option);
@@ -293,7 +320,11 @@ export async function renderModuleScreen(
   };
 
   const answerField = makeSelect('回答形式');
-  for (const [value, label] of [['auto', '自動'], ['choice', '4択'], ['input', '入力']] as const) {
+  for (const [value, label] of [
+    ['auto', '自動'],
+    ['choice', '4択'],
+    ['input', '入力']
+  ] as const) {
     const option = el('option', '', label) as HTMLOptionElement;
     option.value = value;
     answerField.select.append(option);
@@ -380,9 +411,10 @@ export async function renderModuleScreen(
   start.onclick = () => startSession(settings, 'normal');
 
   if (storedSession) {
-    const resumeLabel = storedSession.index >= storedSession.questions.length
-      ? '結果を再開'
-      : `再開 (${storedSession.index + 1}/${storedSession.questions.length})`;
+    const resumeLabel =
+      storedSession.index >= storedSession.questions.length
+        ? '結果を再開'
+        : `再開 (${storedSession.index + 1}/${storedSession.questions.length})`;
     const resume = button(resumeLabel, 'btn');
     resume.onclick = () => {
       const session = restoreStoredSession(module, storedSession, questionsById, sessionQuestionPool);
@@ -412,7 +444,12 @@ export async function renderModuleScreen(
   const quickLabel = el('div', 'v2-quick-label');
   quickLabel.append(el('strong', '', 'Quick Start'), el('span', '', '問題数だけ選んですぐ開始'));
   const lengths = el('div', 'v2-lengths');
-  const quickValues: Array<[string, string]> = [['10', '10問'], ['20', '20問'], ['50', '50問'], ['all', '全部']];
+  const quickValues: Array<[string, string]> = [
+    ['10', '10問'],
+    ['20', '20問'],
+    ['50', '50問'],
+    ['all', '全部']
+  ];
   const quickButtons: HTMLButtonElement[] = [];
   const updateQuickSelection = () => {
     for (const item of quickButtons) item.classList.toggle('active', item.dataset.value === countField.select.value);

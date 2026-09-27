@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Attempt, ReviewCard, ReviewLog } from '../src/core/models';
 import { db, type LoopDeckBackup } from '../src/storage/db';
 
@@ -75,6 +75,7 @@ function emptyBackup(): LoopDeckBackup {
 }
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   await db.importUserData(emptyBackup(), 'replace');
 });
 
@@ -86,7 +87,7 @@ describe('IndexedDB atomic persistence', () => {
 
     expect((await db.getAttempts()).some((row) => row.attemptId === 'atomic-fail')).toBe(false);
     expect(await db.getReviewCard('q-atomic-fail')).toBeUndefined();
-    expect((await db.getReviewLogsForQuestion('q-atomic-fail'))).toEqual([]);
+    expect(await db.getReviewLogsForQuestion('q-atomic-fail')).toEqual([]);
   });
 
   it('rolls back a replace restore completely when a later backup row fails', async () => {
@@ -94,7 +95,12 @@ describe('IndexedDB atomic persistence', () => {
     await db.setBookmark('existing-bookmark', true);
     const backup = emptyBackup();
     backup.attempts = [attempt('incoming')];
-    backup.reviewLogs = [{ ...log('incoming'), nonCloneable: () => undefined } as unknown as ReviewLog];
+    backup.reviewLogs = [log('incoming')];
+    const originalPut = IDBObjectStore.prototype.put;
+    vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(function (this: IDBObjectStore, value, key) {
+      if (this.name === 'reviewLogs') throw new DOMException('Disk full', 'QuotaExceededError');
+      return originalPut.call(this, value, key);
+    });
 
     await expect(db.importUserData(backup, 'replace')).rejects.toBeTruthy();
 

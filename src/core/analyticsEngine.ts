@@ -43,7 +43,6 @@ export interface AnalyticsOverview {
   mistakeBreakdown: MistakeBreakdownItem[];
 }
 
-
 function parseAttemptDay(attempt: Attempt): string | undefined {
   const date = new Date(attempt.answeredAt);
   if (Number.isNaN(date.getTime())) return undefined;
@@ -165,7 +164,6 @@ export function buildMistakeBreakdown(attempts: Attempt[], questions: Question[]
   return [...counts.values()].filter((item) => item.count > 0);
 }
 
-
 /**
  * Builds all Graphs-screen summaries from one pass over attempt history.
  * Derived problem analysis reuses the by-question groups from that pass instead
@@ -181,8 +179,10 @@ export function buildAnalyticsOverview(
   const dailyDays = options.dailyDays ?? 28;
   const trendDays = options.trendDays ?? 14;
   const slowCorrectMs = options.slowCorrectMs ?? 10000;
-  const dailyByDay = new Map<string, DailyStudyStat>(recentDayKeys(dailyDays, now).map((date) => [date, { date, attempts: 0, correct: 0, wrong: 0, revealed: 0, accuracy: 0 }]));
-  const trendByDay = new Map<string, number>(recentDayKeys(trendDays, now).map((date) => [date, 0]));
+  const dailyByDay = new Map<string, DailyStudyStat>(
+    recentLocalCalendarDayKeys(dailyDays, now).map((date) => [date, { date, attempts: 0, correct: 0, wrong: 0, revealed: 0, accuracy: 0 }])
+  );
+  const trendByDay = new Map<string, number>(recentLocalCalendarDayKeys(trendDays, now).map((date) => [date, 0]));
   const moduleTitles = new Map(modules.map((module) => [module.id, module.title]));
   const moduleById = new Map<string, ModuleStudyStat & { elapsedTotal: number }>();
   const questionsById = new Map(questions.map((question) => [question.id, question]));

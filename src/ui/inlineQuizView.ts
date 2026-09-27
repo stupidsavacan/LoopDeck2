@@ -10,16 +10,16 @@ const IMAGE_MISSING_MESSAGE = '画像参照は保持されていますが、画�
 const IMAGE_UNSAFE_MESSAGE = '画像参照は保持されています。表示は未実装または安全でない参照のためスキップしました。';
 const IMAGE_LOAD_ERROR_MESSAGE = '画像参照は保持されています。画像ファイルはまだ表示できません。';
 
-function answerToText(answer: string | string[]): string { return Array.isArray(answer) ? answer.join(' / ') : answer; }
+function answerToText(answer: string | string[]): string {
+  return Array.isArray(answer) ? answer.join(' / ') : answer;
+}
 
 function wrongAnswerLabel(source: WrongAnswerExplanation['source']): string {
   return source === 'choice' ? '選んだ答えの解説' : '入力した答えの解説';
 }
 
 function wrongAnswerFallback(source: WrongAnswerExplanation['source']): string {
-  return source === 'choice'
-    ? 'この選択肢は、この問題の答えではありません。'
-    : '入力した答えは、この問題の答えではありません。';
+  return source === 'choice' ? 'この選択肢は、この問題の答えではありません。' : '入力した答えは、この問題の答えではありません。';
 }
 
 function appendExplanation(container: HTMLElement, className: string, label: string, text: string): void {
@@ -63,26 +63,33 @@ export function appendQuizResult(
   if (result === 'wrong') appendWrongAnswerExplanation(container, wrongExplanation);
 }
 
-function fallback(message: string): HTMLElement { return el('p', 'image-fallback', message); }
+function fallback(message: string): HTMLElement {
+  return el('p', 'image-fallback', message);
+}
 
 export function renderQuestionImage(question: Question, resolveImageAsset: QuestionImageAssetResolver): HTMLElement | undefined {
   if (!question.imageAsset) return undefined;
   if (!isSafeImageAssetRef(question.imageAsset)) return fallback(IMAGE_UNSAFE_MESSAGE);
   const mount = el('div', 'question-image-mount');
   mount.append(fallback('画像を読み込んでいます。'));
-  void resolveImageAsset(question).then((resolvedAsset) => {
-    if (!resolvedAsset) { mount.replaceChildren(fallback(IMAGE_MISSING_MESSAGE)); return; }
-    if (!isSafeImageDataUrl(resolvedAsset) && !isSafeImageAssetRef(resolvedAsset)) {
-      mount.replaceChildren(fallback(IMAGE_UNSAFE_MESSAGE));
-      return;
-    }
-    const image = el('img', 'question-image') as HTMLImageElement;
-    image.src = resolvedAsset;
-    image.alt = '問題資料画像';
-    image.loading = 'lazy';
-    image.onerror = () => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE));
-    mount.replaceChildren(image);
-  }).catch(() => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE)));
+  void resolveImageAsset(question)
+    .then((resolvedAsset) => {
+      if (!resolvedAsset) {
+        mount.replaceChildren(fallback(IMAGE_MISSING_MESSAGE));
+        return;
+      }
+      if (!isSafeImageDataUrl(resolvedAsset) && !isSafeImageAssetRef(resolvedAsset)) {
+        mount.replaceChildren(fallback(IMAGE_UNSAFE_MESSAGE));
+        return;
+      }
+      const image = el('img', 'question-image') as HTMLImageElement;
+      image.src = resolvedAsset;
+      image.alt = '問題資料画像';
+      image.loading = 'lazy';
+      image.onerror = () => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE));
+      mount.replaceChildren(image);
+    })
+    .catch(() => mount.replaceChildren(fallback(IMAGE_LOAD_ERROR_MESSAGE)));
   return mount;
 }
 

@@ -519,7 +519,7 @@ https://example.com/file.json
 null byte を含むパス
 ```
 
-ZIP 内の危険なファイルパスや実行可能/描画可能な拡張子はエラーとして拒否します。一方、question の `imageAsset` が安全でない・未対応形式・ZIP 内に存在しない場合は現在は warning になり、その画像を取り込まずに pack 自体は受理されることがあります。したがって「インポートできた」だけでは画像問題の完全性は保証されません。インポートされた教材 HTML、JavaScript、CSS は実行されません。
+ZIP 内の危険なファイルパスや実行可能/描画可能な拡張子はエラーとして拒否します。一方、question の安全でない・未対応形式の `imageAsset` は拒否します。安全な参照先が ZIP 内に存在しない場合は warning になり、その画像を取り込まずに pack 自体は受理されることがあります。したがって「インポートできた」だけでは画像問題の完全性は保証されません。インポートされた教材 HTML、JavaScript、CSS は実行されません。
 
 ### クイックチェックリスト
 
@@ -534,7 +534,6 @@ pack をインポートする前に、次を確認してください。
 - `multi_select` 問題には `choices` と `correctChoices` がある。
 - 画像パスがローカルで、`.png`、`.jpg`、`.jpeg`、または `.webp` を使っている。
 - ZIP のルートに `manifest.json`、`modules.json`、`questions.json` が直接入っている。
-
 
 ## Pack Authoring Prompt の同期ルール
 

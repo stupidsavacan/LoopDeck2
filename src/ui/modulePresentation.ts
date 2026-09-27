@@ -28,31 +28,12 @@ function validHexColor(value: unknown): string | undefined {
 }
 
 function inferModuleColors(module: ModuleInfo): { accent: string; accentColor?: string } {
-  const haystack = [
-    module.id,
-    module.title,
-    module.subject,
-    ...(module.tags ?? [])
-  ].join(' ').toLocaleLowerCase();
+  const haystack = [module.id, module.title, module.subject, ...(module.tags ?? [])].join(' ').toLocaleLowerCase();
 
-  const fallback = SUBJECT_COLOR_FALLBACKS.find((entry) => entry.keywords.some((keyword) => haystack.includes(keyword.toLocaleLowerCase())));
+  const fallback = SUBJECT_COLOR_FALLBACKS.find((entry) =>
+    entry.keywords.some((keyword) => haystack.includes(keyword.toLocaleLowerCase()))
+  );
   return fallback ? { accent: fallback.accent, accentColor: fallback.accentColor } : { accent: DEFAULT_MODULE_ACCENT };
-}
-
-function safeGetStorage(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function safeSetStorage(key: string, value: string): void {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // Storage may be unavailable in some embedded contexts.
-  }
 }
 
 export function moduleMeta(module: ModuleInfo): ModuleCardMeta {
@@ -65,5 +46,3 @@ export function moduleMeta(module: ModuleInfo): ModuleCardMeta {
     tags: module.tags?.slice(0, 4) ?? [module.subject]
   };
 }
-
-

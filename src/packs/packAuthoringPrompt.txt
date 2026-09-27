@@ -246,7 +246,7 @@ Reference/import rules:
 - no data: or javascript: URLs.
 - do not invent image filenames unless you also provide the image file.
 - a JSON-only pack cannot carry a local image payload; when any `imageAsset` is required, emit a ZIP that actually contains the referenced files.
-- the current ZIP importer reports an unsafe, unsupported, or missing referenced image as a warning and can still accept the pack. Do not treat that leniency as permission to ship a broken image question: the authoring self-check below requires the asset to exist and resolve.
+- unsafe or unsupported image references are rejected. A safe but missing referenced image produces a warning; the authoring self-check still requires the asset to exist and resolve.
 - store one shared figure once and let multiple questions reference the same stable neutral path. Do not duplicate the same image once per question.
 
 ### Image-question quality contract (#41)
@@ -351,12 +351,12 @@ Requirements:
 
 Current collision/merge behavior that authors must account for:
 - active packs are resolved by `packId`; later entries in the active-pack resolution order win. Imported packs are loaded after the built-in pack, so an imported collision can shadow built-in content.
-- active modules/questions are also resolved by ID across active packs, so generic IDs such as `history` or `q1` can shadow existing content even when `packId` differs.
+- module IDs use later-wins precedence, but each module resolves questions only from its owning pack. Question IDs must be globally unique across different active packIds because learning history uses question IDs as keys; direct cross-pack question-ID collisions are rejected.
 - importing the same already-imported `packId` offers overwrite or merge update.
 - merge update keeps identical colliding questions once; a colliding question with different content is renamed with a suffix such as `__merge_1` and module `questionIds` are remapped.
 - during module merge, incoming module metadata replaces same-key metadata while questionIds are unioned/de-duplicated.
 - a module ID shared with another active pack can trigger module-merge behavior.
-- overwrite import replaces the stored assets for that pack with the newly imported referenced assets. Merge import preserves existing same-path assets and only adds missing asset paths; if the bytes for an existing image path must change, use overwrite update or a new asset path instead of assuming merge will replace it.
+- overwrite import replaces the stored assets for that pack with the newly imported referenced assets. Merge import upserts assets: incoming same-path bytes replace stored bytes, while unrelated existing assets remain. Merge preview is pure and does not stage or persist assets.
 - use a pack-specific prefix for module/question IDs unless intentional replacement/merge is the goal.
 
 ## 10. Module and question presentation metadata
@@ -364,7 +364,7 @@ Current collision/merge behavior that authors must account for:
 Keep module titles specific enough to identify the test range.
 Use consistent Japanese category names where practical.
 
-For authored modules, provide non-empty `id`, `folderId`, `title`, `subject`, and a `questionIds` array. The current validator is less strict about some of these fields, but the Home/Module UI consumes them and malformed values can yield an importable but broken presentation.
+Only `id` and `questionIds` are required module fields. For clear authored content, provide `folderId`, `title`, and `subject` as well. Missing or malformed optional text metadata is normalized safely: folderId becomes empty, title defaults to id, and subject defaults to その他. A non-empty folderId must reference an existing folder.
 
 Optional module presentation metadata currently consumed by the UI includes:
 - `color`
@@ -372,8 +372,12 @@ Optional module presentation metadata currently consumed by the UI includes:
 - `accentColor`
 - `description`
 - `tags`
+- `subtitle`
+- `preferredAnswerFormat`: `auto`, `choice`, or `input`, used as the module's default answer format.
 
-`color`, `accent`, and `accentColor` are only honored by the current Home UI when they are six-digit hex colors such as `#2563EB`. Invalid values fall back to inferred/default colors.
+Folders may also carry `description` and `tags`. Built-in presentation metadata and imported metadata use the same data contract.
+
+`color`, `accent`, and `accentColor` must be six-digit hex colors such as `#2563EB`. Invalid authored values are rejected; omitted colors use inferred/default colors. Removed `sampleMarks` and `sampleColors` fields are not supported authoring features.
 
 Useful optional question metadata currently consumed by the study UI includes:
 - `category`: category filter/group label.
@@ -386,14 +390,16 @@ Fields that merely exist in a TypeScript interface but are not wired into the cu
 
 ## 11. Importer enforcement versus authoring invariants
 
-The current importer performs only a core structural validation pass. It rejects, among other things:
+The importer validates and normalizes the runtime schema before persistence. It rejects, among other things:
 - packVersion other than 1; missing/blank packId or title; missing folders/modules/questions arrays;
 - duplicate question IDs and duplicate module IDs within the imported pack;
 - missing question id/moduleId/prompt; unsupported question types;
 - missing input/choice answer; fewer than 2 choice options; fewer than 2 multi-select options; empty multi-select correctChoices;
-- unsafe container paths and forbidden executable/renderable file extensions.
+- unsafe container paths, unsafe/unsupported image references, forbidden executable/renderable file extensions, and files exceeding the resource limits;
+- broken folder/module/question cross-references, inconsistent module ownership, duplicate choice text, choice answers outside choices, and multi-select answers outside choices;
+- invalid colors, supported-field types, and preferredAnswerFormat values.
 
-It does **not** currently enforce every semantic invariant listed in this prompt. In particular, do not rely on the importer to catch all broken folder/module/question cross-references, choice-answer membership, duplicate choice text, multi-select membership, or missing image payloads. Some missing/unsafe image references are warnings rather than fatal errors.
+Validation cannot establish factual accuracy, distractor quality, or whether a figure really supports an answer. Missing safe image payloads remain warnings rather than fatal errors.
 
 Therefore the mandatory authoring self-check is stricter than the importer. A pack that imports successfully can still behave incorrectly if these invariants are violated.
 

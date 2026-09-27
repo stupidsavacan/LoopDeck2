@@ -11,7 +11,6 @@ const lowerAreas = new Set(['core', 'storage', 'packs', 'pdf', 'ui']);
 // screen dependencies must be reviewed and added here deliberately, not silently.
 const screenImportAllowlist = new Map([
   ['src/screens/homeScreen.ts -> src/screens/homeFolders.ts', 'home-only helper currently colocated under screens'],
-  ['src/screens/moduleScreen.ts -> src/screens/homeScreen.ts', 'temporary #49 exception for moduleMeta() ownership'],
   ['src/screens/moduleScreen.ts -> src/screens/inlineQuiz.ts', 'deliberate composition of the shared inline quiz renderer'],
   ['src/screens/reviewCenter.ts -> src/screens/inlineQuiz.ts', 'deliberate composition of the shared inline quiz renderer']
 ]);

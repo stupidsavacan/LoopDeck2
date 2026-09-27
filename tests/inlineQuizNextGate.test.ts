@@ -44,8 +44,15 @@ describe('inline quiz Next gating', () => {
   });
 
   it('cannot advance an input question before answering, then advances only after persistence succeeds', async () => {
+    let finishSave: () => void = () => {};
+    vi.spyOn(db, 'saveAttemptWithReview').mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishSave = resolve;
+      })
+    );
     const container = document.createElement('div');
     const onSessionChange = vi.fn();
+    const onSessionCheckpoint = vi.fn();
     const session = createSession(moduleInfo, [inputQuestion], {
       shuffle: false,
       autoNext: false,
@@ -53,13 +60,11 @@ describe('inline quiz Next gating', () => {
       answerFormat: 'input'
     });
 
-    renderInlineQuiz(container, session, { onSessionChange, onComplete() {} });
+    renderInlineQuiz(container, session, { onSessionChange, onSessionCheckpoint, onComplete() {} });
 
-    const next = [...container.querySelectorAll<HTMLButtonElement>('button')]
-      .find((button) => button.textContent === '次へ')!;
+    const next = [...container.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '次へ')!;
     const input = container.querySelector<HTMLInputElement>('input.text-input')!;
-    const submit = [...container.querySelectorAll<HTMLButtonElement>('button')]
-      .find((button) => button.textContent === '回答する')!;
+    const submit = [...container.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '回答する')!;
 
     expect(next.disabled).toBe(true);
     next.click();
@@ -69,7 +74,14 @@ describe('inline quiz Next gating', () => {
     submit.click();
 
     expect(next.disabled).toBe(true);
+    expect(onSessionCheckpoint).not.toHaveBeenCalled();
+    finishSave();
     await vi.waitFor(() => expect(next.disabled).toBe(false));
+    expect(onSessionCheckpoint).toHaveBeenCalledTimes(1);
+    expect(onSessionCheckpoint.mock.calls[0][0]).toMatchObject({
+      index: 1,
+      attempts: [expect.objectContaining({ questionId: inputQuestion.id })]
+    });
     next.click();
 
     expect(onSessionChange).toHaveBeenCalledTimes(1);
@@ -94,10 +106,8 @@ describe('inline quiz Next gating', () => {
 
     renderInlineQuiz(container, session, { onSessionChange() {}, onComplete() {} });
 
-    const next = [...container.querySelectorAll<HTMLButtonElement>('button')]
-      .find((button) => button.textContent === '次へ')!;
-    const reveal = [...container.querySelectorAll<HTMLButtonElement>('button')]
-      .find((button) => button.textContent === '答えを見る')!;
+    const next = [...container.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '次へ')!;
+    const reveal = [...container.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '答えを見る')!;
 
     expect(next.disabled).toBe(true);
     reveal.click();
@@ -116,10 +126,8 @@ describe('inline quiz Next gating', () => {
 
     renderInlineQuiz(container, session, { onSessionChange() {}, onComplete() {} });
 
-    const next = [...container.querySelectorAll<HTMLButtonElement>('button')]
-      .find((button) => button.textContent === '次へ')!;
-    const choiceB = [...container.querySelectorAll<HTMLButtonElement>('.choice-btn')]
-      .find((button) => button.textContent === 'B')!;
+    const next = [...container.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '次へ')!;
+    const choiceB = [...container.querySelectorAll<HTMLButtonElement>('.choice-btn')].find((button) => button.textContent === 'B')!;
 
     expect(next.disabled).toBe(true);
     choiceB.click();
@@ -128,14 +136,15 @@ describe('inline quiz Next gating', () => {
   });
 
   it('surfaces a failed save, keeps Next gated, and retries the same attempt', async () => {
-    const save = vi.spyOn(db, 'saveAttemptWithReview')
-      .mockRejectedValueOnce(new Error('disk full'))
-      .mockResolvedValueOnce();
+    const save = vi.spyOn(db, 'saveAttemptWithReview').mockRejectedValueOnce(new Error('disk full')).mockResolvedValueOnce();
     const container = document.createElement('div');
     document.body.append(container);
     const onSessionChange = vi.fn();
     const session = createSession(moduleInfo, [inputQuestion], {
-      shuffle: false, autoNext: false, questionLimit: 'all', answerFormat: 'input'
+      shuffle: false,
+      autoNext: false,
+      questionLimit: 'all',
+      answerFormat: 'input'
     });
 
     renderInlineQuiz(container, session, { onSessionChange, onComplete() {} });

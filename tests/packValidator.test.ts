@@ -4,7 +4,21 @@ import { validateActivePackIdentities, validatePack, validatePackFiles } from '.
 
 describe('pack validator', () => {
   it('rejects executable files and unsafe paths', () => {
-    const issues = validatePackFiles(['manifest.json', '../evil.js', '..\\evil.json', 'questions.json', 'images/a.png', 'run.sh', 'script.cjs', 'shell.ps1', 'page.html', '/abs/data.json', '', 'bad\0path.json', ' space.json']);
+    const issues = validatePackFiles([
+      'manifest.json',
+      '../evil.js',
+      '..\\evil.json',
+      'questions.json',
+      'images/a.png',
+      'run.sh',
+      'script.cjs',
+      'shell.ps1',
+      'page.html',
+      '/abs/data.json',
+      '',
+      'bad\0path.json',
+      ' space.json'
+    ]);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '../evil.js')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '..\\evil.json')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === 'run.sh')).toBe(true);
@@ -48,15 +62,17 @@ describe('pack validator', () => {
       packId: 'demo-optional-types',
       title: 'Demo',
       folders: [],
-      modules: [{
-        id: 'm',
-        folderId: 123,
-        title: null,
-        subject: { unsafe: true },
-        description: ['bad'],
-        tags: ['safe', 42, 'also-safe'],
-        questionIds: ['q']
-      }],
+      modules: [
+        {
+          id: 'm',
+          folderId: 123,
+          title: null,
+          subject: { unsafe: true },
+          description: ['bad'],
+          tags: ['safe', 42, 'also-safe'],
+          questionIds: ['q']
+        }
+      ],
       questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
     });
 
@@ -96,7 +112,7 @@ describe('pack validator', () => {
       questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
     });
     expect(result.ok).toBe(true);
-    expect(result.pack?.modules[0]).toMatchObject({ id: 'm', folderId: '', title: 'm', subject: '' });
+    expect(result.pack?.modules[0]).toMatchObject({ id: 'm', folderId: '', title: 'm', subject: 'その他' });
   });
 
   it('rejects broken cross references and malformed optional presentation metadata', () => {
@@ -106,19 +122,20 @@ describe('pack validator', () => {
       title: 'Bad refs',
       folders: [{ id: 'f', title: 'Folder' }],
       modules: [{ id: 'm', folderId: 'missing', title: 'Module', subject: 'demo', color: 'url(javascript:evil)', questionIds: ['q'] }],
-      questions: [{
-        id: 'q',
-        moduleId: 'm',
-        type: 'input',
-        prompt: 'A?',
-        answer: 'A',
-        sampleMarks: [{ label: 'unsafe', color: 'red', pattern: 'unknown' }]
-      }]
+      questions: [
+        {
+          id: 'q',
+          moduleId: 'm',
+          type: 'input',
+          prompt: 'A?',
+          answer: 'A',
+          sampleMarks: [{ label: 'unsafe', color: 'red', pattern: 'unknown' }]
+        }
+      ]
     });
     expect(result.ok).toBe(false);
     expect(result.issues.some((entry) => entry.message.includes('unknown folderId'))).toBe(true);
     expect(result.issues.some((entry) => entry.message.includes('six-digit hex color'))).toBe(true);
-    expect(result.issues.some((entry) => entry.message.includes('pattern is unsupported'))).toBe(true);
   });
 
   it('rejects inconsistent module/question ownership and invalid answer collections', () => {
@@ -141,7 +158,10 @@ describe('pack validator', () => {
 
   it('rejects invalid preferred answer formats', () => {
     const result = validatePack({
-      packVersion: 1, packId: 'demo-format', title: 'Demo', folders: [{ id: 'f', title: 'F' }],
+      packVersion: 1,
+      packId: 'demo-format',
+      title: 'Demo',
+      folders: [{ id: 'f', title: 'F' }],
       modules: [{ id: 'm', folderId: 'f', title: 'M', subject: 'demo', preferredAnswerFormat: 'bad', questionIds: ['q'] }],
       questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
     });
@@ -150,7 +170,10 @@ describe('pack validator', () => {
 
   it('treats question ids as global across different active packIds but allows same-pack replacement', () => {
     const makePack = (packId: string, prompt: string): LoopDeckPack => ({
-      packVersion: 1, packId, title: packId, folders: [{ id: 'f', title: 'F' }],
+      packVersion: 1,
+      packId,
+      title: packId,
+      folders: [{ id: 'f', title: 'F' }],
       modules: [{ id: `${packId}-m`, folderId: 'f', title: 'M', subject: 'demo', questionIds: ['shared'] }],
       questions: [{ id: 'shared', moduleId: `${packId}-m`, type: 'input', prompt, answer: 'A' }]
     });

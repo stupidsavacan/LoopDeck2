@@ -8,7 +8,6 @@ import { renderHomeScreen } from '../src/screens/homeScreen';
 import { db } from '../src/storage/db';
 
 const DB_NAME = 'loopdeck-db';
-const DB_VERSION = 3;
 
 function minimalPack(packId: string) {
   return {
@@ -23,7 +22,7 @@ function minimalPack(packId: string) {
 
 function putRawStoredPack(pack: unknown): Promise<void> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = indexedDB.open(DB_NAME);
     request.onsuccess = () => {
       const database = request.result;
       const transaction = database.transaction('packs', 'readwrite');
@@ -38,9 +37,35 @@ function putRawStoredPack(pack: unknown): Promise<void> {
 
 function expectHomeToRender(pack: LoopDeckPack): void {
   const root = document.createElement('div');
-  expect(() => renderHomeScreen(root, resolveActivePacks([pack]), () => {}, () => {}, () => {}, () => {})).not.toThrow();
+  expect(() =>
+    renderHomeScreen(
+      root,
+      resolveActivePacks([pack]),
+      () => {},
+      () => {},
+      () => {},
+      () => {}
+    )
+  ).not.toThrow();
   expect(root.querySelector('.module-card')).toBeTruthy();
 }
+
+function installFileTextForJSDom(): void {
+  if (typeof File.prototype.text === 'function') return;
+  Object.defineProperty(File.prototype, 'text', {
+    configurable: true,
+    value(this: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result ?? ''));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(this);
+      });
+    }
+  });
+}
+
+installFileTextForJSDom();
 
 describe('imported pack startup recovery', () => {
   it('imports, persists, reloads, and renders a module with only documented required fields', async () => {

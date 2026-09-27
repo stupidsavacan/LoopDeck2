@@ -71,13 +71,18 @@ function settings(overrides: Partial<StudySettings> = {}): StudySettings {
   };
 }
 
-function render(question: Question, overrides: Partial<StudySettings> = {}): { container: HTMLElement; attempts: Attempt[]; onSessionChange: ReturnType<typeof vi.fn> } {
+function render(
+  question: Question,
+  overrides: Partial<StudySettings> = {}
+): { container: HTMLElement; attempts: Attempt[]; onSessionChange: ReturnType<typeof vi.fn> } {
   const container = document.createElement('div');
   document.body.append(container);
   const attempts: Attempt[] = [];
   vi.spyOn(db, 'hasBookmark').mockResolvedValue(false);
   vi.spyOn(db, 'getReviewCard').mockResolvedValue(undefined);
-  vi.spyOn(db, 'saveAttemptWithReview').mockImplementation(async (attempt) => { attempts.push(attempt); });
+  vi.spyOn(db, 'saveAttemptWithReview').mockImplementation(async (attempt) => {
+    attempts.push(attempt);
+  });
   const onSessionChange = vi.fn();
   renderInlineQuiz(container, createSession(moduleInfo, [question], settings(overrides)), {
     onSessionChange,
@@ -212,6 +217,7 @@ describe('inline quiz idle auto reveal', () => {
     await vi.advanceTimersByTimeAsync(1_000);
     input.value = 'answer';
     submit.click();
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(attempts).toHaveLength(1);
     expect(attempts[0].elapsedMs).toBe(3_000);
@@ -265,7 +271,7 @@ describe('inline quiz idle auto reveal', () => {
     expect(container.querySelectorAll('.result')).toHaveLength(1);
   });
 
-  it('records the concrete presented question mode on attempts', () => {
+  it('records the concrete presented question mode on attempts', async () => {
     const { container, attempts } = render(reversibleQuestion, {
       autoRevealAfterIdle: false,
       answerFormat: 'input',
@@ -277,6 +283,7 @@ describe('inline quiz idle auto reveal', () => {
     expect(container.querySelector('.question-prompt')?.textContent).toBe('back');
     input.value = 'front';
     submit.click();
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(attempts).toHaveLength(1);
     expect(attempts[0].questionMode).toBe('back_to_front');

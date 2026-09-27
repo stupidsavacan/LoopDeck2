@@ -83,12 +83,6 @@ function characterWidth(character: string, font: PDFFont, size: number): number 
   return width;
 }
 
-function textWidth(text: string, fonts: WorksheetFonts, size: number): number {
-  let width = 0;
-  for (const character of text) width += characterWidth(character, fontForCharacter(character, fonts), size);
-  return width;
-}
-
 function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: number, y: number, size: number): void {
   let cursor = x;
   for (const run of textRuns(text, fonts)) {
@@ -111,7 +105,6 @@ function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: n
       lines.push(current);
       current = character;
       currentWidth = width;
-
     }
   }
   if (current) lines.push(current);
@@ -136,15 +129,7 @@ function fitHeaderTitle(text: string, fonts: WorksheetFonts, maxWidth: number): 
   return undefined;
 }
 
-function drawCellText(
-  page: PDFPage,
-  text: string,
-  fonts: WorksheetFonts,
-  x: number,
-  rowTop: number,
-  width: number,
-  context: string
-): void {
+function drawCellText(page: PDFPage, text: string, fonts: WorksheetFonts, x: number, rowTop: number, width: number, context: string): void {
   const fitted = fitCellText(text, fonts, width - 10);
   if (!fitted) {
     throw new Error(`[PDF-L001] ${context}がPDFセル内に収まりません。内容は省略せず、出力を中止しました。`);
@@ -179,7 +164,8 @@ function drawTable(page: PDFPage, worksheetPage: WorksheetPage, fonts: Worksheet
     const rowTop = TABLE_TOP - (index + 1) * ROW_HEIGHT;
     drawCellText(page, String(row.number), fonts, left, rowTop, NO_COLUMN_WIDTH, `No.${row.number} の番号`);
     drawCellText(page, row.prompt, fonts, noRight, rowTop, PROMPT_COLUMN_WIDTH, `No.${row.number} の問題文`);
-    if (worksheetPage.kind === 'answers') drawCellText(page, row.answer, fonts, promptRight, rowTop, ANSWER_COLUMN_WIDTH, `No.${row.number} の解答`);
+    if (worksheetPage.kind === 'answers')
+      drawCellText(page, row.answer, fonts, promptRight, rowTop, ANSWER_COLUMN_WIDTH, `No.${row.number} の解答`);
   });
 }
 

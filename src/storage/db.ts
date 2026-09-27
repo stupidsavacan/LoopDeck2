@@ -9,18 +9,8 @@ const DB_VERSION = 4;
 const USER_DATA_STORES = ['attempts', 'bookmarks', 'packs', 'packAssets', 'reviewCards', 'reviewLogs'] as const;
 export type BackupImportMode = 'merge' | 'replace';
 
-export interface StoredPackAsset extends ImportedPackAsset { assetId: string; }
-
-export interface LoopDeckBackup {
-  loopDeckBackupVersion: 1;
-  exportedAt: string;
-  attempts: Attempt[];
-  bookmarks: string[];
-  importedPacks: LoopDeckPack[];
-  importedPackAssets?: StoredPackAsset[];
-  reviewCards?: ReviewCard[];
-  reviewLogs?: ReviewLog[];
-}
+import type { LoopDeckBackup, StoredPackAsset } from './storageTypes';
+export type { LoopDeckBackup, StoredPackAsset } from './storageTypes';
 
 export interface LoopDeckDb {
   addAttempt(attempt: Attempt): Promise<void>;
@@ -49,16 +39,16 @@ export interface LoopDeckDb {
   importUserData(backup: unknown, mode: BackupImportMode): Promise<void>;
 }
 
-export function packAssetId(packId: string, path: string): string { return `${packId}:${path}`; }
+export function packAssetId(packId: string, path: string): string {
+  return `${packId}:${path}`;
+}
 
 function storedAsset(packId: string, asset: ImportedPackAsset): StoredPackAsset {
   return { assetId: packAssetId(packId, asset.path), packId, path: asset.path, mimeType: asset.mimeType, dataUrl: asset.dataUrl };
 }
 
 function ensureStore(database: IDBDatabase, transaction: IDBTransaction, name: string, keyPath: string): IDBObjectStore {
-  return database.objectStoreNames.contains(name)
-    ? transaction.objectStore(name)
-    : database.createObjectStore(name, { keyPath });
+  return database.objectStoreNames.contains(name) ? transaction.objectStore(name) : database.createObjectStore(name, { keyPath });
 }
 
 function ensureIndex(store: IDBObjectStore, name: string, keyPath: string): void {
@@ -90,7 +80,6 @@ function openDb(): Promise<IDBDatabase> {
       const packAssets = ensureStore(database, upgradeTransaction, 'packAssets', 'assetId');
       ensureIndex(packAssets, 'byPackId', 'packId');
 
-      ensureStore(database, upgradeTransaction, 'settings', 'key');
       ensureStore(database, upgradeTransaction, 'reviewCards', 'questionId');
 
       const reviewLogs = ensureStore(database, upgradeTransaction, 'reviewLogs', 'reviewLogId');
@@ -128,7 +117,11 @@ async function runTransaction<T>(
     try {
       result = task(tx);
     } catch (error) {
-      try { tx.abort(); } catch { /* already inactive */ }
+      try {
+        tx.abort();
+      } catch {
+        /* already inactive */
+      }
       reject(error);
       return;
     }
@@ -138,7 +131,11 @@ async function runTransaction<T>(
   });
 }
 
-async function transaction<T>(storeName: string, mode: IDBTransactionMode, task: (store: IDBObjectStore) => IDBRequest<T> | void): Promise<T | void> {
+async function transaction<T>(
+  storeName: string,
+  mode: IDBTransactionMode,
+  task: (store: IDBObjectStore) => IDBRequest<T> | void
+): Promise<T | void> {
   const request = await runTransaction<IDBRequest<T> | void>(storeName, mode, (tx) => task(tx.objectStore(storeName)));
   return request ? request.result : undefined;
 }
@@ -207,7 +204,10 @@ async function deletePackAndAssets(packId: string): Promise<void> {
 function validatedPackForStorage(pack: unknown): LoopDeckPack {
   const result = validatePack(pack);
   if (result.ok && result.pack) return result.pack;
-  const detail = result.issues.filter((issue) => issue.level === 'error').map((issue) => issue.message).join(' ');
+  const detail = result.issues
+    .filter((issue) => issue.level === 'error')
+    .map((issue) => issue.message)
+    .join(' ');
   throw new Error(`Imported pack failed validation before persistence.${detail ? ` ${detail}` : ''}`);
 }
 
@@ -254,7 +254,9 @@ async function importBackup(rawBackup: unknown, mode: BackupImportMode): Promise
 }
 
 export const db: LoopDeckDb = {
-  async addAttempt(attempt) { await transaction('attempts', 'readwrite', (store) => store.put(attempt)); },
+  async addAttempt(attempt) {
+    await transaction('attempts', 'readwrite', (store) => store.put(attempt));
+  },
   async saveAttemptWithReview(attempt, card, log) {
     await runTransaction(['attempts', 'reviewCards', 'reviewLogs'], 'readwrite', (tx) => {
       tx.objectStore('attempts').put(attempt);
@@ -262,33 +264,67 @@ export const db: LoopDeckDb = {
       tx.objectStore('reviewLogs').put(log);
     });
   },
-  async getAttempts() { return getAll<Attempt>('attempts'); },
-  async clearAttempts() { await transaction('attempts', 'readwrite', (store) => store.clear()); },
-  async clearWrongAttempts() { await deleteAttemptsByResult(['wrong', 'revealed']); },
+  async getAttempts() {
+    return getAll<Attempt>('attempts');
+  },
+  async clearAttempts() {
+    await transaction('attempts', 'readwrite', (store) => store.clear());
+  },
+  async clearWrongAttempts() {
+    await deleteAttemptsByResult(['wrong', 'revealed']);
+  },
   async setBookmark(questionId, enabled) {
     if (enabled) await transaction('bookmarks', 'readwrite', (store) => store.put({ questionId, createdAt: new Date().toISOString() }));
     else await transaction('bookmarks', 'readwrite', (store) => store.delete(questionId));
   },
-  async getBookmarks() { return (await getAll<{ questionId: string }>('bookmarks')).map((row) => row.questionId); },
+  async getBookmarks() {
+    return (await getAll<{ questionId: string }>('bookmarks')).map((row) => row.questionId);
+  },
   async hasBookmark(questionId) {
     return Boolean(await transaction<{ questionId: string }>('bookmarks', 'readonly', (store) => store.get(questionId)));
   },
-  async clearBookmarks() { await transaction('bookmarks', 'readwrite', (store) => store.clear()); },
-  async saveImportedPack(pack) { const normalized = validatedPackForStorage(pack); await transaction('packs', 'readwrite', (store) => store.put(normalized)); },
-  async saveImportedPackWithAssets(pack, assets, strategy) { await savePackWithAssets(validatedPackForStorage(pack), assets, strategy); },
-  async getImportedPacks() { return recoverStoredPacks(await getAll<unknown>('packs')); },
-  async getImportedPackAssets() { return getAll<StoredPackAsset>('packAssets'); },
-  async getPackAsset(packId, path) {
-    return await transaction<StoredPackAsset>('packAssets', 'readonly', (store) => store.get(packAssetId(packId, path))) as StoredPackAsset | undefined;
+  async clearBookmarks() {
+    await transaction('bookmarks', 'readwrite', (store) => store.clear());
   },
-  async deleteImportedPack(packId) { await deletePackAndAssets(packId); },
-  async getReviewCards() { return getAll<ReviewCard>('reviewCards'); },
-  async getReviewCard(questionId) { return await transaction<ReviewCard>('reviewCards', 'readonly', (store) => store.get(questionId)) as ReviewCard | undefined; },
-  async putReviewCard(card) { await transaction('reviewCards', 'readwrite', (store) => store.put(card)); },
-  async putReviewLog(log) { await transaction('reviewLogs', 'readwrite', (store) => store.put(log)); },
-  async getReviewLogs() { return getAll<ReviewLog>('reviewLogs'); },
+  async saveImportedPack(pack) {
+    const normalized = validatedPackForStorage(pack);
+    await transaction('packs', 'readwrite', (store) => store.put(normalized));
+  },
+  async saveImportedPackWithAssets(pack, assets, strategy) {
+    await savePackWithAssets(validatedPackForStorage(pack), assets, strategy);
+  },
+  async getImportedPacks() {
+    return recoverStoredPacks(await getAll<unknown>('packs'));
+  },
+  async getImportedPackAssets() {
+    return getAll<StoredPackAsset>('packAssets');
+  },
+  async getPackAsset(packId, path) {
+    return (await transaction<StoredPackAsset>('packAssets', 'readonly', (store) => store.get(packAssetId(packId, path)))) as
+      StoredPackAsset | undefined;
+  },
+  async deleteImportedPack(packId) {
+    await deletePackAndAssets(packId);
+  },
+  async getReviewCards() {
+    return getAll<ReviewCard>('reviewCards');
+  },
+  async getReviewCard(questionId) {
+    return (await transaction<ReviewCard>('reviewCards', 'readonly', (store) => store.get(questionId))) as ReviewCard | undefined;
+  },
+  async putReviewCard(card) {
+    await transaction('reviewCards', 'readwrite', (store) => store.put(card));
+  },
+  async putReviewLog(log) {
+    await transaction('reviewLogs', 'readwrite', (store) => store.put(log));
+  },
+  async getReviewLogs() {
+    return getAll<ReviewLog>('reviewLogs');
+  },
   async getReviewLogsForQuestion(questionId) {
-    const request = await runTransaction<IDBRequest<ReviewLog[]>>('reviewLogs', 'readonly', (tx) => tx.objectStore('reviewLogs').index('byQuestionId').getAll(questionId));
+    const request = await runTransaction<IDBRequest<ReviewLog[]>>('reviewLogs', 'readonly', (tx) =>
+      tx.objectStore('reviewLogs').index('byQuestionId').getAll(questionId)
+    );
     return request.result.sort((a, b) => Date.parse(a.reviewedAt) - Date.parse(b.reviewedAt));
   },
   async clearReviewData() {
@@ -299,9 +335,17 @@ export const db: LoopDeckDb = {
   },
   async exportUserData() {
     return {
-      loopDeckBackupVersion: 1, exportedAt: new Date().toISOString(), attempts: await this.getAttempts(), bookmarks: await this.getBookmarks(),
-      importedPacks: await this.getImportedPacks(), importedPackAssets: await this.getImportedPackAssets(), reviewCards: await this.getReviewCards(), reviewLogs: await this.getReviewLogs()
+      loopDeckBackupVersion: 1,
+      exportedAt: new Date().toISOString(),
+      attempts: await this.getAttempts(),
+      bookmarks: await this.getBookmarks(),
+      importedPacks: await this.getImportedPacks(),
+      importedPackAssets: await this.getImportedPackAssets(),
+      reviewCards: await this.getReviewCards(),
+      reviewLogs: await this.getReviewLogs()
     };
   },
-  async importUserData(backup, mode) { await importBackup(backup, mode); }
+  async importUserData(backup, mode) {
+    await importBackup(backup, mode);
+  }
 };

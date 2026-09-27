@@ -57,18 +57,21 @@ afterEach(() => vi.useRealTimers());
 
 describe('stored session v2 resume state', () => {
   it('restores the exact presented direction, attempts, start time, and current timing state', () => {
-    localStorage.setItem(`loopdeck_session_${moduleInfo.id}`, JSON.stringify({
-      version: 2,
-      questions: [{ questionId: reversible.id, questionMode: 'back_to_front' }],
-      index: 0,
-      mode: 'normal',
-      settings,
-      startedAt: Date.parse('2026-09-27T00:00:00.000Z'),
-      currentElapsedMs: 4200,
-      currentHiddenTimeExcludedMs: 12000,
-      attempts: [attempt],
-      savedAt: '2026-09-27T00:05:00.000Z'
-    }));
+    localStorage.setItem(
+      `loopdeck_session_${moduleInfo.id}`,
+      JSON.stringify({
+        version: 2,
+        questions: [{ questionId: reversible.id, questionMode: 'back_to_front' }],
+        index: 0,
+        mode: 'normal',
+        settings,
+        startedAt: Date.parse('2026-09-27T00:00:00.000Z'),
+        currentElapsedMs: 4200,
+        currentHiddenTimeExcludedMs: 12000,
+        attempts: [attempt],
+        savedAt: '2026-09-27T00:05:00.000Z'
+      })
+    );
 
     const byId = new Map([[reversible.id, reversible]]);
     const stored = readStoredSession(moduleInfo.id, byId);
@@ -82,33 +85,41 @@ describe('stored session v2 resume state', () => {
     expect(restored?.currentElapsedMs).toBe(4200);
     expect(restored?.currentHiddenTimeExcludedMs).toBe(12000);
     expect(restored?.currentStartedAt).toBe(Date.now());
+    expect(restored?.choiceCandidateIndex.get('back_to_front')?.some((item) => item.answer === 'front')).toBe(true);
+    expect(restored?.wrongAnswerLookupIndex).toBeDefined();
   });
 
   it('accepts a completed v2 session so its summary can be resumed', () => {
-    localStorage.setItem(`loopdeck_session_${moduleInfo.id}`, JSON.stringify({
-      version: 2,
-      questions: [{ questionId: reversible.id, questionMode: 'front_to_back' }],
-      index: 1,
-      mode: 'normal',
-      settings,
-      startedAt: Date.parse('2026-09-27T00:00:00.000Z'),
-      currentElapsedMs: 0,
-      currentHiddenTimeExcludedMs: 0,
-      attempts: [attempt],
-      savedAt: '2026-09-27T00:05:00.000Z'
-    }));
+    localStorage.setItem(
+      `loopdeck_session_${moduleInfo.id}`,
+      JSON.stringify({
+        version: 2,
+        questions: [{ questionId: reversible.id, questionMode: 'front_to_back' }],
+        index: 1,
+        mode: 'normal',
+        settings,
+        startedAt: Date.parse('2026-09-27T00:00:00.000Z'),
+        currentElapsedMs: 0,
+        currentHiddenTimeExcludedMs: 0,
+        attempts: [attempt],
+        savedAt: '2026-09-27T00:05:00.000Z'
+      })
+    );
 
     expect(readStoredSession(moduleInfo.id, new Map([[reversible.id, reversible]]))?.index).toBe(1);
   });
 
   it('does not resume legacy mixed sessions because their already-presented direction was never stored', () => {
-    localStorage.setItem(`loopdeck_session_${moduleInfo.id}`, JSON.stringify({
-      questionIds: [reversible.id],
-      index: 0,
-      mode: 'normal',
-      settings,
-      savedAt: '2026-09-27T00:05:00.000Z'
-    }));
+    localStorage.setItem(
+      `loopdeck_session_${moduleInfo.id}`,
+      JSON.stringify({
+        questionIds: [reversible.id],
+        index: 0,
+        mode: 'normal',
+        settings,
+        savedAt: '2026-09-27T00:05:00.000Z'
+      })
+    );
 
     expect(readStoredSession(moduleInfo.id, new Map([[reversible.id, reversible]]))).toBeUndefined();
   });

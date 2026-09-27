@@ -20,10 +20,9 @@ The command reads `tsconfig.json`, resolves imports with the TypeScript compiler
 
 ## Current screen exceptions
 
-The checker freezes these existing edges so #50 can land independently of the ownership cleanup tracked by #49:
+The checker permits only these composition edges. Shared module presentation lives in src/ui/modulePresentation.ts and quiz view helpers in src/ui/inlineQuizView.ts:
 
 - `src/screens/homeScreen.ts -> src/screens/homeFolders.ts` — home-only helper currently colocated under `screens`.
-- `src/screens/moduleScreen.ts -> src/screens/homeScreen.ts` — temporary #49 exception for `moduleMeta()`; remove this allowlist entry when #49 moves the helper.
 - `src/screens/moduleScreen.ts -> src/screens/inlineQuiz.ts` — deliberate composition of the shared inline quiz renderer.
 - `src/screens/reviewCenter.ts -> src/screens/inlineQuiz.ts` — deliberate composition of the shared inline quiz renderer.
 

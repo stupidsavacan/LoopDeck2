@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
+import { woffToSfnt } from './scripts/woffToSfnt';
 
 const BASE64_FONT_QUERY = '?base64';
 
@@ -18,8 +19,8 @@ function inlineBase64Fonts(): Plugin {
     load(id) {
       if (!id.endsWith(BASE64_FONT_QUERY)) return null;
       const fontPath = id.slice(0, -BASE64_FONT_QUERY.length);
-      const base64 = readFileSync(fontPath).toString('base64');
-      return `export default ${JSON.stringify(`data:font/woff;base64,${base64}`)};`;
+      const base64 = woffToSfnt(readFileSync(fontPath)).toString('base64');
+      return `export default ${JSON.stringify(`data:font/ttf;base64,${base64}`)};`;
     }
   };
 }

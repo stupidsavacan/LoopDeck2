@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
+import { woffToSfnt } from '../scripts/woffToSfnt';
 import type { ModuleInfo, Question } from '../src/core/models';
 import { createJapaneseToEnglishWorksheetPlan } from '../src/pdf/worksheetPlanner';
 import { generateWorksheetPdfBlob, loadFontBytesFromDataUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
@@ -55,9 +56,13 @@ function questions(count: number): Question[] {
 }
 
 async function fonts(): Promise<WorksheetPdfFontBytes> {
-  const japanese = await readFile(new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff', import.meta.url));
-  const latin = await readFile(new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url));
-  return { japanese, latin };
+  const japanese = await readFile(
+    new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff', import.meta.url)
+  );
+  const latin = await readFile(
+    new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url)
+  );
+  return { japanese: woffToSfnt(japanese), latin: woffToSfnt(latin) };
 }
 
 describe('fixed Japanese-to-English worksheet planner', () => {
@@ -70,7 +75,16 @@ describe('fixed Japanese-to-English worksheet planner', () => {
   it('adds matching answer pages after all question pages when requested', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, questions(100), true);
     expect(plan.answerPages).toHaveLength(4);
-    expect(plan.pages.map((page) => page.kind)).toEqual(['questions', 'questions', 'questions', 'questions', 'answers', 'answers', 'answers', 'answers']);
+    expect(plan.pages.map((page) => page.kind)).toEqual([
+      'questions',
+      'questions',
+      'questions',
+      'questions',
+      'answers',
+      'answers',
+      'answers',
+      'answers'
+    ]);
   });
 
   it('omits answer pages when they are not requested', () => {

@@ -11,10 +11,16 @@ import { persistAttemptAndReview } from '../services/quizPersistence';
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
-import { appendQuizResult, renderQuestionImage, renderQuizMeta, renderSessionSummary } from './inlineQuizView';
+import { appendQuizResult, renderQuestionImage, renderQuizMeta, renderSessionSummary } from '../ui/inlineQuizView';
 
-export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): void; onSessionCheckpoint?(session: QuizSession): void; onComplete(): void; }
-export interface InlineQuizOptions { resolveImageAsset?: QuestionImageAssetResolver; }
+export interface InlineQuizCallbacks {
+  onSessionChange(session: QuizSession): void;
+  onSessionCheckpoint?(session: QuizSession): void;
+  onComplete(): void;
+}
+export interface InlineQuizOptions {
+  resolveImageAsset?: QuestionImageAssetResolver;
+}
 
 const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
 const AUTO_REVEAL_IDLE_MS = 10_000;
@@ -26,7 +32,9 @@ function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto
   if (question.type === 'choice') return 'choice';
   return generatedChoices?.length ? 'choice' : 'input';
 }
-function canJudgeNearMiss(question: Question): question is InputQuestion | ChoiceQuestion { return question.type === 'input' || question.type === 'choice'; }
+function canJudgeNearMiss(question: Question): question is InputQuestion | ChoiceQuestion {
+  return question.type === 'input' || question.type === 'choice';
+}
 
 function buildAttempt(
   question: Question,
@@ -39,13 +47,29 @@ function buildAttempt(
   nearMiss = false
 ): Attempt {
   return {
-    attemptId: `${Date.now()}-${crypto.randomUUID()}`, questionId: question.id, moduleId: question.moduleId, answeredAt: new Date().toISOString(), result, input,
-    answer: getCorrectAnswer(question), elapsedMs, mode, nearMiss, hiddenTimeExcludedMs, priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode), answerMode,
+    attemptId: `${Date.now()}-${crypto.randomUUID()}`,
+    questionId: question.id,
+    moduleId: question.moduleId,
+    answeredAt: new Date().toISOString(),
+    result,
+    input,
+    answer: getCorrectAnswer(question),
+    elapsedMs,
+    mode,
+    nearMiss,
+    hiddenTimeExcludedMs,
+    priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode),
+    answerMode,
     questionMode: question.activeStudyMode ?? 'as_stored'
   };
 }
 
-export function renderInlineQuiz(container: HTMLElement, session: QuizSession, callbacks: InlineQuizCallbacks, options: InlineQuizOptions = {}): void {
+export function renderInlineQuiz(
+  container: HTMLElement,
+  session: QuizSession,
+  callbacks: InlineQuizCallbacks,
+  options: InlineQuizOptions = {}
+): void {
   renderCleanupByContainer.get(container)?.();
   renderCleanupByContainer.delete(container);
   const renderToken = Symbol('inline-quiz-render');
@@ -53,7 +77,11 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   clear(container);
   if (isSessionComplete(session)) {
     const done = el('div', 'quiz-card done');
-    done.append(el('h3', '', 'セッション完了'), el('p', '', `${session.queue.length}問の学習が終わりました。`), renderSessionSummary(session));
+    done.append(
+      el('h3', '', 'セッション完了'),
+      el('p', '', `${session.queue.length}問の学習が終わりました。`),
+      renderSessionSummary(session)
+    );
     const back = button('教材詳細に戻る', 'btn primary');
     back.onclick = callbacks.onComplete;
     done.append(back);
@@ -65,8 +93,13 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   if (!question) return;
   const activeQuestion: Question = question;
   const requestedAnswerFormat = session.settings.answerFormat ?? 'auto';
-  const shouldGenerateChoices = question.type === 'input' && (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
-  const generatedChoices = question.type === 'input' && shouldGenerateChoices ? buildGeneratedChoices(question, session.choicePool, 4, Math.random, session.choiceCandidateIndex) : undefined;
+  const shouldGenerateChoices =
+    question.type === 'input' &&
+    (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
+  const generatedChoices =
+    question.type === 'input' && shouldGenerateChoices
+      ? buildGeneratedChoices(question, session.choicePool, 4, Math.random, session.choiceCandidateIndex)
+      : undefined;
   const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices);
   const card = el('section', 'quiz-card');
   const answerArea = el('div', 'answer-area');
@@ -126,7 +159,6 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     if (answered || moved) return;
     const now = Date.now();
     if (document.hidden) {
-
       checkpointCurrentTiming(now);
       if (hiddenStartedAt === undefined) hiddenStartedAt = now;
       idleController?.setVisible(false);
@@ -164,7 +196,20 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     try {
       await persistAttemptAndReview(attempt, db);
       persistenceComplete = true;
-      callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
+      try {
+        callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
+      } catch (error) {
+        // IndexedDB has committed. A localStorage checkpoint failure must not
+        // retry the answer transaction and apply the SRS rating twice.
+        writeDebugLog({
+          level: 'warn',
+          area: 'quizPersistence',
+          code: 'SESSION-CHECKPOINT-FAILED',
+          userMessage: '再開位置を保存できませんでした。',
+          detail: String(error)
+        });
+        toast('回答は保存済みですが、再開位置を保存できませんでした。');
+      }
       if (nextButton) {
         nextButton.disabled = false;
         nextButton.hidden = false;
@@ -201,20 +246,31 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     lockAnswerControls();
     const elapsedMs = currentAnswerElapsedMs();
     const totalHiddenTimeExcludedMs = session.currentHiddenTimeExcludedMs + currentRenderExcludedMs();
-    const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
+    const nearMiss =
+      !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
-    const attempt = buildAttempt(activeQuestion, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, totalHiddenTimeExcludedMs, nearMiss);
+    const attempt = buildAttempt(
+      activeQuestion,
+      result,
+      revealed ? '' : answer,
+      elapsedMs,
+      session.mode,
+      answerMode,
+      totalHiddenTimeExcludedMs,
+      nearMiss
+    );
     pendingAttempt = attempt;
 
-    const wrongExplanation = !revealed && result === 'wrong' && typeof answer === 'string'
-      ? buildWrongAnswerExplanation(
-          answerMode === 'input' ? 'input' : 'choice',
-          answer,
-          activeQuestion,
-          session.choicePool.length ? session.choicePool : session.queue,
-          session.wrongAnswerLookupIndex
-        )
-      : undefined;
+    const wrongExplanation =
+      !revealed && result === 'wrong' && typeof answer === 'string'
+        ? buildWrongAnswerExplanation(
+            answerMode === 'input' ? 'input' : 'choice',
+            answer,
+            activeQuestion,
+            session.choicePool.length ? session.choicePool : session.queue,
+            session.wrongAnswerLookupIndex
+          )
+        : undefined;
     appendQuizResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
     void persistAttempt(attempt);
   }
@@ -270,9 +326,12 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     window.setTimeout(() => input.focus(), 0);
   } else if (question.type === 'choice' || generatedChoices) {
     const list = el('div', 'choice-list');
-    for (const choice of question.type === 'choice' ? question.choices : generatedChoices ?? []) {
+    for (const choice of question.type === 'choice' ? question.choices : (generatedChoices ?? [])) {
       const choiceButton = button(choice, 'choice-btn');
-      choiceButton.onclick = () => { selectedAnswer = choice; record(choice); };
+      choiceButton.onclick = () => {
+        selectedAnswer = choice;
+        record(choice);
+      };
       list.append(choiceButton);
     }
     answerArea.append(list);
@@ -340,11 +399,13 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     idleController = createIdleRevealController({
       timeoutMs: AUTO_REVEAL_IDLE_MS,
       isEligible: () => !answered && !moved && isCurrentRender(),
-      onSuspend: (elapsed) => { suspendedTimeExcludedMs += elapsed; checkpointCurrentTiming(); },
+      onSuspend: (elapsed) => {
+        suspendedTimeExcludedMs += elapsed;
+        checkpointCurrentTiming();
+      },
       onReveal: () => record(selectedAnswer, true)
     });
     idleController.setVisible(!document.hidden);
-
 
     idleController.start();
   }

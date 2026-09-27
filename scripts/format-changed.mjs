@@ -41,8 +41,9 @@ if (files.length === 0) {
   process.exit(0);
 }
 
-const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const action = write ? '--write' : '--check';
-execFileSync(npx, ['--yes', `prettier@${prettierVersion}`, action, '--ignore-path', '.prettierignore', ...files], {
+const npmCli = process.env.npm_execpath;
+if (!npmCli) throw new Error('Run this formatter through npm run format or npm run format:check.');
+execFileSync(process.execPath, [npmCli, 'exec', '--yes', `--package=prettier@${prettierVersion}`, '--', 'prettier', action, '--ignore-path', '.prettierignore', ...files], {
   stdio: 'inherit'
 });
