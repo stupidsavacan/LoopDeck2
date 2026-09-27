@@ -11,7 +11,7 @@ import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../
 import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon, iconNameForModule } from '../ui/icons';
-import { moduleMeta } from './homeScreen';
+import { moduleMeta } from '../ui/modulePresentation';
 import { renderInlineQuiz } from './inlineQuiz';
 
 type ToggleSettingKey = 'shuffle' | 'autoNext' | 'autoRevealAfterIdle' | 'showExample' | 'showNumber' | 'showCategory';
