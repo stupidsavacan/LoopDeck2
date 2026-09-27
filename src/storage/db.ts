@@ -136,10 +136,7 @@ async function runTransaction<T>(
 }
 
 async function transaction<T>(storeName: string, mode: IDBTransactionMode, task: (store: IDBObjectStore) => IDBRequest<T> | void): Promise<T | void> {
-  let request: IDBRequest<T> | void = undefined;
-  await runTransaction(storeName, mode, (tx) => {
-    request = task(tx.objectStore(storeName));
-  });
+  const request = await runTransaction<IDBRequest<T> | void>(storeName, mode, (tx) => task(tx.objectStore(storeName)));
   return request ? request.result : undefined;
 }
 
@@ -163,7 +160,6 @@ async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<voi
     }
   });
 }
-
 
 async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], replaceAssets: boolean): Promise<void> {
   await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
@@ -285,11 +281,8 @@ export const db: LoopDeckDb = {
   async putReviewLog(log) { await transaction('reviewLogs', 'readwrite', (store) => store.put(log)); },
   async getReviewLogs() { return getAll<ReviewLog>('reviewLogs'); },
   async getReviewLogsForQuestion(questionId) {
-    let request: IDBRequest<ReviewLog[]>;
-    await runTransaction('reviewLogs', 'readonly', (tx) => {
-      request = tx.objectStore('reviewLogs').index('byQuestionId').getAll(questionId);
-    });
-    return request!.result.sort((a, b) => Date.parse(a.reviewedAt) - Date.parse(b.reviewedAt));
+    const request = await runTransaction<IDBRequest<ReviewLog[]>>('reviewLogs', 'readonly', (tx) => tx.objectStore('reviewLogs').index('byQuestionId').getAll(questionId));
+    return request.result.sort((a, b) => Date.parse(a.reviewedAt) - Date.parse(b.reviewedAt));
   },
   async clearReviewData() {
     await runTransaction(['reviewCards', 'reviewLogs'], 'readwrite', (tx) => {
