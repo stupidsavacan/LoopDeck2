@@ -23,6 +23,18 @@ const attempts: Attempt[] = [
 ];
 
 describe('analytics engine', () => {
+  it('uses the device-local calendar day for analytics boundaries', () => {
+    const localMidnightAttempt: Attempt = {
+      ...attempts[0],
+      attemptId: 'local-midnight',
+      answeredAt: new Date(2026, 5, 2, 0, 4).toISOString()
+    };
+    const stats = buildDailyStudyStats([localMidnightAttempt], 1, new Date(2026, 5, 2, 0, 30));
+
+    expect(stats).toHaveLength(1);
+    expect(stats[0]).toMatchObject({ date: '2026-06-02', attempts: 1, wrong: 1 });
+  });
+
   it('builds daily study heatmap stats from real attempts', () => {
     const stats = buildDailyStudyStats(attempts, 3, new Date('2026-06-02T12:00:00.000Z'));
 
