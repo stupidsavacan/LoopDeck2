@@ -136,7 +136,7 @@ async function runTransaction<T>(
 }
 
 async function transaction<T>(storeName: string, mode: IDBTransactionMode, task: (store: IDBObjectStore) => IDBRequest<T> | void): Promise<T | void> {
-  let request: IDBRequest<T> | void;
+  let request: IDBRequest<T> | void = undefined;
   await runTransaction(storeName, mode, (tx) => {
     request = task(tx.objectStore(storeName));
   });
