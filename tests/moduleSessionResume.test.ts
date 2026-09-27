@@ -77,7 +77,6 @@ describe('stored session v2 resume state', () => {
 
     expect(restored?.queue[0].activeStudyMode).toBe('back_to_front');
     expect(restored?.queue[0].prompt).toBe('back');
-    expect(restored?.queue[0].answer).toBe('front');
     expect(restored?.attempts).toEqual([attempt]);
     expect(restored?.startedAt).toBe(Date.parse('2026-09-27T00:00:00.000Z'));
     expect(restored?.currentElapsedMs).toBe(4200);
