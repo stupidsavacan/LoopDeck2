@@ -185,15 +185,8 @@ function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOpti
   return disambiguateLabels(options);
 }
 
-export async function renderPdfWorksheetScreen(
-  root: HTMLElement,
-  packView: ResolvedPackView,
-  navigateHome: () => void,
-  isCurrent: () => boolean = () => true
-): Promise<void> {
-  if (!isCurrent()) return;
+export async function renderPdfWorksheetScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void): Promise<void> {
   const modules = worksheetModuleOptions(packView);
-  if (!isCurrent()) return;
   clear(root);
   const screen = el('main', 'screen pdf-worksheet-screen');
   const header = el('header', 'topbar');
@@ -228,115 +221,127 @@ export async function renderPdfWorksheetScreen(
   const rangeSelect = el('select', 'study-select') as HTMLSelectElement;
   rangeLabel.append(el('span', '', '範囲'), rangeSelect);
 
-  const countLabel = el('label', 'field-label');
-  const countSelect = el('select', 'study-select') as HTMLSelectElement;
-  [['all', '全部'], ['10', '10問'], ['20', '20問'], ['50', '50問']].forEach(([value, label]) => countSelect.append(makeOption(value, label)));
-  countLabel.append(el('span', '', '問題数'), countSelect);
+  const answerLabel = el('label', 'check-label');
+  const includeAnswers = document.createElement('input');
+  includeAnswers.type = 'checkbox';
+  includeAnswers.checked = true;
+  answerLabel.append(includeAnswers, document.createTextNode(' 解答ページを付ける'));
 
-  const shuffleLabel = el('label', 'check-label');
-  const shuffle = document.createElement('input');
-  shuffle.type = 'checkbox';
-  shuffleLabel.append(shuffle, document.createTextNode(' 問題をシャッフル'));
+  const summary = el('p', 'hint');
+  let selectedQuestions: Question[] = [];
 
-  const includeAnswerLabel = el('label', 'check-label');
-  const includeAnswer = document.createElement('input');
-  includeAnswer.type = 'checkbox';
-  includeAnswer.checked = true;
-  includeAnswerLabel.append(includeAnswer, document.createTextNode(' 解答ページを付ける'));
-
-  const titleLabel = el('label', 'field-label');
-  const titleInput = el('input', 'study-input') as HTMLInputElement;
-  titleInput.placeholder = '例: LEAP 301–400 小テスト';
-  titleLabel.append(el('span', '', 'タイトル'), titleInput);
-
-  grid.append(moduleLabel, rangeLabel, countLabel, titleLabel);
-  setup.append(grid, shuffleLabel, includeAnswerLabel);
-
-  const status = el('section', 'card worksheet-status');
-  status.append(el('p', 'eyebrow', 'STATUS'));
-  const statusTitle = el('h2', '', '準備完了');
-  const statusDetail = el('p', 'hint', '教材と範囲を選んでPDFを作成します。');
-  const statusLog = el('div', 'worksheet-status-log');
-  status.append(statusTitle, statusDetail, statusLog);
-
-  function reportProgress(code: string, message: string, detail = ''): void {
-    statusTitle.textContent = message;
-    statusDetail.textContent = detail || code;
-    const row = el('div', 'worksheet-status-row');
-    row.append(el('code', '', code), el('span', '', `${message}${detail ? ` / ${detail}` : ''}`));
-    statusLog.prepend(row);
-    writeDebugLog({ level: 'info', area: 'pdf', code, userMessage: message, detail });
+  function selectedModuleOption(): WorksheetModuleOption {
+    return modules[Number(moduleSelect.value)] ?? modules[0];
   }
 
   function refreshRangeOptions(): void {
-    const selected = modules[Number(moduleSelect.value || '0')];
-    rangeSelect.replaceChildren();
-    for (const option of buildWorksheetRangeOptions(selected?.questions ?? [])) {
-      rangeSelect.append(makeOption(option.value, option.label));
-    }
+    const selected = selectedModuleOption();
+    rangeSelect.replaceChildren(...buildWorksheetRangeOptions(selected.questions).map((option) => makeOption(option.value, option.label)));
+    selectedQuestions = selected.questions;
+    refreshSummary();
   }
+
+  function refreshSummary(): void {
+    const selected = selectedModuleOption();
+    selectedQuestions = filterWorksheetQuestionsByRange(selected.questions, rangeSelect.value || 'all');
+    const questionPages = Math.ceil(selectedQuestions.length / 25);
+    const totalPages = questionPages * (includeAnswers.checked ? 2 : 1);
+    summary.textContent = `${selectedQuestions.length}問 / ${totalPages}ページ。問題ページを先に、解答は後ろに出力します。`;
+  }
+
   moduleSelect.onchange = refreshRangeOptions;
+  rangeSelect.onchange = refreshSummary;
+  includeAnswers.onchange = refreshSummary;
   refreshRangeOptions();
 
-  const actions = el('section', 'card action-card');
-  const generate = button('PDFプリントを作る', 'btn primary');
-  actions.append(generate, el('p', 'hint', '生成後、ブラウザまたはAndroidの保存先選択画面が開きます。'));
+  grid.append(moduleLabel, rangeLabel);
+  setup.append(grid, answerLabel, summary);
 
-  generate.onclick = async () => {
-    if (generate.disabled) return;
-    const selected = modules[Number(moduleSelect.value || '0')];
-    if (!selected) {
-      toast('教材を選んでください。');
-      return;
-    }
-    const filtered = filterWorksheetQuestionsByRange(selected.questions, rangeSelect.value || 'all');
-    const limit = countSelect.value === 'all' ? filtered.length : Number(countSelect.value);
-    const selectedQuestions = shuffle.checked ? [...filtered].sort(() => Math.random() - 0.5).slice(0, limit) : filtered.slice(0, limit);
+  const actions = el('section', 'worksheet-export-panel');
+  const exportButton = button('', 'btn primary worksheet-export-button');
+  appendIconLabel(exportButton, 'filePdf', 'PDFを書き出す');
+  actions.append(exportButton);
+
+  const statusCard = el('details', 'card export-status-card');
+  const statusSummary = el('summary', '', '書き出し状況');
+  const statusBody = el('div', 'export-status-body');
+  const statusMessage = el('p', 'export-status-message', '待機中');
+  const statusDetail = el('p', 'hint export-status-detail', 'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。');
+  const statusLog = el('ol', 'export-status-log');
+  statusBody.append(statusMessage, statusDetail, statusLog);
+  statusCard.append(statusSummary, statusBody);
+
+  function reportProgress(code: string, message: string, detail = ''): void {
+    statusCard.open = true;
+    statusMessage.textContent = message;
+    statusDetail.textContent = detail || '詳細なし';
+    const item = el('li', '', `${message}${detail ? ` — ${detail}` : ''}`);
+    statusLog.append(item);
+    writeDebugLog({ level: 'info', area: 'pdfWorksheet', code, userMessage: message, detail });
+    while (statusLog.childElementCount > 24) statusLog.firstElementChild?.remove();
+  }
+
+  exportButton.onclick = async () => {
+    const selected = selectedModuleOption();
     if (!selectedQuestions.length) {
-      toast('この範囲には出力できる問題がありません。');
+      reportProgress('PDF-S000', '出力できる問題がありません', selected.label);
+      reportIssue({
+        level: 'warn',
+        area: 'pdfWorksheet',
+        code: 'PDF-S000',
+        userMessage: '出力できる問題がありません。',
+        detail: selected.label,
+        context: { selectedQuestionCount: selectedQuestions.length }
+      });
       return;
     }
-
-    generate.disabled = true;
-    generate.textContent = 'PDF作成中…';
-    clear(statusLog);
+    exportButton.disabled = true;
+    appendIconLabel(exportButton, 'filePdf', 'PDFを作成中…');
+    statusLog.replaceChildren();
     try {
-      reportProgress('PDF-P010', 'PDFレイアウトを準備中', `${selectedQuestions.length}問`);
-      const plan = createJapaneseToEnglishWorksheetPlan({
-        module: selected.module,
-        questions: selectedQuestions,
-        title: titleInput.value.trim() || selected.module.title,
-        includeAnswerSheet: includeAnswer.checked
-      });
-      reportProgress('PDF-F010', '日本語フォントを準備中', 'Noto Sans JPを使用します。');
-      const { createJapaneseWorksheetPdf } = await import('../pdf/pdfWorksheet');
-      reportProgress('PDF-R010', 'PDFページを描画中', `${plan.questions.length}問 / ${plan.title}`);
-      const blob = await createJapaneseWorksheetPdf(plan, reportProgress);
-      const filename = `${safeFileStem(plan.title)}.pdf`;
-      reportProgress('PDF-V010', 'PDF検証完了', `${blob.size.toLocaleString()} bytes`);
-      await savePdf(blob, filename, reportProgress);
-      toast('PDFを作成しました。');
+      reportProgress('PDF-S010', '出力設定を読み込みました', `${selected.label} / ${selectedQuestions.length}問`);
+      const plan = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
+      if (!plan.pages.length) throw exportError('PDF-P001', 'PDFに出力できるページがありません。');
+      reportProgress('PDF-P010', 'PDFページ構成を作成しました', `${plan.pages.length}ページ / ${plan.rows.length}問`);
+
+      reportProgress('PDF-M010', 'PDF生成モジュールを読み込み中', '../pdf/worksheetPdf');
+      const { generateWorksheetPdfBlob } = await import('../pdf/worksheetPdf');
+
+      reportProgress('PDF-G010', 'PDF本体を生成中', '日本語フォントを埋め込みます。');
+      const pdf = await generateWorksheetPdfBlob(plan);
+      reportProgress('PDF-G020', 'PDF Blobを生成しました', `${pdf.size.toLocaleString()} bytes / ${pdf.type || '(no type)'}`);
+      if (pdf.size <= 0) throw exportError('PDF-G021', 'PDF Blobが0Bです。');
+
+      const filename = `${safeFileStem(selected.label)}-${safeFileStem(plan.rangeLabel)}.pdf`;
+      reportProgress('PDF-S020', '保存処理を開始します', filename);
+      await savePdf(pdf, filename, reportProgress);
+      writeDebugLog({ level: 'info', area: 'pdfWorksheet', code: 'PDF-OK', userMessage: 'PDFプリントを書き出しました。', detail: filename, context: { bytes: pdf.size } });
+      toast('PDFプリントを書き出しました。');
     } catch (error) {
       const code = errorCode(error);
       const message = baseErrorMessage(error);
-      writeDebugLog({
+      reportProgress(code, 'PDF作成/保存に失敗しました', message);
+      reportIssue({
         level: 'error',
-        area: 'pdf',
+        area: 'pdfWorksheet',
         code,
-        userMessage: 'PDF作成または保存に失敗しました。',
+        userMessage: 'PDFの作成に失敗しました。もう一度試してください。',
         detail: message,
-        stack: error instanceof Error ? error.stack : undefined
+        error,
+        context: { selectedLabel: selected.label, selectedQuestionCount: selectedQuestions.length }
       });
-      reportIssue({ code, message, context: 'pdfWorksheet' });
-      statusTitle.textContent = 'PDF作成に失敗しました';
-      statusDetail.textContent = `${code}: ${message}`;
-      toast(`PDF作成に失敗しました：${message}`);
     } finally {
-      generate.disabled = false;
-      generate.textContent = 'PDFプリントを作る';
+      exportButton.disabled = false;
+      appendIconLabel(exportButton, 'filePdf', 'PDFを書き出す');
     }
   };
 
-  screen.append(header, intro, setup, actions, status);
+  const note = el('details', 'card worksheet-note');
+  note.append(
+    el('summary', '', '対応範囲'),
+    el('p', 'hint', 'A4縦・1ページ25問・日本語から英語の入力式問題に対応しています。選択問題・画像問題・逆方向は出力しません。')
+  );
+
+  screen.append(header, intro, setup, actions, statusCard, note);
   root.append(screen);
 }
