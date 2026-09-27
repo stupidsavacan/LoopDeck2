@@ -21,16 +21,53 @@ describe('pack validator', () => {
     expect(issues).toEqual([]);
   });
 
-  it('accepts a minimal valid pack', () => {
+  it('accepts documented minimal module fields and normalizes runtime metadata', () => {
     const result = validatePack({
       packVersion: 1,
       packId: 'demo',
       title: 'Demo',
-      folders: [{ id: 'f', title: 'Folder' }],
-      modules: [{ id: 'm', folderId: 'f', title: 'Module', subject: 'demo', questionIds: ['q'] }],
+      folders: [],
+      modules: [{ id: 'm', questionIds: ['q'] }],
       questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
     });
+
     expect(result.ok).toBe(true);
+    expect(result.pack?.modules[0]).toMatchObject({
+      id: 'm',
+      folderId: '',
+      title: 'm',
+      subject: 'その他',
+      questionIds: ['q']
+    });
+  });
+
+  it('normalizes invalid optional module metadata before persistence', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'demo-optional-types',
+      title: 'Demo',
+      folders: [],
+      modules: [{
+        id: 'm',
+        folderId: 123,
+        title: null,
+        subject: { unsafe: true },
+        description: ['bad'],
+        tags: ['safe', 42, 'also-safe'],
+        questionIds: ['q']
+      }],
+      questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.pack?.modules[0]).toMatchObject({
+      folderId: '',
+      title: 'm',
+      subject: 'その他',
+      tags: ['safe', 'also-safe']
+    });
+    expect(result.pack?.modules[0].description).toBeUndefined();
+    expect(result.issues.some((issue) => issue.level === 'warning' && issue.message.includes('subject'))).toBe(true);
   });
 
   it('rejects duplicate question ids', () => {

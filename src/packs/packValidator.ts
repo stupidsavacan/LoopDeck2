@@ -355,14 +355,14 @@ function parseModules(value: unknown, issues: PackValidationIssue[]): ModuleInfo
       return;
     }
     uniqueStrings(raw.questionIds, `${path}.questionIds`, issues);
-    const folderId = optionalString(raw, 'folderId', path, issues) ?? '';
-    const titleValue = optionalString(raw, 'title', path, issues);
-    const subject = optionalString(raw, 'subject', path, issues) ?? '';
+    const folderId = normalizedOptionalString(raw.folderId, '', issues, path + '.folderId') ?? '';
+    const titleValue = normalizedOptionalString(raw.title, raw.id, issues, path + '.title');
+    const subject = normalizedOptionalString(raw.subject, 'その他', issues, path + '.subject') ?? 'その他';
     const color = optionalHexColor(raw, 'color', path, issues);
     const accent = optionalHexColor(raw, 'accent', path, issues);
     const accentColor = optionalHexColor(raw, 'accentColor', path, issues);
-    const description = optionalString(raw, 'description', path, issues);
-    const tags = optionalStringArray(raw, 'tags', path, issues);
+    const description = normalizedOptionalString(raw.description, undefined, issues, path + '.description');
+    const tags = normalizedOptionalStringArray(raw.tags, issues, path + '.tags');
     result.push({
       id: raw.id,
       folderId,
@@ -377,6 +377,39 @@ function parseModules(value: unknown, issues: PackValidationIssue[]): ModuleInfo
     });
   });
   return result;
+}
+
+function normalizedOptionalString(
+  value: unknown,
+  fallback: string | undefined,
+  issues: PackValidationIssue[],
+  label: string
+): string | undefined {
+  if (value === undefined) return fallback;
+  if (typeof value !== 'string') {
+    issues.push({ level: 'warning', message: `${label} must be a string when present; using a safe default.` });
+    return fallback;
+  }
+  const trimmed = value.trim();
+  return trimmed || fallback;
+}
+
+function normalizedOptionalStringArray(
+  value: unknown,
+  issues: PackValidationIssue[],
+  label: string
+): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) {
+    issues.push({ level: 'warning', message: `${label} must be an array of strings when present; ignoring it.` });
+    return undefined;
+  }
+
+  const strings = value.filter((item): item is string => typeof item === 'string');
+  if (strings.length !== value.length) {
+    issues.push({ level: 'warning', message: `${label} contained non-string values; they were ignored.` });
+  }
+  return strings;
 }
 
 export function validatePackFiles(paths: string[]): PackValidationIssue[] {

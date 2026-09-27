@@ -50,10 +50,15 @@ function cleanId(id: unknown): string {
   return typeof id === 'string' ? id.trim() : '';
 }
 
-function unique(values: string[]): string[] {
+function stringList(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+function unique(values: unknown[]): string[] {
   const seen = new Set<string>();
   const result: string[] = [];
   for (const value of values) {
+    if (typeof value !== 'string') continue;
     const trimmed = value.trim();
     if (!trimmed || seen.has(trimmed)) continue;
     seen.add(trimmed);
@@ -64,7 +69,7 @@ function unique(values: string[]): string[] {
 
 function folderTags(seed: HomeFolderSeed, modules: ModuleInfo[]): string[] {
   if (seed.tags?.length) return seed.tags;
-  return unique(modules.flatMap((module) => [module.subject, ...(module.tags ?? [])])).slice(0, 8);
+  return unique(modules.flatMap((module) => [module.subject, ...stringList(module.tags)])).slice(0, 8);
 }
 
 function appendUnique(target: string[], ids: string[], visibleIds: Set<string>, placed: Set<string>): void {
@@ -151,10 +156,10 @@ export function homeModuleMatches(module: ModuleInfo, query: string, meta: HomeM
     module.title,
     module.subject,
     module.description,
-    ...(module.tags ?? []),
+    ...stringList(module.tags),
     meta.subtitle,
     meta.description,
-    ...(meta.tags ?? [])
+    ...stringList(meta.tags)
   ]
     .filter((value): value is string => typeof value === 'string' && value.length > 0)
     .join(' ')

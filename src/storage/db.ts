@@ -1,5 +1,6 @@
 import type { Attempt, LoopDeckPack, ReviewCard, ReviewLog } from '../core/models';
 import { takeStagedPackAssets } from '../packs/importedAssetStaging';
+import { validatePack } from '../packs/packValidator';
 import type { ImportedPackAsset } from '../packs/packTypes';
 import { validateBackupPayload } from './backupValidator';
 
@@ -143,6 +144,26 @@ async function deletePackAndAssets(packId: string): Promise<void> {
   });
 }
 
+function validatedPackForStorage(pack: unknown): LoopDeckPack {
+  const result = validatePack(pack);
+  if (result.ok && result.pack) return result.pack;
+  const detail = result.issues.filter((issue) => issue.level === 'error').map((issue) => issue.message).join(' ');
+  throw new Error(`Imported pack failed validation before persistence.${detail ? ` ${detail}` : ''}`);
+}
+
+function recoverStoredPacks(packs: unknown[]): LoopDeckPack[] {
+  const recovered: LoopDeckPack[] = [];
+  for (const stored of packs) {
+    const result = validatePack(stored);
+    if (result.ok && result.pack) {
+      recovered.push(result.pack);
+      continue;
+    }
+    console.warn('Ignoring an invalid stored LoopDeck pack during startup recovery.', result.issues);
+  }
+  return recovered;
+}
+
 export const db: LoopDeckDb = {
   async addAttempt(attempt) { await transaction('attempts', 'readwrite', (store) => store.put(attempt)); },
   async getAttempts() { return getAll<Attempt>('attempts'); },
@@ -156,11 +177,14 @@ export const db: LoopDeckDb = {
   async clearBookmarks() { await transaction('bookmarks', 'readwrite', (store) => store.clear()); },
   async saveImportedPack(pack) {
     const staged = takeStagedPackAssets(pack);
-    if (staged) await savePackWithAssets(pack, staged.assets, staged.replaceAssets);
-    else await transaction('packs', 'readwrite', (store) => store.put(pack));
+    const normalized = validatedPackForStorage(pack);
+    if (staged) await savePackWithAssets(normalized, staged.assets, staged.replaceAssets);
+    else await transaction('packs', 'readwrite', (store) => store.put(normalized));
   },
-  async saveImportedPackWithAssets(pack, assets, replaceAssets = true) { await savePackWithAssets(pack, assets, replaceAssets); },
-  async getImportedPacks() { return getAll<LoopDeckPack>('packs'); },
+  async saveImportedPackWithAssets(pack, assets, replaceAssets = true) {
+    await savePackWithAssets(validatedPackForStorage(pack), assets, replaceAssets);
+  },
+  async getImportedPacks() { return recoverStoredPacks(await getAll<unknown>('packs')); },
   async getImportedPackAssets() { return getAll<StoredPackAsset>('packAssets'); },
   async getPackAsset(packId, path) {
     return await transaction<StoredPackAsset>('packAssets', 'readonly', (store) => store.get(packAssetId(packId, path))) as StoredPackAsset | undefined;

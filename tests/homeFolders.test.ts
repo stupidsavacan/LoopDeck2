@@ -101,4 +101,17 @@ describe('Home folder grouping', () => {
     expect(homeModuleMatches(term2Chemistry, '2学期')).toBe(true);
     expect(homeModuleMatches(term2Chemistry, '存在しない語')).toBe(false);
   });
+
+  it('tolerates legacy modules with missing subject or malformed tags', () => {
+    const legacy = {
+      id: 'legacy-minimal',
+      folderId: '',
+      title: 'Legacy minimal',
+      questionIds: ['legacy-q'],
+      tags: [123, 'safe-tag']
+    } as unknown as ModuleInfo;
+
+    expect(() => buildHomeFolders([pack({ modules: [legacy] })], [legacy])).not.toThrow();
+    expect(homeModuleMatches(legacy, 'safe-tag')).toBe(true);
+  });
 });
