@@ -1,14 +1,6 @@
 import type { ModuleInfo, Question, ReviewCard, StudySettings } from '../core/models';
-import {
-  analyzeProblems,
-  buildMistakeQuestions,
-  buildReviewQueue,
-  DEFAULT_REVIEW_LOOKBACK_DAYS,
-  DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS,
-  filterRecentAttempts,
-  summarizeWeakModules
-} from '../core/reviewEngine';
-import { bucketReviewCards, buildSrsReviewQueue, summarizeReviewSchedule } from '../core/scheduler';
+import { DEFAULT_REVIEW_LOOKBACK_DAYS } from '../core/reviewEngine';
+import { buildReviewCenterModel, type ReviewScope } from '../core/reviewCenterModel';
 import { createSession, type QuizSession } from '../core/sessionEngine';
 import { getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
@@ -17,8 +9,6 @@ import { appendIconLabel } from '../ui/icons';
 import { renderInlineQuiz } from './inlineQuiz';
 
 const REVIEW_SCOPE_KEY = 'loopdeck_review_scope_session_v1';
-type ReviewScope = 'recent' | 'all';
-
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
 const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
 
@@ -70,36 +60,20 @@ export async function renderReviewCenter(
   const reviewCards = await db.getReviewCards();
   if (!isCurrent()) return;
   const questions = getActiveQuestions(packView);
-  const questionsById = new Map(questions.map((question) => [question.id, question]));
   const modules = packView.moduleById;
-  const now = new Date();
   const scope = readReviewScope();
-
-  const recentAttempts = filterRecentAttempts(attempts, now, DEFAULT_REVIEW_LOOKBACK_DAYS);
-  const scopedAttempts = scope === 'recent' ? recentAttempts : attempts;
-  const activeModuleIds = new Set(scopedAttempts.map((attempt) => attempt.moduleId));
-  const recentQuestionIds = new Set(recentAttempts.map((attempt) => attempt.questionId));
-  const scopedReviewCards = scope === 'recent'
-    ? reviewCards.filter((card) => recentQuestionIds.has(card.questionId))
-    : reviewCards;
-
-  const queue = buildReviewQueue(
-    scopedAttempts,
-    questions,
-    scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {}
-  );
-  const mistakes = buildMistakeQuestions(questions, scopedAttempts);
-  const analyses = analyzeProblems(
-    scopedAttempts,
-    questions,
-    scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {}
-  ).filter((item) => item.needsAttention).slice(0, 8);
-  const weak = summarizeWeakModules(scopedAttempts);
-  const schedule = summarizeReviewSchedule(scopedReviewCards, now);
-  const allSchedule = summarizeReviewSchedule(reviewCards, now);
-  const buckets = bucketReviewCards(scopedReviewCards, now);
-  const srsQueue = buildSrsReviewQueue(scopedReviewCards, now, 30);
-  const hiddenDueCount = scope === 'recent' ? Math.max(0, allSchedule.dueToday - schedule.dueToday) : 0;
+  const {
+    questionsById,
+    activeModuleIds,
+    queue,
+    mistakes,
+    analyses,
+    weak,
+    schedule,
+    buckets,
+    srsQueue,
+    hiddenDueCount
+  } = buildReviewCenterModel(attempts, reviewCards, questions, scope);
   const mount = el('div', 'quiz-mount');
 
   clear(root);

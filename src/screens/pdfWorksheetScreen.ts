@@ -4,9 +4,9 @@ import type { LoopDeckPack, ModuleInfo, Question } from '../core/models';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
 import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
 import type { ResolvedPackView } from '../packs/packResolver';
+import { saveBlob, type SaveProgressReporter } from '../platform/fileSave';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
-import { saveBlob } from '../platform/nativeFileSave';
 
 interface WorksheetModuleOption {
   packId: string;
@@ -15,7 +15,6 @@ interface WorksheetModuleOption {
   label: string;
 }
 
-type ProgressReporter = (code: string, message: string, detail?: string) => void;
 
 function makeOption(value: string, label: string): HTMLOptionElement {
   const option = el('option', '', label) as HTMLOptionElement;
@@ -42,33 +41,10 @@ function baseErrorMessage(error: unknown): string {
   return message.replace(/^\[[A-Z0-9-]+\]\s*/, '');
 }
 
-async function savePdf(blob: Blob, filename: string, progress: ProgressReporter): Promise<void> {
+async function savePdf(blob: Blob, filename: string, progress: SaveProgressReporter): Promise<void> {
   if (blob.type !== 'application/pdf') throw exportError('PDF-V002', `PDF BlobのMIME typeが不正です: ${blob.type || '(empty)'}`);
   if (blob.size <= 0) throw exportError('PDF-V001', 'PDF Blobのサイズが0Bです。保存を中止しました。');
-
-  const result = await saveBlob(blob, filename, {
-    onNativeProgress(event) {
-      if (event.phase === 'begin') {
-        progress('SAV-A010', 'Android保存セッションを開始中', `${event.chunkCount ?? 0} chunks / ${blob.size.toLocaleString()} bytes`);
-      } else if (event.phase === 'chunk') {
-        const index = event.chunkIndex ?? 0;
-        const count = event.chunkCount ?? 0;
-        if (index === 1 || index === count || index % 10 === 0) {
-          progress('SAV-A020', 'AndroidへPDFデータを送信中', `${index}/${count} chunks`);
-        }
-      } else if (event.phase === 'picker') {
-        progress('SAV-A030', '保存先選択画面を開いています', 'ファイル名と保存先を選んでください。');
-      }
-    }
-  });
-
-  if (result.mode === 'native') {
-    const nativeResult = result.nativeResult;
-    progress(nativeResult?.code || 'SAV-OK', 'Android保存が完了しました', `${(nativeResult?.bytes ?? blob.size).toLocaleString()} bytes`);
-    return;
-  }
-
-  progress('WEB-S020', 'ブラウザ保存を開始しました', `${blob.size.toLocaleString()} bytes`);
+  await saveBlob(blob, filename, { idPrefix: 'worksheet', progress });
 }
 
 function getPackQuestionsForModule(pack: LoopDeckPack, module: ModuleInfo): Question[] {
