@@ -27,8 +27,8 @@ function pack(overrides: Partial<LoopDeckPack>): LoopDeckPack {
 }
 
 describe('Home folder grouping', () => {
-  const history = module({ id: 'history', folderId: 'social', title: '歴史総合', subject: '社会' });
-  const leapFinal = module({ id: 'leap_final', folderId: 'english', title: 'LEAP 201〜300', subject: '英語' });
+  const history = module({ id: 'history', folderId: 'term1_midterm', title: '歴史総合', subject: '社会' });
+  const leapFinal = module({ id: 'leap_final', folderId: 'term1_final', title: 'LEAP 201〜300', subject: '英語' });
   const finalChemistry = module({ id: 'term1_final_chemistry', folderId: 'term1_final', title: '化学 期末', subject: '理科', tags: ['化学', '期末'] });
   const term2Chemistry = module({ id: 'term2_midterm_chemistry', folderId: 'term2_midterm', title: '化学 2学期中間', subject: '理科', tags: ['化学', '2学期中間'] });
   const unknownFolder = module({ id: 'mystery_math', folderId: 'unknown_folder', title: '数学 追加', subject: '数学' });
@@ -38,7 +38,7 @@ describe('Home folder grouping', () => {
   const packs = [
     pack({
       packId: 'loopdeck-builtin-v1',
-      folders: [{ id: 'social', title: '社会' }, { id: 'english', title: '英語' }],
+      folders: [{ id: 'term1_midterm', title: '一学期中間テスト', description: '中間' }, { id: 'term1_final', title: '一学期期末テスト', description: '期末' }],
       modules: [history, leapFinal]
     }),
     pack({
@@ -60,10 +60,10 @@ describe('Home folder grouping', () => {
   const visibleModules = packs.flatMap((item) => item.modules);
   const folders = buildHomeFolders(packs, visibleModules);
 
-  it('keeps built-in Home folders first with their built-in titles', () => {
+  it('keeps first folder position but lets later pack metadata win', () => {
     expect(folders.map((folder) => folder.id).slice(0, 2)).toEqual(['term1_midterm', 'term1_final']);
     expect(folders[0].title).toBe('一学期中間テスト');
-    expect(folders[1].title).toBe('一学期期末テスト');
+    expect(folders[1].title).toBe('別名の期末フォルダ');
   });
 
   it('keeps built-in modules in their expected Home folders', () => {
