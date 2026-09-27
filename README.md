@@ -519,7 +519,7 @@ https://example.com/file.json
 null byte を含むパス
 ```
 
-LoopDeck は、リモート URL や安全でない画像参照も拒否します。インポートされた教材 HTML、JavaScript、CSS は実行されません。
+ZIP 内の危険なファイルパスや実行可能/描画可能な拡張子はエラーとして拒否します。一方、question の `imageAsset` が安全でない・未対応形式・ZIP 内に存在しない場合は現在は warning になり、その画像を取り込まずに pack 自体は受理されることがあります。したがって「インポートできた」だけでは画像問題の完全性は保証されません。インポートされた教材 HTML、JavaScript、CSS は実行されません。
 
 ### クイックチェックリスト
 
@@ -534,3 +534,10 @@ pack をインポートする前に、次を確認してください。
 - `multi_select` 問題には `choices` と `correctChoices` がある。
 - 画像パスがローカルで、`.png`、`.jpg`、`.jpeg`、または `.webp` を使っている。
 - ZIP のルートに `manifest.json`、`modules.json`、`questions.json` が直接入っている。
+
+
+## Pack Authoring Prompt の同期ルール
+
+`src/packs/packAuthoringPrompt.txt` は単なる説明文ではなく、アプリから配布する Pack 作成契約です。Pack の schema、validator、import/merge、asset、answer judging、study presentation など、AI が生成内容を変える必要がある変更を行う PR では、同じ PR でこの prompt の更新要否を確認してください。
+
+監査時は古い README だけを正本にせず、`src/core/models.ts`、`src/core/answerJudge.ts`、`src/core/questionPresentation.ts`、`src/core/choiceGenerator.ts`、`src/packs/packValidator.ts`、`src/packs/zipImporter.ts`、`src/packs/packMerger.ts`、`src/packs/assetSafety.ts`、built-in pack と関連 tests を一次資料として確認します。drift protection は `tests/packAuthoringPrompt.test.ts` に全文 snapshot ではなく、高価値な契約項目の semantic assertion として追加します。

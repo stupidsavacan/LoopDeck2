@@ -21,15 +21,6 @@ const DIRECTIONS = new Set(['ja_to_en', 'en_to_ja', 'normal']);
 const STUDY_MODES = new Set<ConcreteStudyQuestionMode>(['as_stored', 'front_to_back', 'back_to_front']);
 const REVERSIBLE_STUDY_MODES = new Set(['front_to_back', 'back_to_front']);
 const ANSWER_JUDGING_MODES = new Set<AnswerJudgingMode>(['single', 'any_of', 'all_of', 'exact_phrase', 'numeric']);
-const SAMPLE_PATTERNS = new Set<QuestionSamplePattern>([
-  'solid',
-  'vertical_stripes',
-  'horizontal_stripes',
-  'diagonal_stripes',
-  'cross_hatch',
-  'dots',
-  'grid'
-]);
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === 'string');
