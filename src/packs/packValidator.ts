@@ -80,6 +80,9 @@ export function validatePack(rawPack: unknown): PackValidationResult {
       if (typeof module.id !== 'string' || !module.id.trim()) issues.push({ level: 'error', message: 'Module id is required.' });
       if (typeof module.id === 'string' && moduleIds.has(module.id)) issues.push({ level: 'error', message: `Duplicate module id: ${module.id}` });
       if (typeof module.id === 'string') moduleIds.add(module.id);
+      if (module.preferredAnswerFormat !== undefined && !['auto', 'choice', 'input'].includes(String(module.preferredAnswerFormat))) {
+        issues.push({ level: 'error', message: `Module ${String(module.id)} has invalid preferredAnswerFormat.` });
+      }
       if (!isStringArray(module.questionIds)) issues.push({ level: 'error', message: `Module ${String(module.id)} needs questionIds.` });
     }
   }
@@ -113,6 +116,9 @@ export function validatePack(rawPack: unknown): PackValidationResult {
   return { ok, issues, pack: ok ? (rawPack as unknown as LoopDeckPack) : undefined };
 }
 
+export function collectAllQuestions(packs: LoopDeckPack[]): Question[] {
+  return packs.flatMap((pack) => pack.questions);
+}
 
 /**
  * Question IDs are global user-data keys (attempts, bookmarks and review data),
@@ -139,8 +145,4 @@ export function validateActivePackIdentities(packs: LoopDeckPack[]): PackValidat
     }
   }
   return issues;
-}
-
-export function collectAllQuestions(packs: LoopDeckPack[]): Question[] {
-  return packs.flatMap((pack) => pack.questions);
 }
