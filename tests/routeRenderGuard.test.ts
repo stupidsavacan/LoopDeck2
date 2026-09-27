@@ -43,6 +43,24 @@ describe('route render ownership', () => {
     expect(root.textContent).toBe('B');
   });
 
+  it('preserves the two-second loading threshold for the active route', async () => {
+    vi.useFakeTimers();
+    const coordinator = new RouteRenderCoordinator();
+    const root = document.createElement('div');
+    root.textContent = 'previous';
+    const lease = coordinator.begin();
+    const loadingTimer = window.setTimeout(() => {
+      if (lease.isCurrent()) root.textContent = 'loading';
+    }, 2000);
+
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(root.textContent).toBe('previous');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(root.textContent).toBe('loading');
+
+    window.clearTimeout(loadingTimer);
+  });
+
   it('prevents an async screen from clearing the root after its lease becomes stale', async () => {
     let resolveAttempts!: (attempts: Attempt[]) => void;
     const delayedAttempts = new Promise<Attempt[]>((resolve) => {
