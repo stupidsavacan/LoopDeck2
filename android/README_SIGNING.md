@@ -22,12 +22,13 @@ Use this workflow:
 .github/workflows/build-android-release.yml
 ```
 
-It builds the web app, prepares release signing files from GitHub Secrets, runs `assembleRelease`, uploads the signed APK, and removes the temporary signing files.
+It builds the web app, prepares release signing files from GitHub Secrets, runs `assembleRelease`, publishes the signed APK and single-file HTML as assets on a GitHub Release, and removes the temporary signing files.
 
-The uploaded artifact is named:
+The release assets are named with the workflow run number and attempt, for example:
 
 ```text
-LoopDeck-signed-release-apk
+LoopDeck2-signed-release-<run>-<attempt>.apk
+LoopDeck2-single-<run>-<attempt>.html
 ```
 
 Required GitHub Actions secrets:
@@ -41,7 +42,7 @@ KEY_PASSWORD
 
 The workflow decodes `ANDROID_KEYSTORE_BASE64` into a temporary `android/loopdeck-release.jks` file and creates `android/keystore.properties` during CI. Those files must never be committed.
 
-Pull request runs can verify the web build and Android setup. Manual `workflow_dispatch` runs are the release-export path and fail clearly if any required signing secret is missing.
+The signed-release workflow runs on `main` pushes and manual `workflow_dispatch`. It fails clearly if any required signing secret is missing. Debug APKs remain GitHub Actions artifacts; signed release outputs are GitHub Release assets.
 
 ## Creating ANDROID_KEYSTORE_BASE64
 
@@ -70,7 +71,7 @@ Do not paste those values into README files, source files, workflow logs, issues
 From the repository root, build web assets first:
 
 ```bash
-npm install
+npm ci --include=dev
 npm run build
 ```
 

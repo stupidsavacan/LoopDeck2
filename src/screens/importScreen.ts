@@ -1,67 +1,22 @@
+import { writeDebugLog } from '../debug/debugLog';
+import { validateActivePackIdentities } from '../packs/packValidator';
+import { validateImportFileSize } from '../packs/importLimits';
 import type { LoopDeckPack } from '../core/models';
+import { analyzeImportConflicts, sharedModuleIds } from '../packs/importConflictAnalysis';
 import { mergeLoopDeckPacks, mergeLoopDeckPacksIntoExisting, type MergePackReport } from '../packs/packMerger';
 import packAuthoringPrompt from '../packs/packAuthoringPrompt.txt?raw';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
-import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
-import { db, type LoopDeckBackup } from '../storage/db';
+import { saveBlob } from '../platform/fileSave';
+import { readImportFile } from '../services/importFileService';
+import { db, type BackupImportMode, type LoopDeckBackup } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
-
-declare global {
-  interface Window {
-    LoopDeckAndroid?: {
-      saveFile(filename: string, mimeType: string, base64Data: string): void;
-      beginSaveFile?(saveId: string, filename: string, mimeType: string, expectedBytes: number, expectedChunks: number): boolean;
-      appendSaveFileChunk?(saveId: string, chunkIndex: number, base64Chunk: string): boolean;
-      finishSaveFile?(saveId: string): boolean;
-      canUseNativeSave?(): boolean;
-      showToast?(message: string): void;
-    };
-  }
-}
-
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      const comma = result.indexOf(',');
-      resolve(comma >= 0 ? result.slice(comma + 1) : result);
-    };
-    reader.onerror = () => reject(reader.error ?? new Error('Failed to read export file.'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-async function downloadBlob(blob: Blob, filename: string): Promise<void> {
-  if (window.LoopDeckAndroid?.saveFile) {
-    window.LoopDeckAndroid.saveFile(filename, blob.type || 'application/octet-stream', await blobToBase64(blob));
-    toast('保存先を選んでください。');
-    return;
-  }
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.style.display = 'none';
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function isBackupPayload(value: unknown): value is LoopDeckBackup {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
-  const record = value as Record<string, unknown>;
-  return record.loopDeckBackupVersion === 1 && Array.isArray(record.attempts) && Array.isArray(record.bookmarks) && Array.isArray(record.importedPacks);
-}
 
 async function exportPackJson(pack: LoopDeckPack): Promise<void> {
   try {
     const blob = new Blob([stringifyLoopDeckJson(pack)], { type: 'application/json' });
-    await downloadBlob(blob, `${makePackFileStem(pack)}.loopdeck.json`);
+    await saveBlob(blob, `${makePackFileStem(pack)}.loopdeck.json`);
     toast('JSONを書き出しました。');
   } catch (error) {
     toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
@@ -71,7 +26,7 @@ async function exportPackJson(pack: LoopDeckPack): Promise<void> {
 async function exportPackZip(pack: LoopDeckPack): Promise<void> {
   try {
     const blob = await createLoopDeckZipBlob(pack);
-    await downloadBlob(blob, `${makePackFileStem(pack)}.loopdeck.zip`);
+    await saveBlob(blob, `${makePackFileStem(pack)}.loopdeck.zip`);
     toast('ZIPを書き出しました。');
   } catch (error) {
     toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
@@ -81,13 +36,13 @@ async function exportPackZip(pack: LoopDeckPack): Promise<void> {
 async function exportBackup(): Promise<void> {
   const backup = await db.exportUserData();
   const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-  await downloadBlob(blob, `loopdeck-backup-${backup.exportedAt.slice(0, 10)}.json`);
+  await saveBlob(blob, `loopdeck-backup-${backup.exportedAt.slice(0, 10)}.json`);
   toast('バックアップを書き出しました。');
 }
 
 async function exportPackAuthoringPrompt(): Promise<void> {
   const blob = new Blob([packAuthoringPrompt], { type: 'text/plain;charset=utf-8' });
-  await downloadBlob(blob, 'loopdeck-pack-authoring-prompt.txt');
+  await saveBlob(blob, 'loopdeck-pack-authoring-prompt.txt');
   toast('AI用のPack作成プロンプトを書き出しました。');
 }
 
@@ -96,10 +51,6 @@ function infoList(items: string[]): HTMLUListElement {
   list.className = 'info-list';
   for (const text of items) list.append(el('li', '', text));
   return list;
-}
-
-function unique(values: string[]): string[] {
-  return [...new Set(values.filter((value) => value.trim()))];
 }
 
 function summarizeIds(ids: string[]): string {
@@ -125,28 +76,20 @@ function appendMergeReport(container: HTMLElement, report: MergePackReport): voi
   container.append(reportBox);
 }
 
-function sharedModuleIds(left: LoopDeckPack, right: LoopDeckPack): string[] {
-  const leftIds = new Set(left.modules.map((module) => module.id));
-  return unique(right.modules.map((module) => module.id).filter((moduleId) => leftIds.has(moduleId)));
-}
-
-function findModuleMergeTarget(pack: LoopDeckPack, activePacks: LoopDeckPack[]): LoopDeckPack | undefined {
-  const incomingModuleIds = new Set(pack.modules.map((module) => module.id));
-  return activePacks.find((activePack) => activePack.modules.some((module) => incomingModuleIds.has(module.id)));
-}
-
 export async function renderImportScreen(
   root: HTMLElement,
   packView: ResolvedPackView,
   navigateHome: () => void,
-  onImported: () => Promise<void>
+  onImported: () => Promise<void>,
+  isCurrent: () => boolean = () => true
 ): Promise<void> {
+  if (!isCurrent()) return;
   const importedPacks = await db.getImportedPacks();
+  if (!isCurrent()) return;
   const activePacks = getActivePacks(packView);
   const importedIds = new Set(importedPacks.map((pack) => pack.packId));
-  const activePackIds = new Set(activePacks.map((pack) => pack.packId));
-  const activeModuleIds = new Set(getActiveModules(packView).map((module) => module.id));
-  const activeQuestionIds = new Set(getActiveQuestions(packView).map((question) => question.id));
+  const activeModules = getActiveModules(packView);
+  const activeQuestions = getActiveQuestions(packView);
 
   clear(root);
   const screen = el('main', 'screen import-screen');
@@ -199,30 +142,81 @@ export async function renderImportScreen(
     uploadCard.classList.toggle('loading', value);
   }
 
+  async function importBackupFromUi(
+    backup: LoopDeckBackup,
+    mode: BackupImportMode,
+    replaceButton: HTMLButtonElement,
+    mergeButton: HTMLButtonElement
+  ): Promise<void> {
+    if (
+      mode === 'replace' &&
+      !window.confirm('現在の回答履歴・ブックマーク・インポート教材・SRS復習データを、このバックアップの内容で置き換えます。続けますか？')
+    )
+      return;
+    replaceButton.disabled = true;
+    mergeButton.disabled = true;
+    try {
+      await db.importUserData(backup, mode);
+      toast(mode === 'replace' ? 'バックアップから置き換え復元しました。' : 'バックアップを現在データへマージしました。');
+      await onImported();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      writeDebugLog({
+        level: 'error',
+        area: 'backupImport',
+        code: 'BACKUP-IMPORT-FAILED',
+        userMessage: 'バックアップの読み込みに失敗しました。',
+        detail,
+        stack: error instanceof Error ? error.stack : undefined,
+        context: { mode, exportedAt: backup.exportedAt }
+      });
+      toast(`バックアップの読み込みに失敗しました：${detail}`);
+      replaceButton.disabled = false;
+      mergeButton.disabled = false;
+    }
+  }
+
+  function renderBackupImport(backup: LoopDeckBackup): void {
+    clear(preview);
+    preview.append(
+      el('h2', '', 'バックアップを読み込む'),
+      el(
+        'p',
+        'import-summary',
+        `書き出し日時: ${backup.exportedAt} / 回答${backup.attempts.length}件 / ブックマーク${backup.bookmarks.length}件 / 教材${backup.importedPacks.length}件`
+      ),
+      el(
+        'p',
+        'hint',
+        '「置き換え復元」は現在の学習データを消してバックアップの状態に合わせます。「マージ」は現在データを残し、バックアップ内の同じIDだけ上書きします。'
+      )
+    );
+    const replace = button('現在データを置き換えて復元', 'btn ghost danger');
+    const merge = button('現在データにマージ', 'btn primary');
+    replace.onclick = () => void importBackupFromUi(backup, 'replace', replace, merge);
+    merge.onclick = () => void importBackupFromUi(backup, 'merge', replace, merge);
+    const actions = el('div', 'data-actions');
+    actions.append(replace, merge);
+    preview.append(actions);
+  }
+
   async function handleFile(file: File): Promise<void> {
     if (importing) return;
+    const sizeIssue = validateImportFileSize(file).find((issue) => issue.level === 'error');
+    if (sizeIssue) {
+      clear(preview);
+      preview.append(el('h2', '', '読み込み結果'), el('p', 'issue error', sizeIssue.message));
+      return;
+    }
     selectedFile.textContent = `選択中のファイル: ${file.name}`;
     setImporting(true);
     try {
-      const result = file.name.endsWith('.zip') || file.name.endsWith('.loopdeck.zip')
-        ? await importLoopDeckZip(file)
-        : await (async () => {
-            const text = await file.text();
-            let parsed: unknown;
-            try {
-              parsed = JSON.parse(text);
-            } catch {
-              parsed = undefined;
-            }
-            if (isBackupPayload(parsed)) {
-              await db.importUserData(parsed);
-              toast('バックアップを復元しました。');
-              await onImported();
-              return undefined;
-            }
-            return importLoopDeckJson(new File([text], file.name, { type: file.type || 'application/json' }));
-          })();
-      if (!result) return;
+      const imported = await readImportFile(file);
+      if (imported.kind === 'backup') {
+        renderBackupImport(imported.backup);
+        return;
+      }
+      const result = imported.result;
 
       clear(preview);
       preview.append(el('h2', '', '読み込み結果'));
@@ -237,12 +231,16 @@ export async function renderImportScreen(
 
       if (result.ok && result.pack) {
         const pack = result.pack;
-        const existingImportedPack = importedPacks.find((importedPack) => importedPack.packId === pack.packId);
-        const moduleMergeTarget = existingImportedPack ? undefined : findModuleMergeTarget(pack, activePacks);
-        const duplicateImportedPackId = Boolean(existingImportedPack);
-        const duplicateActivePackId = activePackIds.has(pack.packId);
-        const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
-        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
+        const assets = result.assets ?? [];
+        const directIdentityIssues = validateActivePackIdentities([...activePacks, pack]).filter((issue) => issue.level === 'error');
+        const {
+          existingImportedPack,
+          moduleMergeTarget,
+          duplicateImportedPackId,
+          duplicateActivePackId,
+          duplicateModuleIds,
+          duplicateQuestionIds
+        } = analyzeImportConflicts(pack, importedPacks, activePacks, activeModules, activeQuestions);
         const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
         preview.append(summary);
 
@@ -255,22 +253,56 @@ export async function renderImportScreen(
             preview.append(el('p', 'issue warning', '同じIDのパックがあります。取り込み後は新しく取り込んだ教材が優先されます。'));
           }
           if (duplicateModuleIds.length) {
-            preview.append(el('p', 'issue warning', `同じIDの教材があります: ${summarizeIds(duplicateModuleIds)}。通常取り込みでは上書き扱いになるため、必要なら教材マージ更新を選んでください。`));
+            preview.append(
+              el(
+                'p',
+                'issue warning',
+                `同じIDの教材があります: ${summarizeIds(duplicateModuleIds)}。通常取り込みでは上書き扱いになるため、必要なら教材マージ更新を選んでください。`
+              )
+            );
           }
           if (moduleMergeTarget) {
             const previewMerge = mergeLoopDeckPacksIntoExisting(moduleMergeTarget, pack);
             const sharedIds = sharedModuleIds(moduleMergeTarget, pack);
-            preview.append(el('p', 'issue warning', `教材マージ更新できます。対象: ${moduleMergeTarget.title} / 教材ID: ${summarizeIds(sharedIds)}`));
+            preview.append(
+              el('p', 'issue warning', `教材マージ更新できます。対象: ${moduleMergeTarget.title} / 教材ID: ${summarizeIds(sharedIds)}`)
+            );
             appendMergeReport(preview, previewMerge.report);
           }
           if (duplicateQuestionIds.length) {
-            preview.append(el('p', 'issue warning', `同じIDの問題があります。マージ時は同一内容ならスキップ、内容違いならID変更して追加します: ${summarizeIds(duplicateQuestionIds)}`));
+            preview.append(
+              el(
+                'p',
+                'issue warning',
+                `同じIDの問題があります。マージ時は同一内容ならスキップ、内容違いならID変更して追加します: ${summarizeIds(duplicateQuestionIds)}`
+              )
+            );
           }
         }
 
-        const install = button(duplicateImportedPackId ? '上書き更新する' : duplicateModuleIds.length ? '別パックとして取り込む（上書き注意）' : 'この教材を取り込む', duplicateModuleIds.length ? 'btn ghost danger' : 'btn primary');
+        if (directIdentityIssues.length) {
+          preview.append(
+            el('p', 'issue error', `別パックとしては取り込めません: ${directIdentityIssues.map((issue) => issue.message).join(' / ')}`)
+          );
+        }
+
+        const install = button(
+          duplicateImportedPackId
+            ? '上書き更新する'
+            : duplicateModuleIds.length
+              ? '別パックとして取り込む（上書き注意）'
+              : 'この教材を取り込む',
+          duplicateModuleIds.length ? 'btn ghost danger' : 'btn primary'
+        );
+        install.disabled = directIdentityIssues.length > 0;
         install.onclick = async () => {
-          await db.saveImportedPack(pack);
+          const latestActive = getActivePacks(packView);
+          const identityIssues = validateActivePackIdentities([...latestActive, pack]).filter((issue) => issue.level === 'error');
+          if (identityIssues.length) {
+            toast('問題IDが別パックと衝突しているため取り込めません。マージ更新を使ってください。');
+            return;
+          }
+          await db.saveImportedPackWithAssets(pack, assets, 'replace');
           toast(duplicateImportedPackId ? '教材を上書き更新しました。' : '教材を取り込みました。');
           await onImported();
         };
@@ -281,15 +313,22 @@ export async function renderImportScreen(
           mergeInstall.onclick = async () => {
             const currentExistingPack = (await db.getImportedPacks()).find((importedPack) => importedPack.packId === pack.packId);
             if (!currentExistingPack) {
-              await db.saveImportedPack(pack);
+              await db.saveImportedPackWithAssets(pack, assets, 'replace');
               toast('同じIDのインポート済み教材が見つからなかったため、新規取り込みしました。');
               await onImported();
               return;
             }
 
             const { pack: mergedPack, report } = mergeLoopDeckPacks(currentExistingPack, pack);
-            await db.saveImportedPack(mergedPack);
-            toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
+            const identityIssues = validateActivePackIdentities([...activePacks, mergedPack]).filter((issue) => issue.level === 'error');
+            if (identityIssues.length) {
+              toast('マージ結果の問題IDが別パックと衝突するため保存できません。');
+              return;
+            }
+            await db.saveImportedPackWithAssets(mergedPack, assets, 'upsert');
+            toast(
+              `教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`
+            );
             await onImported();
           };
           preview.append(mergeInstall);
@@ -299,10 +338,18 @@ export async function renderImportScreen(
           const moduleMergeInstall = button('教材マージ更新する', 'btn primary');
           moduleMergeInstall.onclick = async () => {
             const currentImportedPacks = await db.getImportedPacks();
-            const currentTarget = currentImportedPacks.find((importedPack) => importedPack.packId === moduleMergeTarget.packId) ?? moduleMergeTarget;
+            const currentTarget =
+              currentImportedPacks.find((importedPack) => importedPack.packId === moduleMergeTarget.packId) ?? moduleMergeTarget;
             const { pack: mergedPack, report } = mergeLoopDeckPacksIntoExisting(currentTarget, pack);
-            await db.saveImportedPack(mergedPack);
-            toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
+            const identityIssues = validateActivePackIdentities([...activePacks, mergedPack]).filter((issue) => issue.level === 'error');
+            if (identityIssues.length) {
+              toast('マージ結果の問題IDが別パックと衝突するため保存できません。');
+              return;
+            }
+            await db.saveImportedPackWithAssets(mergedPack, assets, 'upsert');
+            toast(
+              `教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`
+            );
             await onImported();
           };
           preview.append(moduleMergeInstall);
@@ -344,7 +391,10 @@ export async function renderImportScreen(
   for (const pack of activePacks) {
     const row = el('div', 'weak-row pack-row');
     const meta = el('div', 'pack-meta');
-    meta.append(el('span', '', pack.title), el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`));
+    meta.append(
+      el('span', '', pack.title),
+      el('small', '', `${pack.questions.length}問${importedIds.has(pack.packId) ? ' / imported' : ' / built-in'}`)
+    );
 
     const actions = el('div', 'pack-actions');
     const json = button('JSON', 'btn');
@@ -399,21 +449,23 @@ export async function renderImportScreen(
   dangerZone.append(dangerActions);
   dataCard.append(
     dataActions,
-    el('p', 'hint', 'JSONバックアップを読み込むと、回答履歴・ブックマーク・インポート済み教材を復元します。'),
+    el('p', 'hint', 'JSONバックアップを読み込むと、「現在データを置き換えて復元」または「現在データにマージ」を選べます。'),
     dangerZone
   );
 
   const apkCard = el('details', 'card v2-dev-zone');
-  apkCard.append(
-    el('summary', '', '開発者向け · APKビルド')
-  );
+  apkCard.append(el('summary', '', '開発者向け · APKビルド'));
   const apkBody = el('div', 'v2-dev-body');
   apkBody.append(
     el('h2', '', 'APK書き出し'),
-    el('p', 'hint', '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'),
+    el(
+      'p',
+      'hint',
+      '署名付き APK は、GitHub Secrets に登録した LoopDeck 用 keystore から GitHub Actions で作成します。通常の学習データとは分けて安全に扱います。'
+    ),
     infoList([
       'debug APK: Build Android Debug APK workflow の LoopDeck-debug-apk artifact',
-      'signed release APK: Build Android Signed Release APK workflow の LoopDeck-signed-release-apk artifact',
+      'signed release APK: Build Android Signed Release APK workflow が GitHub Releases に公開する LoopDeck2-signed-release-...apk',
       '署名の詳しい手順は android/README_SIGNING.md にまとめています。'
     ])
   );
@@ -424,7 +476,7 @@ export async function renderImportScreen(
     el('summary', '', '対応ファイルと安全制限'),
     infoList([
       'JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。',
-      'LoopDeckバックアップJSONは回答履歴・ブックマーク・インポート済み教材を復元できます。',
+      'LoopDeckバックアップJSONは、置き換え復元とマージ読み込みを明示的に選べます。',
       'HTML / JavaScript / CSS は教材として実行しません。',
       '.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。',
       '../、..\\、絶対パス、空パス、null byte を含む危険なパスは拒否します。'

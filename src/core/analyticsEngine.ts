@@ -1,5 +1,6 @@
+import { localCalendarDayKey, recentLocalCalendarDayKeys } from './calendarDay';
 import type { Attempt, ModuleInfo, Question } from './models';
-import { analyzeProblems, timingBand } from './reviewEngine';
+import { analyzeProblems, timingBand, type ReviewAttemptAggregation } from './reviewEngine';
 
 export interface DailyStudyStat {
   date: string;
@@ -32,24 +33,20 @@ export interface MistakeBreakdownItem {
   count: number;
 }
 
-function dayKey(value: Date): string {
-  return value.toISOString().slice(0, 10);
+export interface AnalyticsOverview {
+  totalAttempts: number;
+  correct: number;
+  mistakes: number;
+  dailyStudyStats: DailyStudyStat[];
+  moduleStudyStats: ModuleStudyStat[];
+  mistakeTrend: MistakeTrendPoint[];
+  mistakeBreakdown: MistakeBreakdownItem[];
 }
 
 function parseAttemptDay(attempt: Attempt): string | undefined {
   const date = new Date(attempt.answeredAt);
   if (Number.isNaN(date.getTime())) return undefined;
-  return dayKey(date);
-}
-
-function recentDayKeys(days: number, now: Date): string[] {
-  const safeDays = Math.max(1, Math.floor(days));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  return Array.from({ length: safeDays }, (_, index) => {
-    const date = new Date(end);
-    date.setUTCDate(end.getUTCDate() - (safeDays - index - 1));
-    return dayKey(date);
-  });
+  return localCalendarDayKey(date);
 }
 
 function bump(counts: Map<string, MistakeBreakdownItem>, id: string, label: string, amount = 1): void {
@@ -60,7 +57,7 @@ function bump(counts: Map<string, MistakeBreakdownItem>, id: string, label: stri
 
 export function buildDailyStudyStats(attempts: Attempt[], days = 28, now = new Date()): DailyStudyStat[] {
   const byDay = new Map<string, DailyStudyStat>();
-  for (const date of recentDayKeys(days, now)) {
+  for (const date of recentLocalCalendarDayKeys(days, now)) {
     byDay.set(date, { date, attempts: 0, correct: 0, wrong: 0, revealed: 0, accuracy: 0 });
   }
 
@@ -116,7 +113,7 @@ export function buildModuleStudyStats(attempts: Attempt[], modules: ModuleInfo[]
 }
 
 export function buildMistakeTrend(attempts: Attempt[], days = 14, now = new Date()): MistakeTrendPoint[] {
-  const byDay = new Map(recentDayKeys(days, now).map((date) => [date, 0]));
+  const byDay = new Map(recentLocalCalendarDayKeys(days, now).map((date) => [date, 0]));
   for (const attempt of attempts) {
     if (attempt.result === 'correct') continue;
     const date = parseAttemptDay(attempt);
@@ -165,4 +162,125 @@ export function buildMistakeBreakdown(attempts: Attempt[], questions: Question[]
   if (relapse) bump(counts, 'failed_after_correct', '正解後に再失敗', relapse);
 
   return [...counts.values()].filter((item) => item.count > 0);
+}
+
+/**
+ * Builds all Graphs-screen summaries from one pass over attempt history.
+ * Derived problem analysis reuses the by-question groups from that pass instead
+ * of scanning the raw attempt array again.
+ */
+export function buildAnalyticsOverview(
+  attempts: Attempt[],
+  modules: ModuleInfo[],
+  questions: Question[],
+  options: { dailyDays?: number; trendDays?: number; slowCorrectMs?: number; now?: Date } = {}
+): AnalyticsOverview {
+  const now = options.now ?? new Date();
+  const dailyDays = options.dailyDays ?? 28;
+  const trendDays = options.trendDays ?? 14;
+  const slowCorrectMs = options.slowCorrectMs ?? 10000;
+  const dailyByDay = new Map<string, DailyStudyStat>(
+    recentLocalCalendarDayKeys(dailyDays, now).map((date) => [date, { date, attempts: 0, correct: 0, wrong: 0, revealed: 0, accuracy: 0 }])
+  );
+  const trendByDay = new Map<string, number>(recentLocalCalendarDayKeys(trendDays, now).map((date) => [date, 0]));
+  const moduleTitles = new Map(modules.map((module) => [module.id, module.title]));
+  const moduleById = new Map<string, ModuleStudyStat & { elapsedTotal: number }>();
+  const questionsById = new Map(questions.map((question) => [question.id, question]));
+  const breakdownCounts = new Map<string, MistakeBreakdownItem>();
+  const wrongByQuestion = new Map<string, number>();
+  const reviewByQuestion = new Map<string, Attempt[]>();
+  const reviewWrongQuestionIds = new Set<string>();
+  const reviewWeakModules: Record<string, number> = {};
+  let correct = 0;
+  let mistakes = 0;
+
+  for (const attempt of attempts) {
+    if (attempt.result === 'correct') correct += 1;
+    else mistakes += 1;
+    const reviewRecords = reviewByQuestion.get(attempt.questionId) ?? [];
+    reviewRecords.push(attempt);
+    reviewByQuestion.set(attempt.questionId, reviewRecords);
+    if (attempt.result !== 'correct') {
+      reviewWrongQuestionIds.add(attempt.questionId);
+      reviewWeakModules[attempt.moduleId] = (reviewWeakModules[attempt.moduleId] ?? 0) + 1;
+    }
+
+    const date = parseAttemptDay(attempt);
+    const daily = date ? dailyByDay.get(date) : undefined;
+    if (daily) {
+      daily.attempts += 1;
+      if (attempt.result === 'correct') daily.correct += 1;
+      if (attempt.result === 'wrong') daily.wrong += 1;
+      if (attempt.result === 'revealed') daily.revealed += 1;
+    }
+    if (date && attempt.result !== 'correct' && trendByDay.has(date)) {
+      trendByDay.set(date, (trendByDay.get(date) ?? 0) + 1);
+    }
+
+    const moduleStat = moduleById.get(attempt.moduleId) ?? {
+      moduleId: attempt.moduleId,
+      title: moduleTitles.get(attempt.moduleId) ?? attempt.moduleId,
+      attempts: 0,
+      correct: 0,
+      wrong: 0,
+      revealed: 0,
+      accuracy: 0,
+      averageElapsedMs: 0,
+      elapsedTotal: 0
+    };
+    moduleStat.attempts += 1;
+    moduleStat.elapsedTotal += Math.max(0, attempt.elapsedMs);
+    if (attempt.result === 'correct') moduleStat.correct += 1;
+    if (attempt.result === 'wrong') moduleStat.wrong += 1;
+    if (attempt.result === 'revealed') moduleStat.revealed += 1;
+    moduleById.set(attempt.moduleId, moduleStat);
+
+    const question = questionsById.get(attempt.questionId);
+    if (attempt.result === 'wrong') {
+      bump(breakdownCounts, 'wrong', '不正解');
+      wrongByQuestion.set(attempt.questionId, (wrongByQuestion.get(attempt.questionId) ?? 0) + 1);
+      if (question?.type === 'multi_select') bump(breakdownCounts, 'multi_select', '複数選択ミス');
+      if (attempt.nearMiss) bump(breakdownCounts, 'near_miss', 'ニアミス');
+      if (timingBand(attempt.elapsedMs, attempt.answerMode) === 'fast') bump(breakdownCounts, 'quick_wrong', '即答ミス');
+      if (timingBand(attempt.elapsedMs, attempt.answerMode) === 'slow') bump(breakdownCounts, 'slow_wrong', '長考して誤答');
+    } else if (attempt.result === 'revealed') {
+      bump(breakdownCounts, 'revealed', '答え表示');
+      wrongByQuestion.set(attempt.questionId, (wrongByQuestion.get(attempt.questionId) ?? 0) + 1);
+    } else if (attempt.elapsedMs >= slowCorrectMs) {
+      bump(breakdownCounts, 'slow_correct', '時間がかかった正解');
+    }
+  }
+
+  const repeated = [...wrongByQuestion.values()].filter((count) => count >= 2).length;
+  if (repeated) bump(breakdownCounts, 'repeated', '繰り返しミス', repeated);
+
+  const reviewAggregation: ReviewAttemptAggregation = {
+    byQuestion: reviewByQuestion,
+    wrongQuestionIds: reviewWrongQuestionIds,
+    weakModules: reviewWeakModules
+  };
+  const analyses = analyzeProblems(attempts, questions, {}, reviewAggregation);
+  const repeatedSameWrong = analyses.filter((item) => item.wrongAnswerPatterns.some((pattern) => pattern.count >= 2)).length;
+  if (repeatedSameWrong) bump(breakdownCounts, 'repeated_same_wrong', '同じ誤答を反復', repeatedSameWrong);
+  const relapse = analyses.filter((item) => item.mistakeTags.includes('正解後に再失敗')).length;
+  if (relapse) bump(breakdownCounts, 'failed_after_correct', '正解後に再失敗', relapse);
+
+  return {
+    totalAttempts: attempts.length,
+    correct,
+    mistakes,
+    dailyStudyStats: [...dailyByDay.values()].map((item) => ({
+      ...item,
+      accuracy: item.attempts ? item.correct / item.attempts : 0
+    })),
+    moduleStudyStats: [...moduleById.values()]
+      .map(({ elapsedTotal, ...item }) => ({
+        ...item,
+        accuracy: item.attempts ? item.correct / item.attempts : 0,
+        averageElapsedMs: item.attempts ? elapsedTotal / item.attempts : 0
+      }))
+      .sort((a, b) => b.attempts - a.attempts || a.title.localeCompare(b.title)),
+    mistakeTrend: [...trendByDay.entries()].map(([date, mistakes]) => ({ date, mistakes })),
+    mistakeBreakdown: [...breakdownCounts.values()].filter((item) => item.count > 0)
+  };
 }

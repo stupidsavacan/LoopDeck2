@@ -47,6 +47,19 @@ const secondQuestion: Question = {
   prompt: 'Second answer?'
 };
 
+const reversibleQuestion: Question = {
+  id: 'reversible-question',
+  moduleId: moduleInfo.id,
+  type: 'input',
+  prompt: 'front',
+  answer: 'back',
+  supportedStudyModes: ['front_to_back', 'back_to_front'],
+  sides: {
+    front: { label: 'Front', text: 'front' },
+    back: { label: 'Back', text: 'back' }
+  }
+};
+
 function settings(overrides: Partial<StudySettings> = {}): StudySettings {
   return {
     shuffle: false,
@@ -58,15 +71,18 @@ function settings(overrides: Partial<StudySettings> = {}): StudySettings {
   };
 }
 
-function render(question: Question, overrides: Partial<StudySettings> = {}): { container: HTMLElement; attempts: Attempt[]; onSessionChange: ReturnType<typeof vi.fn> } {
+function render(
+  question: Question,
+  overrides: Partial<StudySettings> = {}
+): { container: HTMLElement; attempts: Attempt[]; onSessionChange: ReturnType<typeof vi.fn> } {
   const container = document.createElement('div');
   document.body.append(container);
   const attempts: Attempt[] = [];
-  vi.spyOn(db, 'addAttempt').mockImplementation(async (attempt) => { attempts.push(attempt); });
-  vi.spyOn(db, 'getBookmarks').mockResolvedValue([]);
+  vi.spyOn(db, 'hasBookmark').mockResolvedValue(false);
   vi.spyOn(db, 'getReviewCard').mockResolvedValue(undefined);
-  vi.spyOn(db, 'putReviewCard').mockResolvedValue();
-  vi.spyOn(db, 'putReviewLog').mockResolvedValue();
+  vi.spyOn(db, 'saveAttemptWithReview').mockImplementation(async (attempt) => {
+    attempts.push(attempt);
+  });
   const onSessionChange = vi.fn();
   renderInlineQuiz(container, createSession(moduleInfo, [question], settings(overrides)), {
     onSessionChange,
@@ -172,7 +188,7 @@ describe('inline quiz idle auto reveal', () => {
     expect(choice.classList.contains('selected')).toBe(true);
   });
 
-  it('pauses while hidden and resumes from the remaining idle time without excluding hidden elapsed time', async () => {
+  it('pauses while hidden, excludes hidden answer time, and resumes from the remaining idle time', async () => {
     const { attempts } = render(inputQuestion);
     await vi.advanceTimersByTimeAsync(6_000);
     setHidden(true);
@@ -185,8 +201,27 @@ describe('inline quiz idle auto reveal', () => {
     await vi.advanceTimersByTimeAsync(1);
 
     expect(attempts).toHaveLength(1);
-    expect(attempts[0].elapsedMs).toBe(30_000);
-    expect(attempts[0].hiddenTimeExcludedMs).toBe(0);
+    expect(attempts[0].elapsedMs).toBe(10_000);
+    expect(attempts[0].hiddenTimeExcludedMs).toBe(20_000);
+  });
+
+  it('excludes hidden time from manual answers even when auto reveal is disabled', async () => {
+    const { container, attempts } = render(inputQuestion, { autoRevealAfterIdle: false });
+    const input = container.querySelector<HTMLInputElement>('input.text-input')!;
+    const submit = [...container.querySelectorAll<HTMLButtonElement>('button')].find((item) => item.textContent === '回答する')!;
+
+    await vi.advanceTimersByTimeAsync(2_000);
+    setHidden(true);
+    await vi.advanceTimersByTimeAsync(20_000);
+    setHidden(false);
+    await vi.advanceTimersByTimeAsync(1_000);
+    input.value = 'answer';
+    submit.click();
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0].elapsedMs).toBe(3_000);
+    expect(attempts[0].hiddenTimeExcludedMs).toBe(20_000);
   });
 
   it('treats a large visible scheduling gap as suspension instead of idle time', async () => {
@@ -200,7 +235,8 @@ describe('inline quiz idle auto reveal', () => {
     expect(attempts).toHaveLength(0);
     await vi.advanceTimersByTimeAsync(1);
     expect(attempts).toHaveLength(1);
-    expect(attempts[0].elapsedMs).toBeGreaterThan(3_600_000);
+    expect(attempts[0].elapsedMs).toBe(10_000);
+    expect(attempts[0].hiddenTimeExcludedMs).toBeGreaterThan(3_600_000);
   });
 
   it('does not reveal during IME composition and restarts the full delay after composition ends', async () => {
@@ -233,6 +269,24 @@ describe('inline quiz idle auto reveal', () => {
     expect(attempts).toHaveLength(1);
     expect(attempts[0].questionId).toBe(secondQuestion.id);
     expect(container.querySelectorAll('.result')).toHaveLength(1);
+  });
+
+  it('records the concrete presented question mode on attempts', async () => {
+    const { container, attempts } = render(reversibleQuestion, {
+      autoRevealAfterIdle: false,
+      answerFormat: 'input',
+      questionMode: 'back_to_front'
+    });
+    const input = container.querySelector<HTMLInputElement>('input.text-input')!;
+    const submit = [...container.querySelectorAll<HTMLButtonElement>('button')].find((item) => item.textContent === '回答する')!;
+
+    expect(container.querySelector('.question-prompt')?.textContent).toBe('back');
+    input.value = 'front';
+    submit.click();
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0].questionMode).toBe('back_to_front');
   });
 
   it('does not record after the rendered container is detached', async () => {

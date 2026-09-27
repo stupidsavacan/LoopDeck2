@@ -2,8 +2,39 @@ import type { AnswerJudgingRule, ChoiceQuestion, InputQuestion, MultiSelectQuest
 
 const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
 const EDGE_CHARS = new Set([
-  ' ', '\t', '\n', '\r', '"', "'", '`', '「', '」', '『', '』', '（', '）', '(', ')', '【', '】', '[', ']',
-  '。', '．', '.', '!', '！', '?', '？', ',', '，', '、', ':', '：', ';', '；'
+  ' ',
+  '\t',
+  '\n',
+  '\r',
+  '"',
+  "'",
+  '`',
+  '「',
+  '」',
+  '『',
+  '』',
+  '（',
+  '）',
+  '(',
+  ')',
+  '【',
+  '】',
+  '[',
+  ']',
+  '。',
+  '．',
+  '.',
+  '!',
+  '！',
+  '?',
+  '？',
+  ',',
+  '，',
+  '、',
+  ':',
+  '：',
+  ';',
+  '；'
 ]);
 const JAPANESE_PREFIXES = ['答えは', '答えが', '答え', '正解は', '正解が', '回答は', '回答が'];
 const JAPANESE_SUFFIXES = ['です', 'である', 'だ'];
@@ -62,13 +93,13 @@ function isAcceptableJapaneseExpansion(input: string, target: string): boolean {
   if (!JAPANESE_TEXT.test(target) || target.length < 2 || input.length <= target.length) return false;
   const prefixes = ['', '答えは', '答えが', '正解は', '正解が', '回答は', '回答が'];
   const suffixes = ['', 'です', 'だ', 'である'];
-  return prefixes.some((prefix) =>
-    suffixes.some((suffix) => (prefix || suffix) && input === `${prefix}${target}${suffix}`)
-  );
+  return prefixes.some((prefix) => suffixes.some((suffix) => (prefix || suffix) && input === `${prefix}${target}${suffix}`));
 }
 
 function removePunctuation(value: string): string {
-  return Array.from(value).filter((char) => !EDGE_CHARS.has(char)).join('');
+  return Array.from(value)
+    .filter((char) => !EDGE_CHARS.has(char))
+    .join('');
 }
 
 function normalizeForRule(value: string, rule: AnswerJudgingRule = {}): string {
@@ -84,9 +115,7 @@ function normalizeForRule(value: string, rule: AnswerJudgingRule = {}): string {
 export const normalizeAnswer = normalize;
 
 export function getAcceptedAnswers(question: InputQuestion | ChoiceQuestion): string[] {
-  const base = question.acceptedAnswers?.length
-    ? question.acceptedAnswers
-    : [question.answer, ...(question.acceptableAnswers ?? [])];
+  const base = question.acceptedAnswers?.length ? question.acceptedAnswers : [question.answer, ...(question.acceptableAnswers ?? [])];
   const result: string[] = [];
   const seen = new Set<string>();
 
@@ -104,6 +133,15 @@ export function getAcceptedAnswers(question: InputQuestion | ChoiceQuestion): st
 
 function inputCandidates(question: InputQuestion | ChoiceQuestion): string[] {
   return getAcceptedAnswers(question);
+}
+
+export function normalizeAnswerForQuestion(question: InputQuestion | ChoiceQuestion, rawInput: string): string {
+  const rule = question.answerJudging ?? {};
+  const mode = rule.mode ?? 'single';
+  return normalizeForRule(rawInput, {
+    allowJapaneseSentenceEdges: rule.allowJapaneseSentenceEdges ?? mode !== 'exact_phrase',
+    ...rule
+  });
 }
 
 export function levenshtein(left: string, right: string): number {
@@ -129,10 +167,7 @@ export function judgeAnswerWithRule(question: InputQuestion | ChoiceQuestion, ra
   const rule = question.answerJudging ?? {};
   const mode = rule.mode ?? 'single';
   const acceptedAnswers = getAcceptedAnswers(question);
-  const normalizedInput = normalizeForRule(rawInput, {
-    allowJapaneseSentenceEdges: rule.allowJapaneseSentenceEdges ?? mode !== 'exact_phrase',
-    ...rule
-  });
+  const normalizedInput = normalizeAnswerForQuestion(question, rawInput);
 
   if (!normalizedInput) return false;
 

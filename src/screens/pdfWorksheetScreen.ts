@@ -1,24 +1,12 @@
 import { reportIssue } from '../debug/reportIssue';
 import { writeDebugLog } from '../debug/debugLog';
-import type { LoopDeckPack, ModuleInfo, Question } from '../core/models';
+import type { ModuleInfo, Question } from '../core/models';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
 import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
 import type { ResolvedPackView } from '../packs/packResolver';
+import { saveBlob, type SaveProgressReporter } from '../platform/fileSave';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
-
-declare global {
-  interface Window {
-    LoopDeckAndroid?: {
-      saveFile(filename: string, mimeType: string, base64Data: string): void;
-      beginSaveFile?(saveId: string, filename: string, mimeType: string, expectedBytes: number, expectedChunks: number): boolean;
-      appendSaveFileChunk?(saveId: string, chunkIndex: number, base64Chunk: string): boolean;
-      finishSaveFile?(saveId: string): boolean;
-      canUseNativeSave?(): boolean;
-      showToast?(message: string): void;
-    };
-  }
-}
 
 interface WorksheetModuleOption {
   packId: string;
@@ -27,19 +15,6 @@ interface WorksheetModuleOption {
   label: string;
 }
 
-export interface NativeSaveResult {
-  id: string;
-  ok: boolean;
-  code: string;
-  message: string;
-  bytes?: number;
-}
-
-type ProgressReporter = (code: string, message: string, detail?: string) => void;
-
-const ANDROID_SAVE_CHUNK_SIZE = 48_000;
-const NATIVE_SAVE_TIMEOUT_MS = 120_000;
-
 function makeOption(value: string, label: string): HTMLOptionElement {
   const option = el('option', '', label) as HTMLOptionElement;
   option.value = value;
@@ -47,7 +22,15 @@ function makeOption(value: string, label: string): HTMLOptionElement {
 }
 
 function safeFileStem(value: string): string {
-  return value.normalize('NFKC').replace(/[<>:"/\\|?*\u0000-\u001f]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 80) || 'worksheet';
+  return (
+    value
+      .normalize('NFKC')
+      .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, '-')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 80) || 'worksheet'
+  );
 }
 
 function exportError(code: string, message: string, cause?: unknown): Error {
@@ -65,102 +48,17 @@ function baseErrorMessage(error: unknown): string {
   return message.replace(/^\[[A-Z0-9-]+\]\s*/, '');
 }
 
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      const comma = result.indexOf(',');
-      const base64 = comma >= 0 ? result.slice(comma + 1) : result;
-      if (!base64) reject(exportError('PDF-B002', 'PDFのbase64化結果が空です。'));
-      else resolve(base64);
-    };
-    reader.onerror = () => reject(exportError('PDF-B001', 'PDF Blobをbase64に変換できません。', reader.error));
-    reader.readAsDataURL(blob);
-  });
-}
-
-export function waitForNativeSave(saveId: string, timeoutMs = NATIVE_SAVE_TIMEOUT_MS): Promise<NativeSaveResult> {
-  return new Promise((resolve, reject) => {
-    let timeoutId = 0;
-    const cleanup = () => {
-      window.removeEventListener('loopdeck-native-save-result', handler);
-      window.clearTimeout(timeoutId);
-    };
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent<NativeSaveResult>).detail;
-      if (!detail || detail.id !== saveId) return;
-      cleanup();
-      if (detail.ok) resolve(detail);
-      else reject(exportError(detail.code || 'SAV-E999', detail.message || 'Android保存に失敗しました。'));
-    };
-    window.addEventListener('loopdeck-native-save-result', handler);
-    timeoutId = window.setTimeout(() => {
-      cleanup();
-      reject(exportError('SAV-A032', 'Android保存結果を受信できませんでした。もう一度お試しください。'));
-    }, timeoutMs);
-  });
-}
-
-async function savePdf(blob: Blob, filename: string, progress: ProgressReporter): Promise<void> {
+async function savePdf(blob: Blob, filename: string, progress: SaveProgressReporter): Promise<void> {
   if (blob.type !== 'application/pdf') throw exportError('PDF-V002', `PDF BlobのMIME typeが不正です: ${blob.type || '(empty)'}`);
   if (blob.size <= 0) throw exportError('PDF-V001', 'PDF Blobのサイズが0Bです。保存を中止しました。');
-
-  const android = window.LoopDeckAndroid;
-  if (android?.beginSaveFile && android.appendSaveFileChunk && android.finishSaveFile) {
-    progress('PDF-B010', 'PDFをbase64へ変換中', `${blob.size.toLocaleString()} bytes`);
-    const base64 = await blobToBase64(blob);
-    const chunks = Math.max(1, Math.ceil(base64.length / ANDROID_SAVE_CHUNK_SIZE));
-    const saveId = `worksheet-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    progress('SAV-A010', 'Android保存セッションを開始中', `${chunks} chunks / ${base64.length.toLocaleString()} chars`);
-
-    if (!android.beginSaveFile(saveId, filename, 'application/pdf', blob.size, chunks)) {
-      throw exportError('SAV-A011', 'Android保存セッションの開始に失敗しました。');
-    }
-
-    for (let index = 0; index < chunks; index += 1) {
-      const chunk = base64.slice(index * ANDROID_SAVE_CHUNK_SIZE, (index + 1) * ANDROID_SAVE_CHUNK_SIZE);
-      if (!android.appendSaveFileChunk(saveId, index, chunk)) {
-        throw exportError('SAV-A012', `Android保存チャンク送信に失敗しました。chunk=${index + 1}/${chunks}`);
-      }
-      if (index === 0 || index === chunks - 1 || (index + 1) % 10 === 0) {
-        progress('SAV-A020', 'AndroidへPDFデータを送信中', `${index + 1}/${chunks} chunks`);
-      }
-    }
-
-    progress('SAV-A030', '保存先選択画面を開いています', 'ファイル名と保存先を選んでください。');
-    if (!android.finishSaveFile(saveId)) throw exportError('SAV-A031', 'Android保存処理の開始に失敗しました。');
-    const result = await waitForNativeSave(saveId);
-    progress(result.code || 'SAV-OK', 'Android保存が完了しました', `${(result.bytes ?? blob.size).toLocaleString()} bytes`);
-    return;
-  }
-
-  if (android?.saveFile) {
-    progress('SAV-L010', '旧Android保存方式で保存します', '保存完了結果はアプリへ戻りません。');
-    android.saveFile(filename, 'application/pdf', await blobToBase64(blob));
-    return;
-  }
-
-  progress('WEB-S010', 'ブラウザ保存を開始します', filename);
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.style.display = 'none';
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  progress('WEB-S020', 'ブラウザ保存を開始しました', `${blob.size.toLocaleString()} bytes`);
+  await saveBlob(blob, filename, { idPrefix: 'worksheet', progress });
 }
 
-function getPackQuestionsForModule(pack: LoopDeckPack, module: ModuleInfo): Question[] {
-  const questionsById = new Map(pack.questions.map((question) => [question.id, question]));
-  return module.questionIds.map((questionId) => questionsById.get(questionId)).filter((question): question is Question => Boolean(question));
-}
-
-function supportedQuestions(pack: LoopDeckPack, module: ModuleInfo): Question[] {
-  return getPackQuestionsForModule(pack, module).filter(isJapaneseToEnglishWorksheetQuestion);
+function supportedQuestions(module: ModuleInfo, questionsById: ReadonlyMap<string, Question>): Question[] {
+  return module.questionIds
+    .map((questionId) => questionsById.get(questionId))
+    .filter((question): question is Question => Boolean(question))
+    .filter(isJapaneseToEnglishWorksheetQuestion);
 }
 
 function disambiguateLabels(options: WorksheetModuleOption[]): WorksheetModuleOption[] {
@@ -178,7 +76,7 @@ function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOpti
     const packId = packView.modulePackIdById.get(module.id);
     const pack = packId ? packView.packById.get(packId) : undefined;
     if (!packId || !pack) continue;
-    const questions = supportedQuestions(pack, module);
+    const questions = supportedQuestions(module, packView.questionById);
     if (!questions.length) continue;
     options.push({ packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
   }
@@ -246,7 +144,8 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
     selectedQuestions = filterWorksheetQuestionsByRange(selected.questions, rangeSelect.value || 'all');
     const questionPages = Math.ceil(selectedQuestions.length / 25);
     const totalPages = questionPages * (includeAnswers.checked ? 2 : 1);
-    summary.textContent = `${selectedQuestions.length}問 / ${totalPages}ページ。問題ページを先に、解答は後ろに出力します。`;
+    const planPreview = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
+    summary.textContent = `${selectedQuestions.length}問 / ${totalPages}ページ。問題ページを先に、解答は後ろに出力します。${planPreview.warnings.length ? ` 注意: ${planPreview.warnings.join(' ')}` : ''}`;
   }
 
   moduleSelect.onchange = refreshRangeOptions;
@@ -266,7 +165,11 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   const statusSummary = el('summary', '', '書き出し状況');
   const statusBody = el('div', 'export-status-body');
   const statusMessage = el('p', 'export-status-message', '待機中');
-  const statusDetail = el('p', 'hint export-status-detail', 'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。');
+  const statusDetail = el(
+    'p',
+    'hint export-status-detail',
+    'PDFを書き出すと、ここに進行状況が表示されます。内部コードはデバッグログに保存します。'
+  );
   const statusLog = el('ol', 'export-status-log');
   statusBody.append(statusMessage, statusDetail, statusLog);
   statusCard.append(statusSummary, statusBody);
@@ -303,6 +206,10 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       const plan = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
       if (!plan.pages.length) throw exportError('PDF-P001', 'PDFに出力できるページがありません。');
       reportProgress('PDF-P010', 'PDFページ構成を作成しました', `${plan.pages.length}ページ / ${plan.rows.length}問`);
+      for (const warning of plan.warnings) {
+        reportProgress('PDF-W010', 'PDF見出しを短縮します', warning);
+        reportIssue({ level: 'warn', area: 'pdfWorksheet', code: 'PDF-W010', userMessage: 'PDF見出しを短縮します。', detail: warning });
+      }
 
       reportProgress('PDF-M010', 'PDF生成モジュールを読み込み中', '../pdf/worksheetPdf');
       const { generateWorksheetPdfBlob } = await import('../pdf/worksheetPdf');
@@ -315,7 +222,14 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       const filename = `${safeFileStem(selected.label)}-${safeFileStem(plan.rangeLabel)}.pdf`;
       reportProgress('PDF-S020', '保存処理を開始します', filename);
       await savePdf(pdf, filename, reportProgress);
-      writeDebugLog({ level: 'info', area: 'pdfWorksheet', code: 'PDF-OK', userMessage: 'PDFプリントを書き出しました。', detail: filename, context: { bytes: pdf.size } });
+      writeDebugLog({
+        level: 'info',
+        area: 'pdfWorksheet',
+        code: 'PDF-OK',
+        userMessage: 'PDFプリントを書き出しました。',
+        detail: filename,
+        context: { bytes: pdf.size }
+      });
       toast('PDFプリントを書き出しました。');
     } catch (error) {
       const code = errorCode(error);

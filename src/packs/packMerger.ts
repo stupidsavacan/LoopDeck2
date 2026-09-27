@@ -1,5 +1,5 @@
 import type { FolderInfo, LoopDeckPack, ModuleInfo, Question } from '../core/models';
-import { stageMergedPackAssets } from './importedAssetStaging';
+import { validatePack } from './packValidator';
 
 export interface MergePackReport {
   addedFolders: number;
@@ -153,6 +153,18 @@ function emptyMergeReport(): MergePackReport {
   };
 }
 
+function validatedMergeResult(pack: LoopDeckPack, report: MergePackReport): MergePackResult {
+  const validation = validatePack(pack);
+  if (!validation.ok) {
+    const detail = validation.issues
+      .filter((issue) => issue.level === 'error')
+      .map((issue) => issue.message)
+      .join('; ');
+    throw new Error(`Merged pack is invalid: ${detail}`);
+  }
+  return { pack, report };
+}
+
 export function mergeLoopDeckPacksIntoExisting(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {
   const report = emptyMergeReport();
   const folders = mergeFolders(existingPack.folders, incomingPack.folders, report);
@@ -168,8 +180,7 @@ export function mergeLoopDeckPacksIntoExisting(existingPack: LoopDeckPack, incom
     questions
   };
 
-  stageMergedPackAssets(incomingPack, pack);
-  return { pack, report };
+  return validatedMergeResult(pack, report);
 }
 
 export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: LoopDeckPack): MergePackResult {
@@ -177,9 +188,12 @@ export function mergeLoopDeckPacks(existingPack: LoopDeckPack, incomingPack: Loo
     throw new Error(`Cannot merge different packIds: ${existingPack.packId} !== ${incomingPack.packId}`);
   }
 
-  return mergeLoopDeckPacksIntoExisting({
-    ...existingPack,
-    title: incomingPack.title,
-    description: incomingPack.description !== undefined ? incomingPack.description : existingPack.description
-  }, incomingPack);
+  return mergeLoopDeckPacksIntoExisting(
+    {
+      ...existingPack,
+      title: incomingPack.title,
+      description: incomingPack.description !== undefined ? incomingPack.description : existingPack.description
+    },
+    incomingPack
+  );
 }

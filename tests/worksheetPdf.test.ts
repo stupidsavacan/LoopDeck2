@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
+import { woffToSfnt } from '../scripts/woffToSfnt';
 import type { ModuleInfo, Question } from '../src/core/models';
 import { createJapaneseToEnglishWorksheetPlan } from '../src/pdf/worksheetPlanner';
 import { generateWorksheetPdfBlob, loadFontBytesFromDataUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
@@ -55,9 +56,13 @@ function questions(count: number): Question[] {
 }
 
 async function fonts(): Promise<WorksheetPdfFontBytes> {
-  const japanese = await readFile(new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff', import.meta.url));
-  const latin = await readFile(new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url));
-  return { japanese, latin };
+  const japanese = await readFile(
+    new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff', import.meta.url)
+  );
+  const latin = await readFile(
+    new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url)
+  );
+  return { japanese: woffToSfnt(japanese), latin: woffToSfnt(latin) };
 }
 
 describe('fixed Japanese-to-English worksheet planner', () => {
@@ -70,7 +75,16 @@ describe('fixed Japanese-to-English worksheet planner', () => {
   it('adds matching answer pages after all question pages when requested', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, questions(100), true);
     expect(plan.answerPages).toHaveLength(4);
-    expect(plan.pages.map((page) => page.kind)).toEqual(['questions', 'questions', 'questions', 'questions', 'answers', 'answers', 'answers', 'answers']);
+    expect(plan.pages.map((page) => page.kind)).toEqual([
+      'questions',
+      'questions',
+      'questions',
+      'questions',
+      'answers',
+      'answers',
+      'answers',
+      'answers'
+    ]);
   });
 
   it('omits answer pages when they are not requested', () => {
@@ -97,6 +111,16 @@ describe('fixed Japanese-to-English worksheet planner', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [messyImportedLeapQuestion(301)], true);
     expect(plan.rows).toEqual([]);
     expect(plan.skippedQuestionCount).toBe(1);
+  });
+
+  it('shortens only an overlong PDF header title and records an explicit warning', () => {
+    const longTitleModule = { ...moduleInfo, title: '教材'.repeat(80) };
+    const plan = createJapaneseToEnglishWorksheetPlan(longTitleModule, [inputQuestion(1)], true);
+
+    expect(Array.from(plan.pdfModuleTitle).length).toBeLessThanOrEqual(72);
+    expect(plan.pdfModuleTitle.endsWith('…')).toBe(true);
+    expect(plan.warnings).toHaveLength(1);
+    expect(plan.warnings[0]).toContain('問題文と解答本文は省略しません');
   });
 
   it('preserves question numbers', () => {
@@ -146,6 +170,16 @@ describe('fixed worksheet PDF generator', () => {
     expect(blob.type).toBe('application/pdf');
     expect(blob.size).toBeGreaterThan(0);
     expect(document.getPageCount()).toBe(2);
+  }, 15000);
+
+  it('fails explicitly instead of truncating essential cell text', async () => {
+    const oversized: Question = {
+      ...inputQuestion(1),
+      prompt: `日本語${'とても長い問題文'.repeat(500)}`
+    };
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [oversized], true);
+
+    await expect(generateWorksheetPdfBlob(plan, await fonts())).rejects.toThrow('[PDF-L001]');
   }, 15000);
 
   it('decodes embedded base64 font data URLs without fetch', () => {

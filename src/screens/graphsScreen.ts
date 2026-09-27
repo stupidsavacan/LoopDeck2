@@ -1,5 +1,10 @@
-import { buildDailyStudyStats, buildMistakeBreakdown, buildMistakeTrend, buildModuleStudyStats } from '../core/analyticsEngine';
-import type { Attempt } from '../core/models';
+import {
+  buildAnalyticsOverview,
+  type DailyStudyStat,
+  type MistakeBreakdownItem,
+  type MistakeTrendPoint,
+  type ModuleStudyStat
+} from '../core/analyticsEngine';
 import { getActiveModules, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
@@ -8,11 +13,10 @@ import { appendIconLabel } from '../ui/icons';
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
 const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
 
-function renderHeatmap(root: HTMLElement, attempts: Attempt[]): void {
+function renderHeatmap(root: HTMLElement, stats: DailyStudyStat[], hasAttempts: boolean): void {
   const card = el('section', 'card graph-card');
   card.append(el('h2', '', '学習の継続'));
-  const stats = buildDailyStudyStats(attempts, 28);
-  if (!attempts.length) {
+  if (!hasAttempts) {
     card.append(el('p', 'empty', 'まだ学習履歴がありません。問題を解くとここに日別の記録が出ます。'));
     root.append(card);
     return;
@@ -31,8 +35,8 @@ function renderHeatmap(root: HTMLElement, attempts: Attempt[]): void {
   root.append(card);
 }
 
-function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: ResolvedPackView): void {
-  const stats = buildModuleStudyStats(attempts, getActiveModules(packView)).slice(0, 8);
+function renderModuleStats(root: HTMLElement, stats: ModuleStudyStat[]): void {
+  stats = stats.slice(0, 8);
   const card = el('section', 'card graph-card');
   card.append(el('h2', '', '正答率と回答速度'));
 
@@ -47,10 +51,7 @@ function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: Res
     const row = el('div', 'module-stat-row');
     const accuracyWidth = `${Math.max(4, Math.round(item.accuracy * 100))}%`;
     const meta = el('div');
-    meta.append(
-      el('strong', '', item.title),
-      el('small', '', `${item.attempts}回 / 平均 ${seconds(item.averageElapsedMs)}`)
-    );
+    meta.append(el('strong', '', item.title), el('small', '', `${item.attempts}回 / 平均 ${seconds(item.averageElapsedMs)}`));
     const meter = el('div', 'accuracy-meter');
     const fill = el('span');
     fill.style.width = accuracyWidth;
@@ -62,8 +63,7 @@ function renderModuleStats(root: HTMLElement, attempts: Attempt[], packView: Res
   root.append(card);
 }
 
-function renderTrend(root: HTMLElement, attempts: Attempt[]): void {
-  const trend = buildMistakeTrend(attempts, 14);
+function renderTrend(root: HTMLElement, trend: MistakeTrendPoint[]): void {
   const card = el('section', 'card graph-card');
   card.append(el('h2', '', 'ミスの推移'));
 
@@ -86,8 +86,7 @@ function renderTrend(root: HTMLElement, attempts: Attempt[]): void {
   root.append(card);
 }
 
-function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: ResolvedPackView): void {
-  const breakdown = buildMistakeBreakdown(attempts, getActiveQuestions(packView));
+function renderBreakdown(root: HTMLElement, breakdown: MistakeBreakdownItem[]): void {
   const card = el('section', 'card graph-card');
   card.append(el('h2', '', 'ミスの内訳'));
 
@@ -112,8 +111,17 @@ function renderBreakdown(root: HTMLElement, attempts: Attempt[], packView: Resol
   root.append(card);
 }
 
-export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPackView, navigateHome: () => void, navigateReview: () => void): Promise<void> {
+export async function renderGraphsScreen(
+  root: HTMLElement,
+  packView: ResolvedPackView,
+  navigateHome: () => void,
+  navigateReview: () => void,
+  isCurrent: () => boolean = () => true
+): Promise<void> {
+  if (!isCurrent()) return;
   const attempts = await db.getAttempts();
+  if (!isCurrent()) return;
+  const overview = buildAnalyticsOverview(attempts, getActiveModules(packView), getActiveQuestions(packView));
   clear(root);
 
   const screen = el('main', 'screen graphs-screen');
@@ -127,8 +135,6 @@ export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPa
   header.append(back, review);
 
   const hero = el('section', 'hero-card study-hero-card');
-  const correct = attempts.filter((attempt) => attempt.result === 'correct').length;
-  const mistakes = attempts.filter((attempt) => attempt.result !== 'correct').length;
   hero.append(
     el('p', 'eyebrow', 'ANALYTICS'),
     el('h1', '', '学習の記録'),
@@ -136,17 +142,17 @@ export async function renderGraphsScreen(root: HTMLElement, packView: ResolvedPa
   );
   const stats = el('div', 'stats-row');
   stats.append(
-    el('span', '', `${attempts.length}回答`),
-    el('span', '', `正解 ${correct}`),
-    el('span', '', `ミス ${mistakes}`)
+    el('span', '', `${overview.totalAttempts}回答`),
+    el('span', '', `正解 ${overview.correct}`),
+    el('span', '', `ミス ${overview.mistakes}`)
   );
   hero.append(stats);
 
   const grid = el('section', 'graph-grid');
-  renderHeatmap(grid, attempts);
-  renderModuleStats(grid, attempts, packView);
-  renderTrend(grid, attempts);
-  renderBreakdown(grid, attempts, packView);
+  renderHeatmap(grid, overview.dailyStudyStats, overview.totalAttempts > 0);
+  renderModuleStats(grid, overview.moduleStudyStats);
+  renderTrend(grid, overview.mistakeTrend);
+  renderBreakdown(grid, overview.mistakeBreakdown);
 
   screen.append(header, hero, grid);
   root.append(screen);

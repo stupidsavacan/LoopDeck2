@@ -1,29 +1,36 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { waitForNativeSave } from '../src/screens/pdfWorksheetScreen';
+import { saveBlob, waitForNativeSave } from '../src/platform/nativeFileSave';
 
 afterEach(() => {
   vi.useRealTimers();
+  delete window.LoopDeckAndroid;
 });
 
 describe('Android native save result waiting', () => {
   it('resolves only for the matching save id', async () => {
     const waiting = waitForNativeSave('wanted', 1000);
-    window.dispatchEvent(new CustomEvent('loopdeck-native-save-result', {
-      detail: { id: 'other', ok: true, code: 'SAV-OK', message: 'other' }
-    }));
-    window.dispatchEvent(new CustomEvent('loopdeck-native-save-result', {
-      detail: { id: 'wanted', ok: true, code: 'SAV-OK', message: 'saved', bytes: 42 }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('loopdeck-native-save-result', {
+        detail: { id: 'other', ok: true, code: 'SAV-OK', message: 'other' }
+      })
+    );
+    window.dispatchEvent(
+      new CustomEvent('loopdeck-native-save-result', {
+        detail: { id: 'wanted', ok: true, code: 'SAV-OK', message: 'saved', bytes: 42 }
+      })
+    );
 
     await expect(waiting).resolves.toMatchObject({ id: 'wanted', ok: true, bytes: 42 });
   });
 
   it('rejects native failures with their error code', async () => {
     const waiting = waitForNativeSave('failed', 1000);
-    window.dispatchEvent(new CustomEvent('loopdeck-native-save-result', {
-      detail: { id: 'failed', ok: false, code: 'SAV-A004', message: 'cancelled' }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('loopdeck-native-save-result', {
+        detail: { id: 'failed', ok: false, code: 'SAV-A004', message: 'cancelled' }
+      })
+    );
 
     await expect(waiting).rejects.toThrow('[SAV-A004] cancelled');
   });
@@ -34,5 +41,63 @@ describe('Android native save result waiting', () => {
     await vi.advanceTimersByTimeAsync(25);
 
     await assertion;
+  });
+
+  it('streams Blob chunks through the unified native bridge without legacy saveFile', async () => {
+    const appended: Array<{ index: number; base64: string }> = [];
+    let saveId = '';
+    window.LoopDeckAndroid = {
+      beginSaveFile(id, _filename, _mimeType, expectedBytes, expectedChunks) {
+        saveId = id;
+        expect(expectedBytes).toBe(100_000);
+        expect(expectedChunks).toBe(3);
+        return true;
+      },
+      appendSaveFileChunk(_id, index, base64Chunk) {
+        appended.push({ index, base64: base64Chunk });
+        return true;
+      },
+      finishSaveFile(id) {
+        queueMicrotask(() =>
+          window.dispatchEvent(
+            new CustomEvent('loopdeck-native-save-result', {
+              detail: { id, ok: true, code: 'SAV-OK', message: 'saved', bytes: 100_000 }
+            })
+          )
+        );
+        return true;
+      },
+      cancelSaveFile() {}
+    };
+
+    const result = await saveBlob(new Blob([new Uint8Array(100_000)], { type: 'application/octet-stream' }), 'big.bin');
+
+    expect(result.mode).toBe('native');
+    expect(result.nativeResult?.bytes).toBe(100_000);
+    expect(saveId).toMatch(/^loopdeck-/);
+    expect(appended.map((chunk) => chunk.index)).toEqual([0, 1, 2]);
+    expect(appended[0].base64.length).toBeLessThanOrEqual(65_536);
+    expect(appended[1].base64.length).toBeLessThanOrEqual(65_536);
+  });
+
+  it('cancels a native session when a chunk append is rejected', async () => {
+    const cancelled: string[] = [];
+    window.LoopDeckAndroid = {
+      beginSaveFile() {
+        return true;
+      },
+      appendSaveFileChunk() {
+        return false;
+      },
+      finishSaveFile() {
+        return true;
+      },
+      cancelSaveFile(id) {
+        cancelled.push(id);
+      }
+    };
+
+    await expect(saveBlob(new Blob(['failure']), 'failure.txt')).rejects.toThrow('[SAV-A012]');
+    expect(cancelled).toHaveLength(1);
   });
 });

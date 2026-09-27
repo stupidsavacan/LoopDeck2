@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildDailyStudyStats, buildMistakeBreakdown, buildMistakeTrend, buildModuleStudyStats } from '../src/core/analyticsEngine';
+import {
+  buildAnalyticsOverview,
+  buildDailyStudyStats,
+  buildMistakeBreakdown,
+  buildMistakeTrend,
+  buildModuleStudyStats
+} from '../src/core/analyticsEngine';
 import type { Attempt, ModuleInfo, Question } from '../src/core/models';
 
 const modules: ModuleInfo[] = [
@@ -15,14 +21,76 @@ const questions: Question[] = [
 ];
 
 const attempts: Attempt[] = [
-  { attemptId: 'a1', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-01T00:00:00.000Z', result: 'wrong', input: ['A'], answer: ['A', 'B'], elapsedMs: 1200, mode: 'normal' },
-  { attemptId: 'a2', questionId: 'q2', moduleId: 'm1', answeredAt: '2026-06-01T00:01:00.000Z', result: 'correct', input: 'h', answer: 'H', elapsedMs: 8000, mode: 'normal' },
-  { attemptId: 'a3', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-02T00:02:00.000Z', result: 'revealed', input: '', answer: 'A', elapsedMs: 500, mode: 'review' },
-  { attemptId: 'a4', questionId: 'q4', moduleId: 'm2', answeredAt: '2026-06-02T00:03:00.000Z', result: 'correct', input: '徳川家康', answer: '徳川家康', elapsedMs: 12000, mode: 'normal' },
-  { attemptId: 'a5', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-02T00:04:00.000Z', result: 'wrong', input: ['B', 'C'], answer: ['A', 'B'], elapsedMs: 1500, mode: 'review' }
+  {
+    attemptId: 'a1',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-01T00:00:00.000Z',
+    result: 'wrong',
+    input: ['A'],
+    answer: ['A', 'B'],
+    elapsedMs: 1200,
+    mode: 'normal'
+  },
+  {
+    attemptId: 'a2',
+    questionId: 'q2',
+    moduleId: 'm1',
+    answeredAt: '2026-06-01T00:01:00.000Z',
+    result: 'correct',
+    input: 'h',
+    answer: 'H',
+    elapsedMs: 8000,
+    mode: 'normal'
+  },
+  {
+    attemptId: 'a3',
+    questionId: 'q3',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:02:00.000Z',
+    result: 'revealed',
+    input: '',
+    answer: 'A',
+    elapsedMs: 500,
+    mode: 'review'
+  },
+  {
+    attemptId: 'a4',
+    questionId: 'q4',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:03:00.000Z',
+    result: 'correct',
+    input: '徳川家康',
+    answer: '徳川家康',
+    elapsedMs: 12000,
+    mode: 'normal'
+  },
+  {
+    attemptId: 'a5',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:04:00.000Z',
+    result: 'wrong',
+    input: ['B', 'C'],
+    answer: ['A', 'B'],
+    elapsedMs: 1500,
+    mode: 'review'
+  }
 ];
 
 describe('analytics engine', () => {
+  it('uses the device-local calendar day for analytics boundaries', () => {
+    const localMidnightAttempt: Attempt = {
+      ...attempts[0],
+      attemptId: 'local-midnight',
+      answeredAt: new Date(2026, 5, 2, 0, 4).toISOString()
+    };
+    const stats = buildDailyStudyStats([localMidnightAttempt], 1, new Date(2026, 5, 2, 0, 30));
+
+    expect(stats).toHaveLength(1);
+    expect(stats[0]).toMatchObject({ date: '2026-06-02', attempts: 1, wrong: 1 });
+  });
+
   it('builds daily study heatmap stats from real attempts', () => {
     const stats = buildDailyStudyStats(attempts, 3, new Date('2026-06-02T12:00:00.000Z'));
 
@@ -51,6 +119,17 @@ describe('analytics engine', () => {
       { date: '2026-06-01', mistakes: 1 },
       { date: '2026-06-02', mistakes: 2 }
     ]);
+  });
+
+  it('builds the Graphs overview from one pass without changing existing summaries', () => {
+    const now = new Date('2026-06-02T12:00:00.000Z');
+    const overview = buildAnalyticsOverview(attempts, modules, questions, { dailyDays: 3, trendDays: 2, slowCorrectMs: 10000, now });
+
+    expect(overview).toMatchObject({ totalAttempts: 5, correct: 2, mistakes: 3 });
+    expect(overview.dailyStudyStats).toEqual(buildDailyStudyStats(attempts, 3, now));
+    expect(overview.moduleStudyStats).toEqual(buildModuleStudyStats(attempts, modules));
+    expect(overview.mistakeTrend).toEqual(buildMistakeTrend(attempts, 2, now));
+    expect(overview.mistakeBreakdown).toEqual(buildMistakeBreakdown(attempts, questions, 10000));
   });
 
   it('breaks down mistake categories honestly from available data', () => {

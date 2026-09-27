@@ -4,7 +4,11 @@ import { writeDebugLog } from '../debug/debugLog';
 import { validatePack } from './packValidator';
 import { normalizeBuiltinPack } from './builtinNormalizer';
 
+let cachedBuiltinPacks: LoopDeckPack[] | undefined;
+
 export function loadBuiltinPacks(): LoopDeckPack[] {
+  if (cachedBuiltinPacks) return cachedBuiltinPacks;
+
   const normalizedPack = normalizeBuiltinPack(builtinQuestionPack);
   const result = validatePack(normalizedPack);
   if (!result.ok || !result.pack) {
@@ -19,5 +23,6 @@ export function loadBuiltinPacks(): LoopDeckPack[] {
     });
     throw new Error('Built-in LoopDeck pack is invalid.');
   }
-  return [result.pack];
+  cachedBuiltinPacks = [result.pack];
+  return cachedBuiltinPacks;
 }

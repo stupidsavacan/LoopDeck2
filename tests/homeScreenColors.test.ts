@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import type { LoopDeckPack, ModuleInfo } from '../src/core/models';
 import { resolveActivePacks } from '../src/packs/packResolver';
-import { moduleMeta, renderHomeScreen } from '../src/screens/homeScreen';
+import { renderHomeScreen } from '../src/screens/homeScreen';
+import { moduleMeta } from '../src/ui/modulePresentation';
 
 function moduleInfo(overrides: Partial<ModuleInfo> = {}): ModuleInfo {
   return {
@@ -28,7 +29,14 @@ function pack(module: ModuleInfo): LoopDeckPack {
 
 function renderSingleCard(module: ModuleInfo): { card: HTMLElement; icon: HTMLElement } {
   const root = document.createElement('div');
-  renderHomeScreen(root, resolveActivePacks([pack(module)]), () => {}, () => {}, () => {}, () => {});
+  renderHomeScreen(
+    root,
+    resolveActivePacks([pack(module)]),
+    () => {},
+    () => {},
+    () => {},
+    () => {}
+  );
 
   const card = root.querySelector<HTMLElement>('.module-card');
   const icon = root.querySelector<HTMLElement>('.module-icon');
@@ -62,7 +70,16 @@ describe('Home module card colors', () => {
   });
 
   it('ignores invalid module colors and falls back without crashing', () => {
-    const meta = moduleMeta(moduleInfo({ id: 'custom-pack-module', title: 'Custom Pack Module', subject: 'custom', color: 'green', accent: 'not-a-color', accentColor: 'bad' }));
+    const meta = moduleMeta(
+      moduleInfo({
+        id: 'custom-pack-module',
+        title: 'Custom Pack Module',
+        subject: 'custom',
+        color: 'green',
+        accent: 'not-a-color',
+        accentColor: 'bad'
+      })
+    );
 
     expect(meta.accent).toBe('#2563eb');
     expect(meta.accentColor).toBeUndefined();

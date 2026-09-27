@@ -6,6 +6,10 @@ export interface PackValidationIssue {
   path?: string;
 }
 
+export type PackAssetWriteStrategy =
+  | 'replace' // Stored assets become exactly the incoming set.
+  | 'upsert'; // Incoming paths overwrite same-path assets; unrelated stored paths stay.
+
 export interface ImportedPackAsset {
   packId: string;
   path: string;

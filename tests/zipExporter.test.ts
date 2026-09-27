@@ -86,7 +86,11 @@ describe('zipExporter', () => {
   it('includes persisted assets in the ZIP export used by the UI', async () => {
     const storedPack = withImage({ ...samplePack, packId: 'stored-export-pack' });
     await db.deleteImportedPack(storedPack.packId);
-    await db.saveImportedPackWithAssets(storedPack, [asset('images/map.png', 'data:image/png;base64,c3RvcmVk', storedPack.packId)]);
+    await db.saveImportedPackWithAssets(
+      storedPack,
+      [asset('images/map.png', 'data:image/png;base64,c3RvcmVk', storedPack.packId)],
+      'replace'
+    );
 
     const blob = await createLoopDeckZipBlob(storedPack);
     const zip = await JSZip.loadAsync(await blob.arrayBuffer());

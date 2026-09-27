@@ -4,6 +4,18 @@ import { presentQuestionForStudy } from './questionPresentation';
 
 type RandomSource = () => number;
 
+export interface IndexedChoiceCandidate {
+  questionId: string;
+  moduleId: string;
+  category?: string;
+  answer: string;
+  normalizedAnswer: string;
+}
+
+export type ChoiceCandidateIndex = ReadonlyMap<ConcreteStudyQuestionMode, readonly IndexedChoiceCandidate[]>;
+
+const INDEXED_MODES: ConcreteStudyQuestionMode[] = ['as_stored', 'front_to_back', 'back_to_front'];
+
 function shuffle<T>(items: T[], random: RandomSource): T[] {
   const copied = [...items];
   for (let index = copied.length - 1; index > 0; index -= 1) {
@@ -38,7 +50,7 @@ export function getManualChoiceCandidates(question: Question): string[] | undefi
   const mode = question.activeStudyMode;
   const manual =
     mode === 'front_to_back' || mode === 'back_to_front'
-      ? question.sideChoiceCandidates?.[mode] ?? question.choiceCandidates
+      ? (question.sideChoiceCandidates?.[mode] ?? question.choiceCandidates)
       : question.choiceCandidates;
   if (!manual || manual.mode !== 'manual') return undefined;
 
@@ -62,11 +74,36 @@ function presentCandidateForMode(candidate: Question, mode: ConcreteStudyQuestio
   return presented.activeStudyMode === mode ? presented : undefined;
 }
 
+export function buildChoiceCandidateIndex(pool: Question[]): ChoiceCandidateIndex {
+  const byMode = new Map<ConcreteStudyQuestionMode, IndexedChoiceCandidate[]>();
+  for (const mode of INDEXED_MODES) byMode.set(mode, []);
+
+  for (const candidate of pool) {
+    for (const mode of INDEXED_MODES) {
+      const presented = presentCandidateForMode(candidate, mode);
+      const answer = presented ? candidateAnswer(presented) : undefined;
+      if (!answer) continue;
+      const normalizedAnswer = normalizeAnswer(answer);
+      if (!normalizedAnswer) continue;
+      byMode.get(mode)?.push({
+        questionId: candidate.id,
+        moduleId: candidate.moduleId,
+        category: candidate.category,
+        answer,
+        normalizedAnswer
+      });
+    }
+  }
+
+  return byMode;
+}
+
 export function buildGeneratedChoices(
   question: InputQuestion,
   pool: Question[],
   optionCount = 4,
-  random: RandomSource = Math.random
+  random: RandomSource = Math.random,
+  candidateIndex?: ChoiceCandidateIndex
 ): string[] | undefined {
   if (optionCount < 2) return undefined;
 
@@ -86,22 +123,18 @@ export function buildGeneratedChoices(
   const accepted = new Set(getAcceptedAnswers(question).map(normalizeAnswer));
   const seen = new Set(accepted);
   const distractors: string[] = [];
-  const candidates = pool
-    .filter((candidate) => candidate.id !== question.id)
-    .map((candidate) => {
-      const presented = presentCandidateForMode(candidate, activeMode);
-      return {
-        answer: presented ? candidateAnswer(presented) : undefined,
-        priority: candidate.moduleId === question.moduleId ? (candidate.category === question.category ? 0 : 1) : 2
-      };
-    })
-    .filter((candidate): candidate is { answer: string; priority: number } => Boolean(candidate.answer));
+  const indexedCandidates = candidateIndex?.get(activeMode) ?? buildChoiceCandidateIndex(pool).get(activeMode) ?? [];
 
   for (const priority of [0, 1, 2]) {
-    for (const candidate of shuffle(candidates.filter((item) => item.priority === priority), random)) {
-      const normalized = normalizeAnswer(candidate.answer);
-      if (!normalized || seen.has(normalized)) continue;
-      seen.add(normalized);
+    const candidates = indexedCandidates.filter((candidate) => {
+      if (candidate.questionId === question.id) return false;
+      const candidatePriority = candidate.moduleId === question.moduleId ? (candidate.category === question.category ? 0 : 1) : 2;
+      return candidatePriority === priority;
+    });
+
+    for (const candidate of shuffle([...candidates], random)) {
+      if (seen.has(candidate.normalizedAnswer)) continue;
+      seen.add(candidate.normalizedAnswer);
       distractors.push(candidate.answer);
       if (distractors.length === optionCount - 1) return shuffle([correct, ...distractors], random);
     }

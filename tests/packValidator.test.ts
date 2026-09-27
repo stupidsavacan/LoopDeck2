@@ -1,9 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { validatePack, validatePackFiles } from '../src/packs/packValidator';
+import type { LoopDeckPack } from '../src/core/models';
+import { validateActivePackIdentities, validatePack, validatePackFiles } from '../src/packs/packValidator';
 
 describe('pack validator', () => {
   it('rejects executable files and unsafe paths', () => {
-    const issues = validatePackFiles(['manifest.json', '../evil.js', '..\\evil.json', 'questions.json', 'images/a.png', 'run.sh', 'script.cjs', 'shell.ps1', 'page.html', '/abs/data.json', '', 'bad\0path.json', ' space.json']);
+    const issues = validatePackFiles([
+      'manifest.json',
+      '../evil.js',
+      '..\\evil.json',
+      'questions.json',
+      'images/a.png',
+      'run.sh',
+      'script.cjs',
+      'shell.ps1',
+      'page.html',
+      '/abs/data.json',
+      '',
+      'bad\0path.json',
+      ' space.json'
+    ]);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '../evil.js')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === '..\\evil.json')).toBe(true);
     expect(issues.some((issue) => issue.level === 'error' && issue.path === 'run.sh')).toBe(true);
@@ -21,16 +36,55 @@ describe('pack validator', () => {
     expect(issues).toEqual([]);
   });
 
-  it('accepts a minimal valid pack', () => {
+  it('accepts documented minimal module fields and normalizes runtime metadata', () => {
     const result = validatePack({
       packVersion: 1,
       packId: 'demo',
       title: 'Demo',
-      folders: [{ id: 'f', title: 'Folder' }],
-      modules: [{ id: 'm', folderId: 'f', title: 'Module', subject: 'demo', questionIds: ['q'] }],
+      folders: [],
+      modules: [{ id: 'm', questionIds: ['q'] }],
       questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
     });
+
     expect(result.ok).toBe(true);
+    expect(result.pack?.modules[0]).toMatchObject({
+      id: 'm',
+      folderId: '',
+      title: 'm',
+      subject: 'その他',
+      questionIds: ['q']
+    });
+  });
+
+  it('normalizes invalid optional module metadata before persistence', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'demo-optional-types',
+      title: 'Demo',
+      folders: [],
+      modules: [
+        {
+          id: 'm',
+          folderId: 123,
+          title: null,
+          subject: { unsafe: true },
+          description: ['bad'],
+          tags: ['safe', 42, 'also-safe'],
+          questionIds: ['q']
+        }
+      ],
+      questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.pack?.modules[0]).toMatchObject({
+      folderId: '',
+      title: 'm',
+      subject: 'その他',
+      tags: ['safe', 'also-safe']
+    });
+    expect(result.pack?.modules[0].description).toBeUndefined();
+    expect(result.issues.some((issue) => issue.level === 'warning' && issue.message.includes('subject'))).toBe(true);
   });
 
   it('rejects duplicate question ids', () => {
@@ -46,5 +100,84 @@ describe('pack validator', () => {
       ]
     });
     expect(result.ok).toBe(false);
+  });
+
+  it('normalizes documented optional module metadata instead of persisting undefined runtime fields', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'minimal-module',
+      title: 'Minimal',
+      folders: [],
+      modules: [{ id: 'm', questionIds: ['q'] }],
+      questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
+    });
+    expect(result.ok).toBe(true);
+    expect(result.pack?.modules[0]).toMatchObject({ id: 'm', folderId: '', title: 'm', subject: 'その他' });
+  });
+
+  it('rejects broken cross references and malformed optional presentation metadata', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'bad-refs',
+      title: 'Bad refs',
+      folders: [{ id: 'f', title: 'Folder' }],
+      modules: [{ id: 'm', folderId: 'missing', title: 'Module', subject: 'demo', color: 'url(javascript:evil)', questionIds: ['q'] }],
+      questions: [
+        {
+          id: 'q',
+          moduleId: 'm',
+          type: 'input',
+          prompt: 'A?',
+          answer: 'A',
+          sampleMarks: [{ label: 'unsafe', color: 'red', pattern: 'unknown' }]
+        }
+      ]
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((entry) => entry.message.includes('unknown folderId'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('six-digit hex color'))).toBe(true);
+  });
+
+  it('rejects inconsistent module/question ownership and invalid answer collections', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'bad-ownership',
+      title: 'Bad ownership',
+      folders: [],
+      modules: [
+        { id: 'm1', questionIds: ['q'] },
+        { id: 'm2', questionIds: [] }
+      ],
+      questions: [{ id: 'q', moduleId: 'm2', type: 'choice', prompt: 'A?', choices: ['A', 'A'], answer: 'B' }]
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((entry) => entry.message.includes('belongs to module'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('duplicate value'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('answer must appear in choices'))).toBe(true);
+  });
+
+  it('rejects invalid preferred answer formats', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'demo-format',
+      title: 'Demo',
+      folders: [{ id: 'f', title: 'F' }],
+      modules: [{ id: 'm', folderId: 'f', title: 'M', subject: 'demo', preferredAnswerFormat: 'bad', questionIds: ['q'] }],
+      questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
+    });
+    expect(result.ok).toBe(false);
+  });
+
+  it('treats question ids as global across different active packIds but allows same-pack replacement', () => {
+    const makePack = (packId: string, prompt: string): LoopDeckPack => ({
+      packVersion: 1,
+      packId,
+      title: packId,
+      folders: [{ id: 'f', title: 'F' }],
+      modules: [{ id: `${packId}-m`, folderId: 'f', title: 'M', subject: 'demo', questionIds: ['shared'] }],
+      questions: [{ id: 'shared', moduleId: `${packId}-m`, type: 'input', prompt, answer: 'A' }]
+    });
+    expect(validateActivePackIdentities([makePack('a', 'A'), makePack('b', 'B')])).toHaveLength(1);
+    expect(validateActivePackIdentities([makePack('a', 'A'), makePack('a', 'new A')])).toEqual([]);
   });
 });

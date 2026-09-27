@@ -29,12 +29,15 @@ function asset(packId: string, path: string, base64 = PNG_BASE64): ImportedPackA
 
 async function zipFile(value: LoopDeckPack, images: Record<string, string>): Promise<File> {
   const zip = new JSZip();
-  zip.file('manifest.json', JSON.stringify({
-    packVersion: value.packVersion,
-    packId: value.packId,
-    title: value.title,
-    folders: value.folders
-  }));
+  zip.file(
+    'manifest.json',
+    JSON.stringify({
+      packVersion: value.packVersion,
+      packId: value.packId,
+      title: value.title,
+      folders: value.folders
+    })
+  );
   zip.file('modules.json', JSON.stringify(value.modules));
   zip.file('questions.json', JSON.stringify(value.questions));
   for (const [path, base64] of Object.entries(images)) zip.file(path, base64, { base64: true });
@@ -48,7 +51,7 @@ describe('real image asset regression flows', () => {
 
     const imported = await importLoopDeckZip(await zipFile(value, { 'images/pixel.png': PNG_BASE64 }));
     expect(imported.ok).toBe(true);
-    await db.saveImportedPack(imported.pack!);
+    await db.saveImportedPackWithAssets(imported.pack!, imported.assets ?? [], 'replace');
 
     const storedPack = (await db.getImportedPacks()).find((item) => item.packId === value.packId)!;
     const view = resolveActivePacks([storedPack]);
@@ -59,7 +62,9 @@ describe('real image asset regression flows', () => {
     const exportedZip = await JSZip.loadAsync(await exported.arrayBuffer());
     expect(await exportedZip.file('images/pixel.png')!.async('base64')).toBe(PNG_BASE64);
 
-    const reimported = await importLoopDeckZip(new File([await exported.arrayBuffer()], 'round-trip.loopdeck.zip', { type: 'application/zip' }));
+    const reimported = await importLoopDeckZip(
+      new File([await exported.arrayBuffer()], 'round-trip.loopdeck.zip', { type: 'application/zip' })
+    );
     expect(reimported.assets?.[0]?.dataUrl).toBe(`data:image/png;base64,${PNG_BASE64}`);
     await db.deleteImportedPack(value.packId);
   });
@@ -68,11 +73,11 @@ describe('real image asset regression flows', () => {
     const target = pack('audit-module-merge-target', 'q-existing', 'images/existing.png');
     const addon = pack('audit-module-merge-addon', 'q-addon', 'images/addon.png');
     await db.deleteImportedPack(target.packId);
-    await db.saveImportedPackWithAssets(target, [asset(target.packId, 'images/existing.png')]);
+    await db.saveImportedPackWithAssets(target, [asset(target.packId, 'images/existing.png')], 'replace');
 
     const imported = await importLoopDeckZip(await zipFile(addon, { 'images/addon.png': PNG_BASE64 }));
     const merged = mergeLoopDeckPacksIntoExisting(target, imported.pack!).pack;
-    await db.saveImportedPack(merged);
+    await db.saveImportedPackWithAssets(merged, imported.assets ?? [], 'upsert');
 
     expect(await db.getPackAsset(target.packId, 'images/existing.png')).toBeDefined();
     expect((await db.getPackAsset(target.packId, 'images/addon.png'))?.dataUrl).toBe(`data:image/png;base64,${PNG_BASE64}`);
@@ -84,13 +89,13 @@ describe('real image asset regression flows', () => {
   it('preserves image assets through user-data backup export and import', async () => {
     const value = pack('audit-image-backup', 'q-backup', 'images/backup.png');
     await db.deleteImportedPack(value.packId);
-    await db.saveImportedPackWithAssets(value, [asset(value.packId, 'images/backup.png')]);
+    await db.saveImportedPackWithAssets(value, [asset(value.packId, 'images/backup.png')], 'replace');
 
     const backup = await db.exportUserData();
     await db.deleteImportedPack(value.packId);
     expect(await db.getPackAsset(value.packId, 'images/backup.png')).toBeUndefined();
 
-    await db.importUserData(backup);
+    await db.importUserData(backup, 'replace');
     expect((await db.getPackAsset(value.packId, 'images/backup.png'))?.dataUrl).toBe(`data:image/png;base64,${PNG_BASE64}`);
     await db.deleteImportedPack(value.packId);
   });

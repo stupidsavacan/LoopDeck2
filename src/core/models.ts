@@ -17,29 +17,7 @@ export interface TwoSidedStudyData {
   back: StudySide;
 }
 
-export type QuestionSamplePattern =
-  | 'solid'
-  | 'vertical_stripes'
-  | 'horizontal_stripes'
-  | 'diagonal_stripes'
-  | 'cross_hatch'
-  | 'dots'
-  | 'grid';
-
-export interface QuestionSampleMark {
-  label: string;
-  color: string;
-  pattern?: QuestionSamplePattern;
-  patternColor?: string;
-  description?: string;
-}
-
-export type AnswerJudgingMode =
-  | 'single'
-  | 'any_of'
-  | 'all_of'
-  | 'exact_phrase'
-  | 'numeric';
+export type AnswerJudgingMode = 'single' | 'any_of' | 'all_of' | 'exact_phrase' | 'numeric';
 
 export interface AnswerJudgingRule {
   mode?: AnswerJudgingMode;
@@ -63,12 +41,19 @@ export interface SideChoiceCandidates {
   back_to_front?: ManualChoiceCandidates;
 }
 
+/**
+ * `learning` and state-level `suspended` are retained for persisted-data compatibility.
+ * Normal scheduling writes `new`, `review`, `relearning`, `leech`, or `mastered`;
+ * suspension is represented by the legacy `suspended` flag.
+ */
 export type ReviewState = 'new' | 'learning' | 'review' | 'relearning' | 'leech' | 'mastered' | 'suspended';
 export type ReviewRating = 'again' | 'hard' | 'good' | 'easy';
 
 export interface FolderInfo {
   id: string;
   title: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface ModuleInfo {
@@ -76,6 +61,8 @@ export interface ModuleInfo {
   folderId: string;
   title: string;
   subject: string;
+  subtitle?: string;
+  preferredAnswerFormat?: AnswerFormat;
   color?: string;
   accent?: string;
   accentColor?: string;
@@ -96,12 +83,6 @@ export interface BaseQuestion {
   example?: string;
   sides?: TwoSidedStudyData;
   supportedStudyModes?: Array<'front_to_back' | 'back_to_front'>;
-  sampleMarks?: QuestionSampleMark[];
-  sampleColors?: Array<{
-    label: string;
-    color: string;
-    description?: string;
-  }>;
   activeStudyMode?: ConcreteStudyQuestionMode;
   autoReversed?: boolean;
   directionLabel?: string;
@@ -217,10 +198,4 @@ export interface StudySettings {
   showExample?: boolean;
   showNumber?: boolean;
   showCategory?: boolean;
-}
-
-export interface AppState {
-  packs: LoopDeckPack[];
-  selectedModuleId?: string;
-  searchQuery: string;
 }

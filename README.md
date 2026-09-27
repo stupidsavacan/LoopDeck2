@@ -288,11 +288,13 @@ images/
 
 推奨フィールド:
 
-- `folderId`: `manifest.json` の folder ID と一致させることを推奨します
+- `folderId`: 指定する場合は `manifest.json` の実在する folder ID と一致させます
 - `title`
 - `subject`
 - `description`
 - `tags`
+
+任意の表示色メタデータとして `color` / `accent` / `accentColor` も使用できます。指定する場合は `#2563EB` のような **6桁HEX色**だけを使用します。`url(...)`、CSS関数、色名などは import 時に拒否されます。`title` / `subject` / `folderId` を省略した module は安全な既定値へ正規化されます。
 
 #### `questions.json`
 
@@ -389,6 +391,19 @@ multi_select
 - `correctChoices`: 1つ以上の正解選択肢
 
 選択した集合が `correctChoices` と完全に一致した場合だけ正解になります。順序は関係ありませんが、選択漏れや余分な選択があると不正解になります。
+
+### Import の安全上限
+
+不正・破損・極端に大きい入力でブラウザのメモリを使い切らないよう、import には次の上限があります。
+
+- JSON / ZIP / backup ファイル全体: 32 MiB
+- ZIP entry 数: 256
+- ZIP 展開後合計: 64 MiB
+- ZIP の単一 entry: 12 MiB
+- `manifest.json` / `modules.json` / `questions.json`: 各 8 MiB
+- 画像 asset: 1ファイル 8 MiB
+
+また、folder / module / question の参照関係、optional field の型、表示色なども保存前に検証されます。
 
 ### 画像ファイル
 
@@ -504,7 +519,7 @@ https://example.com/file.json
 null byte を含むパス
 ```
 
-LoopDeck は、リモート URL や安全でない画像参照も拒否します。インポートされた教材 HTML、JavaScript、CSS は実行されません。
+ZIP 内の危険なファイルパスや実行可能/描画可能な拡張子はエラーとして拒否します。一方、question の安全でない・未対応形式の `imageAsset` は拒否します。安全な参照先が ZIP 内に存在しない場合は warning になり、その画像を取り込まずに pack 自体は受理されることがあります。したがって「インポートできた」だけでは画像問題の完全性は保証されません。インポートされた教材 HTML、JavaScript、CSS は実行されません。
 
 ### クイックチェックリスト
 
@@ -519,3 +534,9 @@ pack をインポートする前に、次を確認してください。
 - `multi_select` 問題には `choices` と `correctChoices` がある。
 - 画像パスがローカルで、`.png`、`.jpg`、`.jpeg`、または `.webp` を使っている。
 - ZIP のルートに `manifest.json`、`modules.json`、`questions.json` が直接入っている。
+
+## Pack Authoring Prompt の同期ルール
+
+`src/packs/packAuthoringPrompt.txt` は単なる説明文ではなく、アプリから配布する Pack 作成契約です。Pack の schema、validator、import/merge、asset、answer judging、study presentation など、AI が生成内容を変える必要がある変更を行う PR では、同じ PR でこの prompt の更新要否を確認してください。
+
+監査時は古い README だけを正本にせず、`src/core/models.ts`、`src/core/answerJudge.ts`、`src/core/questionPresentation.ts`、`src/core/choiceGenerator.ts`、`src/packs/packValidator.ts`、`src/packs/zipImporter.ts`、`src/packs/packMerger.ts`、`src/packs/assetSafety.ts`、built-in pack と関連 tests を一次資料として確認します。drift protection は `tests/packAuthoringPrompt.test.ts` に全文 snapshot ではなく、高価値な契約項目の semantic assertion として追加します。

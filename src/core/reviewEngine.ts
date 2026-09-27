@@ -1,3 +1,4 @@
+import { normalizeAnswer, normalizeAnswerForQuestion } from './answerJudge';
 import type { AnswerFormat, AnswerResult, Attempt, Question } from './models';
 
 export interface ReviewItem {
@@ -40,16 +41,36 @@ export interface ReviewQueueOptions {
   halfLifeDays?: number;
 }
 
+export interface ReviewAttemptAggregation {
+  byQuestion: ReadonlyMap<string, readonly Attempt[]>;
+  wrongQuestionIds: ReadonlySet<string>;
+  weakModules: Readonly<Record<string, number>>;
+}
+
+export function aggregateReviewAttempts(attempts: Attempt[]): ReviewAttemptAggregation {
+  const byQuestion = new Map<string, Attempt[]>();
+  const wrongQuestionIds = new Set<string>();
+  const weakModules: Record<string, number> = {};
+
+  for (const attempt of attempts) {
+    const records = byQuestion.get(attempt.questionId) ?? [];
+    records.push(attempt);
+    byQuestion.set(attempt.questionId, records);
+    if (attempt.result !== 'correct') {
+      wrongQuestionIds.add(attempt.questionId);
+      weakModules[attempt.moduleId] = (weakModules[attempt.moduleId] ?? 0) + 1;
+    }
+  }
+
+  return { byQuestion, wrongQuestionIds, weakModules };
+}
+
 function attemptTime(attempt: Attempt): number {
   const parsed = Date.parse(attempt.answeredAt);
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-export function filterRecentAttempts(
-  attempts: Attempt[],
-  now = new Date(),
-  lookbackDays = DEFAULT_REVIEW_LOOKBACK_DAYS
-): Attempt[] {
+export function filterRecentAttempts(attempts: Attempt[], now = new Date(), lookbackDays = DEFAULT_REVIEW_LOOKBACK_DAYS): Attempt[] {
   const cutoff = now.getTime() - Math.max(0, lookbackDays) * DAY_MS;
   const upperBound = now.getTime();
   return attempts.filter((attempt) => {
@@ -78,12 +99,7 @@ export function timingBand(elapsedMs: number, answerMode: AnswerFormat = 'input'
   return 'normal';
 }
 
-export function scoreAttemptDelta(
-  result: AnswerResult,
-  nearMiss: boolean,
-  elapsedMs: number,
-  answerMode: AnswerFormat = 'input'
-): number {
+export function scoreAttemptDelta(result: AnswerResult, nearMiss: boolean, elapsedMs: number, answerMode: AnswerFormat = 'input'): number {
   if (result === 'revealed') return 10;
   if (result === 'wrong' && nearMiss) return 4;
   if (result === 'wrong') return timingBand(elapsedMs, answerMode) === 'fast' ? 8 : 6;
@@ -106,6 +122,14 @@ function stringifyAnswer(input: string | string[]): string {
   return Array.isArray(input) ? input.join(' / ') : input;
 }
 
+function wrongAnswerPatternKey(question: Question, input: string | string[]): string {
+  if (Array.isArray(input)) {
+    return [...new Set(input.map(normalizeAnswer).filter(Boolean))].sort().join(' / ');
+  }
+  if (question.type === 'multi_select') return normalizeAnswer(input);
+  return normalizeAnswerForQuestion(question, input);
+}
+
 export function getWrongQuestionIds(attempts: Attempt[]): string[] {
   const wrong = attempts
     .filter((attempt) => attempt.result === 'wrong' || attempt.result === 'revealed')
@@ -113,12 +137,13 @@ export function getWrongQuestionIds(attempts: Attempt[]): string[] {
   return [...new Set(wrong)].reverse();
 }
 
-export function buildMistakeQuestions(allQuestions: Question[], attempts: Attempt[]): Question[] {
-  const wrongIds = new Set(getWrongQuestionIds(attempts));
+export function buildMistakeQuestions(allQuestions: Question[], attempts: Attempt[], aggregation?: ReviewAttemptAggregation): Question[] {
+  const wrongIds = aggregation?.wrongQuestionIds ?? new Set(getWrongQuestionIds(attempts));
   return allQuestions.filter((question) => wrongIds.has(question.id));
 }
 
-export function summarizeWeakModules(attempts: Attempt[]): Record<string, number> {
+export function summarizeWeakModules(attempts: Attempt[], aggregation?: ReviewAttemptAggregation): Record<string, number> {
+  if (aggregation) return { ...aggregation.weakModules };
   return attempts.reduce<Record<string, number>>((acc, attempt) => {
     if (attempt.result === 'correct') return acc;
     acc[attempt.moduleId] = (acc[attempt.moduleId] ?? 0) + 1;
@@ -126,17 +151,16 @@ export function summarizeWeakModules(attempts: Attempt[]): Record<string, number
   }, {});
 }
 
-export function buildReviewQueue(attempts: Attempt[], questions: Question[], options: ReviewQueueOptions = {}): ReviewItem[] {
+export function buildReviewQueue(
+  attempts: Attempt[],
+  questions: Question[],
+  options: ReviewQueueOptions = {},
+  aggregation: ReviewAttemptAggregation = aggregateReviewAttempts(attempts)
+): ReviewItem[] {
   const byQuestion = new Map(questions.map((question) => [question.id, question]));
   const now = options.now ?? new Date();
-  const groups = new Map<string, Attempt[]>();
-  for (const attempt of attempts) {
-    const records = groups.get(attempt.questionId) ?? [];
-    records.push(attempt);
-    groups.set(attempt.questionId, records);
-  }
 
-  return [...groups.entries()]
+  return [...aggregation.byQuestion.entries()]
     .map(([questionId, records]) => {
       const question = byQuestion.get(questionId);
       if (!question) return undefined;
@@ -158,21 +182,20 @@ export function buildReviewQueue(attempts: Attempt[], questions: Question[], opt
     .sort((a, b) => b.score - a.score || b.lastAttemptAt - a.lastAttemptAt);
 }
 
-export function analyzeProblems(attempts: Attempt[], questions: Question[], options: ReviewQueueOptions = {}): ProblemAnalysis[] {
-  const queueScores = new Map(buildReviewQueue(attempts, questions, options).map((item) => [item.question.id, item.score]));
+export function analyzeProblems(
+  attempts: Attempt[],
+  questions: Question[],
+  options: ReviewQueueOptions = {},
+  aggregation: ReviewAttemptAggregation = aggregateReviewAttempts(attempts)
+): ProblemAnalysis[] {
+  const queueScores = new Map(buildReviewQueue(attempts, questions, options, aggregation).map((item) => [item.question.id, item.score]));
   const byQuestion = new Map(questions.map((question) => [question.id, question]));
-  const groups = new Map<string, Attempt[]>();
-  for (const attempt of attempts) {
-    const records = groups.get(attempt.questionId) ?? [];
-    records.push(attempt);
-    groups.set(attempt.questionId, records);
-  }
 
-  return [...groups.entries()]
+  return [...aggregation.byQuestion.entries()]
     .map(([questionId, rawRecords]) => {
       const question = byQuestion.get(questionId);
       if (!question) return undefined;
-      const records = rawRecords.sort((a, b) => attemptTime(a) - attemptTime(b));
+      const records = [...rawRecords].sort((a, b) => attemptTime(a) - attemptTime(b));
       const wrongRecords = records.filter((attempt) => attempt.result === 'wrong');
       const correctRecords = records.filter((attempt) => attempt.result === 'correct');
       const revealedRecords = records.filter((attempt) => attempt.result === 'revealed');
@@ -183,14 +206,21 @@ export function analyzeProblems(attempts: Attempt[], questions: Question[], opti
       if (nearMissCount) tags.push(`ニアミス ${nearMissCount}回`);
       if (wrongRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'fast')) tags.push('即答ミス');
       if (wrongRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow')) tags.push('長考して誤答');
-      if (correctRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow')) tags.push('正解だが想起が遅い');
+      if (correctRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow'))
+        tags.push('正解だが想起が遅い');
 
-      const wrongAnswerPatterns = [...wrongRecords
-        .map((attempt) => stringifyAnswer(attempt.input).trim())
-        .filter(Boolean)
-        .reduce<Map<string, number>>((acc, answer) => acc.set(answer, (acc.get(answer) ?? 0) + 1), new Map())
-        .entries()]
-        .map(([answer, count]) => ({ answer, count }))
+      const wrongAnswerPatterns = [
+        ...wrongRecords
+          .reduce<Map<string, WrongAnswerPattern>>((acc, attempt) => {
+            const key = wrongAnswerPatternKey(question, attempt.input);
+            if (!key) return acc;
+            const current = acc.get(key);
+            if (current) current.count += 1;
+            else acc.set(key, { answer: stringifyAnswer(attempt.input).trim(), count: 1 });
+            return acc;
+          }, new Map())
+          .values()
+      ]
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
       if (wrongAnswerPatterns.some((pattern) => pattern.count >= 2)) tags.push('同じ誤答を反復');
@@ -223,5 +253,7 @@ export function analyzeProblems(attempts: Attempt[], questions: Question[], opti
       } satisfies ProblemAnalysis;
     })
     .filter((item): item is ProblemAnalysis => Boolean(item))
-    .sort((a, b) => Number(b.needsAttention) - Number(a.needsAttention) || b.reviewScore - a.reviewScore || b.lastAttemptAt - a.lastAttemptAt);
+    .sort(
+      (a, b) => Number(b.needsAttention) - Number(a.needsAttention) || b.reviewScore - a.reviewScore || b.lastAttemptAt - a.lastAttemptAt
+    );
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Question } from '../src/core/models';
 import {
   buildWrongAnswerExplanation,
+  buildWrongAnswerLookupIndex,
   collectAnswerTexts,
   findQuestionByAnswer,
   normalizeWrongAnswerLookup
@@ -70,8 +71,21 @@ describe('wrong answer explanation lookup', () => {
   });
 
   it('finds acceptable and accepted answers from other questions', () => {
-    expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, [current, otherModule])?.matchedQuestionId).toBe('q-geography');
-    expect(buildWrongAnswerExplanation('input', '\u8449\u7dd1\u4f53', current, [current, otherSameModule])?.explanation).toContain('\u5149\u5408\u6210');
+    expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, [current, otherModule])?.matchedQuestionId).toBe(
+      'q-geography'
+    );
+    expect(buildWrongAnswerExplanation('input', '\u8449\u7dd1\u4f53', current, [current, otherSameModule])?.explanation).toContain(
+      '\u5149\u5408\u6210'
+    );
+  });
+
+  it('reuses a prebuilt answer index while preserving same-module priority', () => {
+    const pool = [current, otherModule, otherSameModule];
+    const index = buildWrongAnswerLookupIndex(pool);
+    const hit = findQuestionByAnswer(chloroplast, current, pool, index);
+
+    expect(hit?.question.id).toBe('q-other');
+    expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, pool, index)?.matchedQuestionId).toBe('q-geography');
   });
 
   it('returns a not-found explanation when no registered answer matches', () => {

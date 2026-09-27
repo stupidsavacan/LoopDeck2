@@ -39,9 +39,14 @@ async function settleImageResolution(): Promise<void> {
 describe('renderInlineQuiz image assets', () => {
   it('renders a resolved safe data URL as img.question-image', async () => {
     const container = document.createElement('div');
-    renderInlineQuiz(container, session(), { onSessionChange() {}, onComplete() {} }, {
-      resolveImageAsset: async () => 'data:image/png;base64,iVBORw0KGgo='
-    });
+    renderInlineQuiz(
+      container,
+      session(),
+      { onSessionChange() {}, onComplete() {} },
+      {
+        resolveImageAsset: async () => 'data:image/png;base64,iVBORw0KGgo='
+      }
+    );
 
     await settleImageResolution();
 
@@ -53,9 +58,14 @@ describe('renderInlineQuiz image assets', () => {
 
   it('renders a validated relative built-in image path', async () => {
     const container = document.createElement('div');
-    renderInlineQuiz(container, session(), { onSessionChange() {}, onComplete() {} }, {
-      resolveImageAsset: async () => 'images/map.png'
-    });
+    renderInlineQuiz(
+      container,
+      session(),
+      { onSessionChange() {}, onComplete() {} },
+      {
+        resolveImageAsset: async () => 'images/map.png'
+      }
+    );
 
     await settleImageResolution();
 
@@ -75,12 +85,18 @@ describe('renderInlineQuiz image assets', () => {
       questions: [imageQuestion]
     };
     await db.deleteImportedPack(pack.packId);
-    await db.saveImportedPackWithAssets(pack, [{
-      packId: pack.packId,
-      path: 'images/map.png',
-      mimeType: 'image/png',
-      dataUrl: 'data:image/png;base64,iVBORw0KGgo='
-    }]);
+    await db.saveImportedPackWithAssets(
+      pack,
+      [
+        {
+          packId: pack.packId,
+          path: 'images/map.png',
+          mimeType: 'image/png',
+          dataUrl: 'data:image/png;base64,iVBORw0KGgo='
+        }
+      ],
+      'replace'
+    );
     setActivePackAssetView(resolveActivePacks([pack]));
 
     const container = document.createElement('div');
@@ -94,13 +110,20 @@ describe('renderInlineQuiz image assets', () => {
 
   it('shows the missing-image fallback when the resolver returns undefined', async () => {
     const container = document.createElement('div');
-    renderInlineQuiz(container, session(), { onSessionChange() {}, onComplete() {} }, {
-      resolveImageAsset: async () => undefined
-    });
+    renderInlineQuiz(
+      container,
+      session(),
+      { onSessionChange() {}, onComplete() {} },
+      {
+        resolveImageAsset: async () => undefined
+      }
+    );
 
     await settleImageResolution();
 
     expect(container.querySelector('img.question-image')).toBeNull();
-    expect(container.querySelector('.image-fallback')?.textContent).toContain('\u753b\u50cf\u30d5\u30a1\u30a4\u30eb\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093');
+    expect(container.querySelector('.image-fallback')?.textContent).toContain(
+      '\u753b\u50cf\u30d5\u30a1\u30a4\u30eb\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093'
+    );
   });
 });

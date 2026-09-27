@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import builtinPackData from '../data/builtin/loopdeck_builtin.loopdeck.json';
 import { buildGeneratedChoices } from '../src/core/choiceGenerator';
+import { loadBuiltinPacks } from '../src/packs/builtinLoader';
 import type { InputQuestion } from '../src/core/models';
 import { buildRangeOptions, createSession } from '../src/core/sessionEngine';
 import { validatePack } from '../src/packs/packValidator';
@@ -8,6 +9,10 @@ import { getVisibleBuiltinModules, normalizeBuiltinPack, REVERSE_MODULE_IDS } fr
 
 describe('built-in LoopDeck data', () => {
   const pack = normalizeBuiltinPack(builtinPackData);
+
+  it('caches the normalized and validated built-in pack for the app lifetime', () => {
+    expect(loadBuiltinPacks()).toBe(loadBuiltinPacks());
+  });
 
   it('loads as the active valid built-in dataset', () => {
     const result = validatePack(pack);
@@ -61,9 +66,7 @@ describe('built-in LoopDeck data', () => {
   });
 
   it('keeps built-in history images as four shared path references', () => {
-    const imageAssets = pack.questions
-      .map((question) => question.imageAsset)
-      .filter((value): value is string => Boolean(value));
+    const imageAssets = pack.questions.map((question) => question.imageAsset).filter((value): value is string => Boolean(value));
     const counts = imageAssets.reduce<Record<string, number>>((acc, path) => {
       acc[path] = (acc[path] ?? 0) + 1;
       return acc;
@@ -86,7 +89,9 @@ describe('built-in LoopDeck data', () => {
   });
 
   it('can generate four choices for the LEAP final input dataset', () => {
-    const leapFinal = pack.questions.filter((question): question is InputQuestion => question.moduleId === 'leap_final' && question.type === 'input');
+    const leapFinal = pack.questions.filter(
+      (question): question is InputQuestion => question.moduleId === 'leap_final' && question.type === 'input'
+    );
     const choices = buildGeneratedChoices(leapFinal[0], leapFinal, 4, () => 0.25);
 
     expect(leapFinal).toHaveLength(100);

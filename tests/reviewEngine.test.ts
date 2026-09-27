@@ -1,13 +1,78 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
+import {
+  aggregateReviewAttempts,
+  analyzeProblems,
+  buildMistakeQuestions,
+  buildReviewQueue,
+  filterRecentAttempts,
+  getWrongQuestionIds,
+  scoreAttemptDelta,
+  summarizeWeakModules
+} from '../src/core/reviewEngine';
 import type { Attempt, Question } from '../src/core/models';
 
 const attempts: Attempt[] = [
-  { attemptId: 'a1', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-02T00:00:00.000Z', result: 'wrong', input: 'x', answer: 'a', elapsedMs: 100, mode: 'normal', answerMode: 'input' },
-  { attemptId: 'a2', questionId: 'q2', moduleId: 'm1', answeredAt: '2026-06-02T00:01:00.000Z', result: 'correct', input: 'b', answer: 'b', elapsedMs: 100, mode: 'normal', answerMode: 'input' },
-  { attemptId: 'a3', questionId: 'q3', moduleId: 'm2', answeredAt: '2026-06-02T00:02:00.000Z', result: 'revealed', input: '', answer: 'c', elapsedMs: 100, mode: 'review', answerMode: 'choice' },
-  { attemptId: 'a4', questionId: 'q1', moduleId: 'm1', answeredAt: '2026-06-02T00:03:00.000Z', result: 'wrong', input: 'x', answer: 'a', elapsedMs: 500, mode: 'review', answerMode: 'input' },
-  { attemptId: 'a5', questionId: 'q4', moduleId: 'm2', answeredAt: '2026-06-02T00:04:00.000Z', result: 'wrong', input: 'appl', answer: 'apple', elapsedMs: 5000, mode: 'normal', nearMiss: true, answerMode: 'input' }
+  {
+    attemptId: 'a1',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:00:00.000Z',
+    result: 'wrong',
+    input: 'x',
+    answer: 'a',
+    elapsedMs: 100,
+    mode: 'normal',
+    answerMode: 'input'
+  },
+  {
+    attemptId: 'a2',
+    questionId: 'q2',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:01:00.000Z',
+    result: 'correct',
+    input: 'b',
+    answer: 'b',
+    elapsedMs: 100,
+    mode: 'normal',
+    answerMode: 'input'
+  },
+  {
+    attemptId: 'a3',
+    questionId: 'q3',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:02:00.000Z',
+    result: 'revealed',
+    input: '',
+    answer: 'c',
+    elapsedMs: 100,
+    mode: 'review',
+    answerMode: 'choice'
+  },
+  {
+    attemptId: 'a4',
+    questionId: 'q1',
+    moduleId: 'm1',
+    answeredAt: '2026-06-02T00:03:00.000Z',
+    result: 'wrong',
+    input: 'x',
+    answer: 'a',
+    elapsedMs: 500,
+    mode: 'review',
+    answerMode: 'input'
+  },
+  {
+    attemptId: 'a5',
+    questionId: 'q4',
+    moduleId: 'm2',
+    answeredAt: '2026-06-02T00:04:00.000Z',
+    result: 'wrong',
+    input: 'appl',
+    answer: 'apple',
+    elapsedMs: 5000,
+    mode: 'normal',
+    nearMiss: true,
+    answerMode: 'input'
+  }
 ];
 
 const questions: Question[] = [
@@ -61,6 +126,31 @@ describe('review engine', () => {
     const queue = buildReviewQueue(recencyAttempts, questions, { now, halfLifeDays: 4 });
     expect(queue.map((item) => item.question.id)).toEqual(['q1', 'q3']);
     expect(queue[0].score).toBeGreaterThan(queue[1].score);
+  });
+
+  it('groups repeated wrong answers with the same normalization used by answer judging', () => {
+    const normalizedAttempts: Attempt[] = [
+      { ...attempts[0], attemptId: 'norm-1', input: ' Apple. ' },
+      { ...attempts[0], attemptId: 'norm-2', input: 'ａｐｐｌｅ' },
+      { ...attempts[0], attemptId: 'norm-3', questionId: 'q-multi', input: [' B ', 'Ａ'] },
+      { ...attempts[0], attemptId: 'norm-4', questionId: 'q-multi', input: ['a', 'b'] }
+    ];
+    const normalizedQuestions: Question[] = [
+      questions[0],
+      { id: 'q-multi', moduleId: 'm1', type: 'multi_select', prompt: 'Pick', choices: ['A', 'B', 'C'], correctChoices: ['A', 'C'] }
+    ];
+
+    const analysis = analyzeProblems(normalizedAttempts, normalizedQuestions);
+    expect(analysis.find((item) => item.question.id === 'q1')?.wrongAnswerPatterns).toEqual([{ answer: 'Apple.', count: 2 }]);
+    expect(analysis.find((item) => item.question.id === 'q-multi')?.wrongAnswerPatterns).toEqual([{ answer: 'B  / Ａ', count: 2 }]);
+  });
+
+  it('reuses one attempt aggregation without changing review results', () => {
+    const aggregation = aggregateReviewAttempts(attempts);
+    expect(buildReviewQueue(attempts, questions, {}, aggregation)).toEqual(buildReviewQueue(attempts, questions));
+    expect(buildMistakeQuestions(questions, attempts, aggregation)).toEqual(buildMistakeQuestions(questions, attempts));
+    expect(summarizeWeakModules(attempts, aggregation)).toEqual(summarizeWeakModules(attempts));
+    expect(analyzeProblems(attempts, questions, {}, aggregation)).toEqual(analyzeProblems(attempts, questions));
   });
 
   it('analyzes repeated wrong input and near misses', () => {
