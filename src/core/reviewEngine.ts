@@ -1,3 +1,4 @@
+import { normalizeAnswer, normalizeAnswerForQuestion } from './answerJudge';
 import type { AnswerFormat, AnswerResult, Attempt, Question } from './models';
 
 export interface ReviewItem {
@@ -106,6 +107,14 @@ function stringifyAnswer(input: string | string[]): string {
   return Array.isArray(input) ? input.join(' / ') : input;
 }
 
+function wrongAnswerPatternKey(question: Question, input: string | string[]): string {
+  if (Array.isArray(input)) {
+    return [...new Set(input.map(normalizeAnswer).filter(Boolean))].sort().join(' / ');
+  }
+  if (question.type === 'multi_select') return normalizeAnswer(input);
+  return normalizeAnswerForQuestion(question, input);
+}
+
 export function getWrongQuestionIds(attempts: Attempt[]): string[] {
   const wrong = attempts
     .filter((attempt) => attempt.result === 'wrong' || attempt.result === 'revealed')
@@ -186,11 +195,15 @@ export function analyzeProblems(attempts: Attempt[], questions: Question[], opti
       if (correctRecords.some((attempt) => timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow')) tags.push('正解だが想起が遅い');
 
       const wrongAnswerPatterns = [...wrongRecords
-        .map((attempt) => stringifyAnswer(attempt.input).trim())
-        .filter(Boolean)
-        .reduce<Map<string, number>>((acc, answer) => acc.set(answer, (acc.get(answer) ?? 0) + 1), new Map())
-        .entries()]
-        .map(([answer, count]) => ({ answer, count }))
+        .reduce<Map<string, WrongAnswerPattern>>((acc, attempt) => {
+          const key = wrongAnswerPatternKey(question, attempt.input);
+          if (!key) return acc;
+          const current = acc.get(key);
+          if (current) current.count += 1;
+          else acc.set(key, { answer: stringifyAnswer(attempt.input).trim(), count: 1 });
+          return acc;
+        }, new Map())
+        .values()]
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
       if (wrongAnswerPatterns.some((pattern) => pattern.count >= 2)) tags.push('同じ誤答を反復');
