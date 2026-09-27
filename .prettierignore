@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-single/
+qa-report/
+qa-results/
+android/
+rescued-data/
+LoopDeck-single*.html
+public/assets/
