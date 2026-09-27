@@ -3,20 +3,16 @@ import { mergeLoopDeckPacks, mergeLoopDeckPacksIntoExisting, type MergePackRepor
 import packAuthoringPrompt from '../packs/packAuthoringPrompt.txt?raw';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
+import { validateImportFileSize } from '../packs/importLimits';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
-import { db, type LoopDeckBackup } from '../storage/db';
+import { looksLikeLoopDeckBackup } from '../storage/backupValidator';
+import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
 import { saveBlob } from '../platform/nativeFileSave';
 
 async function downloadBlob(blob: Blob, filename: string): Promise<void> {
   await saveBlob(blob, filename);
-}
-
-function isBackupPayload(value: unknown): value is LoopDeckBackup {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
-  const record = value as Record<string, unknown>;
-  return record.loopDeckBackupVersion === 1 && Array.isArray(record.attempts) && Array.isArray(record.bookmarks) && Array.isArray(record.importedPacks);
 }
 
 async function exportPackJson(pack: LoopDeckPack): Promise<void> {
@@ -162,6 +158,12 @@ export async function renderImportScreen(
 
   async function handleFile(file: File): Promise<void> {
     if (importing) return;
+    const sizeIssue = validateImportFileSize(file).find((issue) => issue.level === 'error');
+    if (sizeIssue) {
+      clear(preview);
+      preview.append(el('h2', '', '読み込み結果'), el('p', 'issue error', sizeIssue.message));
+      return;
+    }
     selectedFile.textContent = `選択中のファイル: ${file.name}`;
     setImporting(true);
     try {
@@ -175,7 +177,7 @@ export async function renderImportScreen(
             } catch {
               parsed = undefined;
             }
-            if (isBackupPayload(parsed)) {
+            if (looksLikeLoopDeckBackup(parsed)) {
               await db.importUserData(parsed);
               toast('バックアップを復元しました。');
               await onImported();

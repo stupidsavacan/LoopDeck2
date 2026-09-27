@@ -45,11 +45,11 @@ describe('ZIP image asset import', () => {
     expect(result.issues.some((issue) => issue.level === 'warning' && issue.path === 'images/missing.png')).toBe(true);
   });
 
-  it('warns and does not import unsafe image references', async () => {
+  it('rejects unsafe image references before persistence', async () => {
     const result = await importLoopDeckZip(await zipFile([question('q1', '../evil.png')]));
-    expect(result.ok).toBe(true);
-    expect(result.assets).toEqual([]);
-    expect(result.issues.some((issue) => issue.level === 'warning' && issue.path === '../evil.png')).toBe(true);
+    expect(result.ok).toBe(false);
+    expect(result.assets).toBeUndefined();
+    expect(result.issues.some((issue) => issue.level === 'error' && issue.path === '../evil.png')).toBe(true);
   });
 
   it('stages exact imports as overwrite updates and merged pack objects as additive updates', async () => {

@@ -47,4 +47,58 @@ describe('pack validator', () => {
     });
     expect(result.ok).toBe(false);
   });
+
+  it('normalizes documented optional module metadata instead of persisting undefined runtime fields', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'minimal-module',
+      title: 'Minimal',
+      folders: [],
+      modules: [{ id: 'm', questionIds: ['q'] }],
+      questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
+    });
+    expect(result.ok).toBe(true);
+    expect(result.pack?.modules[0]).toMatchObject({ id: 'm', folderId: '', title: 'm', subject: '' });
+  });
+
+  it('rejects broken cross references and malformed optional presentation metadata', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'bad-refs',
+      title: 'Bad refs',
+      folders: [{ id: 'f', title: 'Folder' }],
+      modules: [{ id: 'm', folderId: 'missing', title: 'Module', subject: 'demo', color: 'url(javascript:evil)', questionIds: ['q'] }],
+      questions: [{
+        id: 'q',
+        moduleId: 'm',
+        type: 'input',
+        prompt: 'A?',
+        answer: 'A',
+        sampleMarks: [{ label: 'unsafe', color: 'red', pattern: 'unknown' }]
+      }]
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((entry) => entry.message.includes('unknown folderId'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('six-digit hex color'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('pattern is unsupported'))).toBe(true);
+  });
+
+  it('rejects inconsistent module/question ownership and invalid answer collections', () => {
+    const result = validatePack({
+      packVersion: 1,
+      packId: 'bad-ownership',
+      title: 'Bad ownership',
+      folders: [],
+      modules: [
+        { id: 'm1', questionIds: ['q'] },
+        { id: 'm2', questionIds: [] }
+      ],
+      questions: [{ id: 'q', moduleId: 'm2', type: 'choice', prompt: 'A?', choices: ['A', 'A'], answer: 'B' }]
+    });
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((entry) => entry.message.includes('belongs to module'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('duplicate value'))).toBe(true);
+    expect(result.issues.some((entry) => entry.message.includes('answer must appear in choices'))).toBe(true);
+  });
+
 });

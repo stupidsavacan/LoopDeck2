@@ -20,6 +20,8 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('supportedStudyModes');
     expect(packAuthoringPrompt).toContain('choiceCandidates');
     expect(packAuthoringPrompt).toContain('manifest.json');
+    expect(packAuthoringPrompt).toContain('whole JSON/ZIP/backup file: at most 32 MiB');
+    expect(packAuthoringPrompt).toContain('ZIP entry count: at most 256 entries');
   });
 
   it('defines a source-grounded image-question quality contract', () => {

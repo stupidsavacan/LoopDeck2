@@ -343,6 +343,16 @@ Never put these executable/renderable files in a pack:
 Do not embed HTML or JavaScript in metadata or question text as a feature.
 Treat all text fields as plain text.
 
+Current import resource limits:
+- whole JSON/ZIP/backup file: at most 32 MiB;
+- ZIP entry count: at most 256 entries;
+- total ZIP expanded size: at most 64 MiB;
+- any one ZIP entry after expansion: at most 12 MiB;
+- manifest.json / modules.json / questions.json: at most 8 MiB each;
+- each image asset: at most 8 MiB after decoding/expansion.
+
+Keep packs comfortably below these ceilings; they are safety limits, not authoring targets.
+
 ## 9. ID and reference rules
 
 Use stable collision-resistant IDs.
