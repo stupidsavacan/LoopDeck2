@@ -5,10 +5,11 @@ import { scoreAttemptDelta } from '../core/reviewEngine';
 import { applyReviewRating, createReviewCard, inferReviewRating } from '../core/scheduler';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
 import { buildWrongAnswerExplanation, type WrongAnswerExplanation } from '../core/wrongAnswerExplanation';
+import { writeDebugLog } from '../debug/debugLog';
 import { isSafeImageAssetRef, isSafeImageDataUrl } from '../packs/assetSafety';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { db } from '../storage/db';
-import { button, clear, el } from '../ui/dom';
+import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
 
 export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): void; onComplete(): void; }
@@ -75,12 +76,10 @@ function appendWrongAnswerExplanation(container: HTMLElement, explanation: Wrong
 }
 
 async function saveAttemptAndReview(attempt: Attempt): Promise<void> {
-  await db.addAttempt(attempt);
   const baseCard = (await db.getReviewCard(attempt.questionId)) ?? createReviewCard(attempt.questionId, attempt.moduleId);
   const rating = inferReviewRating(attempt.result, attempt.elapsedMs, attempt.answerMode ?? 'input');
   const { card, log } = applyReviewRating(baseCard, rating, attempt.result, attempt.elapsedMs, { attemptId: attempt.attemptId });
-  await db.putReviewCard(card);
-  await db.putReviewLog(log);
+  await db.saveAttemptWithReview(attempt, card, log);
 }
 
 function appendResult(container: HTMLElement, question: Question, result: Attempt['result'], elapsedMs: number, nearMiss = false, wrongExplanation?: WrongAnswerExplanation): void {
@@ -215,6 +214,8 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let idleLastTickAt = 0;
   let idleRemainingMs = AUTO_REVEAL_IDLE_MS;
   let composing = false;
+  let persistenceInFlight = false;
+  let persistenceComplete = false;
 
   function isCurrentRender(): boolean {
     return renderTokenByContainer.get(container) === renderToken && card.isConnected && container.contains(card);
@@ -288,10 +289,46 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   }
 
   function nextQuestion(): void {
-    if (moved) return;
+    if (moved || !persistenceComplete) return;
     moved = true;
     cleanup();
     callbacks.onSessionChange(advanceSession(session, pendingAttempt));
+  }
+
+  async function persistAttempt(attempt: Attempt): Promise<void> {
+    if (persistenceInFlight || persistenceComplete) return;
+    persistenceInFlight = true;
+    resultArea.querySelector('.persistence-error')?.remove();
+    try {
+      await saveAttemptAndReview(attempt);
+      persistenceComplete = true;
+      if (nextButton) {
+        nextButton.disabled = false;
+        nextButton.hidden = false;
+      }
+      if (attempt.result === 'correct' && session.settings.autoNext) window.setTimeout(nextQuestion, 650);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      console.error('Failed to persist answer/SRS state', error);
+      writeDebugLog({
+        level: 'error',
+        area: 'quizPersistence',
+        code: 'ANSWER-PERSIST-FAILED',
+        userMessage: '回答の保存に失敗しました。',
+        detail,
+        stack: error instanceof Error ? error.stack : undefined,
+        context: { attemptId: attempt.attemptId, questionId: attempt.questionId, moduleId: attempt.moduleId, result: attempt.result }
+      });
+      toast('回答の保存に失敗しました。再試行してください。');
+      const errorBox = el('div', 'issue error persistence-error');
+      errorBox.append(el('p', '', '回答を保存できませんでした。次へ進む前に再試行してください。'));
+      const retry = button('保存を再試行', 'btn primary');
+      retry.onclick = () => void persistAttempt(attempt);
+      errorBox.append(retry);
+      resultArea.append(errorBox);
+    } finally {
+      persistenceInFlight = false;
+    }
   }
 
   function record(answer: string | string[], revealed = false): void {
@@ -308,13 +345,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
       ? buildWrongAnswerExplanation(answerMode === 'input' ? 'input' : 'choice', answer, activeQuestion, session.choicePool.length ? session.choicePool : session.queue)
       : undefined;
     appendResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
-    if (nextButton) {
-      nextButton.disabled = false;
-      nextButton.hidden = false;
-    }
-    const persisted = saveAttemptAndReview(attempt);
-    if (result === 'correct' && session.settings.autoNext) void persisted.finally(() => window.setTimeout(nextQuestion, 650));
-    else void persisted;
+    void persistAttempt(attempt);
   }
 
   const bookmark = button('', 'btn ghost bookmark-btn');
