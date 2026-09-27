@@ -9,6 +9,8 @@ export interface QuizSession {
   settings: StudySettings;
   startedAt: number;
   currentStartedAt: number;
+  currentElapsedMs: number;
+  currentHiddenTimeExcludedMs: number;
   mode: 'normal' | 'review';
   attempts: Attempt[];
 }
@@ -98,16 +100,20 @@ export function createSession(module: ModuleInfo, questions: Question[], setting
     presentQuestionForStudy(question, resolveConcreteStudyQuestionMode(question, requestedMode))
   );
   const now = Date.now();
-  return { module, queue, choicePool: [...choicePool], index: 0, settings, startedAt: now, currentStartedAt: now, mode, attempts: [] };
+  return { module, queue, choicePool: [...choicePool], index: 0, settings, startedAt: now, currentStartedAt: now, currentElapsedMs: 0, currentHiddenTimeExcludedMs: 0, mode, attempts: [] };
 }
 
 export function currentQuestion(session: QuizSession): Question | undefined { return session.queue[session.index]; }
-export function elapsedForCurrent(session: QuizSession): number { return Math.max(0, Date.now() - session.currentStartedAt); }
+export function elapsedForCurrent(session: QuizSession, excludedMs = 0): number {
+  return session.currentElapsedMs + Math.max(0, Date.now() - session.currentStartedAt - Math.max(0, excludedMs));
+}
 export function advanceSession(session: QuizSession, attempt?: Attempt): QuizSession {
   return {
     ...session,
     index: session.index + 1,
     currentStartedAt: Date.now(),
+    currentElapsedMs: 0,
+    currentHiddenTimeExcludedMs: 0,
     attempts: attempt ? [...session.attempts, attempt] : session.attempts
   };
 }

@@ -11,7 +11,7 @@ import { db } from '../storage/db';
 import { button, clear, el } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
 
-export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): void; onComplete(): void; }
+export interface InlineQuizCallbacks { onSessionChange(session: QuizSession): void; onSessionCheckpoint?(session: QuizSession): void; onComplete(): void; }
 export interface InlineQuizOptions { resolveImageAsset?: QuestionImageAssetResolver; }
 
 const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
@@ -36,10 +36,20 @@ function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto
 }
 function canJudgeNearMiss(question: Question): question is InputQuestion | ChoiceQuestion { return question.type === 'input' || question.type === 'choice'; }
 
-function buildAttempt(question: Question, result: Attempt['result'], input: string | string[], elapsedMs: number, mode: 'normal' | 'review', answerMode: AnswerFormat, nearMiss = false): Attempt {
+function buildAttempt(
+  question: Question,
+  result: Attempt['result'],
+  input: string | string[],
+  elapsedMs: number,
+  mode: 'normal' | 'review',
+  answerMode: AnswerFormat,
+  hiddenTimeExcludedMs: number,
+  nearMiss = false
+): Attempt {
   return {
     attemptId: `${Date.now()}-${crypto.randomUUID()}`, questionId: question.id, moduleId: question.moduleId, answeredAt: new Date().toISOString(), result, input,
-    answer: getCorrectAnswer(question), elapsedMs, mode, nearMiss, hiddenTimeExcludedMs: 0, priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode), answerMode
+    answer: getCorrectAnswer(question), elapsedMs, mode, nearMiss, hiddenTimeExcludedMs, priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode), answerMode,
+    questionMode: question.activeStudyMode ?? 'as_stored'
   };
 }
 
@@ -214,6 +224,9 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let idleTimer: number | undefined;
   let idleLastTickAt = 0;
   let idleRemainingMs = AUTO_REVEAL_IDLE_MS;
+  let hiddenStartedAt: number | undefined;
+  let hiddenTimeExcludedMs = 0;
+  let suspendedTimeExcludedMs = 0;
   let composing = false;
 
   function isCurrentRender(): boolean {
@@ -226,9 +239,28 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     idleTimer = undefined;
   }
 
+  function currentRenderExcludedMs(now = Date.now()): number {
+    const activeHiddenMs = hiddenStartedAt === undefined ? 0 : Math.max(0, now - hiddenStartedAt);
+    return hiddenTimeExcludedMs + suspendedTimeExcludedMs + activeHiddenMs;
+  }
+
+  function currentAnswerElapsedMs(now = Date.now()): number {
+    return elapsedForCurrent(session, currentRenderExcludedMs(now));
+  }
+
+  function checkpointCurrentTiming(now = Date.now()): void {
+    callbacks.onSessionCheckpoint?.({
+      ...session,
+      currentElapsedMs: currentAnswerElapsedMs(now),
+      currentStartedAt: now,
+      currentHiddenTimeExcludedMs: session.currentHiddenTimeExcludedMs + currentRenderExcludedMs(now)
+    });
+  }
+
   function cleanup(): void {
     clearIdleTimer();
     document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.removeEventListener('pagehide', handlePageHide);
     if (renderTokenByContainer.get(container) === renderToken) {
       renderTokenByContainer.delete(container);
       renderCleanupByContainer.delete(container);
@@ -252,8 +284,12 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
       }
       const now = Date.now();
       const sinceLastTick = Math.max(0, now - idleLastTickAt);
-      // A large scheduling gap indicates tab throttling or device sleep. It must not consume idle time.
+      // A large scheduling gap indicates tab throttling or device sleep. It must not consume idle or answer time.
       if (sinceLastTick <= IDLE_CLOCK_SUSPEND_GAP_MS) idleRemainingMs = Math.max(0, idleRemainingMs - sinceLastTick);
+      else {
+        suspendedTimeExcludedMs += sinceLastTick;
+        checkpointCurrentTiming(now);
+      }
       if (idleRemainingMs === 0) record(selectedAnswer, true);
       else scheduleIdleReveal();
     }, Math.min(IDLE_CLOCK_TICK_MS, idleRemainingMs));
@@ -266,18 +302,27 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   }
 
   function handleVisibilityChange(): void {
-    if (!session.settings.autoRevealAfterIdle || answered || moved) return;
+    if (answered || moved) return;
+    const now = Date.now();
     if (document.hidden) {
-      if (idleTimer !== undefined) {
-        const sinceLastTick = Math.max(0, Date.now() - idleLastTickAt);
-        if (sinceLastTick <= IDLE_CLOCK_SUSPEND_GAP_MS) {
-          idleRemainingMs = Math.max(0, idleRemainingMs - sinceLastTick);
-        }
+      if (session.settings.autoRevealAfterIdle && idleTimer !== undefined) {
+        const sinceLastTick = Math.max(0, now - idleLastTickAt);
+        if (sinceLastTick <= IDLE_CLOCK_SUSPEND_GAP_MS) idleRemainingMs = Math.max(0, idleRemainingMs - sinceLastTick);
       }
+      checkpointCurrentTiming(now);
+      if (hiddenStartedAt === undefined) hiddenStartedAt = now;
       clearIdleTimer();
       return;
     }
-    scheduleIdleReveal();
+    if (hiddenStartedAt !== undefined) {
+      hiddenTimeExcludedMs += Math.max(0, now - hiddenStartedAt);
+      hiddenStartedAt = undefined;
+    }
+    if (session.settings.autoRevealAfterIdle) scheduleIdleReveal();
+  }
+
+  function handlePageHide(): void {
+    if (!answered && !moved) checkpointCurrentTiming();
   }
 
   function lockAnswerControls(): void {
@@ -299,11 +344,13 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     answered = true;
     cleanup();
     lockAnswerControls();
-    const elapsedMs = elapsedForCurrent(session);
+    const elapsedMs = currentAnswerElapsedMs();
+    const totalHiddenTimeExcludedMs = session.currentHiddenTimeExcludedMs + currentRenderExcludedMs();
     const nearMiss = !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
-    const attempt = buildAttempt(activeQuestion, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, nearMiss);
+    const attempt = buildAttempt(activeQuestion, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, totalHiddenTimeExcludedMs, nearMiss);
     pendingAttempt = attempt;
+    callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
     const wrongExplanation = !revealed && result === 'wrong' && typeof answer === 'string'
       ? buildWrongAnswerExplanation(answerMode === 'input' ? 'input' : 'choice', answer, activeQuestion, session.choicePool.length ? session.choicePool : session.queue)
       : undefined;
@@ -431,9 +478,8 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   window.requestAnimationFrame(() => {
     container.scrollIntoView?.({ block: 'start', inline: 'nearest', behavior: 'auto' });
   });
-  if (session.settings.autoRevealAfterIdle) {
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    renderCleanupByContainer.set(container, cleanup);
-    scheduleIdleReveal();
-  }
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('pagehide', handlePageHide);
+  renderCleanupByContainer.set(container, cleanup);
+  if (session.settings.autoRevealAfterIdle) scheduleIdleReveal();
 }
