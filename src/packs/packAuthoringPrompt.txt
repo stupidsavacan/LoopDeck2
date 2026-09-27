@@ -1,28 +1,140 @@
-# LoopDeck Pack Authoring Prompt
+# LoopDeck Pack Authoring Contract
 
 Authoring contract revision: 2026-09-27
 Target LoopDeck packVersion: 1
+Prompt target: modern reasoning models including GPT-5.6 Sol
 
 You are creating a study pack for the current LoopDeck application.
-Treat this document as a strict authoring contract. Produce content that is structurally valid, safe to import, and useful for school test preparation.
+This is a strict authoring contract, not a loose style guide.
+Produce the final importable pack, not merely an example, when file-generation tools are available.
 
-## 1. Output target
+## 0. Decision order and non-negotiable invariants
+
+Apply these rules in order. A later convenience rule must never override an earlier compatibility or source-fidelity rule.
+
+1. Preserve factual correctness and the supplied material's intended scope.
+2. Preserve LoopDeck runtime, worksheet/PDF, import, and ID compatibility.
+3. Preserve the intended hierarchy: Folder -> Module -> question `category` -> Question.
+4. Preserve source numbering/order where the source provides it.
+5. Choose the question type that matches the meaning of the source.
+6. Improve study quality with plausible distractors, useful explanations, images, and metadata only when doing so does not violate rules 1-5.
+7. Validate the complete result before emitting it.
+
+Do not replace an existing compatible representation with a newer-looking equivalent representation when the change can break downstream behavior. In particular, the English-vocabulary contract in section 3 is compatibility-critical.
+
+## 1. Source authority, verification, and coverage
+
+Treat user-supplied worksheets, PDFs, images, notes, lists, and other study material as the primary factual authority and as the authority for intended test scope.
+
+External verification is allowed and useful when the supplied material is unclear, incomplete, suspicious, or difficult to read:
+- use reliable external sources to verify a doubtful transcription, label, spelling, date, value, or interpretation when tools are available;
+- use external information to resolve a clearly missing or unreadable fact only when the intended source fact can be established with adequate confidence;
+- do not silently replace a supplied fact when an external source disagrees with it;
+- when a meaningful conflict remains, preserve the supplied material's role as the study source and report the discrepancy instead of guessing;
+- do not expand the tested scope with unrelated outside facts merely because they are correct or useful background knowledge.
+
+Never invent facts to fill coverage. If a source-dependent fact cannot be established, omit that question or clearly report the unresolved ambiguity.
+
+Preserve requested question numbering, vocabulary numbering, ranges, and ordering unless the user explicitly asks for reordering.
+
+## 2. Hierarchy contract: Folder -> Module -> category -> Question
+
+LoopDeck has four authoring levels relevant to study organization:
+- Folder: a broad user-recognizable collection such as a school test, term, or explicitly requested grouping.
+- Module: one coherent study material, subject range, book range, or user-recognizable study unit.
+- question `category`: an internal grouping/filter inside a Module.
+- Question: one actual prompt/answer item.
+
+This hierarchy is a hard default. Do not promote source-file boundaries into higher levels.
+
+### Folder rules
+
+- Do not create a Folder merely because the source contains multiple pages, images, chapters, headings, or topics.
+- Do not invent subject-taxonomy Folders such as `地理総合` merely to organize a batch unless the user explicitly asked for that Folder or the source already defines that broad collection.
+- If the user specifies a test/term/folder, use it.
+- If no broad grouping is supplied, prefer one neutral Folder for the imported set rather than inventing several Folders.
+
+### Module rules
+
+- Multiple pages or images from the same coherent material belong to one Module by default.
+- Do not create one Module per image, page, worksheet side, heading, or small topic.
+- Split into multiple Modules only when the user explicitly requests it or when the supplied sources are clearly independent study materials that should be launched/studied separately.
+- A batch of several geography-material images from one study set is therefore normally one geography Module, not several Modules and not several Folders.
+
+### Category rules
+
+Use `category` for useful internal subdivision of one Module.
+Choose categories in this priority order:
+1. categories explicitly requested by the user;
+2. explicit headings, sections, ranges, or groupings in the source;
+3. compatibility-preserving groupings required by an existing material format;
+4. the minimum additional grouping needed to make a large Module practical.
+
+Do not invent a semantic taxonomy merely because the content can be classified that way. For example, do not reorganize a numbered vocabulary list into inferred categories such as `意見`, `政治`, `感情`, or `行動` unless the user or source explicitly defines those categories.
+
+Several source images may map to several categories when their contents are genuinely different, but image count does not determine category count. Images covering the same topic may share one category.
+
+### Numbered vocabulary category rule
+
+For numbered vocabulary materials such as LEAP:
+- preserve the original order and `number` values;
+- do not infer semantic categories unless explicitly requested or present in the source;
+- when category subdivision is useful and the source gives no categories, use contiguous numeric ranges;
+- the default granularity is approximately 25 consecutive vocabulary items per category, for example `001〜025`, `026〜050`, `051〜075`, `076〜100`.
+
+## 3. English vocabulary canonical format and worksheet/PDF compatibility
+
+English vocabulary and phrase-list Modules have a compatibility-critical canonical representation. Keep this representation even if another schema could express the same study behavior.
+
+For a normal numbered English-vocabulary item, use:
+- `type: "input"`;
+- `prompt`: the English word or phrase itself, with no Japanese question wrapper;
+- `answer`: the primary Japanese meaning;
+- `acceptableAnswers`: other genuinely correct Japanese meanings that should also appear as worksheet meanings;
+- `number`: the original source number;
+- `direction: "normal"`;
+- no `imageAsset` unless the vocabulary item genuinely depends on an image.
+
+Canonical example:
+
+```json
+{
+  "id": "school-2026-leap-001",
+  "moduleId": "school-2026-leap-001-200",
+  "type": "input",
+  "number": 1,
+  "category": "001〜025",
+  "prompt": "agree",
+  "answer": "賛成する",
+  "acceptableAnswers": ["同意する", "意見が一致する"],
+  "direction": "normal"
+}
+```
+
+Compatibility rules:
+- Do not rewrite the prompt as `agree の意味は？`, `「agree」を日本語にすると？`, or another mixed Japanese/English sentence. The worksheet planner detects the compact English prompt.
+- Do not set canonical vocabulary items to `direction: "en_to_ja"`; the current Japanese-to-English worksheet/PDF planner intentionally skips those questions.
+- Do not convert canonical vocabulary data into a `sides`-only representation. `sides` and `supportedStudyModes` may be added when useful, but they must not replace or alter the canonical `prompt`, `answer`, `acceptableAnswers`, `number`, and `direction` fields.
+- Do not move Japanese meaning variants from `acceptableAnswers` into `acceptedAnswers` only. The worksheet/PDF planner reads `answer` plus `acceptableAnswers` when constructing Japanese meaning prompts.
+- Normally omit `acceptedAnswers` for canonical vocabulary. If a special judging requirement makes it necessary, keep every worksheet-visible Japanese variant in `acceptableAnswers` as well and make the explicit accepted-answer set complete.
+- `choiceCandidates` or `sideChoiceCandidates` may add controlled multiple-choice study without changing the canonical vocabulary representation.
+
+The current worksheet/PDF path turns compact English-prompt/Japanese-answer vocabulary into Japanese-to-English worksheet rows automatically. Preserve that behavior.
+
+## 4. Output target and top-level model
 
 LoopDeck accepts JSON and ZIP imports. Use these canonical LoopDeck filenames:
 
-1. one complete `.loopdeck.json` file containing a LoopDeckPack object, or
+1. one complete `.loopdeck.json` file containing a LoopDeckPack object; or
 2. one `.loopdeck.zip` whose root directly contains:
    - `manifest.json`
    - `modules.json`
    - `questions.json`
-   - optional local image files such as `images/map01.png`
+   - optional local image files such as `images/map01.png`.
 
-If images are needed, prefer the ZIP form.
+If images are needed, use the ZIP form so the actual local assets can be included.
 If no images are needed, a single `.loopdeck.json` is acceptable.
-
 Do not output executable content. LoopDeck study packs are data only.
-
-## 2. Required top-level model
 
 A complete single-file pack has this shape:
 
@@ -37,13 +149,13 @@ A complete single-file pack has this shape:
   ],
   "modules": [
     {
-      "id": "history-imperialism",
+      "id": "school-2026-term1-final-history-imperialism",
       "folderId": "term1-final",
       "title": "歴史総合 帝国主義とアジア",
       "subject": "歴史総合",
       "description": "Optional module description",
       "tags": ["歴史", "期末"],
-      "questionIds": ["history-imperialism-001"]
+      "questionIds": ["school-2026-term1-final-history-imperialism-001"]
     }
   ],
   "questions": []
@@ -51,13 +163,13 @@ A complete single-file pack has this shape:
 ```
 
 For ZIP output:
-- `manifest.json` contains packVersion, packId, title, optional description, and folders.
-- `modules.json` is the modules array.
+- `manifest.json` contains packVersion, packId, title, optional description, and folders;
+- `modules.json` is the modules array;
 - `questions.json` is the questions array.
 
-## 3. Question types
+## 5. Question types
 
-Choose the type by meaning, not by convenience.
+Choose the type by meaning, not by convenience. Do not make every question `input` just because it is easier.
 
 ### input
 
@@ -82,8 +194,7 @@ Do not compress multiple independent answers into one input answer.
 
 ### choice
 
-Use when exactly one displayed option is correct.
-For authored high-quality packs, normally provide 4 plausible choices manually.
+Use when exactly one displayed option is correct. For authored high-quality packs, normally provide 4 plausible choices manually.
 
 ```json
 {
@@ -100,21 +211,14 @@ For authored high-quality packs, normally provide 4 plausible choices manually.
 ```
 
 Rules:
-- answer must appear in choices.
-- choices must be unique.
-- distractors must be plausible and the same conceptual category as the answer.
+- `answer` must appear in `choices`;
+- choices must be unique;
+- distractors must be plausible and from the same conceptual class as the answer;
 - never use joke or obviously unrelated distractors.
 
 ### multi_select
 
-Use when the learner must select the complete applicable set rather than type one short answer.
-This is most useful when two or more answers are correct, including prompts such as:
-- すべて選べ
-- 2つ選べ
-- 該当するものを選べ
-- 複数の内容を列挙する問題
-
-The current importer requires at least one `correctChoices` item. Prefer two or more when that is the actual meaning of the source question; do not invent extra correct answers just to force a multi-select question.
+Use when the learner must select the complete applicable set rather than type one short answer. This is appropriate for prompts such as `すべて選べ`, `2つ選べ`, `該当するものを選べ`, or other genuinely multiple-answer tasks.
 
 ```json
 {
@@ -129,16 +233,17 @@ The current importer requires at least one `correctChoices` item. Prefer two or 
 }
 ```
 
-Every correctChoices item must appear in choices.
-Do not add an answer field to multi_select.
+Every `correctChoices` item must appear in `choices`.
+Do not add an `answer` field to `multi_select`.
+Do not invent extra correct answers just to force a multi-select question.
 
-## 4. Accepted answers and judging
+## 6. Accepted answers and judging
 
 For input/choice questions:
-- `acceptableAnswers` is for true equivalent variants.
-- `acceptedAnswers` may be used when an explicit accepted-answer set is needed.
-- the primary `answer` is always accepted.
-- when a non-empty `acceptedAnswers` array is present, LoopDeck uses it instead of `acceptableAnswers` for judging, so include every intended non-primary accepted variant there.
+- `acceptableAnswers` is for true equivalent variants;
+- `acceptedAnswers` may be used when an explicit accepted-answer set is needed;
+- the primary `answer` is always accepted;
+- when a non-empty `acceptedAnswers` array is present, LoopDeck uses it instead of `acceptableAnswers` for judging, so include every intended non-primary accepted variant there;
 - do not include vague related concepts, explanations, or partial answers as accepted variants.
 
 Optional `answerJudging` exists for questions that need stricter or structured matching:
@@ -155,21 +260,20 @@ Optional `answerJudging` exists for questions that need stricter or structured m
 }
 ```
 
-Supported modes in the current model:
-- `single`: normal single-answer judging.
-- `any_of`: accept any configured accepted answer.
-- `all_of`: use `answerJudging.requiredParts`; every required part must occur in the normalized input.
-- `exact_phrase`: require an exact normalized accepted answer and do not apply the normal loose sentence-edge matching.
+Supported modes:
+- `single`: normal single-answer judging;
+- `any_of`: accept any configured accepted answer;
+- `all_of`: use `answerJudging.requiredParts`; every required part must occur in the normalized input;
+- `exact_phrase`: require an exact normalized accepted answer and do not apply the normal loose sentence-edge matching;
 - `numeric`: currently requires an exact normalized accepted answer; it does not provide numeric tolerance/range handling.
 
 Default judging normalizes Unicode with NFKC, trims/compacts surrounding whitespace and edge punctuation, and is case-insensitive unless `caseSensitive` is true. In normal `single` / `any_of` mode, LoopDeck also accepts limited Japanese sentence-edge wrappers and exact English answer tokens inside a longer input. `exact_phrase` disables that loose fallback.
 
 `requiresAll` exists in the TypeScript rule shape but is not consulted by the current judge; do not emit it as an authoring control. Use `mode: "all_of"` with non-empty `requiredParts` instead.
 
-Use custom judging only when the normal answer/accepted-answer behavior is insufficient.
-Do not assume undocumented tolerance, ordering, numeric ranges, or fuzzy matching behavior.
+Use custom judging only when the normal answer/accepted-answer behavior is insufficient. Do not assume undocumented tolerance, ordering, numeric ranges, or fuzzy matching behavior.
 
-## 5. Two-sided study / reverse practice
+## 7. Two-sided study and generated-choice study
 
 Input questions may explicitly define both study sides:
 
@@ -191,17 +295,13 @@ Input questions may explicitly define both study sides:
 }
 ```
 
-Use this when both directions are pedagogically intended.
-For simple compact Japanese/English vocabulary, LoopDeck can also infer reversible presentation automatically, but explicit sides are preferable when ambiguity exists.
+Use this when both directions are pedagogically intended, except that section 3 remains authoritative for canonical English vocabulary storage.
+For simple compact Japanese/English vocabulary, LoopDeck can also infer reversible presentation automatically.
 
-Input questions may also use:
-- `direction`: `ja_to_en`, `en_to_ja`, or `normal`.
+Input questions may use `direction`: `ja_to_en`, `en_to_ja`, or `normal`.
+`direction` is consumed by some worksheet/export planning and retained as metadata. Inline reversal comes from explicit `sides` + `supportedStudyModes` or the compact Japanese/English auto-reversal heuristic. Do not rely on `direction` alone for reliable two-direction study.
 
-`direction` is currently consumed by worksheet/export planning and retained as question metadata. The inline study-direction runtime does not use it to decide reversal; inline reversal comes from explicit `sides` + `supportedStudyModes` or the compact Japanese/English auto-reversal heuristic. Do not rely on `direction` alone for reliable two-direction study.
-
-## 6. Manual choice candidates for generated-choice study
-
-If an input question should have controlled distractors when LoopDeck presents it as a choice question, use:
+For controlled distractors when an input question is presented as a choice question, use:
 
 ```json
 {
@@ -215,14 +315,14 @@ If an input question should have controlled distractors when LoopDeck presents i
 ```
 
 Runtime rules:
-- `choices` is the actual candidate source used by LoopDeck and must include the primary correct `answer`.
-- provide at least 4 unique usable choices for a normal four-choice presentation.
-- accepted-answer variants must not be used as distractors.
-- `distractors` and `reason` are optional authoring metadata; LoopDeck's current generated-choice runtime does not use `distractors` as a separate option source.
+- `choices` is the actual candidate source and must include the primary correct `answer`;
+- provide at least 4 unique usable choices for a normal four-choice presentation;
+- accepted-answer variants must not be used as distractors;
+- `distractors` and `reason` are optional authoring metadata; the current runtime does not use `distractors` as a separate option source.
 
-For explicit two-sided study, `sideChoiceCandidates` may provide different candidate sets for `front_to_back` and `back_to_front`, using the same structure and rules.
+For explicit two-sided study, `sideChoiceCandidates` may provide different candidate sets for `front_to_back` and `back_to_front` using the same structure and rules.
 
-## 7. Images
+## 8. Images and image-grounded questions
 
 Optional image references use `imageAsset`:
 
@@ -239,74 +339,39 @@ Allowed image extensions:
 - .webp
 
 Reference/import rules:
-- path must be relative and local.
-- no remote URLs.
-- no absolute paths.
-- no `../` traversal.
-- no data: or javascript: URLs.
-- do not invent image filenames unless you also provide the image file.
-- a JSON-only pack cannot carry a local image payload; when any `imageAsset` is required, emit a ZIP that actually contains the referenced files.
-- unsafe or unsupported image references are rejected. A safe but missing referenced image produces a warning; the authoring self-check still requires the asset to exist and resolve.
-- store one shared figure once and let multiple questions reference the same stable neutral path. Do not duplicate the same image once per question.
-
-### Image-question quality contract (#41)
-
-A safe path is not enough. Image-backed questions must also be grounded in the actual figure.
+- path must be relative and local;
+- no remote URLs;
+- no absolute paths;
+- no `../` traversal;
+- no data: or javascript: URLs;
+- do not invent image filenames unless you also provide the image file;
+- a JSON-only pack cannot carry a local image payload; when any `imageAsset` is required, emit a ZIP that actually contains the referenced files;
+- unsafe or unsupported image references are rejected. A safe but missing referenced image produces a warning; the authoring self-check still requires the asset to exist and resolve;
+- store one shared figure once and let multiple questions reference the same stable neutral path instead of duplicating the same image per question.
 
 Source authority and fidelity:
-- treat a user-supplied worksheet/map/graph/image as factual authority.
-- prefer preserving or reusing the supplied source instead of redrawing it.
-- cropping, cleanup, or contrast adjustment is allowed only when labels, scale, relationships, and factual meaning are unchanged.
-- never invent missing labels, values, legends, locations, or relationships. If a required visual fact is unreadable or ambiguous, report that ambiguity instead of guessing.
-- do not generate a factual replacement map/graph/diagram from imagination when the supplied source can be preserved. If reconstruction from verified structured data is necessary, reproduce only verified data and self-check every label/value used by questions.
+- treat a user-supplied worksheet/map/graph/image as factual authority for the figure itself;
+- prefer preserving or reusing the supplied source instead of redrawing it;
+- cropping, cleanup, or contrast adjustment is allowed only when labels, scale, relationships, and factual meaning are unchanged;
+- never invent missing labels, values, legends, locations, or relationships;
+- if a required visual fact is unreadable or ambiguous, verify it under section 1 or omit/report it instead of guessing;
+- do not generate a factual replacement map/graph/diagram from imagination when the supplied source can be preserved.
 
 Question construction from figures:
-- create an image question only when the image materially contributes to answering it.
-- each question must target a specific visible feature such as a label, location, line, bar, legend, relationship, sequence, or region.
-- one authoritative figure may and should be reused for multiple targeted questions when it contains multiple testable facts.
-- keep distractors in the same semantic class as the answer and plausible for that exact figure/context.
-- explanations must resolve the visual mapping (why the figure supports the answer), not merely repeat that the answer is correct.
+- create an image question only when the image materially contributes to answering it;
+- each question must target a specific visible feature such as a label, location, line, bar, legend, relationship, sequence, or region;
+- one authoritative figure may and should be reused for multiple targeted questions when it contains multiple testable facts;
+- keep distractors in the same semantic class as the answer and plausible for that exact figure/context;
+- explanations must resolve the visual mapping, not merely repeat that the answer is correct;
 - avoid prompts whose answer is already stated verbatim in the prompt.
 
 Asset quality:
-- include the actual referenced image files, never placeholders.
-- preserve enough resolution/crop/context that labels, text, axes, and legends remain legible at normal phone-scale display.
-- use sensible crop/contrast/format choices without adding decorative or invented factual content.
-- do not claim built-in-equivalent image quality if you cannot actually create and inspect the final image file.
+- include the actual referenced image files, never placeholders;
+- preserve enough resolution/crop/context that labels, text, axes, and legends remain legible at normal phone-scale display;
+- do not add decorative or invented factual content;
+- do not claim image quality you did not actually create and inspect.
 
-Canonical shared-figure pattern:
-
-```json
-[
-  {
-    "id": "school-2026-history-map64-001",
-    "moduleId": "school-2026-history-map64",
-    "type": "choice",
-    "prompt": "図中のAで示された地域はどれか。",
-    "choices": ["地域A", "地域B", "地域C", "地域D"],
-    "answer": "地域A",
-    "acceptableAnswers": ["地域Aの標準的な別表記"],
-    "category": "地図読解",
-    "imageAsset": "images/history/map64.png",
-    "explanation": "図中Aの位置・ラベルが地域Aに対応する。"
-  },
-  {
-    "id": "school-2026-history-map64-002",
-    "moduleId": "school-2026-history-map64",
-    "type": "choice",
-    "prompt": "同じ図でBに対応するものはどれか。",
-    "choices": ["地域B", "地域A", "地域C", "地域D"],
-    "answer": "地域B",
-    "category": "地図読解",
-    "imageAsset": "images/history/map64.png",
-    "explanation": "図中Bの位置・ラベルが地域Bに対応する。"
-  }
-]
-```
-
-The labels/answers above are placeholders for structure only. Replace them only with facts actually visible in the supplied/verified source; never invent visual facts to fill this example shape.
-
-## 8. Safety restrictions
+## 9. Safety restrictions
 
 Never put these executable/renderable files in a pack:
 - .html / .htm
@@ -315,8 +380,7 @@ Never put these executable/renderable files in a pack:
 - .apk / .dex / .jar / .so
 - .exe / .bat / .cmd / .sh / .ps1
 
-Do not embed HTML or JavaScript in metadata or question text as a feature.
-Treat all text fields as plain text.
+Do not embed HTML or JavaScript in metadata or question text as a feature. Treat all text fields as plain text.
 
 Current import resource limits:
 - whole JSON/ZIP/backup file: at most 32 MiB;
@@ -328,41 +392,40 @@ Current import resource limits:
 
 Keep packs comfortably below these ceilings; they are safety limits, not authoring targets.
 
-## 9. ID, cross-reference, and merge rules
+## 10. ID, reference, and merge rules
 
 Use stable collision-resistant IDs. IDs are not merely local labels: active packs are resolved by ID, and collisions can change which pack/module/question is visible.
 
 Recommended pattern:
-- packId: `school-2026-term1-final`
-- module id: `school-2026-term1-final-history-imperialism`
-- question id: `school-2026-term1-final-history-imperialism-001`
+- packId: `school-2026-term1-final`;
+- module id: `school-2026-term1-final-history-imperialism`;
+- question id: `school-2026-term1-final-history-imperialism-001`.
 
 Requirements:
-- packId is non-empty.
-- folder IDs are unique.
-- module IDs are unique.
-- question IDs are unique.
-- every module.folderId points to a real folder.
-- every question.moduleId points to a real module.
-- every module.questionIds entry points to a real question.
-- a question listed by a module should belong to that module.
-- do not reuse an ID for different content.
+- packId is non-empty;
+- folder IDs are unique;
+- module IDs are unique;
+- question IDs are unique;
+- every module.folderId points to a real folder;
+- every question.moduleId points to a real module;
+- every module.questionIds entry points to a real question;
+- a question listed by a module should belong to that module;
+- do not reuse an ID for different content;
 - prefer IDs that are unlikely to collide with another imported pack.
 
 Current collision/merge behavior that authors must account for:
-- active packs are resolved by `packId`; later entries in the active-pack resolution order win. Imported packs are loaded after the built-in pack, so an imported collision can shadow built-in content.
-- module IDs use later-wins precedence, but each module resolves questions only from its owning pack. Question IDs must be globally unique across different active packIds because learning history uses question IDs as keys; direct cross-pack question-ID collisions are rejected.
-- importing the same already-imported `packId` offers overwrite or merge update.
-- merge update keeps identical colliding questions once; a colliding question with different content is renamed with a suffix such as `__merge_1` and module `questionIds` are remapped.
-- during module merge, incoming module metadata replaces same-key metadata while questionIds are unioned/de-duplicated.
-- a module ID shared with another active pack can trigger module-merge behavior.
-- overwrite import replaces the stored assets for that pack with the newly imported referenced assets. Merge import upserts assets: incoming same-path bytes replace stored bytes, while unrelated existing assets remain. Merge preview is pure and does not stage or persist assets.
+- active packs are resolved by `packId`; later entries in the active-pack resolution order win. Imported packs are loaded after the built-in pack, so an imported collision can shadow built-in content;
+- module IDs use later-wins precedence, but each module resolves questions only from its owning pack. Question IDs must be globally unique across different active packIds because learning history uses question IDs as keys; direct cross-pack question-ID collisions are rejected;
+- importing the same already-imported `packId` offers overwrite or merge update;
+- merge update keeps identical colliding questions once; a colliding question with different content is renamed with a suffix such as `__merge_1` and module `questionIds` are remapped;
+- during module merge, incoming module metadata replaces same-key metadata while `questionIds` are unioned/de-duplicated;
+- a module ID shared with another active pack can trigger module-merge behavior;
+- overwrite import replaces the stored assets for that pack with the newly imported referenced assets. Merge import upserts assets: incoming same-path bytes replace stored bytes, while unrelated existing assets remain. Merge preview is pure and does not stage or persist assets;
 - use a pack-specific prefix for module/question IDs unless intentional replacement/merge is the goal.
 
-## 10. Module and question presentation metadata
+## 11. Module and question metadata
 
-Keep module titles specific enough to identify the test range.
-Use consistent Japanese category names where practical.
+For authored modules, provide non-empty `id`, `folderId`, `title`, `subject`, and a `questionIds` array. Keep module titles specific enough to identify the study material/range, but obey the hierarchy contract in section 2 rather than splitting a Module for every source section.
 
 Only `id` and `questionIds` are required module fields. For clear authored content, provide `folderId`, `title`, and `subject` as well. Missing or malformed optional text metadata is normalized safely: folderId becomes empty, title defaults to id, and subject defaults to その他. A non-empty folderId must reference an existing folder.
 
@@ -380,15 +443,15 @@ Folders may also carry `description` and `tags`. Built-in presentation metadata 
 `color`, `accent`, and `accentColor` must be six-digit hex colors such as `#2563EB`. Invalid authored values are rejected; omitted colors use inferred/default colors. Removed `sampleMarks` and `sampleColors` fields are not supported authoring features.
 
 Useful optional question metadata currently consumed by the study UI includes:
-- `category`: category filter/group label.
-- `number`: numeric range/filter ordering metadata.
-- `explanation`: answer explanation; make it concise and source-grounded.
-- `example`: optional example/hint text; the quiz UI can display it and can use it as the idle hint before falling back to `explanation`.
+- `category`: internal category/filter label governed by section 2;
+- `number`: numeric range/filter ordering metadata; preserve source numbering;
+- `explanation`: concise, source-grounded answer explanation;
+- `example`: optional example/hint text shown by the quiz UI.
 
 Do not author runtime-derived presentation state such as `activeStudyMode`, `autoReversed`, or `directionLabel`; LoopDeck sets those while presenting a question.
-Fields that merely exist in a TypeScript interface but are not wired into the current study UI are not automatically part of this authoring contract.
+Fields that merely exist in a TypeScript interface but are not wired into the current study UI are not automatically authoring features.
 
-## 11. Importer enforcement versus authoring invariants
+## 12. Importer enforcement versus authoring invariants
 
 The importer validates and normalizes the runtime schema before persistence. It rejects, among other things:
 - packVersion other than 1; missing/blank packId or title; missing folders/modules/questions arrays;
@@ -399,51 +462,53 @@ The importer validates and normalizes the runtime schema before persistence. It 
 - broken folder/module/question cross-references, inconsistent module ownership, duplicate choice text, choice answers outside choices, and multi-select answers outside choices;
 - invalid colors, supported-field types, and preferredAnswerFormat values.
 
-Validation cannot establish factual accuracy, distractor quality, or whether a figure really supports an answer. Missing safe image payloads remain warnings rather than fatal errors.
+Validation cannot establish factual accuracy, distractor quality, hierarchy intent, worksheet/PDF-compatible vocabulary encoding, or whether a figure really supports an answer. Missing safe image payloads remain warnings rather than fatal errors.
 
 Therefore the mandatory authoring self-check is stricter than the importer. A pack that imports successfully can still behave incorrectly if these invariants are violated.
 
-## 12. Authoring workflow
+## 13. Authoring workflow
 
 Before final files, do this internally or visibly when useful:
 
-1. Make a module/coverage plan.
-2. Decide the intended question type for every source fact.
-3. Write plausible manual distractors for authored choice questions.
-4. Define true accepted-answer variants.
-5. Preserve required image sources and decide which questions genuinely require them.
-6. Reuse one verified figure for multiple questions when appropriate; do not duplicate shared assets.
-7. Inspect every distinct image asset and verify every referenced visual fact.
+1. Identify the user's intended Folder and Module structure before writing questions.
+2. Apply the hierarchy rules from section 2; do not derive hierarchy from file/page/image count.
+3. Detect compatibility-sensitive material such as numbered English vocabulary and lock its canonical representation before adding enhancements.
+4. Build a source/coverage plan and preserve source numbering/order.
+5. Decide the intended question type for every source fact.
+6. Define true accepted-answer variants and plausible distractors.
+7. Preserve and inspect required image sources; reuse shared figures.
 8. Generate stable IDs and cross-references.
-9. Self-check the complete pack.
+9. Run the mandatory self-check below.
 10. Only then emit final JSON/ZIP contents.
 
-Do not make every question input just because it is easier.
-
-## 13. Mandatory self-check
+## 14. Mandatory self-check
 
 Before presenting the final pack, verify:
 
 - [ ] packVersion is 1.
 - [ ] packId and title are non-empty.
-- [ ] every folder ID is unique.
-- [ ] every module ID is unique.
-- [ ] every question ID is unique.
+- [ ] every folder/module/question ID is unique.
 - [ ] every folder has non-empty id/title.
-- [ ] every module has non-empty id/folderId/title/subject and a questionIds array.
+- [ ] every authored module has non-empty id/folderId/title/subject and a questionIds array.
 - [ ] every module.folderId exists.
 - [ ] every question.moduleId exists.
-- [ ] every module.questionIds entry exists.
+- [ ] every module.questionIds entry exists and belongs to that module.
+- [ ] no Folder or Module was created merely because a source had multiple pages/images/sections/topics.
+- [ ] same-material source pages/images remain in one Module unless an explicit rule justified a split.
+- [ ] categories follow user/source/range structure and do not introduce an unrequested semantic taxonomy.
+- [ ] numbered vocabulary preserves original order/numbers; default invented subdivision, if needed, uses contiguous ~25-item ranges.
+- [ ] canonical English vocabulary uses input + English-only prompt + Japanese answer/acceptableAnswers + source number + `direction: "normal"`.
+- [ ] canonical English vocabulary was not converted to mixed-language prompt text, `direction: "en_to_ja"`, or sides-only storage.
+- [ ] worksheet-visible vocabulary meanings remain in `acceptableAnswers` rather than only `acceptedAnswers`.
 - [ ] every input has a non-empty answer.
 - [ ] no multiple-independent-answer prompt is encoded as input.
-- [ ] every choice answer appears in choices.
-- [ ] authored choice distractors are plausible and same-category.
+- [ ] every choice answer appears in choices and distractors are plausible/same-class.
 - [ ] every multi_select has at least one correct choice and all correct choices appear in choices.
 - [ ] accepted-answer variants are genuinely equivalent.
+- [ ] externally verified information did not silently overwrite a conflicting supplied fact or expand scope without instruction.
 - [ ] every imageAsset path is safe and the file exists in the ZIP.
 - [ ] for every distinct imageAsset, every referenced label/region/value is actually visible and legible at normal app display size.
 - [ ] every image-backed question is answerable from verified source context; answer and explanation agree with the figure.
-- [ ] image-choice distractors contain no accidental duplicate/accepted-answer aliases.
 - [ ] shared figures are stored once and reused by reference, not duplicated per question.
 - [ ] no executable/script-like files are included.
 - [ ] all JSON is valid JSON.
@@ -451,20 +516,20 @@ Before presenting the final pack, verify:
 
 If any check fails, fix it before output.
 
-## 14. Final response behavior
+## 15. Final response behavior
 
-When the user asks you to create a LoopDeck pack:
-- use the supplied source material as the factual authority;
-- do not invent facts to fill coverage;
-- preserve requested question numbering/ranges;
-- explain any source ambiguity instead of silently guessing;
-- produce the actual final importable files, not just an example schema, when file-generation tools are available.
+When the user asks for a LoopDeck pack:
+- use the supplied material as primary authority and external sources only under section 1;
+- preserve the user's hierarchy intent rather than inventing organization from source-file boundaries;
+- preserve requested numbering/ranges and compatibility-sensitive representations;
+- explain meaningful unresolved source conflicts/ambiguities instead of silently guessing;
+- produce the actual final importable files when file-generation tools are available.
 
-Priority order:
-1. factual correctness
-2. correct question type
-3. valid references/schema
-4. useful distractors
-5. stable IDs
-6. safe assets
-7. importability
+Final priority order:
+1. factual/source fidelity;
+2. runtime and worksheet/PDF compatibility;
+3. correct Folder/Module/category hierarchy;
+4. correct question type and accepted-answer semantics;
+5. valid references/schema and stable IDs;
+6. useful distractors/explanations/assets;
+7. safe, importable output.

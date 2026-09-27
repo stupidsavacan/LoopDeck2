@@ -2,19 +2,20 @@
 import 'fake-indexeddb/auto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import packAuthoringPrompt from '../src/packs/packAuthoringPrompt.txt?raw';
+import { ALLOWED_IMAGE_EXTENSIONS, FORBIDDEN_EXTENSIONS } from '../src/packs/packTypes';
 import { resolveActivePacks } from '../src/packs/packResolver';
 import { renderImportScreen } from '../src/screens/importScreen';
-import { ALLOWED_IMAGE_EXTENSIONS, FORBIDDEN_EXTENSIONS } from '../src/packs/packTypes';
 
 describe('pack authoring prompt', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('ships a non-empty current authoring contract with semantic drift guards', () => {
-    expect(packAuthoringPrompt.length).toBeGreaterThan(4000);
+  it('ships the current Sol-oriented authoring contract with semantic drift guards', () => {
+    expect(packAuthoringPrompt.length).toBeGreaterThan(8000);
     expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-27');
     expect(packAuthoringPrompt).toContain('Target LoopDeck packVersion: 1');
+    expect(packAuthoringPrompt).toContain('Prompt target: modern reasoning models including GPT-5.6 Sol');
 
     for (const questionType of ['input', 'choice', 'multi_select']) {
       expect(packAuthoringPrompt).toContain(`### ${questionType}`);
@@ -35,23 +36,43 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('sideChoiceCandidates');
     expect(packAuthoringPrompt).toContain('example');
     expect(packAuthoringPrompt).toContain('manifest.json');
+
+    // User-authoritative hierarchy contract: source file boundaries must not become app hierarchy.
+    expect(packAuthoringPrompt).toContain('Hierarchy contract: Folder -> Module -> category -> Question');
+    expect(packAuthoringPrompt).toContain(
+      'Do not create a Folder merely because the source contains multiple pages, images, chapters, headings, or topics.'
+    );
+    expect(packAuthoringPrompt).toContain('Do not create one Module per image, page, worksheet side, heading, or small topic.');
+    expect(packAuthoringPrompt).toContain('Do not invent a semantic taxonomy merely because the content can be classified that way.');
+    expect(packAuthoringPrompt).toContain('approximately 25 consecutive vocabulary items per category');
+
+    // Vocabulary storage is constrained by the existing Japanese-to-English worksheet/PDF planner.
+    expect(packAuthoringPrompt).toContain('English vocabulary canonical format and worksheet/PDF compatibility');
+    expect(packAuthoringPrompt).toContain('`prompt`: the English word or phrase itself, with no Japanese question wrapper');
+    expect(packAuthoringPrompt).toContain('Do not set canonical vocabulary items to `direction: "en_to_ja"`');
+    expect(packAuthoringPrompt).toContain('Do not convert canonical vocabulary data into a `sides`-only representation.');
+    expect(packAuthoringPrompt).toContain('worksheet/PDF planner reads `answer` plus `acceptableAnswers`');
+
+    // Source is primary, but uncertain source facts may be externally verified without silent replacement.
+    expect(packAuthoringPrompt).toContain(
+      'External verification is allowed and useful when the supplied material is unclear, incomplete, suspicious, or difficult to read'
+    );
+    expect(packAuthoringPrompt).toContain('do not silently replace a supplied fact when an external source disagrees with it');
+    expect(packAuthoringPrompt).toContain('do not expand the tested scope with unrelated outside facts');
+
+    // Image quality and high-risk runtime semantics remain explicit.
+    expect(packAuthoringPrompt).toContain('treat a user-supplied worksheet/map/graph/image as factual authority for the figure itself');
+    expect(packAuthoringPrompt).toContain('never invent missing labels, values, legends, locations, or relationships');
+    expect(packAuthoringPrompt).toContain('one authoritative figure may and should be reused for multiple targeted questions');
+    expect(packAuthoringPrompt).toContain('legible at normal phone-scale display');
+    expect(packAuthoringPrompt).toContain('a JSON-only pack cannot carry a local image payload');
+    expect(packAuthoringPrompt).toContain('Question IDs must be globally unique across different active packIds');
+    expect(packAuthoringPrompt).toContain('Merge import upserts assets');
     expect(packAuthoringPrompt).toContain('whole JSON/ZIP/backup file: at most 32 MiB');
     expect(packAuthoringPrompt).toContain('ZIP entry count: at most 256 entries');
     expect(packAuthoringPrompt).toContain('preferredAnswerFormat');
     expect(packAuthoringPrompt).toContain('broken folder/module/question cross-references');
-
-    // #41 quality contract: path safety alone is insufficient.
-    expect(packAuthoringPrompt).toContain('treat a user-supplied worksheet/map/graph/image as factual authority');
-    expect(packAuthoringPrompt).toContain('never invent missing labels, values, legends, locations, or relationships');
-    expect(packAuthoringPrompt).toContain('one authoritative figure may and should be reused for multiple targeted questions');
-    expect(packAuthoringPrompt).toContain('legible at normal phone-scale display');
-    expect(packAuthoringPrompt).toContain('for every distinct imageAsset');
-
-    // High-risk runtime semantics that can yield an importable but wrong pack.
-    expect(packAuthoringPrompt).toContain('Question IDs must be globally unique across different active packIds');
-    expect(packAuthoringPrompt).toContain('Merge import upserts assets');
     expect(packAuthoringPrompt).toContain('A pack that imports successfully can still behave incorrectly');
-    expect(packAuthoringPrompt).toContain('a JSON-only pack cannot carry a local image payload');
     expect(packAuthoringPrompt).toContain('activeStudyMode');
   });
 
@@ -91,7 +112,7 @@ describe('pack authoring prompt', () => {
 
       expect(createObjectURL).toHaveBeenCalledTimes(1);
       const blob = createObjectURL.mock.calls[0][0];
-      expect(blob.size).toBeGreaterThan(4000);
+      expect(blob.size).toBeGreaterThan(8000);
       expect(blob.type).toBe('text/plain;charset=utf-8');
       expect(downloadedFilename).toBe('loopdeck-pack-authoring-prompt.txt');
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:loopdeck-authoring-prompt');
