@@ -52,5 +52,16 @@ describe('IndexedDB migration', () => {
     expect((await db.getReviewCards()).map((card) => card.questionId)).toContain('q');
     expect((await db.getReviewLogs()).map((log) => log.reviewLogId)).toContain('legacy-log');
     expect(await db.getImportedPackAssets()).toEqual([]);
+
+    const current = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 4);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const indexTx = current.transaction(['attempts', 'packAssets', 'reviewLogs'], 'readonly');
+    expect([...indexTx.objectStore('attempts').indexNames]).toEqual(expect.arrayContaining(['byQuestionId', 'byResult']));
+    expect([...indexTx.objectStore('packAssets').indexNames]).toContain('byPackId');
+    expect([...indexTx.objectStore('reviewLogs').indexNames]).toEqual(expect.arrayContaining(['byQuestionId', 'byReviewedAt']));
+    current.close();
   });
 });
