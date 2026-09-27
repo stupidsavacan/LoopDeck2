@@ -1,4 +1,5 @@
 import type { Attempt, ModuleInfo, Question } from './models';
+import { localCalendarDayKey, recentLocalCalendarDayKeys } from './calendarDay';
 import { analyzeProblems, timingBand } from './reviewEngine';
 
 export interface DailyStudyStat {
@@ -32,24 +33,10 @@ export interface MistakeBreakdownItem {
   count: number;
 }
 
-function dayKey(value: Date): string {
-  return value.toISOString().slice(0, 10);
-}
-
 function parseAttemptDay(attempt: Attempt): string | undefined {
   const date = new Date(attempt.answeredAt);
   if (Number.isNaN(date.getTime())) return undefined;
-  return dayKey(date);
-}
-
-function recentDayKeys(days: number, now: Date): string[] {
-  const safeDays = Math.max(1, Math.floor(days));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  return Array.from({ length: safeDays }, (_, index) => {
-    const date = new Date(end);
-    date.setUTCDate(end.getUTCDate() - (safeDays - index - 1));
-    return dayKey(date);
-  });
+  return localCalendarDayKey(date);
 }
 
 function bump(counts: Map<string, MistakeBreakdownItem>, id: string, label: string, amount = 1): void {
@@ -60,7 +47,7 @@ function bump(counts: Map<string, MistakeBreakdownItem>, id: string, label: stri
 
 export function buildDailyStudyStats(attempts: Attempt[], days = 28, now = new Date()): DailyStudyStat[] {
   const byDay = new Map<string, DailyStudyStat>();
-  for (const date of recentDayKeys(days, now)) {
+  for (const date of recentLocalCalendarDayKeys(days, now)) {
     byDay.set(date, { date, attempts: 0, correct: 0, wrong: 0, revealed: 0, accuracy: 0 });
   }
 
@@ -116,7 +103,7 @@ export function buildModuleStudyStats(attempts: Attempt[], modules: ModuleInfo[]
 }
 
 export function buildMistakeTrend(attempts: Attempt[], days = 14, now = new Date()): MistakeTrendPoint[] {
-  const byDay = new Map(recentDayKeys(days, now).map((date) => [date, 0]));
+  const byDay = new Map(recentLocalCalendarDayKeys(days, now).map((date) => [date, 0]));
   for (const attempt of attempts) {
     if (attempt.result === 'correct') continue;
     const date = parseAttemptDay(attempt);

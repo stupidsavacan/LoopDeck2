@@ -2,6 +2,7 @@ import { getCorrectAnswer } from '../core/answerJudge';
 import type { InputQuestion, ModuleInfo, Question } from '../core/models';
 
 export const WORKSHEET_ROWS_PER_PAGE = 25;
+export const WORKSHEET_PDF_TITLE_MAX_CHARS = 72;
 
 const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
 const ENGLISH_TEXT = /[a-z]/i;
@@ -21,6 +22,8 @@ export interface WorksheetPage {
 
 export interface WorksheetPlan {
   moduleTitle: string;
+  pdfModuleTitle: string;
+  warnings: string[];
   rangeLabel: string;
   rowsPerPage: 25;
   rows: WorksheetRow[];
@@ -45,6 +48,12 @@ function rangeLabel(rows: WorksheetRow[]): string {
 
 function clean(value: string): string {
   return value.replace(/\s+/g, ' ').trim();
+}
+
+export function worksheetPdfModuleTitle(title: string): { text: string; shortened: boolean } {
+  const characters = Array.from(clean(title));
+  if (characters.length <= WORKSHEET_PDF_TITLE_MAX_CHARS) return { text: characters.join(''), shortened: false };
+  return { text: `${characters.slice(0, WORKSHEET_PDF_TITLE_MAX_CHARS - 1).join('')}…`, shortened: true };
 }
 
 function uniqueValues(values: string[]): string[] {
@@ -113,8 +122,15 @@ export function createJapaneseToEnglishWorksheetPlan(
       }))
     : [];
 
+  const pdfTitle = worksheetPdfModuleTitle(module.title);
+  const warnings = pdfTitle.shortened
+    ? [`教材名が長いため、PDF見出しでは${WORKSHEET_PDF_TITLE_MAX_CHARS}文字以内に短縮します。問題文と解答本文は省略しません。`]
+    : [];
+
   return {
     moduleTitle: module.title,
+    pdfModuleTitle: pdfTitle.text,
+    warnings,
     rangeLabel: rangeLabel(rows),
     rowsPerPage: WORKSHEET_ROWS_PER_PAGE,
     rows,

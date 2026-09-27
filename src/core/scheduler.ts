@@ -1,4 +1,5 @@
 import type { AnswerFormat, AnswerResult, ReviewCard, ReviewLog, ReviewRating, ReviewState } from './models';
+import { endOfLocalCalendarDay, startOfLocalCalendarDay } from './calendarDay';
 
 const DEFAULT_EASE = 2.5;
 const MIN_EASE = 1.3;
@@ -46,14 +47,6 @@ function addMinutes(date: Date, minutes: number): Date {
 
 function addDays(date: Date, days: number): Date {
   return new Date(date.getTime() + days * DAY_MS);
-}
-
-function startOfToday(date: Date): number {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-}
-
-function endOfToday(date: Date): number {
-  return startOfToday(date) + DAY_MS - 1;
 }
 
 function dueTime(card: ReviewCard): number | undefined {
@@ -202,8 +195,8 @@ export function bucketReviewCards(cards: ReviewCard[], now = new Date()): Review
     leech: [],
     masteredDue: []
   };
-  const todayStart = startOfToday(now);
-  const todayEnd = endOfToday(now);
+  const todayStart = startOfLocalCalendarDay(now);
+  const todayEnd = endOfLocalCalendarDay(now);
 
   for (const card of cards) {
     if (isSuspended(card)) continue;

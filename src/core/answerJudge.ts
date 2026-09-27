@@ -106,6 +106,15 @@ function inputCandidates(question: InputQuestion | ChoiceQuestion): string[] {
   return getAcceptedAnswers(question);
 }
 
+export function normalizeAnswerForQuestion(question: InputQuestion | ChoiceQuestion, rawInput: string): string {
+  const rule = question.answerJudging ?? {};
+  const mode = rule.mode ?? 'single';
+  return normalizeForRule(rawInput, {
+    allowJapaneseSentenceEdges: rule.allowJapaneseSentenceEdges ?? mode !== 'exact_phrase',
+    ...rule
+  });
+}
+
 export function levenshtein(left: string, right: string): number {
   if (!left) return right.length;
   if (!right) return left.length;
@@ -129,10 +138,7 @@ export function judgeAnswerWithRule(question: InputQuestion | ChoiceQuestion, ra
   const rule = question.answerJudging ?? {};
   const mode = rule.mode ?? 'single';
   const acceptedAnswers = getAcceptedAnswers(question);
-  const normalizedInput = normalizeForRule(rawInput, {
-    allowJapaneseSentenceEdges: rule.allowJapaneseSentenceEdges ?? mode !== 'exact_phrase',
-    ...rule
-  });
+  const normalizedInput = normalizeAnswerForQuestion(question, rawInput);
 
   if (!normalizedInput) return false;
 

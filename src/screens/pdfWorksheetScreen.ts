@@ -163,7 +163,8 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
     selectedQuestions = filterWorksheetQuestionsByRange(selected.questions, rangeSelect.value || 'all');
     const questionPages = Math.ceil(selectedQuestions.length / 25);
     const totalPages = questionPages * (includeAnswers.checked ? 2 : 1);
-    summary.textContent = `${selectedQuestions.length}問 / ${totalPages}ページ。問題ページを先に、解答は後ろに出力します。`;
+    const planPreview = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
+    summary.textContent = `${selectedQuestions.length}問 / ${totalPages}ページ。問題ページを先に、解答は後ろに出力します。${planPreview.warnings.length ? ` 注意: ${planPreview.warnings.join(' ')}` : ''}`;
   }
 
   moduleSelect.onchange = refreshRangeOptions;
@@ -220,6 +221,10 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
       const plan = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
       if (!plan.pages.length) throw exportError('PDF-P001', 'PDFに出力できるページがありません。');
       reportProgress('PDF-P010', 'PDFページ構成を作成しました', `${plan.pages.length}ページ / ${plan.rows.length}問`);
+      for (const warning of plan.warnings) {
+        reportProgress('PDF-W010', 'PDF見出しを短縮します', warning);
+        reportIssue({ level: 'warn', area: 'pdfWorksheet', code: 'PDF-W010', userMessage: 'PDF見出しを短縮します。', detail: warning });
+      }
 
       reportProgress('PDF-M010', 'PDF生成モジュールを読み込み中', '../pdf/worksheetPdf');
       const { generateWorksheetPdfBlob } = await import('../pdf/worksheetPdf');

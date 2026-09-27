@@ -63,6 +63,23 @@ describe('review engine', () => {
     expect(queue[0].score).toBeGreaterThan(queue[1].score);
   });
 
+  it('groups repeated wrong answers with the same normalization used by answer judging', () => {
+    const normalizedAttempts: Attempt[] = [
+      { ...attempts[0], attemptId: 'norm-1', input: ' Apple. ' },
+      { ...attempts[0], attemptId: 'norm-2', input: 'ａｐｐｌｅ' },
+      { ...attempts[0], attemptId: 'norm-3', questionId: 'q-multi', input: [' B ', 'Ａ'] },
+      { ...attempts[0], attemptId: 'norm-4', questionId: 'q-multi', input: ['a', 'b'] }
+    ];
+    const normalizedQuestions: Question[] = [
+      questions[0],
+      { id: 'q-multi', moduleId: 'm1', type: 'multi_select', prompt: 'Pick', choices: ['A', 'B', 'C'], correctChoices: ['A', 'C'] }
+    ];
+
+    const analysis = analyzeProblems(normalizedAttempts, normalizedQuestions);
+    expect(analysis.find((item) => item.question.id === 'q1')?.wrongAnswerPatterns).toEqual([{ answer: 'Apple.', count: 2 }]);
+    expect(analysis.find((item) => item.question.id === 'q-multi')?.wrongAnswerPatterns).toEqual([{ answer: 'B  / Ａ', count: 2 }]);
+  });
+
   it('analyzes repeated wrong input and near misses', () => {
     const analysis = analyzeProblems(attempts, questions);
     const q1 = analysis.find((item) => item.question.id === 'q1');
