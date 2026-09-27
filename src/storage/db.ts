@@ -25,6 +25,7 @@ export interface LoopDeckDb {
   clearWrongAttempts(): Promise<void>;
   setBookmark(questionId: string, enabled: boolean): Promise<void>;
   getBookmarks(): Promise<string[]>;
+  hasBookmark(questionId: string): Promise<boolean>;
   clearBookmarks(): Promise<void>;
   saveImportedPack(pack: LoopDeckPack): Promise<void>;
   saveImportedPackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], replaceAssets?: boolean): Promise<void>;
@@ -160,6 +161,9 @@ export const db: LoopDeckDb = {
     else await transaction('bookmarks', 'readwrite', (store) => store.delete(questionId));
   },
   async getBookmarks() { return (await getAll<{ questionId: string }>('bookmarks')).map((row) => row.questionId); },
+  async hasBookmark(questionId) {
+    return Boolean(await transaction<{ questionId: string }>('bookmarks', 'readonly', (store) => store.get(questionId)));
+  },
   async clearBookmarks() { await transaction('bookmarks', 'readwrite', (store) => store.clear()); },
   async saveImportedPack(pack) {
     const staged = takeStagedPackAssets(pack);

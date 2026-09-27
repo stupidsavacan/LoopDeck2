@@ -1,5 +1,6 @@
 import type { ModuleInfo, Question, ReviewCard, StudySettings } from '../core/models';
 import {
+  aggregateReviewAttempts,
   analyzeProblems,
   buildMistakeQuestions,
   buildReviewQueue,
@@ -80,18 +81,14 @@ export async function renderReviewCenter(
     ? reviewCards.filter((card) => recentQuestionIds.has(card.questionId))
     : reviewCards;
 
-  const queue = buildReviewQueue(
-    scopedAttempts,
-    questions,
-    scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {}
-  );
-  const mistakes = buildMistakeQuestions(questions, scopedAttempts);
-  const analyses = analyzeProblems(
-    scopedAttempts,
-    questions,
-    scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {}
-  ).filter((item) => item.needsAttention).slice(0, 8);
-  const weak = summarizeWeakModules(scopedAttempts);
+  const reviewAggregation = aggregateReviewAttempts(scopedAttempts);
+  const reviewOptions = scope === 'recent' ? { now, halfLifeDays: DEFAULT_REVIEW_SCORE_HALF_LIFE_DAYS } : {};
+  const queue = buildReviewQueue(scopedAttempts, questions, reviewOptions, reviewAggregation);
+  const mistakes = buildMistakeQuestions(questions, scopedAttempts, reviewAggregation);
+  const analyses = analyzeProblems(scopedAttempts, questions, reviewOptions, reviewAggregation)
+    .filter((item) => item.needsAttention)
+    .slice(0, 8);
+  const weak = summarizeWeakModules(scopedAttempts, reviewAggregation);
   const schedule = summarizeReviewSchedule(scopedReviewCards, now);
   const allSchedule = summarizeReviewSchedule(reviewCards, now);
   const buckets = bucketReviewCards(scopedReviewCards, now);

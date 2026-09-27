@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
+import { aggregateReviewAttempts, analyzeProblems, buildMistakeQuestions, buildReviewQueue, filterRecentAttempts, getWrongQuestionIds, scoreAttemptDelta, summarizeWeakModules } from '../src/core/reviewEngine';
 import type { Attempt, Question } from '../src/core/models';
 
 const attempts: Attempt[] = [
@@ -61,6 +61,14 @@ describe('review engine', () => {
     const queue = buildReviewQueue(recencyAttempts, questions, { now, halfLifeDays: 4 });
     expect(queue.map((item) => item.question.id)).toEqual(['q1', 'q3']);
     expect(queue[0].score).toBeGreaterThan(queue[1].score);
+  });
+
+  it('reuses one attempt aggregation without changing review results', () => {
+    const aggregation = aggregateReviewAttempts(attempts);
+    expect(buildReviewQueue(attempts, questions, {}, aggregation)).toEqual(buildReviewQueue(attempts, questions));
+    expect(buildMistakeQuestions(questions, attempts, aggregation)).toEqual(buildMistakeQuestions(questions, attempts));
+    expect(summarizeWeakModules(attempts, aggregation)).toEqual(summarizeWeakModules(attempts));
+    expect(analyzeProblems(attempts, questions, {}, aggregation)).toEqual(analyzeProblems(attempts, questions));
   });
 
   it('analyzes repeated wrong input and near misses', () => {

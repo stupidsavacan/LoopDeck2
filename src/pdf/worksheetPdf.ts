@@ -66,8 +66,26 @@ function textRuns(text: string, fonts: WorksheetFonts): TextRun[] {
   return runs;
 }
 
+const characterWidthCache = new WeakMap<PDFFont, Map<string, number>>();
+
+function characterWidth(character: string, font: PDFFont, size: number): number {
+  let cache = characterWidthCache.get(font);
+  if (!cache) {
+    cache = new Map<string, number>();
+    characterWidthCache.set(font, cache);
+  }
+  const key = `${size}:${character}`;
+  const cached = cache.get(key);
+  if (cached !== undefined) return cached;
+  const width = font.widthOfTextAtSize(character, size);
+  cache.set(key, width);
+  return width;
+}
+
 function textWidth(text: string, fonts: WorksheetFonts, size: number): number {
-  return textRuns(text, fonts).reduce((width, run) => width + run.font.widthOfTextAtSize(run.text, size), 0);
+  let width = 0;
+  for (const character of text) width += characterWidth(character, fontForCharacter(character, fonts), size);
+  return width;
 }
 
 function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: number, y: number, size: number): void {
@@ -79,21 +97,32 @@ function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: nu
 }
 
 function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: number, maxLines = 2): string[] {
+  const trimmed = text.trim();
   const lines: string[] = [];
   let current = '';
-  for (const character of text.trim()) {
-    if (textWidth(current + character, fonts, size) <= maxWidth || !current) current += character;
-    else {
+  let currentWidth = 0;
+  for (const character of trimmed) {
+    const width = characterWidth(character, fontForCharacter(character, fonts), size);
+    if (currentWidth + width <= maxWidth || !current) {
+      current += character;
+      currentWidth += width;
+    } else {
       lines.push(current);
       current = character;
+      currentWidth = width;
       if (lines.length === maxLines) break;
     }
   }
   if (lines.length < maxLines && current) lines.push(current);
-  if (lines.join('').length < text.trim().length) {
-    let last = lines[maxLines - 1] ?? '';
-    while (last && textWidth(`${last}…`, fonts, size) > maxWidth) last = last.slice(0, -1);
-    lines[maxLines - 1] = `${last}…`;
+  if (lines.join('').length < trimmed.length) {
+    const lastCharacters = Array.from(lines[maxLines - 1] ?? '');
+    let lastWidth = textWidth(lastCharacters.join(''), fonts, size);
+    const ellipsisWidth = characterWidth('…', fontForCharacter('…', fonts), size);
+    while (lastCharacters.length && lastWidth + ellipsisWidth > maxWidth) {
+      const removed = lastCharacters.pop();
+      if (removed) lastWidth -= characterWidth(removed, fontForCharacter(removed, fonts), size);
+    }
+    lines[maxLines - 1] = `${lastCharacters.join('')}…`;
   }
   return lines;
 }

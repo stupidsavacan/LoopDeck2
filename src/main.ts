@@ -27,6 +27,7 @@ const ROUTE_LOADING_DELAY_MS = 2000;
 registerGlobalErrorLogging();
 
 let packView: ResolvedPackView = resolveActivePacks([]);
+let packViewLoaded = false;
 
 export type AppRoute =
   | { name: 'home' }
@@ -84,9 +85,15 @@ function run(task: () => Promise<void>): void {
 }
 
 async function loadPacks(): Promise<void> {
+  if (packViewLoaded) return;
   const loadedPacks = [...loadBuiltinPacks(), ...(await db.getImportedPacks())];
   packView = resolveActivePacks(loadedPacks);
   setActivePackAssetView(packView);
+  packViewLoaded = true;
+}
+
+function invalidatePackView(): void {
+  packViewLoaded = false;
 }
 
 function routeToUrl(route: AppRoute): string {
@@ -235,7 +242,10 @@ async function renderRoute(route: AppRoute): Promise<void> {
         appendMainNavigation('review');
         return;
       case 'import':
-        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => navigate({ name: 'home' }));
+        await renderImportScreen(root, packView, () => navigate({ name: 'home' }), async () => {
+          invalidatePackView();
+          navigate({ name: 'home' });
+        });
         appendMainNavigation(undefined);
         return;
       case 'graphs':

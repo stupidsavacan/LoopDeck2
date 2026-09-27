@@ -1,10 +1,14 @@
+import { buildChoiceCandidateIndex, type ChoiceCandidateIndex } from './choiceGenerator';
 import type { Attempt, ModuleInfo, Question, StudySettings } from './models';
 import { getSupportedStudyQuestionModes, presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
+import { buildWrongAnswerLookupIndex, type WrongAnswerLookupIndex } from './wrongAnswerExplanation';
 
 export interface QuizSession {
   module: ModuleInfo;
   queue: Question[];
   choicePool: Question[];
+  choiceCandidateIndex: ChoiceCandidateIndex;
+  wrongAnswerLookupIndex: WrongAnswerLookupIndex;
   index: number;
   settings: StudySettings;
   startedAt: number;
@@ -98,7 +102,21 @@ export function createSession(module: ModuleInfo, questions: Question[], setting
     presentQuestionForStudy(question, resolveConcreteStudyQuestionMode(question, requestedMode))
   );
   const now = Date.now();
-  return { module, queue, choicePool: [...choicePool], index: 0, settings, startedAt: now, currentStartedAt: now, mode, attempts: [] };
+  const sessionPool = [...choicePool];
+  const explanationPool = sessionPool.length ? sessionPool : queue;
+  return {
+    module,
+    queue,
+    choicePool: sessionPool,
+    choiceCandidateIndex: buildChoiceCandidateIndex(sessionPool),
+    wrongAnswerLookupIndex: buildWrongAnswerLookupIndex(explanationPool),
+    index: 0,
+    settings,
+    startedAt: now,
+    currentStartedAt: now,
+    mode,
+    attempts: []
+  };
 }
 
 export function currentQuestion(session: QuizSession): Question | undefined { return session.queue[session.index]; }

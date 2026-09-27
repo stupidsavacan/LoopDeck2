@@ -48,6 +48,8 @@ describe('IndexedDB migration', () => {
     const { db } = await import('../src/storage/db');
     expect((await db.getAttempts()).map((attempt) => attempt.attemptId)).toContain('legacy-attempt');
     expect(await db.getBookmarks()).toContain('q');
+    expect(await db.hasBookmark('q')).toBe(true);
+    expect(await db.hasBookmark('missing')).toBe(false);
     expect((await db.getImportedPacks()).map((pack) => pack.packId)).toContain('legacy-pack');
     expect((await db.getReviewCards()).map((card) => card.questionId)).toContain('q');
     expect((await db.getReviewLogs()).map((log) => log.reviewLogId)).toContain('legacy-log');

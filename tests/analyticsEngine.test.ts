@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildDailyStudyStats, buildMistakeBreakdown, buildMistakeTrend, buildModuleStudyStats } from '../src/core/analyticsEngine';
+import { buildAnalyticsOverview, buildDailyStudyStats, buildMistakeBreakdown, buildMistakeTrend, buildModuleStudyStats } from '../src/core/analyticsEngine';
 import type { Attempt, ModuleInfo, Question } from '../src/core/models';
 
 const modules: ModuleInfo[] = [
@@ -51,6 +51,17 @@ describe('analytics engine', () => {
       { date: '2026-06-01', mistakes: 1 },
       { date: '2026-06-02', mistakes: 2 }
     ]);
+  });
+
+  it('builds the Graphs overview from one pass without changing existing summaries', () => {
+    const now = new Date('2026-06-02T12:00:00.000Z');
+    const overview = buildAnalyticsOverview(attempts, modules, questions, { dailyDays: 3, trendDays: 2, slowCorrectMs: 10000, now });
+
+    expect(overview).toMatchObject({ totalAttempts: 5, correct: 2, mistakes: 3 });
+    expect(overview.dailyStudyStats).toEqual(buildDailyStudyStats(attempts, 3, now));
+    expect(overview.moduleStudyStats).toEqual(buildModuleStudyStats(attempts, modules));
+    expect(overview.mistakeTrend).toEqual(buildMistakeTrend(attempts, 2, now));
+    expect(overview.mistakeBreakdown).toEqual(buildMistakeBreakdown(attempts, questions, 10000));
   });
 
   it('breaks down mistake categories honestly from available data', () => {

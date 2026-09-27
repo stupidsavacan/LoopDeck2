@@ -33,7 +33,7 @@ const choiceQuestion: Question = {
 
 function stubPersistence(): void {
   vi.spyOn(db, 'addAttempt').mockResolvedValue();
-  vi.spyOn(db, 'getBookmarks').mockResolvedValue([]);
+  vi.spyOn(db, 'hasBookmark').mockResolvedValue(false);
   vi.spyOn(db, 'getReviewCard').mockResolvedValue(undefined);
   vi.spyOn(db, 'putReviewCard').mockResolvedValue();
   vi.spyOn(db, 'putReviewLog').mockResolvedValue();
