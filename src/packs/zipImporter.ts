@@ -110,6 +110,7 @@ export async function importLoopDeckJson(file: File): Promise<PackValidationResu
   return {
     ok: packResult.ok && !issues.some((issue) => issue.level === 'error'),
     issues: [...issues, ...packResult.issues],
-    pack: packResult.pack
+    pack: packResult.pack,
+    assets: []
   };
 }
