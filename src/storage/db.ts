@@ -6,6 +6,9 @@ import type { ImportedPackAsset, PackAssetWriteStrategy } from '../packs/packTyp
 const DB_NAME = 'loopdeck-db';
 const DB_VERSION = 4;
 
+const USER_DATA_STORES = ['attempts', 'bookmarks', 'packs', 'packAssets', 'reviewCards', 'reviewLogs'] as const;
+export type BackupImportMode = 'merge' | 'replace';
+
 export interface StoredPackAsset extends ImportedPackAsset { assetId: string; }
 
 export interface LoopDeckBackup {
@@ -21,6 +24,7 @@ export interface LoopDeckBackup {
 
 export interface LoopDeckDb {
   addAttempt(attempt: Attempt): Promise<void>;
+  saveAttemptWithReview(attempt: Attempt, card: ReviewCard, log: ReviewLog): Promise<void>;
   getAttempts(): Promise<Attempt[]>;
   clearAttempts(): Promise<void>;
   clearWrongAttempts(): Promise<void>;
@@ -42,7 +46,7 @@ export interface LoopDeckDb {
   getReviewLogsForQuestion(questionId: string): Promise<ReviewLog[]>;
   clearReviewData(): Promise<void>;
   exportUserData(): Promise<LoopDeckBackup>;
-  importUserData(backup: unknown): Promise<void>;
+  importUserData(backup: unknown, mode: BackupImportMode): Promise<void>;
 }
 
 export function packAssetId(packId: string, path: string): string { return `${packId}:${path}`; }
@@ -51,89 +55,152 @@ function storedAsset(packId: string, asset: ImportedPackAsset): StoredPackAsset 
   return { assetId: packAssetId(packId, asset.path), packId, path: asset.path, mimeType: asset.mimeType, dataUrl: asset.dataUrl };
 }
 
+function ensureStore(database: IDBDatabase, transaction: IDBTransaction, name: string, keyPath: string): IDBObjectStore {
+  return database.objectStoreNames.contains(name)
+    ? transaction.objectStore(name)
+    : database.createObjectStore(name, { keyPath });
+}
+
+function ensureIndex(store: IDBObjectStore, name: string, keyPath: string): void {
+  if (!store.indexNames.contains(name)) store.createIndex(name, keyPath, { unique: false });
+}
+
+let databaseConnection: IDBDatabase | undefined;
+let databasePromise: Promise<IDBDatabase> | undefined;
+
 function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  if (databaseConnection) return Promise.resolve(databaseConnection);
+  if (databasePromise) return databasePromise;
+
+  databasePromise = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = () => {
       const database = request.result;
-      if (!database.objectStoreNames.contains('attempts')) database.createObjectStore('attempts', { keyPath: 'attemptId' });
-      if (!database.objectStoreNames.contains('bookmarks')) database.createObjectStore('bookmarks', { keyPath: 'questionId' });
-      if (!database.objectStoreNames.contains('packs')) database.createObjectStore('packs', { keyPath: 'packId' });
-      if (!database.objectStoreNames.contains('packAssets')) database.createObjectStore('packAssets', { keyPath: 'assetId' });
-      if (!database.objectStoreNames.contains('reviewCards')) database.createObjectStore('reviewCards', { keyPath: 'questionId' });
-      if (!database.objectStoreNames.contains('reviewLogs')) database.createObjectStore('reviewLogs', { keyPath: 'reviewLogId' });
       if (database.objectStoreNames.contains('settings')) database.deleteObjectStore('settings');
+      const upgradeTransaction = request.transaction;
+      if (!upgradeTransaction) throw new Error('IndexedDB upgrade transaction is unavailable.');
+
+      const attempts = ensureStore(database, upgradeTransaction, 'attempts', 'attemptId');
+      ensureIndex(attempts, 'byQuestionId', 'questionId');
+      ensureIndex(attempts, 'byResult', 'result');
+
+      ensureStore(database, upgradeTransaction, 'bookmarks', 'questionId');
+      ensureStore(database, upgradeTransaction, 'packs', 'packId');
+
+      const packAssets = ensureStore(database, upgradeTransaction, 'packAssets', 'assetId');
+      ensureIndex(packAssets, 'byPackId', 'packId');
+
+      ensureStore(database, upgradeTransaction, 'settings', 'key');
+      ensureStore(database, upgradeTransaction, 'reviewCards', 'questionId');
+
+      const reviewLogs = ensureStore(database, upgradeTransaction, 'reviewLogs', 'reviewLogId');
+      ensureIndex(reviewLogs, 'byQuestionId', 'questionId');
+      ensureIndex(reviewLogs, 'byReviewedAt', 'reviewedAt');
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const database = request.result;
+      databaseConnection = database;
+      databasePromise = undefined;
+      database.onversionchange = () => {
+        database.close();
+        if (databaseConnection === database) databaseConnection = undefined;
+        databasePromise = undefined;
+      };
+      resolve(database);
+    };
+    request.onerror = () => {
+      databasePromise = undefined;
+      reject(request.error ?? new Error('Failed to open LoopDeck IndexedDB.'));
+    };
+  });
+  return databasePromise;
+}
+
+async function runTransaction<T>(
+  storeNames: string | string[],
+  mode: IDBTransactionMode,
+  task: (transaction: IDBTransaction) => T
+): Promise<T> {
+  const database = await openDb();
+  return new Promise<T>((resolve, reject) => {
+    const tx = database.transaction(storeNames, mode);
+    let result: T;
+    try {
+      result = task(tx);
+    } catch (error) {
+      try { tx.abort(); } catch { /* already inactive */ }
+      reject(error);
+      return;
+    }
+    tx.oncomplete = () => resolve(result);
+    tx.onerror = () => reject(tx.error ?? new Error('IndexedDB transaction failed.'));
+    tx.onabort = () => reject(tx.error ?? new Error('IndexedDB transaction was aborted.'));
   });
 }
 
 async function transaction<T>(storeName: string, mode: IDBTransactionMode, task: (store: IDBObjectStore) => IDBRequest<T> | void): Promise<T | void> {
-  const database = await openDb();
-  return new Promise((resolve, reject) => {
-    const tx = database.transaction(storeName, mode);
-    const request = task(tx.objectStore(storeName));
-    tx.oncomplete = () => resolve(request ? (request.result as T) : undefined);
-    tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(tx.error);
-  });
+  const request = await runTransaction<IDBRequest<T> | void>(storeName, mode, (tx) => task(tx.objectStore(storeName)));
+  return request ? request.result : undefined;
 }
 
 async function getAll<T>(storeName: string): Promise<T[]> {
-  return (await transaction<T[]>(storeName, 'readonly', (store) => store.getAll())) ?? [];
+  const result = await transaction<T[]>(storeName, 'readonly', (store) => store.getAll());
+  return Array.isArray(result) ? result : [];
 }
 
-async function deleteAttemptsWhere(predicate: (attempt: Attempt) => boolean): Promise<void> {
-  const database = await openDb();
-  await new Promise<void>((resolve, reject) => {
-    const tx = database.transaction('attempts', 'readwrite');
+async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<void> {
+  await runTransaction('attempts', 'readwrite', (tx) => {
     const store = tx.objectStore('attempts');
-    const request = store.getAll();
-    request.onsuccess = () => {
-      for (const attempt of request.result as Attempt[]) if (predicate(attempt)) store.delete(attempt.attemptId);
-    };
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(tx.error);
+    const index = store.index('byResult');
+    for (const result of results) {
+      const request = index.openKeyCursor(IDBKeyRange.only(result));
+      request.onsuccess = () => {
+        const cursor = request.result;
+        if (!cursor) return;
+        store.delete(cursor.primaryKey);
+        cursor.continue();
+      };
+    }
   });
 }
 
 async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], strategy: PackAssetWriteStrategy): Promise<void> {
-  const database = await openDb();
-  await new Promise<void>((resolve, reject) => {
-    const tx = database.transaction(['packs', 'packAssets'], 'readwrite');
+  await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
     tx.objectStore('packs').put(pack);
     const assetStore = tx.objectStore('packAssets');
-    const request = assetStore.getAll();
-    request.onsuccess = () => {
-      const existing = request.result as StoredPackAsset[];
-      if (strategy === 'replace') {
-        for (const asset of existing) if (asset.packId === pack.packId) assetStore.delete(asset.assetId);
-      }
-      // Both replace and upsert write incoming bytes. Therefore an incoming asset
-      // with the same path deterministically replaces the stored asset.
+    const writeAssets = () => {
       for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset));
     };
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(tx.error);
+
+    if (strategy === 'upsert') {
+      writeAssets();
+      return;
+    }
+
+    const request = assetStore.index('byPackId').openKeyCursor(IDBKeyRange.only(pack.packId));
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (cursor) {
+        assetStore.delete(cursor.primaryKey);
+        cursor.continue();
+        return;
+      }
+      writeAssets();
+    };
   });
 }
 
 async function deletePackAndAssets(packId: string): Promise<void> {
-  const database = await openDb();
-  await new Promise<void>((resolve, reject) => {
-    const tx = database.transaction(['packs', 'packAssets'], 'readwrite');
+  await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
     tx.objectStore('packs').delete(packId);
     const assetStore = tx.objectStore('packAssets');
-    const request = assetStore.getAll();
+    const request = assetStore.index('byPackId').openKeyCursor(IDBKeyRange.only(packId));
     request.onsuccess = () => {
-      for (const asset of request.result as StoredPackAsset[]) if (asset.packId === packId) assetStore.delete(asset.assetId);
+      const cursor = request.result;
+      if (!cursor) return;
+      assetStore.delete(cursor.primaryKey);
+      cursor.continue();
     };
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(tx.error);
   });
 }
 
@@ -157,11 +224,47 @@ function recoverStoredPacks(packs: unknown[]): LoopDeckPack[] {
   return recovered;
 }
 
+async function importBackup(rawBackup: unknown, mode: BackupImportMode): Promise<void> {
+  if (mode !== 'merge' && mode !== 'replace') throw new Error('Explicit backup import mode is required.');
+  const backup = validateBackupPayload(rawBackup);
+  await runTransaction([...USER_DATA_STORES], 'readwrite', (tx) => {
+    if (mode === 'replace') {
+      for (const storeName of USER_DATA_STORES) tx.objectStore(storeName).clear();
+    }
+
+    const attempts = tx.objectStore('attempts');
+    for (const attempt of backup.attempts) attempts.put(attempt);
+
+    const bookmarks = tx.objectStore('bookmarks');
+    const importedAt = new Date().toISOString();
+    for (const questionId of backup.bookmarks) bookmarks.put({ questionId, createdAt: importedAt });
+
+    const packs = tx.objectStore('packs');
+    for (const pack of backup.importedPacks) packs.put(pack);
+
+    const packAssets = tx.objectStore('packAssets');
+    for (const asset of backup.importedPackAssets ?? []) packAssets.put(asset);
+
+    const reviewCards = tx.objectStore('reviewCards');
+    for (const card of backup.reviewCards ?? []) reviewCards.put(card);
+
+    const reviewLogs = tx.objectStore('reviewLogs');
+    for (const log of backup.reviewLogs ?? []) reviewLogs.put(log);
+  });
+}
+
 export const db: LoopDeckDb = {
   async addAttempt(attempt) { await transaction('attempts', 'readwrite', (store) => store.put(attempt)); },
+  async saveAttemptWithReview(attempt, card, log) {
+    await runTransaction(['attempts', 'reviewCards', 'reviewLogs'], 'readwrite', (tx) => {
+      tx.objectStore('attempts').put(attempt);
+      tx.objectStore('reviewCards').put(card);
+      tx.objectStore('reviewLogs').put(log);
+    });
+  },
   async getAttempts() { return getAll<Attempt>('attempts'); },
   async clearAttempts() { await transaction('attempts', 'readwrite', (store) => store.clear()); },
-  async clearWrongAttempts() { await deleteAttemptsWhere((attempt) => attempt.result !== 'correct'); },
+  async clearWrongAttempts() { await deleteAttemptsByResult(['wrong', 'revealed']); },
   async setBookmark(questionId, enabled) {
     if (enabled) await transaction('bookmarks', 'readwrite', (store) => store.put({ questionId, createdAt: new Date().toISOString() }));
     else await transaction('bookmarks', 'readwrite', (store) => store.delete(questionId));
@@ -184,10 +287,15 @@ export const db: LoopDeckDb = {
   async putReviewCard(card) { await transaction('reviewCards', 'readwrite', (store) => store.put(card)); },
   async putReviewLog(log) { await transaction('reviewLogs', 'readwrite', (store) => store.put(log)); },
   async getReviewLogs() { return getAll<ReviewLog>('reviewLogs'); },
-  async getReviewLogsForQuestion(questionId) { return (await this.getReviewLogs()).filter((log) => log.questionId === questionId).sort((a, b) => Date.parse(a.reviewedAt) - Date.parse(b.reviewedAt)); },
+  async getReviewLogsForQuestion(questionId) {
+    const request = await runTransaction<IDBRequest<ReviewLog[]>>('reviewLogs', 'readonly', (tx) => tx.objectStore('reviewLogs').index('byQuestionId').getAll(questionId));
+    return request.result.sort((a, b) => Date.parse(a.reviewedAt) - Date.parse(b.reviewedAt));
+  },
   async clearReviewData() {
-    await transaction('reviewCards', 'readwrite', (store) => store.clear());
-    await transaction('reviewLogs', 'readwrite', (store) => store.clear());
+    await runTransaction(['reviewCards', 'reviewLogs'], 'readwrite', (tx) => {
+      tx.objectStore('reviewCards').clear();
+      tx.objectStore('reviewLogs').clear();
+    });
   },
   async exportUserData() {
     return {
@@ -195,15 +303,5 @@ export const db: LoopDeckDb = {
       importedPacks: await this.getImportedPacks(), importedPackAssets: await this.getImportedPackAssets(), reviewCards: await this.getReviewCards(), reviewLogs: await this.getReviewLogs()
     };
   },
-  async importUserData(rawBackup) {
-    const backup = validateBackupPayload(rawBackup);
-    for (const attempt of backup.attempts) await this.addAttempt(attempt);
-    for (const questionId of backup.bookmarks) await this.setBookmark(questionId, true);
-    for (const pack of backup.importedPacks) {
-      const assets = (backup.importedPackAssets ?? []).filter((asset) => asset.packId === pack.packId);
-      await this.saveImportedPackWithAssets(pack, assets, 'replace');
-    }
-    for (const card of backup.reviewCards ?? []) await this.putReviewCard(card);
-    for (const log of backup.reviewLogs ?? []) await this.putReviewLog(log);
-  }
+  async importUserData(backup, mode) { await importBackup(backup, mode); }
 };

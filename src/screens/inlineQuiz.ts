@@ -1,3 +1,4 @@
+import { writeDebugLog } from '../debug/debugLog';
 import { getCorrectAnswer, isNearMissAnswer, judgeQuestion } from '../core/answerJudge';
 import { buildGeneratedChoices } from '../core/choiceGenerator';
 import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
@@ -8,7 +9,7 @@ import { buildWrongAnswerExplanation } from '../core/wrongAnswerExplanation';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { persistAttemptAndReview } from '../services/quizPersistence';
 import { db } from '../storage/db';
-import { button, clear, el } from '../ui/dom';
+import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
 import { appendQuizResult, renderQuestionImage, renderQuizMeta, renderSessionSummary } from './inlineQuizView';
 
@@ -81,6 +82,8 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   let suspendedTimeExcludedMs = 0;
   let composing = false;
   let idleController: IdleRevealController | undefined;
+  let persistenceInFlight = false;
+  let persistenceComplete = false;
 
   function isCurrentRender(): boolean {
     return renderTokenByContainer.get(container) === renderToken && card.isConnected && container.contains(card);
@@ -148,10 +151,47 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
   }
 
   function nextQuestion(): void {
-    if (moved) return;
+    if (moved || !persistenceComplete) return;
     moved = true;
     cleanup();
     callbacks.onSessionChange(advanceSession(session, pendingAttempt));
+  }
+
+  async function persistAttempt(attempt: Attempt): Promise<void> {
+    if (persistenceInFlight || persistenceComplete) return;
+    persistenceInFlight = true;
+    resultArea.querySelector('.persistence-error')?.remove();
+    try {
+      await persistAttemptAndReview(attempt, db);
+      persistenceComplete = true;
+      callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
+      if (nextButton) {
+        nextButton.disabled = false;
+        nextButton.hidden = false;
+      }
+      if (attempt.result === 'correct' && session.settings.autoNext) window.setTimeout(nextQuestion, 650);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      console.error('Failed to persist answer/SRS state', error);
+      writeDebugLog({
+        level: 'error',
+        area: 'quizPersistence',
+        code: 'ANSWER-PERSIST-FAILED',
+        userMessage: '回答の保存に失敗しました。',
+        detail,
+        stack: error instanceof Error ? error.stack : undefined,
+        context: { attemptId: attempt.attemptId, questionId: attempt.questionId, moduleId: attempt.moduleId, result: attempt.result }
+      });
+      toast('回答の保存に失敗しました。再試行してください。');
+      const errorBox = el('div', 'issue error persistence-error');
+      errorBox.append(el('p', '', '回答を保存できませんでした。次へ進む前に再試行してください。'));
+      const retry = button('保存を再試行', 'btn primary');
+      retry.onclick = () => void persistAttempt(attempt);
+      errorBox.append(retry);
+      resultArea.append(errorBox);
+    } finally {
+      persistenceInFlight = false;
+    }
   }
 
   function record(answer: string | string[], revealed = false): void {
@@ -165,7 +205,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
     const attempt = buildAttempt(activeQuestion, result, revealed ? '' : answer, elapsedMs, session.mode, answerMode, totalHiddenTimeExcludedMs, nearMiss);
     pendingAttempt = attempt;
-    callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
+
     const wrongExplanation = !revealed && result === 'wrong' && typeof answer === 'string'
       ? buildWrongAnswerExplanation(
           answerMode === 'input' ? 'input' : 'choice',
@@ -176,13 +216,7 @@ export function renderInlineQuiz(container: HTMLElement, session: QuizSession, c
         )
       : undefined;
     appendQuizResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
-    if (nextButton) {
-      nextButton.disabled = false;
-      nextButton.hidden = false;
-    }
-    const persisted = persistAttemptAndReview(attempt, db);
-    if (result === 'correct' && session.settings.autoNext) void persisted.finally(() => window.setTimeout(nextQuestion, 650));
-    else void persisted;
+    void persistAttempt(attempt);
   }
 
   const bookmark = button('', 'btn ghost bookmark-btn');
