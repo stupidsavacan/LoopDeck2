@@ -2,7 +2,6 @@ import JSZip from 'jszip';
 import type { LoopDeckPack } from '../core/models';
 import { extensionOf, isSafeImageAssetRef } from './assetSafety';
 import { MAX_IMAGE_ASSET_BYTES, MAX_JSON_ENTRY_BYTES, validateImportFileSize } from './importLimits';
-import { stageImportedPackAssets } from './importedAssetStaging';
 import type { ImportedPackAsset, PackValidationIssue, PackValidationResult } from './packTypes';
 import { validatePack, validatePackFiles } from './packValidator';
 import { inspectZipSafety } from './zipSafety';
@@ -106,7 +105,6 @@ export async function importLoopDeckZip(file: File): Promise<PackValidationResul
 
   const assets = await readReferencedAssets(zip, packResult.pack, issues, inspection.uncompressedBytesByPath);
   if (issues.some((entry) => entry.level === 'error')) return { ok: false, issues: [...issues, ...packResult.issues] };
-  stageImportedPackAssets(packResult.pack, assets);
   return { ok: true, issues: [...issues, ...packResult.issues], pack: packResult.pack, assets };
 }
 
@@ -117,10 +115,10 @@ export async function importLoopDeckJson(file: File): Promise<PackValidationResu
   const text = await file.text();
   const json = JSON.parse(text) as unknown;
   const packResult = validatePack(json);
-  if (packResult.pack) stageImportedPackAssets(packResult.pack, []);
   return {
     ok: packResult.ok && !issues.some((issue) => issue.level === 'error'),
     issues: [...issues, ...packResult.issues],
-    pack: packResult.pack
+    pack: packResult.pack,
+    assets: []
   };
 }

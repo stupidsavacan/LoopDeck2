@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { validatePack, validatePackFiles } from '../src/packs/packValidator';
+import type { LoopDeckPack } from '../src/core/models';
+import { validateActivePackIdentities, validatePack, validatePackFiles } from '../src/packs/packValidator';
 
 describe('pack validator', () => {
   it('rejects executable files and unsafe paths', () => {
@@ -138,4 +139,22 @@ describe('pack validator', () => {
     expect(result.issues.some((entry) => entry.message.includes('answer must appear in choices'))).toBe(true);
   });
 
+  it('rejects invalid preferred answer formats', () => {
+    const result = validatePack({
+      packVersion: 1, packId: 'demo-format', title: 'Demo', folders: [{ id: 'f', title: 'F' }],
+      modules: [{ id: 'm', folderId: 'f', title: 'M', subject: 'demo', preferredAnswerFormat: 'bad', questionIds: ['q'] }],
+      questions: [{ id: 'q', moduleId: 'm', type: 'input', prompt: 'A?', answer: 'A' }]
+    });
+    expect(result.ok).toBe(false);
+  });
+
+  it('treats question ids as global across different active packIds but allows same-pack replacement', () => {
+    const makePack = (packId: string, prompt: string): LoopDeckPack => ({
+      packVersion: 1, packId, title: packId, folders: [{ id: 'f', title: 'F' }],
+      modules: [{ id: `${packId}-m`, folderId: 'f', title: 'M', subject: 'demo', questionIds: ['shared'] }],
+      questions: [{ id: 'shared', moduleId: `${packId}-m`, type: 'input', prompt, answer: 'A' }]
+    });
+    expect(validateActivePackIdentities([makePack('a', 'A'), makePack('b', 'B')])).toHaveLength(1);
+    expect(validateActivePackIdentities([makePack('a', 'A'), makePack('a', 'new A')])).toEqual([]);
+  });
 });

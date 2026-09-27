@@ -88,7 +88,7 @@ describe('packResolver duplicate ID resolution', () => {
     expect(getQuestionById(view, 'old-question')).toBeUndefined();
   });
 
-  it('lets imported questions win when question IDs collide', () => {
+  it('scopes same-id question lookup to the pack that owns each active module', () => {
     const builtin = pack(
       'loopdeck-builtin-v1',
       'Built-in',
@@ -104,6 +104,8 @@ describe('packResolver duplicate ID resolution', () => {
 
     const view = resolveActivePacks([builtin, imported]);
 
+    expect(getQuestionsForModule(view, 'builtin-module')[0]?.prompt).toBe('old shared prompt');
+    expect(getQuestionsForModule(view, 'imported-module')[0]?.prompt).toBe('new shared prompt');
     expect(getQuestionById(view, 'shared-question')?.prompt).toBe('new shared prompt');
   });
 

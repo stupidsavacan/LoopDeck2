@@ -9,7 +9,8 @@ export type ImportFileResult =
   | { kind: 'pack'; result: PackValidationResult };
 
 export async function readImportFile(file: File): Promise<ImportFileResult> {
-  validateImportFileSize(file);
+  const issues = validateImportFileSize(file);
+  if (issues.length) return { kind: 'pack', result: { ok: false, issues } };
   if (file.name.endsWith('.zip')) return { kind: 'pack', result: await importLoopDeckZip(file) };
   const text = await file.text();
   let parsed: unknown;

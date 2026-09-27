@@ -1,6 +1,5 @@
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { takeStagedPackAssets } from '../src/packs/importedAssetStaging';
 import { importLoopDeckJson, importLoopDeckZip } from '../src/packs/zipImporter';
 
 function manifest() {
@@ -52,21 +51,16 @@ describe('ZIP image asset import', () => {
     expect(result.issues.some((issue) => issue.level === 'error' && issue.path === '../evil.png')).toBe(true);
   });
 
-  it('stages exact imports as overwrite updates and merged pack objects as additive updates', async () => {
+  it('returns assets explicitly without hidden staging state', async () => {
     const result = await importLoopDeckZip(await zipFile([question('q1', 'images/map.png')], { 'images/map.png': 'iVBORw0KGgo=' }));
-    const exact = takeStagedPackAssets(result.pack!);
-    expect(exact).toMatchObject({ replaceAssets: true });
-
-    const second = await importLoopDeckZip(await zipFile([question('q1', 'images/map.png')], { 'images/map.png': 'iVBORw0KGgo=' }));
-    const mergedObject = { ...second.pack!, questions: [...second.pack!.questions] };
-    const merged = takeStagedPackAssets(mergedObject);
-    expect(merged).toMatchObject({ replaceAssets: false });
+    expect(result.assets).toHaveLength(1);
+    expect(result.assets?.[0]).toMatchObject({ packId: 'image-pack', path: 'images/map.png' });
   });
 
   it('keeps JSON imports compatible and returns no assets', async () => {
     const pack = { ...manifest(), modules: modules(['q1']), questions: [question('q1')] };
     const result = await importLoopDeckJson(new File([JSON.stringify(pack)], 'image-pack.loopdeck.json'));
     expect(result.ok).toBe(true);
-    expect(result.assets).toBeUndefined();
+    expect(result.assets).toEqual([]);
   });
 });

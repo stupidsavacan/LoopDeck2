@@ -476,3 +476,30 @@ export function validatePack(rawPack: unknown): PackValidationResult {
   };
   return { ok: true, issues, pack };
 }
+
+/**
+ * Question IDs are global user-data keys (attempts, bookmarks and review data),
+ * so two active packIds may not own the same question ID. A later pack with the
+ * same packId is a full replacement and is deduplicated before this check.
+ */
+export function validateActivePackIdentities(packs: LoopDeckPack[]): PackValidationIssue[] {
+  const latestByPackId = new Map<string, LoopDeckPack>();
+  for (const pack of packs) latestByPackId.set(pack.packId, pack);
+
+  const ownerByQuestionId = new Map<string, string>();
+  const issues: PackValidationIssue[] = [];
+  for (const pack of latestByPackId.values()) {
+    for (const question of pack.questions) {
+      const previousOwner = ownerByQuestionId.get(question.id);
+      if (previousOwner && previousOwner !== pack.packId) {
+        issues.push({
+          level: 'error',
+          message: `Question id must be globally unique across active packs: ${question.id} (${previousOwner}, ${pack.packId})`
+        });
+        continue;
+      }
+      ownerByQuestionId.set(question.id, pack.packId);
+    }
+  }
+  return issues;
+}
