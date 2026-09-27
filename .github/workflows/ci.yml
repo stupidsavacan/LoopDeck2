@@ -46,6 +46,9 @@ jobs:
           npx vite --version
           npx vitest --version
 
+      - name: Run dead-code audit
+        run: npm run deadcode
+
       - name: Run web tests
         run: npm test
 
