@@ -2,7 +2,7 @@ import japaneseFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-jap
 import latinFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?base64';
 import fontkit from '@pdf-lib/fontkit';
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from 'pdf-lib';
-import type { WorksheetPage, WorksheetPlan, WorksheetRow } from './worksheetPlanner';
+import type { WorksheetPage, WorksheetPlan } from './worksheetPlanner';
 
 export interface WorksheetPdfFontBytes {
   japanese: Uint8Array;
@@ -23,6 +23,7 @@ const LINE_COLOR = rgb(0.42, 0.47, 0.55);
 
 type WorksheetFonts = { japanese: PDFFont; latin: PDFFont };
 type TextRun = { text: string; font: PDFFont };
+type FittedText = { lines: string[]; size: number; lineHeight: number };
 
 function validateFontBytes(bytes: Uint8Array): Uint8Array {
   if (!bytes.length) throw new Error('Japanese PDF font is empty.');
@@ -78,40 +79,56 @@ function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: nu
   }
 }
 
-function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: number, maxLines = 2): string[] {
+function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: number): string[] {
+  const source = text.trim();
+  if (!source) return [];
   const lines: string[] = [];
   let current = '';
-  for (const character of text.trim()) {
+  for (const character of source) {
     if (textWidth(current + character, fonts, size) <= maxWidth || !current) current += character;
     else {
       lines.push(current);
       current = character;
-      if (lines.length === maxLines) break;
     }
   }
-  if (lines.length < maxLines && current) lines.push(current);
-  if (lines.join('').length < text.trim().length) {
-    let last = lines[maxLines - 1] ?? '';
-    while (last && textWidth(`${last}…`, fonts, size) > maxWidth) last = last.slice(0, -1);
-    lines[maxLines - 1] = `${last}…`;
-  }
+  if (current) lines.push(current);
   return lines;
 }
 
-function fitLines(text: string, fonts: WorksheetFonts, maxWidth: number): { lines: string[]; size: number } {
-  for (const size of [9, 8, 7]) {
-    const lines = wrapText(text, fonts, size, maxWidth, 2);
-    if (lines.join('').replace(/…$/, '').length >= text.trim().length) return { lines, size };
+function fitCellText(text: string, fonts: WorksheetFonts, maxWidth: number): FittedText | undefined {
+  for (const size of [9, 8, 7, 6, 5]) {
+    const lineHeight = size + 1.25;
+    const lines = wrapText(text, fonts, size, maxWidth);
+    if (lines.length * lineHeight <= ROW_HEIGHT - 4) return { lines, size, lineHeight };
   }
-  return { lines: wrapText(text, fonts, 7, maxWidth, 2), size: 7 };
+  return undefined;
 }
 
-function drawCellText(page: PDFPage, text: string, fonts: WorksheetFonts, x: number, rowTop: number, width: number): void {
-  const { lines, size } = fitLines(text, fonts, width - 10);
-  const lineHeight = size + 1.5;
-  const contentHeight = lines.length * lineHeight;
-  const firstY = rowTop - (ROW_HEIGHT - contentHeight) / 2 - size;
-  lines.forEach((line, index) => drawMixedText(page, line, fonts, x + 5, firstY - index * lineHeight, size));
+function fitHeaderTitle(text: string, fonts: WorksheetFonts, maxWidth: number): FittedText | undefined {
+  for (const size of [14, 13, 12, 11, 10, 9, 8, 7]) {
+    const lineHeight = size + 2;
+    const lines = wrapText(text, fonts, size, maxWidth);
+    if (lines.length <= 2) return { lines, size, lineHeight };
+  }
+  return undefined;
+}
+
+function drawCellText(
+  page: PDFPage,
+  text: string,
+  fonts: WorksheetFonts,
+  x: number,
+  rowTop: number,
+  width: number,
+  context: string
+): void {
+  const fitted = fitCellText(text, fonts, width - 10);
+  if (!fitted) {
+    throw new Error(`[PDF-L001] ${context}がPDFセル内に収まりません。内容は省略せず、出力を中止しました。`);
+  }
+  const contentHeight = fitted.lines.length * fitted.lineHeight;
+  const firstY = rowTop - (ROW_HEIGHT - contentHeight) / 2 - fitted.size;
+  fitted.lines.forEach((line, index) => drawMixedText(page, line, fonts, x + 5, firstY - index * fitted.lineHeight, fitted.size));
 }
 
 function drawLine(page: PDFPage, start: { x: number; y: number }, end: { x: number; y: number }, thickness = 0.65): void {
@@ -131,24 +148,28 @@ function drawTable(page: PDFPage, worksheetPage: WorksheetPage, fonts: Worksheet
     drawLine(page, { x: left, y }, { x: right, y });
   }
 
-  drawCellText(page, 'No.', fonts, left, TABLE_TOP, NO_COLUMN_WIDTH);
-  drawCellText(page, '日本語の意味 / 問題', fonts, noRight, TABLE_TOP, PROMPT_COLUMN_WIDTH);
-  drawCellText(page, '英語', fonts, promptRight, TABLE_TOP, ANSWER_COLUMN_WIDTH);
+  drawCellText(page, 'No.', fonts, left, TABLE_TOP, NO_COLUMN_WIDTH, '表見出し No.');
+  drawCellText(page, '日本語の意味 / 問題', fonts, noRight, TABLE_TOP, PROMPT_COLUMN_WIDTH, '表見出し 問題');
+  drawCellText(page, '英語', fonts, promptRight, TABLE_TOP, ANSWER_COLUMN_WIDTH, '表見出し 解答');
 
   worksheetPage.rows.forEach((row, index) => {
     const rowTop = TABLE_TOP - (index + 1) * ROW_HEIGHT;
-    drawCellText(page, String(row.number), fonts, left, rowTop, NO_COLUMN_WIDTH);
-    drawCellText(page, row.prompt, fonts, noRight, rowTop, PROMPT_COLUMN_WIDTH);
-    if (worksheetPage.kind === 'answers') drawCellText(page, row.answer, fonts, promptRight, rowTop, ANSWER_COLUMN_WIDTH);
+    drawCellText(page, String(row.number), fonts, left, rowTop, NO_COLUMN_WIDTH, `No.${row.number} の番号`);
+    drawCellText(page, row.prompt, fonts, noRight, rowTop, PROMPT_COLUMN_WIDTH, `No.${row.number} の問題文`);
+    if (worksheetPage.kind === 'answers') drawCellText(page, row.answer, fonts, promptRight, rowTop, ANSWER_COLUMN_WIDTH, `No.${row.number} の解答`);
   });
 }
 
 function drawHeader(page: PDFPage, plan: WorksheetPlan, worksheetPage: WorksheetPage, fonts: WorksheetFonts): void {
   const kind = worksheetPage.kind === 'questions' ? '問題' : '解答';
-  const title = `${plan.moduleTitle}  [${kind}]`;
-  const fitted = fitLines(title, fonts, A4_WIDTH - MARGIN_X * 2);
-  drawMixedText(page, fitted.lines[0] ?? title, fonts, MARGIN_X, 807, 14);
-  drawMixedText(page, `${plan.rangeLabel} / 25問ごと`, fonts, MARGIN_X, 784, 9);
+  const title = `${plan.pdfModuleTitle}  [${kind}]`;
+  const fitted = fitHeaderTitle(title, fonts, A4_WIDTH - MARGIN_X * 2);
+  if (!fitted) throw new Error('[PDF-L002] PDF見出しがヘッダー領域に収まりません。教材名を短くして再試行してください。');
+
+  const firstY = 815;
+  fitted.lines.forEach((line, index) => drawMixedText(page, line, fonts, MARGIN_X, firstY - index * fitted.lineHeight, fitted.size));
+  const rangeY = firstY - fitted.lines.length * fitted.lineHeight - 1;
+  drawMixedText(page, `${plan.rangeLabel} / 25問ごと`, fonts, MARGIN_X, rangeY, 9);
   drawMixedText(page, `${worksheetPage.pageNumber} / ${plan.pages.length}`, fonts, A4_WIDTH - 78, 22, 8);
 }
 
