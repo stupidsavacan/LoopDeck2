@@ -1,4 +1,4 @@
-import type { LoopDeckPack, Question } from '../core/models';
+import type { LoopDeckPack } from '../core/models';
 import { extensionOf, isSafePackPath } from './assetSafety';
 import { FORBIDDEN_EXTENSIONS, type PackValidationIssue, type PackValidationResult } from './packTypes';
 
@@ -84,8 +84,4 @@ export function validatePack(rawPack: unknown): PackValidationResult {
 
   const ok = !issues.some((issue) => issue.level === 'error');
   return { ok, issues, pack: ok ? (rawPack as unknown as LoopDeckPack) : undefined };
-}
-
-export function collectAllQuestions(packs: LoopDeckPack[]): Question[] {
-  return packs.flatMap((pack) => pack.questions);
 }

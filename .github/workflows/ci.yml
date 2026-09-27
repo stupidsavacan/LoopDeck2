@@ -48,6 +48,8 @@ jobs:
 
       - name: Check TypeScript architecture
         run: npm run check:architecture
+      - name: Run dead-code audit
+        run: npm run deadcode
 
       - name: Run web tests
         run: npm test
