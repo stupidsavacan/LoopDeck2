@@ -158,7 +158,9 @@ export async function generateWorksheetPdfBlob(plan: WorksheetPlan, providedFont
   const document = await PDFDocument.create();
   document.registerFontkit(fontkit);
   const fonts: WorksheetFonts = {
-    japanese: await document.embedFont(fontBytes.japanese, { subset: true }),
+    // @pdf-lib/fontkit has long-standing CJK subsetting bugs that can drop Japanese glyphs.
+    // Keep the Japanese font fully embedded; the smaller Latin font can still be subset safely.
+    japanese: await document.embedFont(fontBytes.japanese, { subset: false }),
     latin: await document.embedFont(fontBytes.latin, { subset: true })
   };
 
