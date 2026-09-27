@@ -90,7 +90,7 @@ describe('real image asset regression flows', () => {
     await db.deleteImportedPack(value.packId);
     expect(await db.getPackAsset(value.packId, 'images/backup.png')).toBeUndefined();
 
-    await db.importUserData(backup);
+    await db.importUserData(backup, 'replace');
     expect((await db.getPackAsset(value.packId, 'images/backup.png'))?.dataUrl).toBe(`data:image/png;base64,${PNG_BASE64}`);
     await db.deleteImportedPack(value.packId);
   });
