@@ -1,6 +1,5 @@
 import type { Attempt, LoopDeckPack, ReviewCard, ReviewLog } from '../core/models';
-import { takeStagedPackAssets } from '../packs/importedAssetStaging';
-import type { ImportedPackAsset } from '../packs/packTypes';
+import type { ImportedPackAsset, PackAssetWriteStrategy } from '../packs/packTypes';
 
 const DB_NAME = 'loopdeck-db';
 const DB_VERSION = 3;
@@ -27,7 +26,7 @@ export interface LoopDeckDb {
   getBookmarks(): Promise<string[]>;
   clearBookmarks(): Promise<void>;
   saveImportedPack(pack: LoopDeckPack): Promise<void>;
-  saveImportedPackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], replaceAssets?: boolean): Promise<void>;
+  saveImportedPackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], strategy: PackAssetWriteStrategy): Promise<void>;
   getImportedPacks(): Promise<LoopDeckPack[]>;
   getImportedPackAssets(): Promise<StoredPackAsset[]>;
   getPackAsset(packId: string, path: string): Promise<StoredPackAsset | undefined>;
@@ -97,7 +96,7 @@ async function deleteAttemptsWhere(predicate: (attempt: Attempt) => boolean): Pr
   });
 }
 
-async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], replaceAssets: boolean): Promise<void> {
+async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], strategy: PackAssetWriteStrategy): Promise<void> {
   const database = await openDb();
   await new Promise<void>((resolve, reject) => {
     const tx = database.transaction(['packs', 'packAssets'], 'readwrite');
@@ -106,19 +105,12 @@ async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[
     const request = assetStore.getAll();
     request.onsuccess = () => {
       const existing = request.result as StoredPackAsset[];
-      if (replaceAssets) {
+      if (strategy === 'replace') {
         for (const asset of existing) if (asset.packId === pack.packId) assetStore.delete(asset.assetId);
-        for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset));
-        return;
       }
-
-      const existingIds = new Set(existing.map((asset) => asset.assetId));
-      for (const asset of assets) {
-        const stored = storedAsset(pack.packId, asset);
-        if (existingIds.has(stored.assetId)) continue;
-        assetStore.put(stored);
-        existingIds.add(stored.assetId);
-      }
+      // Both replace and upsert write incoming bytes. Therefore an incoming asset
+      // with the same path deterministically replaces the stored asset.
+      for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset));
     };
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
@@ -161,12 +153,8 @@ export const db: LoopDeckDb = {
   },
   async getBookmarks() { return (await getAll<{ questionId: string }>('bookmarks')).map((row) => row.questionId); },
   async clearBookmarks() { await transaction('bookmarks', 'readwrite', (store) => store.clear()); },
-  async saveImportedPack(pack) {
-    const staged = takeStagedPackAssets(pack);
-    if (staged) await savePackWithAssets(pack, staged.assets, staged.replaceAssets);
-    else await transaction('packs', 'readwrite', (store) => store.put(pack));
-  },
-  async saveImportedPackWithAssets(pack, assets, replaceAssets = true) { await savePackWithAssets(pack, assets, replaceAssets); },
+  async saveImportedPack(pack) { await transaction('packs', 'readwrite', (store) => store.put(pack)); },
+  async saveImportedPackWithAssets(pack, assets, strategy) { await savePackWithAssets(pack, assets, strategy); },
   async getImportedPacks() { return getAll<LoopDeckPack>('packs'); },
   async getImportedPackAssets() { return getAll<StoredPackAsset>('packAssets'); },
   async getPackAsset(packId, path) {
@@ -195,7 +183,7 @@ export const db: LoopDeckDb = {
     for (const questionId of backup.bookmarks) await this.setBookmark(questionId, true);
     for (const pack of backup.importedPacks) {
       const assets = (backup.importedPackAssets ?? []).filter((asset) => asset.packId === pack.packId);
-      await this.saveImportedPackWithAssets(pack, assets, Boolean(backup.importedPackAssets));
+      await this.saveImportedPackWithAssets(pack, assets, 'replace');
     }
     for (const card of backup.reviewCards ?? []) await this.putReviewCard(card);
     for (const log of backup.reviewLogs ?? []) await this.putReviewLog(log);
