@@ -1,67 +1,19 @@
 import type { LoopDeckPack } from '../core/models';
+import { analyzeImportConflicts, sharedModuleIds } from '../packs/importConflictAnalysis';
 import { mergeLoopDeckPacks, mergeLoopDeckPacksIntoExisting, type MergePackReport } from '../packs/packMerger';
 import packAuthoringPrompt from '../packs/packAuthoringPrompt.txt?raw';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
-import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
-import { db, type LoopDeckBackup } from '../storage/db';
+import { saveBlob } from '../platform/fileSave';
+import { readImportFile } from '../services/importFileService';
+import { db } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
-
-declare global {
-  interface Window {
-    LoopDeckAndroid?: {
-      saveFile(filename: string, mimeType: string, base64Data: string): void;
-      beginSaveFile?(saveId: string, filename: string, mimeType: string, expectedBytes: number, expectedChunks: number): boolean;
-      appendSaveFileChunk?(saveId: string, chunkIndex: number, base64Chunk: string): boolean;
-      finishSaveFile?(saveId: string): boolean;
-      canUseNativeSave?(): boolean;
-      showToast?(message: string): void;
-    };
-  }
-}
-
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      const comma = result.indexOf(',');
-      resolve(comma >= 0 ? result.slice(comma + 1) : result);
-    };
-    reader.onerror = () => reject(reader.error ?? new Error('Failed to read export file.'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-async function downloadBlob(blob: Blob, filename: string): Promise<void> {
-  if (window.LoopDeckAndroid?.saveFile) {
-    window.LoopDeckAndroid.saveFile(filename, blob.type || 'application/octet-stream', await blobToBase64(blob));
-    toast('保存先を選んでください。');
-    return;
-  }
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.style.display = 'none';
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function isBackupPayload(value: unknown): value is LoopDeckBackup {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
-  const record = value as Record<string, unknown>;
-  return record.loopDeckBackupVersion === 1 && Array.isArray(record.attempts) && Array.isArray(record.bookmarks) && Array.isArray(record.importedPacks);
-}
 
 async function exportPackJson(pack: LoopDeckPack): Promise<void> {
   try {
     const blob = new Blob([stringifyLoopDeckJson(pack)], { type: 'application/json' });
-    await downloadBlob(blob, `${makePackFileStem(pack)}.loopdeck.json`);
+    await saveBlob(blob, `${makePackFileStem(pack)}.loopdeck.json`);
     toast('JSONを書き出しました。');
   } catch (error) {
     toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
@@ -71,7 +23,7 @@ async function exportPackJson(pack: LoopDeckPack): Promise<void> {
 async function exportPackZip(pack: LoopDeckPack): Promise<void> {
   try {
     const blob = await createLoopDeckZipBlob(pack);
-    await downloadBlob(blob, `${makePackFileStem(pack)}.loopdeck.zip`);
+    await saveBlob(blob, `${makePackFileStem(pack)}.loopdeck.zip`);
     toast('ZIPを書き出しました。');
   } catch (error) {
     toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
@@ -81,13 +33,13 @@ async function exportPackZip(pack: LoopDeckPack): Promise<void> {
 async function exportBackup(): Promise<void> {
   const backup = await db.exportUserData();
   const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-  await downloadBlob(blob, `loopdeck-backup-${backup.exportedAt.slice(0, 10)}.json`);
+  await saveBlob(blob, `loopdeck-backup-${backup.exportedAt.slice(0, 10)}.json`);
   toast('バックアップを書き出しました。');
 }
 
 async function exportPackAuthoringPrompt(): Promise<void> {
   const blob = new Blob([packAuthoringPrompt], { type: 'text/plain;charset=utf-8' });
-  await downloadBlob(blob, 'loopdeck-pack-authoring-prompt.txt');
+  await saveBlob(blob, 'loopdeck-pack-authoring-prompt.txt');
   toast('AI用のPack作成プロンプトを書き出しました。');
 }
 
@@ -96,10 +48,6 @@ function infoList(items: string[]): HTMLUListElement {
   list.className = 'info-list';
   for (const text of items) list.append(el('li', '', text));
   return list;
-}
-
-function unique(values: string[]): string[] {
-  return [...new Set(values.filter((value) => value.trim()))];
 }
 
 function summarizeIds(ids: string[]): string {
@@ -125,16 +73,6 @@ function appendMergeReport(container: HTMLElement, report: MergePackReport): voi
   container.append(reportBox);
 }
 
-function sharedModuleIds(left: LoopDeckPack, right: LoopDeckPack): string[] {
-  const leftIds = new Set(left.modules.map((module) => module.id));
-  return unique(right.modules.map((module) => module.id).filter((moduleId) => leftIds.has(moduleId)));
-}
-
-function findModuleMergeTarget(pack: LoopDeckPack, activePacks: LoopDeckPack[]): LoopDeckPack | undefined {
-  const incomingModuleIds = new Set(pack.modules.map((module) => module.id));
-  return activePacks.find((activePack) => activePack.modules.some((module) => incomingModuleIds.has(module.id)));
-}
-
 export async function renderImportScreen(
   root: HTMLElement,
   packView: ResolvedPackView,
@@ -144,9 +82,8 @@ export async function renderImportScreen(
   const importedPacks = await db.getImportedPacks();
   const activePacks = getActivePacks(packView);
   const importedIds = new Set(importedPacks.map((pack) => pack.packId));
-  const activePackIds = new Set(activePacks.map((pack) => pack.packId));
-  const activeModuleIds = new Set(getActiveModules(packView).map((module) => module.id));
-  const activeQuestionIds = new Set(getActiveQuestions(packView).map((question) => question.id));
+  const activeModules = getActiveModules(packView);
+  const activeQuestions = getActiveQuestions(packView);
 
   clear(root);
   const screen = el('main', 'screen import-screen');
@@ -204,25 +141,14 @@ export async function renderImportScreen(
     selectedFile.textContent = `選択中のファイル: ${file.name}`;
     setImporting(true);
     try {
-      const result = file.name.endsWith('.zip') || file.name.endsWith('.loopdeck.zip')
-        ? await importLoopDeckZip(file)
-        : await (async () => {
-            const text = await file.text();
-            let parsed: unknown;
-            try {
-              parsed = JSON.parse(text);
-            } catch {
-              parsed = undefined;
-            }
-            if (isBackupPayload(parsed)) {
-              await db.importUserData(parsed);
-              toast('バックアップを復元しました。');
-              await onImported();
-              return undefined;
-            }
-            return importLoopDeckJson(new File([text], file.name, { type: file.type || 'application/json' }));
-          })();
-      if (!result) return;
+      const imported = await readImportFile(file);
+      if (imported.kind === 'backup') {
+        await db.importUserData(imported.backup);
+        toast('バックアップを復元しました。');
+        await onImported();
+        return;
+      }
+      const result = imported.result;
 
       clear(preview);
       preview.append(el('h2', '', '読み込み結果'));
@@ -237,12 +163,14 @@ export async function renderImportScreen(
 
       if (result.ok && result.pack) {
         const pack = result.pack;
-        const existingImportedPack = importedPacks.find((importedPack) => importedPack.packId === pack.packId);
-        const moduleMergeTarget = existingImportedPack ? undefined : findModuleMergeTarget(pack, activePacks);
-        const duplicateImportedPackId = Boolean(existingImportedPack);
-        const duplicateActivePackId = activePackIds.has(pack.packId);
-        const duplicateModuleIds = unique(pack.modules.map((module) => module.id).filter((moduleId) => activeModuleIds.has(moduleId)));
-        const duplicateQuestionIds = unique(pack.questions.map((question) => question.id).filter((questionId) => activeQuestionIds.has(questionId)));
+        const {
+          existingImportedPack,
+          moduleMergeTarget,
+          duplicateImportedPackId,
+          duplicateActivePackId,
+          duplicateModuleIds,
+          duplicateQuestionIds
+        } = analyzeImportConflicts(pack, importedPacks, activePacks, activeModules, activeQuestions);
         const summary = el('p', 'import-summary', `${pack.title} / ${pack.modules.length}教材 / ${pack.questions.length}問`);
         preview.append(summary);
 

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { waitForNativeSave } from '../src/screens/pdfWorksheetScreen';
+import { waitForNativeSave } from '../src/platform/fileSave';
 
 afterEach(() => {
   vi.useRealTimers();
