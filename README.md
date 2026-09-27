@@ -288,11 +288,13 @@ images/
 
 推奨フィールド:
 
-- `folderId`: `manifest.json` の folder ID と一致させることを推奨します
+- `folderId`: 指定する場合は `manifest.json` の実在する folder ID と一致させます
 - `title`
 - `subject`
 - `description`
 - `tags`
+
+任意の表示色メタデータとして `color` / `accent` / `accentColor` も使用できます。指定する場合は `#2563EB` のような **6桁HEX色**だけを使用します。`url(...)`、CSS関数、色名などは import 時に拒否されます。`title` / `subject` / `folderId` を省略した module は安全な既定値へ正規化されます。
 
 #### `questions.json`
 
@@ -389,6 +391,19 @@ multi_select
 - `correctChoices`: 1つ以上の正解選択肢
 
 選択した集合が `correctChoices` と完全に一致した場合だけ正解になります。順序は関係ありませんが、選択漏れや余分な選択があると不正解になります。
+
+### Import の安全上限
+
+不正・破損・極端に大きい入力でブラウザのメモリを使い切らないよう、import には次の上限があります。
+
+- JSON / ZIP / backup ファイル全体: 32 MiB
+- ZIP entry 数: 256
+- ZIP 展開後合計: 64 MiB
+- ZIP の単一 entry: 12 MiB
+- `manifest.json` / `modules.json` / `questions.json`: 各 8 MiB
+- 画像 asset: 1ファイル 8 MiB
+
+また、folder / module / question の参照関係、optional field の型、表示色なども保存前に検証されます。
 
 ### 画像ファイル
 

@@ -12,7 +12,7 @@ describe('pack authoring prompt', () => {
 
   it('ships a non-empty current authoring contract', () => {
     expect(packAuthoringPrompt.length).toBeGreaterThan(4000);
-    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-24');
+    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-27');
     expect(packAuthoringPrompt).toContain('Target LoopDeck packVersion: 1');
     expect(packAuthoringPrompt).toContain('multi_select');
     expect(packAuthoringPrompt).toContain('answerJudging');
@@ -20,6 +20,8 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('supportedStudyModes');
     expect(packAuthoringPrompt).toContain('choiceCandidates');
     expect(packAuthoringPrompt).toContain('manifest.json');
+    expect(packAuthoringPrompt).toContain('whole JSON/ZIP/backup file: at most 32 MiB');
+    expect(packAuthoringPrompt).toContain('ZIP entry count: at most 256 entries');
   });
 
   it('downloads a non-empty UTF-8 text prompt from the import screen action', async () => {

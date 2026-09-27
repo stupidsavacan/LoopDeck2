@@ -1,6 +1,7 @@
 import type { Attempt, LoopDeckPack, ReviewCard, ReviewLog } from '../core/models';
 import { takeStagedPackAssets } from '../packs/importedAssetStaging';
 import type { ImportedPackAsset } from '../packs/packTypes';
+import { validateBackupPayload } from './backupValidator';
 
 const DB_NAME = 'loopdeck-db';
 const DB_VERSION = 3;
@@ -40,7 +41,7 @@ export interface LoopDeckDb {
   getReviewLogsForQuestion(questionId: string): Promise<ReviewLog[]>;
   clearReviewData(): Promise<void>;
   exportUserData(): Promise<LoopDeckBackup>;
-  importUserData(backup: LoopDeckBackup): Promise<void>;
+  importUserData(backup: unknown): Promise<void>;
 }
 
 export function packAssetId(packId: string, path: string): string { return `${packId}:${path}`; }
@@ -142,14 +143,6 @@ async function deletePackAndAssets(packId: string): Promise<void> {
   });
 }
 
-function validateBackup(backup: LoopDeckBackup): void {
-  if (backup.loopDeckBackupVersion !== 1) throw new Error('Unsupported LoopDeck backup version.');
-  if (!Array.isArray(backup.attempts) || !Array.isArray(backup.bookmarks) || !Array.isArray(backup.importedPacks)) throw new Error('LoopDeck backup is missing required arrays.');
-  if (backup.importedPackAssets !== undefined && !Array.isArray(backup.importedPackAssets)) throw new Error('LoopDeck backup importedPackAssets must be an array when present.');
-  if (backup.reviewCards !== undefined && !Array.isArray(backup.reviewCards)) throw new Error('LoopDeck backup reviewCards must be an array when present.');
-  if (backup.reviewLogs !== undefined && !Array.isArray(backup.reviewLogs)) throw new Error('LoopDeck backup reviewLogs must be an array when present.');
-}
-
 export const db: LoopDeckDb = {
   async addAttempt(attempt) { await transaction('attempts', 'readwrite', (store) => store.put(attempt)); },
   async getAttempts() { return getAll<Attempt>('attempts'); },
@@ -189,8 +182,8 @@ export const db: LoopDeckDb = {
       importedPacks: await this.getImportedPacks(), importedPackAssets: await this.getImportedPackAssets(), reviewCards: await this.getReviewCards(), reviewLogs: await this.getReviewLogs()
     };
   },
-  async importUserData(backup) {
-    validateBackup(backup);
+  async importUserData(rawBackup) {
+    const backup = validateBackupPayload(rawBackup);
     for (const attempt of backup.attempts) await this.addAttempt(attempt);
     for (const questionId of backup.bookmarks) await this.setBookmark(questionId, true);
     for (const pack of backup.importedPacks) {
