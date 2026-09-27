@@ -1,9 +1,81 @@
-import type { LoopDeckPack, Question } from '../core/models';
+import type { LoopDeckPack, ModuleInfo, Question } from '../core/models';
 import { extensionOf, isSafePackPath } from './assetSafety';
 import { FORBIDDEN_EXTENSIONS, type PackValidationIssue, type PackValidationResult } from './packTypes';
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === 'string');
+
+function normalizedOptionalString(
+  value: unknown,
+  fallback: string | undefined,
+  issues: PackValidationIssue[],
+  label: string
+): string | undefined {
+  if (value === undefined) return fallback;
+  if (typeof value !== 'string') {
+    issues.push({ level: 'warning', message: `${label} must be a string when present; using a safe default.` });
+    return fallback;
+  }
+  const trimmed = value.trim();
+  return trimmed || fallback;
+}
+
+function normalizedOptionalStringArray(
+  value: unknown,
+  issues: PackValidationIssue[],
+  label: string
+): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) {
+    issues.push({ level: 'warning', message: `${label} must be an array of strings when present; ignoring it.` });
+    return undefined;
+  }
+
+  const strings = value.filter((item): item is string => typeof item === 'string');
+  if (strings.length !== value.length) {
+    issues.push({ level: 'warning', message: `${label} contained non-string values; they were ignored.` });
+  }
+  return strings;
+}
+
+function normalizeModule(module: unknown, ids: Set<string>, issues: PackValidationIssue[]): ModuleInfo | undefined {
+  if (!isObject(module)) {
+    issues.push({ level: 'error', message: 'Module must be an object.' });
+    return undefined;
+  }
+
+  const id = module.id;
+  if (typeof id !== 'string' || !id.trim()) issues.push({ level: 'error', message: 'Module id is required.' });
+  if (typeof id === 'string' && ids.has(id)) issues.push({ level: 'error', message: `Duplicate module id: ${id}` });
+  if (typeof id === 'string') ids.add(id);
+  if (!isStringArray(module.questionIds)) issues.push({ level: 'error', message: `Module ${String(id)} needs questionIds.` });
+
+  if (typeof id !== 'string' || !id.trim() || !isStringArray(module.questionIds)) return undefined;
+
+  const safeId = id.trim();
+  const folderId = normalizedOptionalString(module.folderId, '', issues, `Module ${id} folderId`) ?? '';
+  const title = normalizedOptionalString(module.title, safeId, issues, `Module ${id} title`) ?? safeId;
+  const subject = normalizedOptionalString(module.subject, 'その他', issues, `Module ${id} subject`) ?? 'その他';
+  const description = normalizedOptionalString(module.description, undefined, issues, `Module ${id} description`);
+  const tags = normalizedOptionalStringArray(module.tags, issues, `Module ${id} tags`);
+  const color = normalizedOptionalString(module.color, undefined, issues, `Module ${id} color`);
+  const accent = normalizedOptionalString(module.accent, undefined, issues, `Module ${id} accent`);
+  const accentColor = normalizedOptionalString(module.accentColor, undefined, issues, `Module ${id} accentColor`);
+
+  return {
+    ...module,
+    id,
+    folderId,
+    title,
+    subject,
+    description,
+    tags,
+    color,
+    accent,
+    accentColor,
+    questionIds: module.questionIds
+  } as ModuleInfo;
+}
 
 export function validatePackFiles(paths: string[]): PackValidationIssue[] {
   const issues: PackValidationIssue[] = [];
@@ -68,22 +140,30 @@ export function validatePack(rawPack: unknown): PackValidationResult {
     for (const question of rawPack.questions) issues.push(...validateQuestion(question, questionIds));
   }
 
+  const modules: ModuleInfo[] = [];
   if (Array.isArray(rawPack.modules)) {
     const moduleIds = new Set<string>();
     for (const module of rawPack.modules) {
-      if (!isObject(module)) {
-        issues.push({ level: 'error', message: 'Module must be an object.' });
-        continue;
-      }
-      if (typeof module.id !== 'string' || !module.id.trim()) issues.push({ level: 'error', message: 'Module id is required.' });
-      if (typeof module.id === 'string' && moduleIds.has(module.id)) issues.push({ level: 'error', message: `Duplicate module id: ${module.id}` });
-      if (typeof module.id === 'string') moduleIds.add(module.id);
-      if (!isStringArray(module.questionIds)) issues.push({ level: 'error', message: `Module ${String(module.id)} needs questionIds.` });
+      const normalized = normalizeModule(module, moduleIds, issues);
+      if (normalized) modules.push(normalized);
     }
   }
 
   const ok = !issues.some((issue) => issue.level === 'error');
-  return { ok, issues, pack: ok ? (rawPack as unknown as LoopDeckPack) : undefined };
+  if (!ok) return { ok: false, issues };
+
+  const pack: LoopDeckPack = {
+    ...rawPack,
+    packVersion: 1,
+    packId: rawPack.packId as string,
+    title: rawPack.title as string,
+    description: normalizedOptionalString(rawPack.description, undefined, issues, 'Pack description'),
+    folders: rawPack.folders as LoopDeckPack['folders'],
+    modules,
+    questions: rawPack.questions as Question[]
+  } as LoopDeckPack;
+
+  return { ok: true, issues, pack };
 }
 
 export function collectAllQuestions(packs: LoopDeckPack[]): Question[] {
