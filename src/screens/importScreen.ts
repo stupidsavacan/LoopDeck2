@@ -4,6 +4,7 @@ import packAuthoringPrompt from '../packs/packAuthoringPrompt.txt?raw';
 import { getActiveModules, getActivePacks, getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '../packs/zipExporter';
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
+import { validateActivePackIdentities } from '../packs/packValidator';
 import { db, type LoopDeckBackup } from '../storage/db';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
@@ -237,6 +238,8 @@ export async function renderImportScreen(
 
       if (result.ok && result.pack) {
         const pack = result.pack;
+        const assets = result.assets ?? [];
+        const directIdentityIssues = validateActivePackIdentities([...activePacks, pack]).filter((issue) => issue.level === 'error');
         const existingImportedPack = importedPacks.find((importedPack) => importedPack.packId === pack.packId);
         const moduleMergeTarget = existingImportedPack ? undefined : findModuleMergeTarget(pack, activePacks);
         const duplicateImportedPackId = Boolean(existingImportedPack);
@@ -268,9 +271,20 @@ export async function renderImportScreen(
           }
         }
 
+        if (directIdentityIssues.length) {
+          preview.append(el('p', 'issue error', `別パックとしては取り込めません: ${directIdentityIssues.map((issue) => issue.message).join(' / ')}`));
+        }
+
         const install = button(duplicateImportedPackId ? '上書き更新する' : duplicateModuleIds.length ? '別パックとして取り込む（上書き注意）' : 'この教材を取り込む', duplicateModuleIds.length ? 'btn ghost danger' : 'btn primary');
+        install.disabled = directIdentityIssues.length > 0;
         install.onclick = async () => {
-          await db.saveImportedPack(pack);
+          const latestActive = getActivePacks(packView);
+          const identityIssues = validateActivePackIdentities([...latestActive, pack]).filter((issue) => issue.level === 'error');
+          if (identityIssues.length) {
+            toast('問題IDが別パックと衝突しているため取り込めません。マージ更新を使ってください。');
+            return;
+          }
+          await db.saveImportedPackWithAssets(pack, assets, 'replace');
           toast(duplicateImportedPackId ? '教材を上書き更新しました。' : '教材を取り込みました。');
           await onImported();
         };
@@ -281,14 +295,19 @@ export async function renderImportScreen(
           mergeInstall.onclick = async () => {
             const currentExistingPack = (await db.getImportedPacks()).find((importedPack) => importedPack.packId === pack.packId);
             if (!currentExistingPack) {
-              await db.saveImportedPack(pack);
+              await db.saveImportedPackWithAssets(pack, assets, 'replace');
               toast('同じIDのインポート済み教材が見つからなかったため、新規取り込みしました。');
               await onImported();
               return;
             }
 
             const { pack: mergedPack, report } = mergeLoopDeckPacks(currentExistingPack, pack);
-            await db.saveImportedPack(mergedPack);
+            const identityIssues = validateActivePackIdentities([...activePacks, mergedPack]).filter((issue) => issue.level === 'error');
+            if (identityIssues.length) {
+              toast('マージ結果の問題IDが別パックと衝突するため保存できません。');
+              return;
+            }
+            await db.saveImportedPackWithAssets(mergedPack, assets, 'upsert');
             toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
             await onImported();
           };
@@ -301,7 +320,12 @@ export async function renderImportScreen(
             const currentImportedPacks = await db.getImportedPacks();
             const currentTarget = currentImportedPacks.find((importedPack) => importedPack.packId === moduleMergeTarget.packId) ?? moduleMergeTarget;
             const { pack: mergedPack, report } = mergeLoopDeckPacksIntoExisting(currentTarget, pack);
-            await db.saveImportedPack(mergedPack);
+            const identityIssues = validateActivePackIdentities([...activePacks, mergedPack]).filter((issue) => issue.level === 'error');
+            if (identityIssues.length) {
+              toast('マージ結果の問題IDが別パックと衝突するため保存できません。');
+              return;
+            }
+            await db.saveImportedPackWithAssets(mergedPack, assets, 'upsert');
             toast(`教材をマージ更新しました。追加${report.addedQuestions + report.renamedQuestions}問 / ID変更${report.renamedQuestions}問。`);
             await onImported();
           };
