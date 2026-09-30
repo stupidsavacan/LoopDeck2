@@ -2,6 +2,7 @@
 import 'fake-indexeddb/auto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import packAuthoringPrompt from '../src/packs/packAuthoringPrompt.txt?raw';
+import englishVocabularyRules from '../docs/english-vocabulary-pack-rules.md?raw';
 import { ALLOWED_IMAGE_EXTENSIONS, FORBIDDEN_EXTENSIONS } from '../src/packs/packTypes';
 import { resolveActivePacks } from '../src/packs/packResolver';
 import { renderImportScreen } from '../src/screens/importScreen';
@@ -13,7 +14,7 @@ describe('pack authoring prompt', () => {
 
   it('ships the current Sol-oriented authoring contract with semantic drift guards', () => {
     expect(packAuthoringPrompt.length).toBeGreaterThan(8000);
-    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-09-27');
+    expect(packAuthoringPrompt).toContain('Authoring contract revision: 2026-10-01');
     expect(packAuthoringPrompt).toContain('Target LoopDeck packVersion: 1');
     expect(packAuthoringPrompt).toContain('Prompt target: modern reasoning models including GPT-5.6 Sol');
 
@@ -52,6 +53,19 @@ describe('pack authoring prompt', () => {
     expect(packAuthoringPrompt).toContain('Do not set canonical vocabulary items to `direction: "en_to_ja"`');
     expect(packAuthoringPrompt).toContain('Do not convert canonical vocabulary data into a `sides`-only representation.');
     expect(packAuthoringPrompt).toContain('worksheet/PDF planner reads `answer` plus `acceptableAnswers`');
+    expect(packAuthoringPrompt).toContain('`sides` is additive study metadata');
+    expect(packAuthoringPrompt).toContain('same-language vocabulary');
+    expect(packAuthoringPrompt).toContain('old-Japanese word <-> meaning');
+    expect(packAuthoringPrompt).toContain('Do not use `explanation` merely to restate');
+    expect(packAuthoringPrompt).toContain('Do not put an example sentence in `explanation`; use `example`');
+
+    expect(englishVocabularyRules).toContain('Optional two-sided study metadata');
+    expect(englishVocabularyRules).toContain(
+      'must not replace or change canonical `prompt`, `answer`, `acceptableAnswers`, `number`, or `direction` fields'
+    );
+    expect(englishVocabularyRules).toContain('same-language vocabulary');
+    expect(englishVocabularyRules).toContain('`example` stores an example sentence or usage example');
+    expect(englishVocabularyRules).toContain('`explanation` stores additional post-answer learning information');
 
     // Source is primary, but uncertain source facts may be externally verified without silent replacement.
     expect(packAuthoringPrompt).toContain(

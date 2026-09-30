@@ -13,6 +13,17 @@ interface AutoLanguageStudyData {
   answerCandidates: string[];
 }
 
+export interface StudyPairSide {
+  label: string;
+  text: string;
+  acceptableAnswers?: string[];
+}
+
+export interface StudyPair {
+  front: StudyPairSide;
+  back: StudyPairSide;
+}
+
 function nonEmpty(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
@@ -22,7 +33,10 @@ function cloneAsStored<T extends Question>(question: T): T {
 }
 
 function normalizeTextForLang(value: unknown): string {
-  return String(value ?? '').normalize('NFKC').replace(/<[^>]*>/g, '').trim();
+  return String(value ?? '')
+    .normalize('NFKC')
+    .replace(/<[^>]*>/g, '')
+    .trim();
 }
 
 function hasHtml(value: unknown): boolean {
@@ -71,11 +85,7 @@ function uniqueStrings(values: unknown[]): string[] {
 }
 
 function answerCandidates(question: InputQuestion): string[] {
-  return uniqueStrings([
-    question.answer,
-    ...(question.acceptableAnswers ?? []),
-    ...(question.acceptedAnswers ?? [])
-  ]);
+  return uniqueStrings([question.answer, ...(question.acceptableAnswers ?? []), ...(question.acceptedAnswers ?? [])]);
 }
 
 function autoLanguageStudyData(question: Question): AutoLanguageStudyData | undefined {
@@ -110,6 +120,60 @@ function autoLanguageStudyData(question: Question): AutoLanguageStudyData | unde
 
 export function canAutoReverseQuestion(question: Question): boolean {
   return Boolean(autoLanguageStudyData(question));
+}
+
+function sideWithAliases(label: string, text: string, aliases: string[]): StudyPairSide {
+  const normalizedText = normalizeTextForLang(text).toLocaleLowerCase();
+  const acceptableAnswers = uniqueStrings(aliases).filter((value) => value.toLocaleLowerCase() !== normalizedText);
+  return {
+    label,
+    text: normalizeTextForLang(text),
+    ...(acceptableAnswers.length ? { acceptableAnswers } : {})
+  };
+}
+
+export function getQuestionStudyPair(question: Question): StudyPair | undefined {
+  if (hasTwoSidedStudyData(question) && question.sides) {
+    return {
+      front: sideWithAliases(question.sides.front.label, question.sides.front.text, question.sides.front.acceptableAnswers ?? []),
+      back: sideWithAliases(question.sides.back.label, question.sides.back.text, question.sides.back.acceptableAnswers ?? [])
+    };
+  }
+
+  if (question.type === 'input') {
+    const auto = autoLanguageStudyData(question);
+    if (auto?.answerCandidates.length) {
+      const primary = auto.answerCandidates[0];
+      const aliases = auto.answerCandidates.slice(1);
+      if (auto.storedMode === 'front_to_back') {
+        return {
+          front: sideWithAliases('\u82f1\u8a9e', auto.prompt, []),
+          back: sideWithAliases('\u65e5\u672c\u8a9e', primary, aliases)
+        };
+      }
+      return {
+        front: sideWithAliases('\u82f1\u8a9e', primary, aliases),
+        back: sideWithAliases('\u65e5\u672c\u8a9e', auto.prompt, [])
+      };
+    }
+  }
+
+  if (question.type === 'input' || question.type === 'choice') {
+    const aliases = uniqueStrings([...(question.acceptableAnswers ?? []), ...(question.acceptedAnswers ?? [])]);
+    return {
+      front: sideWithAliases('\u554f\u984c', question.prompt, []),
+      back: sideWithAliases('\u7b54\u3048', question.answer, aliases)
+    };
+  }
+
+  if (question.type === 'multi_select' && question.correctChoices.length) {
+    return {
+      front: sideWithAliases('\u554f\u984c', question.prompt, []),
+      back: sideWithAliases('\u7b54\u3048', question.correctChoices.join(' / '), [])
+    };
+  }
+
+  return undefined;
 }
 
 function directionLabel(mode: 'front_to_back' | 'back_to_front'): string {
@@ -152,11 +216,7 @@ function presentAutoLanguageQuestion(question: InputQuestion, mode: 'front_to_ba
 }
 
 export function hasTwoSidedStudyData(question: Question): boolean {
-  return Boolean(
-    question.sides &&
-      nonEmpty(question.sides.front?.text) &&
-      nonEmpty(question.sides.back?.text)
-  );
+  return Boolean(question.sides && nonEmpty(question.sides.front?.text) && nonEmpty(question.sides.back?.text));
 }
 
 export function getSupportedStudyQuestionModes(question: Question): ConcreteStudyQuestionMode[] {

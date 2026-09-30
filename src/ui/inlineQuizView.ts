@@ -15,32 +15,69 @@ function answerToText(answer: string | string[]): string {
 }
 
 function wrongAnswerLabel(source: WrongAnswerExplanation['source']): string {
-  return source === 'choice' ? '選んだ答えの解説' : '入力した答えの解説';
+  return source === 'choice'
+    ? '\u9078\u3093\u3060\u7b54\u3048\u306b\u3064\u3044\u3066'
+    : '\u5165\u529b\u3057\u305f\u7b54\u3048\u306b\u3064\u3044\u3066';
 }
 
 function wrongAnswerFallback(source: WrongAnswerExplanation['source']): string {
-  return source === 'choice' ? 'この選択肢は、この問題の答えではありません。' : '入力した答えは、この問題の答えではありません。';
+  return source === 'choice'
+    ? '\u3053\u306e\u9078\u629e\u80a2\u306f\u3001\u3053\u306e\u554f\u984c\u306e\u7b54\u3048\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002'
+    : '\u5165\u529b\u3057\u305f\u7b54\u3048\u306f\u3001\u3053\u306e\u554f\u984c\u306e\u7b54\u3048\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002';
 }
 
 function appendExplanation(container: HTMLElement, className: string, label: string, text: string): void {
   const node = el('p', `explanation ${className}`);
-  node.append(el('strong', '', `${label}：`), document.createTextNode(text));
+  node.append(el('strong', '', `${label}\uff1a`), document.createTextNode(text));
   container.append(node);
+}
+
+function pairText(explanation: WrongAnswerExplanation): string | undefined {
+  if (!explanation.pair) return undefined;
+  const { front, back } = explanation.pair;
+  const alias =
+    explanation.matchRole === 'acceptable_answer' ||
+    explanation.matchRole === 'accepted_answer' ||
+    explanation.matchRole === 'front_alias' ||
+    explanation.matchRole === 'back_alias';
+  const multipleRoles = explanation.matchKind === 'lookup' && (explanation.alternatives?.length ?? 0) > 1;
+  const aliasNote = alias
+    ? ` / \u300c${explanation.value}\u300d\u306f\u767b\u9332\u6e08\u307f\u306e\u5225\u89e3\u30fb\u8868\u73fe\u306e1\u3064\u3067\u3059\u3002`
+    : '';
+  const roleNote = multipleRoles
+    ? ` / \u300c${explanation.value}\u300d\u306f\u540c\u3058\u554f\u984c\u5185\u306e\u8907\u6570\u306e\u767b\u9332\u6b04\u306b\u4e00\u81f4\u3057\u307e\u3059\u3002`
+    : '';
+  return `${front.label}: ${front.text} / ${back.label}: ${back.text}${aliasNote}${roleNote}`;
 }
 
 function appendWrongAnswerExplanation(container: HTMLElement, explanation: WrongAnswerExplanation | undefined): void {
   if (!explanation) return;
   const label = wrongAnswerLabel(explanation.source);
-  if (!explanation.found) {
+  if (explanation.matchKind === 'not_found' || !explanation.found) {
     appendExplanation(container, 'wrong-answer-explanation', label, wrongAnswerFallback(explanation.source));
     return;
   }
 
+  if (explanation.matchKind === 'ambiguous') {
+    const alternatives = explanation.alternatives ?? [];
+    const summaries = alternatives.map((alternative) => {
+      if (!alternative.pair) return alternative.matchedAnswer;
+      return `${alternative.pair.front.label}: ${alternative.pair.front.text} / ${alternative.pair.back.label}: ${alternative.pair.back.text}`;
+    });
+    appendExplanation(
+      container,
+      'wrong-answer-explanation',
+      label,
+      `\u300c${explanation.value}\u300d\u306f\u8907\u6570\u306e\u554f\u984c\u30fb\u767b\u9332\u8868\u73fe\u306b\u4e00\u81f4\u3057\u307e\u3059\u3002 ${summaries.join(' / ')}`
+    );
+    return;
+  }
+
   const matched = explanation.matchedAnswer ?? explanation.value;
-  const text = explanation.explanation
-    ? `${matched}：${explanation.explanation}`
-    : `${matched} は別の問題の正解として登録されていますが、解説は未登録です。`;
-  appendExplanation(container, 'wrong-answer-explanation', label, text);
+  appendExplanation(container, 'wrong-answer-explanation', label, pairText(explanation) ?? matched);
+  if (explanation.explanation) {
+    appendExplanation(container, 'wrong-answer-supplement', '\u88dc\u8db3', explanation.explanation);
+  }
 }
 
 export function appendQuizResult(

@@ -11,7 +11,16 @@ function pack(packId: string, title: string, questionId: string): LoopDeckPack {
     title,
     folders: [{ id: 'f', title: 'Folder' }],
     modules: [{ id: 'shared-module', folderId: 'f', title, subject: 'English', questionIds: [questionId] }],
-    questions: [{ id: questionId, moduleId: 'shared-module', type: 'input', number: 1, prompt: '\u65e5\u672c\u8a9e\u306e\u610f\u5473', answer: 'english' }]
+    questions: [
+      {
+        id: questionId,
+        moduleId: 'shared-module',
+        type: 'input',
+        number: 1,
+        prompt: '\u65e5\u672c\u8a9e\u306e\u610f\u5473',
+        answer: 'english'
+      }
+    ]
   };
 }
 
@@ -27,5 +36,10 @@ describe('PDF worksheet module selection', () => {
     const labels = [...(moduleSelect?.options ?? [])].map((option) => option.textContent);
     expect(labels).toHaveLength(1);
     expect(labels[0]).toContain('Active module');
+    const checkboxLabels = [...root.querySelectorAll<HTMLLabelElement>('.check-label')].map((label) => label.textContent?.trim());
+    expect(checkboxLabels).toContain('問題順をシャッフル');
+    const checkboxes = [...root.querySelectorAll<HTMLInputElement>('.check-label input[type="checkbox"]')];
+    expect(checkboxes[0]?.checked).toBe(false);
+    expect(checkboxes[1]?.checked).toBe(true);
   });
 });

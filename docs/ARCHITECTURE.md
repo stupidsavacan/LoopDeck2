@@ -46,4 +46,11 @@ Debug APKs are uploaded as GitHub Actions artifacts. Signed release APKs and the
 
 ## Browser storage
 
-IndexedDB `loopdeck-db` stores attempts, bookmarks, imported packs/assets, review cards, and review logs. Study-session settings are persisted as part of stored session state where needed; there is no standalone `settings` object store. Database upgrades remove the obsolete legacy settings store.
+IndexedDB `loopdeck-db` stores attempts, bookmarks, imported packs/assets, review cards, and review logs. There is no standalone IndexedDB `settings` object store; database upgrades remove the obsolete legacy settings store.
+
+Two separate localStorage responsibilities must not be conflated:
+
+- `loopdeck_session_<moduleId>` stores in-progress session resume state, including the already-built queue, timing, attempts, and runtime session settings. Queue-generation settings such as range, count, and shuffle are intentionally normalized after the queue has been created.
+- `loopdeck_study_prefs_v1_<packId>:<moduleId>` stores the reusable per-pack/per-module study preferences chosen on the pre-study settings screen. These preferences survive session completion and are validated against the current module when restored.
+
+Reusable study preferences are intentionally separate from resume state so completing or discarding a session cannot erase the user's next-session defaults, and different packs with the same module ID do not share preferences.

@@ -1,6 +1,6 @@
 # LoopDeck Pack Authoring Contract
 
-Authoring contract revision: 2026-09-27
+Authoring contract revision: 2026-10-01
 Target LoopDeck packVersion: 1
 Prompt target: modern reasoning models including GPT-5.6 Sol
 
@@ -185,8 +185,8 @@ Use when the expected answer is one clear term or short phrase.
   "prompt": "Na+ の名称は？",
   "answer": "ナトリウムイオン",
   "acceptableAnswers": ["Naイオン"],
-  "example": "Optional example or hint shown by the quiz UI",
-  "explanation": "Optional concise explanation"
+  "example": "Optional usage example or example sentence",
+  "explanation": "Optional post-answer explanation with additional learning value"
 }
 ```
 
@@ -297,6 +297,47 @@ Input questions may explicitly define both study sides:
 
 Use this when both directions are pedagogically intended, except that section 3 remains authoritative for canonical English vocabulary storage.
 For simple compact Japanese/English vocabulary, LoopDeck can also infer reversible presentation automatically.
+
+Vocabulary-side metadata rules:
+- `sides` is additive study metadata. It must not replace compatibility-critical canonical `prompt`, `answer`, `acceptableAnswers`, `number`, or `direction` fields.
+- For new English/Japanese vocabulary, add `sides` and `supportedStudyModes` when explicit labels/directions improve study behavior, while keeping section 3's canonical fields unchanged.
+- For same-language vocabulary or other pairs whose roles cannot be reliably inferred from script alone, explicit labeled `sides` is strongly required when both directions are intended. Examples include old-Japanese word <-> meaning, kanji <-> reading, term <-> definition, and person <-> achievement.
+- Do not force ordinary long-form questions or generic one-question/one-answer material into two-sided cards merely because the schema permits it.
+
+Canonical English vocabulary with additive sides remains shaped like this:
+
+```json
+{
+  "id": "vocab-001",
+  "moduleId": "vocab",
+  "type": "input",
+  "number": 1,
+  "prompt": "pollen",
+  "answer": "花粉",
+  "acceptableAnswers": ["花粉"],
+  "direction": "normal",
+  "sides": {
+    "front": { "label": "英語", "text": "pollen" },
+    "back": { "label": "日本語", "text": "花粉", "acceptableAnswers": ["花粉"] }
+  },
+  "supportedStudyModes": ["front_to_back", "back_to_front"]
+}
+```
+
+For same-language vocabulary, labels carry semantic meaning and therefore must be explicit, for example:
+
+```json
+{
+  "type": "input",
+  "prompt": "あはれ",
+  "answer": "しみじみと趣深い",
+  "sides": {
+    "front": { "label": "古語", "text": "あはれ" },
+    "back": { "label": "意味", "text": "しみじみと趣深い" }
+  },
+  "supportedStudyModes": ["front_to_back", "back_to_front"]
+}
+```
 
 Input questions may use `direction`: `ja_to_en`, `en_to_ja`, or `normal`.
 `direction` is consumed by some worksheet/export planning and retained as metadata. Inline reversal comes from explicit `sides` + `supportedStudyModes` or the compact Japanese/English auto-reversal heuristic. Do not rely on `direction` alone for reliable two-direction study.
@@ -445,8 +486,10 @@ Folders may also carry `description` and `tags`. Built-in presentation metadata 
 Useful optional question metadata currently consumed by the study UI includes:
 - `category`: internal category/filter label governed by section 2;
 - `number`: numeric range/filter ordering metadata; preserve source numbering;
-- `explanation`: concise, source-grounded answer explanation;
-- `example`: optional example/hint text shown by the quiz UI.
+- `example`: an example sentence, usage example, or concrete example of the studied item;
+- `explanation`: post-answer additional learning information such as usage notes, reasoning, etymology, common confusions, grammar notes, or necessary background.
+
+Do not use `explanation` merely to restate the already-encoded `prompt` <-> `answer` relationship, for example `pollen means 花粉`. Do not put an example sentence in `explanation`; use `example` for that. An empty `explanation` is valid when the question/answer relationship is already self-explanatory.
 
 Do not author runtime-derived presentation state such as `activeStudyMode`, `autoReversed`, or `directionLabel`; LoopDeck sets those while presenting a question.
 Fields that merely exist in a TypeScript interface but are not wired into the current study UI are not automatically authoring features.

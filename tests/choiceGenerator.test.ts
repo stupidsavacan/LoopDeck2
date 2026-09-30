@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildChoiceCandidateIndex, buildGeneratedChoices } from '../src/core/choiceGenerator';
+import { buildChoiceCandidateIndex, buildGeneratedChoiceOptions, buildGeneratedChoices } from '../src/core/choiceGenerator';
 import type { InputQuestion } from '../src/core/models';
 
 const questions: InputQuestion[] = [
@@ -44,5 +44,16 @@ describe('generated four-choice answers', () => {
     expect(buildGeneratedChoices(questions[0], questions, 4, fixedRandom, index)).toEqual(
       buildGeneratedChoices(questions[0], questions, 4, fixedRandom)
     );
+  });
+
+  it('keeps the exact source question on generated distractors', () => {
+    const options = buildGeneratedChoiceOptions(questions[0], questions, 4, fixedRandom);
+    const job = options?.find((option) => option.text === '仕事');
+
+    expect(job).toMatchObject({
+      kind: 'generated_distractor',
+      origin: { questionId: 'leap_final-203', moduleId: 'leap_final', studyMode: 'as_stored' }
+    });
+    expect(options?.find((option) => option.text === '会社')).toMatchObject({ kind: 'correct' });
   });
 });

@@ -1,11 +1,11 @@
 import { writeDebugLog } from '../debug/debugLog';
 import { getCorrectAnswer, isNearMissAnswer, judgeQuestion } from '../core/answerJudge';
-import { buildGeneratedChoices } from '../core/choiceGenerator';
+import { buildGeneratedChoiceOptions, type GeneratedChoiceOption } from '../core/choiceGenerator';
 import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
 import { createIdleRevealController, type IdleRevealController } from '../core/idleRevealController';
 import { scoreAttemptDelta } from '../core/reviewEngine';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
-import { buildWrongAnswerExplanation } from '../core/wrongAnswerExplanation';
+import { buildWrongAnswerFeedback } from '../core/wrongAnswerExplanation';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { persistAttemptAndReview } from '../services/quizPersistence';
 import { db } from '../storage/db';
@@ -26,7 +26,11 @@ const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
 const AUTO_REVEAL_IDLE_MS = 10_000;
 const renderCleanupByContainer = new WeakMap<HTMLElement, () => void>();
 const renderTokenByContainer = new WeakMap<HTMLElement, symbol>();
-function effectiveAnswerMode(question: Question, requested: AnswerFormat = 'auto', generatedChoices?: string[]): AnswerFormat {
+function effectiveAnswerMode(
+  question: Question,
+  requested: AnswerFormat = 'auto',
+  generatedChoices?: readonly GeneratedChoiceOption[]
+): AnswerFormat {
   if (question.type === 'multi_select') return 'choice';
   if (requested === 'input') return 'input';
   if (question.type === 'choice') return 'choice';
@@ -98,7 +102,7 @@ export function renderInlineQuiz(
     (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
   const generatedChoices =
     question.type === 'input' && shouldGenerateChoices
-      ? buildGeneratedChoices(question, session.choicePool, 4, Math.random, session.choiceCandidateIndex)
+      ? buildGeneratedChoiceOptions(question, session.choicePool, 4, Math.random, session.choiceCandidateIndex)
       : undefined;
   const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices);
   const card = el('section', 'quiz-card');
@@ -239,7 +243,7 @@ export function renderInlineQuiz(
     }
   }
 
-  function record(answer: string | string[], revealed = false): void {
+  function record(answer: string | string[], revealed = false, generatedChoice?: GeneratedChoiceOption): void {
     if (answered) return;
     answered = true;
     cleanup();
@@ -263,12 +267,13 @@ export function renderInlineQuiz(
 
     const wrongExplanation =
       !revealed && result === 'wrong' && typeof answer === 'string'
-        ? buildWrongAnswerExplanation(
+        ? buildWrongAnswerFeedback(
             answerMode === 'input' ? 'input' : 'choice',
             answer,
             activeQuestion,
             session.choicePool.length ? session.choicePool : session.queue,
-            session.wrongAnswerLookupIndex
+            session.wrongAnswerLookupIndex,
+            generatedChoice?.origin
           )
         : undefined;
     appendQuizResult(resultArea, activeQuestion, result, elapsedMs, nearMiss, wrongExplanation);
@@ -326,13 +331,24 @@ export function renderInlineQuiz(
     window.setTimeout(() => input.focus(), 0);
   } else if (question.type === 'choice' || generatedChoices) {
     const list = el('div', 'choice-list');
-    for (const choice of question.type === 'choice' ? question.choices : (generatedChoices ?? [])) {
-      const choiceButton = button(choice, 'choice-btn');
-      choiceButton.onclick = () => {
-        selectedAnswer = choice;
-        record(choice);
-      };
-      list.append(choiceButton);
+    if (question.type === 'choice') {
+      for (const choice of question.choices) {
+        const choiceButton = button(choice, 'choice-btn');
+        choiceButton.onclick = () => {
+          selectedAnswer = choice;
+          record(choice);
+        };
+        list.append(choiceButton);
+      }
+    } else {
+      for (const choice of generatedChoices ?? []) {
+        const choiceButton = button(choice.text, 'choice-btn');
+        choiceButton.onclick = () => {
+          selectedAnswer = choice.text;
+          record(choice.text, false, choice);
+        };
+        list.append(choiceButton);
+      }
     }
     answerArea.append(list);
   } else if (question.type === 'multi_select') {

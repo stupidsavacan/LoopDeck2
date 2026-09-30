@@ -10,6 +10,19 @@ export interface IndexedChoiceCandidate {
   category?: string;
   answer: string;
   normalizedAnswer: string;
+  studyMode: ConcreteStudyQuestionMode;
+}
+
+export interface GeneratedChoiceOrigin {
+  questionId: string;
+  moduleId: string;
+  studyMode: ConcreteStudyQuestionMode;
+}
+
+export interface GeneratedChoiceOption {
+  text: string;
+  kind: 'correct' | 'generated_distractor' | 'manual_distractor';
+  origin?: GeneratedChoiceOrigin;
 }
 
 export type ChoiceCandidateIndex = ReadonlyMap<ConcreteStudyQuestionMode, readonly IndexedChoiceCandidate[]>;
@@ -90,7 +103,8 @@ export function buildChoiceCandidateIndex(pool: Question[]): ChoiceCandidateInde
         moduleId: candidate.moduleId,
         category: candidate.category,
         answer,
-        normalizedAnswer
+        normalizedAnswer,
+        studyMode: mode
       });
     }
   }
@@ -98,31 +112,35 @@ export function buildChoiceCandidateIndex(pool: Question[]): ChoiceCandidateInde
   return byMode;
 }
 
-export function buildGeneratedChoices(
+export function buildGeneratedChoiceOptions(
   question: InputQuestion,
   pool: Question[],
   optionCount = 4,
   random: RandomSource = Math.random,
   candidateIndex?: ChoiceCandidateIndex
-): string[] | undefined {
+): GeneratedChoiceOption[] | undefined {
   if (optionCount < 2) return undefined;
 
   const correct = question.answer.trim();
   if (!correct) return undefined;
+  const correctOption: GeneratedChoiceOption = { text: correct, kind: 'correct' };
 
   const manualChoices = getManualChoiceCandidates(question);
   if (manualChoices) {
     const correctKey = normalizeAnswer(correct);
     const distractors = manualChoices.filter((choice) => normalizeAnswer(choice) !== correctKey);
     if (distractors.length >= optionCount - 1) {
-      return shuffle([correct, ...shuffle(distractors, random).slice(0, optionCount - 1)], random);
+      const manualOptions = shuffle(distractors, random)
+        .slice(0, optionCount - 1)
+        .map((text): GeneratedChoiceOption => ({ text, kind: 'manual_distractor' }));
+      return shuffle([correctOption, ...manualOptions], random);
     }
   }
 
   const activeMode = question.activeStudyMode ?? 'as_stored';
   const accepted = new Set(getAcceptedAnswers(question).map(normalizeAnswer));
   const seen = new Set(accepted);
-  const distractors: string[] = [];
+  const distractors: GeneratedChoiceOption[] = [];
   const indexedCandidates = candidateIndex?.get(activeMode) ?? buildChoiceCandidateIndex(pool).get(activeMode) ?? [];
 
   for (const priority of [0, 1, 2]) {
@@ -135,10 +153,28 @@ export function buildGeneratedChoices(
     for (const candidate of shuffle([...candidates], random)) {
       if (seen.has(candidate.normalizedAnswer)) continue;
       seen.add(candidate.normalizedAnswer);
-      distractors.push(candidate.answer);
-      if (distractors.length === optionCount - 1) return shuffle([correct, ...distractors], random);
+      distractors.push({
+        text: candidate.answer,
+        kind: 'generated_distractor',
+        origin: {
+          questionId: candidate.questionId,
+          moduleId: candidate.moduleId,
+          studyMode: candidate.studyMode
+        }
+      });
+      if (distractors.length === optionCount - 1) return shuffle([correctOption, ...distractors], random);
     }
   }
 
   return undefined;
+}
+
+export function buildGeneratedChoices(
+  question: InputQuestion,
+  pool: Question[],
+  optionCount = 4,
+  random: RandomSource = Math.random,
+  candidateIndex?: ChoiceCandidateIndex
+): string[] | undefined {
+  return buildGeneratedChoiceOptions(question, pool, optionCount, random, candidateIndex)?.map((option) => option.text);
 }

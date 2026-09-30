@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Question } from '../src/core/models';
 import {
   buildWrongAnswerExplanation,
+  buildWrongAnswerFeedback,
   buildWrongAnswerLookupIndex,
   collectAnswerTexts,
   findQuestionByAnswer,
@@ -40,7 +41,7 @@ const otherModule: Question = {
   acceptableAnswers: ['\u5927\u897f\u6d0b']
 };
 
-describe('wrong answer explanation lookup', () => {
+describe('wrong answer feedback lookup', () => {
   it('normalizes punctuation, spaces, width, and case for exact lookup', () => {
     expect(normalizeWrongAnswerLookup(' A = B ')).toBe(normalizeWrongAnswerLookup('a b'));
     expect(normalizeWrongAnswerLookup('\u8449 \u7dd1\u4f53\uff01')).toBe(normalizeWrongAnswerLookup(chloroplast));
@@ -68,15 +69,99 @@ describe('wrong answer explanation lookup', () => {
 
     expect(hit?.question.id).toBe('q-other');
     expect(hit?.matchedAnswer).toBe(chloroplast);
+    expect(hit?.matchRole).toBe('primary_answer');
   });
 
-  it('finds acceptable and accepted answers from other questions', () => {
-    expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, [current, otherModule])?.matchedQuestionId).toBe(
-      'q-geography'
-    );
-    expect(buildWrongAnswerExplanation('input', '\u8449\u7dd1\u4f53', current, [current, otherSameModule])?.explanation).toContain(
-      '\u5149\u5408\u6210'
-    );
+  it('distinguishes an acceptable answer from the primary answer', () => {
+    const feedback = buildWrongAnswerFeedback('choice', '\u5927\u897f\u6d0b', current, [current, otherModule]);
+
+    expect(feedback).toMatchObject({
+      matchKind: 'lookup',
+      matchedQuestionId: 'q-geography',
+      matchRole: 'acceptable_answer'
+    });
+    expect(feedback?.pair).toMatchObject({
+      front: { text: '\u4e16\u754c\u6700\u5927\u306e\u6d77\u6d0b' },
+      back: { text: pacific }
+    });
+  });
+
+  it('retains multiple roles from one question without pretending they are different questions', () => {
+    const feedback = buildWrongAnswerFeedback('input', chloroplast, current, [current, otherSameModule]);
+
+    expect(feedback).toMatchObject({
+      matchKind: 'lookup',
+      matchedQuestionId: 'q-other',
+      matchRole: 'primary_answer'
+    });
+    expect(feedback?.alternatives?.map((item) => item.matchRole)).toEqual(['primary_answer', 'accepted_answer']);
+    expect(feedback?.explanation).toContain('\u5149\u5408\u6210');
+  });
+
+  it('uses an exact generated-choice origin instead of reverse-looking-up duplicate text', () => {
+    const first: Question = {
+      id: 'q-pollen-first',
+      moduleId: 'biology',
+      type: 'input',
+      prompt: 'pollen',
+      answer: '\u82b1\u7c89'
+    };
+    const second: Question = {
+      id: 'q-pollen-second',
+      moduleId: 'biology',
+      type: 'input',
+      prompt: 'airborne particles',
+      answer: '\u82b1\u7c89'
+    };
+    const feedback = buildWrongAnswerFeedback('choice', '\u82b1\u7c89', current, [current, first, second], undefined, {
+      questionId: second.id,
+      moduleId: second.moduleId,
+      studyMode: 'as_stored'
+    });
+
+    expect(feedback).toMatchObject({
+      matchKind: 'exact_origin',
+      matchedQuestionId: 'q-pollen-second',
+      matchRole: 'primary_answer'
+    });
+    expect(feedback?.pair?.front.text).toBe('airborne particles');
+  });
+
+  it('keeps fallback ambiguity when the same answer belongs to different questions', () => {
+    const duplicate: Question = {
+      id: 'q-duplicate',
+      moduleId: 'biology',
+      type: 'input',
+      prompt: '\u5225\u306e\u554f\u984c',
+      answer: chloroplast
+    };
+    const feedback = buildWrongAnswerFeedback('input', chloroplast, current, [current, otherSameModule, duplicate]);
+
+    expect(feedback?.matchKind).toBe('ambiguous');
+    expect(new Set(feedback?.alternatives?.map((item) => item.questionId))).toEqual(new Set(['q-other', 'q-duplicate']));
+  });
+
+  it('uses explicit side provenance for reverse-study origins', () => {
+    const sided: Question = {
+      id: 'q-sided',
+      moduleId: 'vocab',
+      type: 'input',
+      prompt: '\u3042\u306f\u308c',
+      answer: '\u3057\u307f\u3058\u307f\u3068\u8da3\u6df1\u3044',
+      sides: {
+        front: { label: '\u53e4\u8a9e', text: '\u3042\u306f\u308c', acceptableAnswers: ['\u3042\u306f\u308c\u306a\u308a'] },
+        back: { label: '\u610f\u5473', text: '\u3057\u307f\u3058\u307f\u3068\u8da3\u6df1\u3044' }
+      },
+      supportedStudyModes: ['front_to_back', 'back_to_front']
+    };
+    const feedback = buildWrongAnswerFeedback('choice', '\u3042\u306f\u308c\u306a\u308a', current, [current, sided], undefined, {
+      questionId: sided.id,
+      moduleId: sided.moduleId,
+      studyMode: 'back_to_front'
+    });
+
+    expect(feedback).toMatchObject({ matchKind: 'exact_origin', matchRole: 'front_alias' });
+    expect(feedback?.pair?.front.label).toBe('\u53e4\u8a9e');
   });
 
   it('reuses a prebuilt answer index while preserving same-module priority', () => {
@@ -88,9 +173,9 @@ describe('wrong answer explanation lookup', () => {
     expect(buildWrongAnswerExplanation('choice', '\u5927\u897f\u6d0b', current, pool, index)?.matchedQuestionId).toBe('q-geography');
   });
 
-  it('returns a not-found explanation when no registered answer matches', () => {
-    const explanation = buildWrongAnswerExplanation('input', '\u5168\u304f\u9055\u3046\u7b54\u3048', current, [current, otherSameModule]);
+  it('returns a not-found feedback when no registered answer matches', () => {
+    const feedback = buildWrongAnswerFeedback('input', '\u5168\u304f\u9055\u3046\u7b54\u3048', current, [current, otherSameModule]);
 
-    expect(explanation).toMatchObject({ source: 'input', found: false });
+    expect(feedback).toMatchObject({ source: 'input', found: false, matchKind: 'not_found' });
   });
 });

@@ -2,7 +2,12 @@ import { reportIssue } from '../debug/reportIssue';
 import { writeDebugLog } from '../debug/debugLog';
 import type { ModuleInfo, Question } from '../core/models';
 import { createJapaneseToEnglishWorksheetPlan, isJapaneseToEnglishWorksheetQuestion } from '../pdf/worksheetPlanner';
-import { buildWorksheetRangeOptions, filterWorksheetQuestionsByRange, formatWorksheetModuleLabel } from '../pdf/worksheetSelection';
+import {
+  buildWorksheetRangeOptions,
+  filterWorksheetQuestionsByRange,
+  formatWorksheetModuleLabel,
+  shuffleWorksheetQuestions
+} from '../pdf/worksheetSelection';
 import type { ResolvedPackView } from '../packs/packResolver';
 import { saveBlob, type SaveProgressReporter } from '../platform/fileSave';
 import { button, clear, el, toast } from '../ui/dom';
@@ -119,6 +124,12 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   const rangeSelect = el('select', 'study-select') as HTMLSelectElement;
   rangeLabel.append(el('span', '', '範囲'), rangeSelect);
 
+  const shuffleLabel = el('label', 'check-label');
+  const shuffleQuestions = document.createElement('input');
+  shuffleQuestions.type = 'checkbox';
+  shuffleQuestions.checked = false;
+  shuffleLabel.append(shuffleQuestions, document.createTextNode(' 問題順をシャッフル'));
+
   const answerLabel = el('label', 'check-label');
   const includeAnswers = document.createElement('input');
   includeAnswers.type = 'checkbox';
@@ -154,7 +165,7 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
   refreshRangeOptions();
 
   grid.append(moduleLabel, rangeLabel);
-  setup.append(grid, answerLabel, summary);
+  setup.append(grid, shuffleLabel, answerLabel, summary);
 
   const actions = el('section', 'worksheet-export-panel');
   const exportButton = button('', 'btn primary worksheet-export-button');
@@ -202,8 +213,13 @@ export async function renderPdfWorksheetScreen(root: HTMLElement, packView: Reso
     appendIconLabel(exportButton, 'filePdf', 'PDFを作成中…');
     statusLog.replaceChildren();
     try {
-      reportProgress('PDF-S010', '出力設定を読み込みました', `${selected.label} / ${selectedQuestions.length}問`);
-      const plan = createJapaneseToEnglishWorksheetPlan(selected.module, selectedQuestions, includeAnswers.checked);
+      reportProgress(
+        'PDF-S010',
+        '出力設定を読み込みました',
+        `${selected.label} / ${selectedQuestions.length}問 / シャッフル${shuffleQuestions.checked ? 'ON' : 'OFF'}`
+      );
+      const outputQuestions = shuffleQuestions.checked ? shuffleWorksheetQuestions(selectedQuestions) : [...selectedQuestions];
+      const plan = createJapaneseToEnglishWorksheetPlan(selected.module, outputQuestions, includeAnswers.checked);
       if (!plan.pages.length) throw exportError('PDF-P001', 'PDFに出力できるページがありません。');
       reportProgress('PDF-P010', 'PDFページ構成を作成しました', `${plan.pages.length}ページ / ${plan.rows.length}問`);
       for (const warning of plan.warnings) {
