@@ -59,7 +59,7 @@ export async function loadWorksheetPdfFontBytes(): Promise<WorksheetPdfFontBytes
  * bundled Fontsource Japanese subset. Keep source study data unchanged.
  */
 export function normalizeWorksheetPdfText(text: string): string {
-  return text.replaceAll('～', '〜');
+  return text.replace(/～/g, '〜');
 }
 
 function fontForCharacter(character: string, fonts: WorksheetFonts): PDFFont {
