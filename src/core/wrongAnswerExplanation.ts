@@ -1,5 +1,5 @@
-import type { ConcreteStudyQuestionMode, Question } from './models';
-import { getQuestionStudyPair, type StudyPair } from './questionPresentation';
+import type { ConcreteStudyQuestionMode, Question, StudyQuestionMode } from './models';
+import { getQuestionStudyPair, getSupportedStudyQuestionModes, presentQuestionForStudy, type StudyPair } from './questionPresentation';
 
 export type WrongAnswerExplanationSource = 'choice' | 'input';
 export type WrongAnswerMatchKind = 'exact_origin' | 'lookup' | 'ambiguous' | 'not_found';
@@ -122,6 +122,19 @@ export function buildWrongAnswerLookupIndex(allQuestions: Question[]): WrongAnsw
   return index;
 }
 
+export function buildWrongAnswerLookupIndexForStudyMode(
+  allQuestions: Question[],
+  requestedMode: StudyQuestionMode
+): WrongAnswerLookupIndex {
+  const presentedQuestions = allQuestions.flatMap((question) => {
+    if (requestedMode === 'mixed') {
+      const modes = getSupportedStudyQuestionModes(question).filter((mode) => mode !== 'as_stored');
+      return modes.length ? modes.map((mode) => presentQuestionForStudy(question, mode)) : [presentQuestionForStudy(question, 'as_stored')];
+    }
+    return [presentQuestionForStudy(question, requestedMode)];
+  });
+  return buildWrongAnswerLookupIndex(presentedQuestions);
+}
 function orderedMatches(
   value: string,
   currentQuestion: Question,

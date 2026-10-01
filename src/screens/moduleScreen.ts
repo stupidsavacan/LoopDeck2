@@ -1,5 +1,5 @@
 import { buildChoiceCandidateIndex } from '../core/choiceGenerator';
-import { buildWrongAnswerLookupIndex } from '../core/wrongAnswerExplanation';
+import { buildWrongAnswerLookupIndexForStudyMode } from '../core/wrongAnswerExplanation';
 import type { Attempt, ConcreteStudyQuestionMode, ModuleInfo, Question, StudySettings } from '../core/models';
 import {
   canAutoReverseQuestion,
@@ -129,7 +129,10 @@ export function restoreStoredSession(
     queue,
     choicePool: [...choicePool],
     choiceCandidateIndex: buildChoiceCandidateIndex(choicePool),
-    wrongAnswerLookupIndex: buildWrongAnswerLookupIndex(choicePool.length ? choicePool : queue),
+    wrongAnswerLookupIndex: buildWrongAnswerLookupIndexForStudyMode(
+      choicePool.length ? choicePool : queue,
+      stored.settings.questionMode ?? 'as_stored'
+    ),
     index: stored.index,
     settings: runtimeSettings(stored.settings),
     startedAt: stored.startedAt,

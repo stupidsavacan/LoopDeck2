@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Attempt, ModuleInfo, Question, StudySettings } from '../src/core/models';
+import { buildWrongAnswerFeedback } from '../src/core/wrongAnswerExplanation';
 import { readStoredSession, restoreStoredSession } from '../src/screens/moduleScreen';
 
 const moduleInfo: ModuleInfo = {
@@ -89,6 +90,58 @@ describe('stored session v2 resume state', () => {
     expect(restored?.wrongAnswerLookupIndex).toBeDefined();
   });
 
+  it('restores reverse-direction wrong-answer lookup for auto language questions', () => {
+    const leapModule: ModuleInfo = {
+      id: 'leap-dedicated-0701-0800',
+      folderId: 'english',
+      title: 'LEAP 701-800',
+      subject: 'English',
+      questionIds: ['q-pollution', 'q-tropical']
+    };
+    const pollution: Question = {
+      id: 'q-pollution',
+      moduleId: leapModule.id,
+      type: 'input',
+      prompt: 'pollution',
+      answer: '\u6c5a\u67d3'
+    };
+    const tropical: Question = {
+      id: 'q-tropical',
+      moduleId: leapModule.id,
+      type: 'input',
+      prompt: 'tropical',
+      answer: '\u71b1\u5e2f\u306e'
+    };
+    const stored = {
+      version: 2 as const,
+      questions: [{ questionId: pollution.id, questionMode: 'back_to_front' as const }],
+      index: 0,
+      mode: 'normal' as const,
+      settings: { ...settings, questionMode: 'back_to_front' as const },
+      startedAt: Date.now(),
+      currentElapsedMs: 0,
+      currentHiddenTimeExcludedMs: 0,
+      attempts: [],
+      savedAt: new Date().toISOString()
+    };
+    const byId = new Map<string, Question>([
+      [pollution.id, pollution],
+      [tropical.id, tropical]
+    ]);
+    const restored = restoreStoredSession(leapModule, stored, byId, [pollution, tropical]);
+    expect(restored?.queue[0]).toMatchObject({ prompt: '\u6c5a\u67d3', answer: 'pollution', activeStudyMode: 'back_to_front' });
+
+    const feedback = buildWrongAnswerFeedback(
+      'input',
+      'tropical',
+      restored!.queue[0],
+      restored!.choicePool,
+      restored!.wrongAnswerLookupIndex
+    );
+    expect(feedback).toMatchObject({ found: true, matchKind: 'lookup', matchedQuestionId: tropical.id });
+    expect(feedback?.pair?.front).toMatchObject({ label: '\u82f1\u8a9e', text: 'tropical' });
+    expect(feedback?.pair?.back).toMatchObject({ label: '\u65e5\u672c\u8a9e', text: '\u71b1\u5e2f\u306e' });
+  });
   it('accepts a completed v2 session so its summary can be resumed', () => {
     localStorage.setItem(
       `loopdeck_session_${moduleInfo.id}`,
