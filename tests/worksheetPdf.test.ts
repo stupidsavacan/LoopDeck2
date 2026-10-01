@@ -3,9 +3,15 @@ import { describe, expect, it } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
 import { woffToSfnt } from '../scripts/woffToSfnt';
 import type { ModuleInfo, Question } from '../src/core/models';
+import { circledDigitFontDataUrl } from '../src/pdf/circledDigitFont';
 import { createJapaneseToEnglishWorksheetPlan } from '../src/pdf/worksheetPlanner';
 import { shuffleWorksheetQuestions } from '../src/pdf/worksheetSelection';
-import { generateWorksheetPdfBlob, loadFontBytesFromDataUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
+import {
+  generateWorksheetPdfBlob,
+  loadFontBytesFromDataUrl,
+  normalizeWorksheetPdfText,
+  type WorksheetPdfFontBytes
+} from '../src/pdf/worksheetPdf';
 
 const moduleInfo: ModuleInfo = {
   id: 'leap-test',
@@ -63,7 +69,11 @@ async function fonts(): Promise<WorksheetPdfFontBytes> {
   const latin = await readFile(
     new URL('../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff', import.meta.url)
   );
-  return { japanese: woffToSfnt(japanese), latin: woffToSfnt(latin) };
+  return {
+    japanese: woffToSfnt(japanese),
+    latin: woffToSfnt(latin),
+    circledDigits: loadFontBytesFromDataUrl(circledDigitFontDataUrl)
+  };
 }
 
 describe('fixed Japanese-to-English worksheet planner', () => {
@@ -190,6 +200,27 @@ describe('fixed worksheet PDF generator', () => {
     expect(blob.type).toBe('application/pdf');
     expect(blob.size).toBeGreaterThan(0);
     expect(document.getPageCount()).toBe(2);
+  }, 15000);
+
+  it('normalizes only the emergency fullwidth tilde while preserving circled digits', () => {
+    expect(normalizeWorksheetPdfText('〜 ～ ①②③④⑤⑥⑦⑧⑨')).toBe('〜 〜 ①②③④⑤⑥⑦⑧⑨');
+  });
+
+  it('ships a non-empty embedded font subset for circled digits', () => {
+    expect(loadFontBytesFromDataUrl(circledDigitFontDataUrl).length).toBeGreaterThan(0);
+  });
+
+  it('generates a PDF when LEAP text contains the emergency fallback symbols', async () => {
+    const special: Question = {
+      ...inputQuestion(1),
+      prompt: '範囲 ～ ①②③④⑤⑥⑦⑧⑨'
+    };
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [special], false);
+    const blob = await generateWorksheetPdfBlob(plan, await fonts());
+    const document = await PDFDocument.load(await blob.arrayBuffer());
+
+    expect(blob.size).toBeGreaterThan(0);
+    expect(document.getPageCount()).toBe(1);
   }, 15000);
 
   it('fails explicitly instead of truncating essential cell text', async () => {

@@ -2,11 +2,13 @@ import japaneseFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-jap
 import latinFontDataUrl from '@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff?base64';
 import fontkit from '@pdf-lib/fontkit';
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from 'pdf-lib';
+import { circledDigitFontDataUrl } from './circledDigitFont';
 import type { WorksheetPage, WorksheetPlan } from './worksheetPlanner';
 
 export interface WorksheetPdfFontBytes {
   japanese: Uint8Array;
   latin: Uint8Array;
+  circledDigits: Uint8Array;
 }
 
 const A4_WIDTH = 595.28;
@@ -21,7 +23,7 @@ const ANSWER_COLUMN_WIDTH = A4_WIDTH - MARGIN_X * 2 - NO_COLUMN_WIDTH - PROMPT_C
 const TEXT_COLOR = rgb(0.08, 0.11, 0.18);
 const LINE_COLOR = rgb(0.42, 0.47, 0.55);
 
-type WorksheetFonts = { japanese: PDFFont; latin: PDFFont };
+type WorksheetFonts = { japanese: PDFFont; latin: PDFFont; circledDigits: PDFFont };
 type TextRun = { text: string; font: PDFFont };
 type FittedText = { lines: string[]; size: number; lineHeight: number };
 
@@ -47,12 +49,22 @@ export function loadFontBytesFromDataUrl(dataUrl: string): Uint8Array {
 export async function loadWorksheetPdfFontBytes(): Promise<WorksheetPdfFontBytes> {
   return {
     japanese: loadFontBytesFromDataUrl(japaneseFontDataUrl),
-    latin: loadFontBytesFromDataUrl(latinFontDataUrl)
+    latin: loadFontBytesFromDataUrl(latinFontDataUrl),
+    circledDigits: loadFontBytesFromDataUrl(circledDigitFontDataUrl)
   };
+}
+
+/**
+ * Emergency PDF-only normalization for a glyph missing from the currently
+ * bundled Fontsource Japanese subset. Keep source study data unchanged.
+ */
+export function normalizeWorksheetPdfText(text: string): string {
+  return text.replace(/～/g, '〜');
 }
 
 function fontForCharacter(character: string, fonts: WorksheetFonts): PDFFont {
   const codePoint = character.codePointAt(0) ?? 0;
+  if (codePoint >= 0x2460 && codePoint <= 0x2468) return fonts.circledDigits;
   return codePoint <= 0x024f ? fonts.latin : fonts.japanese;
 }
 
@@ -85,14 +97,14 @@ function characterWidth(character: string, font: PDFFont, size: number): number 
 
 function drawMixedText(page: PDFPage, text: string, fonts: WorksheetFonts, x: number, y: number, size: number): void {
   let cursor = x;
-  for (const run of textRuns(text, fonts)) {
+  for (const run of textRuns(normalizeWorksheetPdfText(text), fonts)) {
     page.drawText(run.text, { x: cursor, y, size, font: run.font, color: TEXT_COLOR });
     cursor += run.font.widthOfTextAtSize(run.text, size);
   }
 }
 
 function wrapText(text: string, fonts: WorksheetFonts, size: number, maxWidth: number): string[] {
-  const trimmed = text.trim();
+  const trimmed = normalizeWorksheetPdfText(text).trim();
   const lines: string[] = [];
   let current = '';
   let currentWidth = 0;
@@ -191,7 +203,9 @@ export async function generateWorksheetPdfBlob(plan: WorksheetPlan, providedFont
     // @pdf-lib/fontkit has long-standing CJK subsetting bugs that can drop Japanese glyphs.
     // Keep the Japanese font fully embedded; the smaller Latin font can still be subset safely.
     japanese: await document.embedFont(fontBytes.japanese, { subset: false }),
-    latin: await document.embedFont(fontBytes.latin, { subset: true })
+    latin: await document.embedFont(fontBytes.latin, { subset: true }),
+    // This font is already reduced to U+2460-U+2468, so embedding it whole is small and predictable.
+    circledDigits: await document.embedFont(fontBytes.circledDigits, { subset: false })
   };
 
   for (const worksheetPage of plan.pages) {
