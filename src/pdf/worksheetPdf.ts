@@ -156,16 +156,16 @@ function drawTable(page: PDFPage, worksheetPage: WorksheetPage, fonts: Worksheet
     drawLine(page, { x: left, y }, { x: right, y });
   }
 
-  drawCellText(page, 'No.', fonts, left, TABLE_TOP, NO_COLUMN_WIDTH, '表見出し No.');
+  drawCellText(page, '番号', fonts, left, TABLE_TOP, NO_COLUMN_WIDTH, '表見出し 番号');
   drawCellText(page, '日本語の意味 / 問題', fonts, noRight, TABLE_TOP, PROMPT_COLUMN_WIDTH, '表見出し 問題');
   drawCellText(page, '英語', fonts, promptRight, TABLE_TOP, ANSWER_COLUMN_WIDTH, '表見出し 解答');
 
   worksheetPage.rows.forEach((row, index) => {
     const rowTop = TABLE_TOP - (index + 1) * ROW_HEIGHT;
-    drawCellText(page, String(row.number), fonts, left, rowTop, NO_COLUMN_WIDTH, `No.${row.number} の番号`);
-    drawCellText(page, row.prompt, fonts, noRight, rowTop, PROMPT_COLUMN_WIDTH, `No.${row.number} の問題文`);
+    drawCellText(page, String(row.displayNumber), fonts, left, rowTop, NO_COLUMN_WIDTH, `印刷番号${row.displayNumber}`);
+    drawCellText(page, row.prompt, fonts, noRight, rowTop, PROMPT_COLUMN_WIDTH, `元No.${row.sourceNumber} の問題文`);
     if (worksheetPage.kind === 'answers')
-      drawCellText(page, row.answer, fonts, promptRight, rowTop, ANSWER_COLUMN_WIDTH, `No.${row.number} の解答`);
+      drawCellText(page, row.answer, fonts, promptRight, rowTop, ANSWER_COLUMN_WIDTH, `元No.${row.sourceNumber} の解答`);
   });
 }
 

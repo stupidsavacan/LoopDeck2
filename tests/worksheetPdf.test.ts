@@ -4,6 +4,7 @@ import { PDFDocument } from 'pdf-lib';
 import { woffToSfnt } from '../scripts/woffToSfnt';
 import type { ModuleInfo, Question } from '../src/core/models';
 import { createJapaneseToEnglishWorksheetPlan } from '../src/pdf/worksheetPlanner';
+import { shuffleWorksheetQuestions } from '../src/pdf/worksheetSelection';
 import { generateWorksheetPdfBlob, loadFontBytesFromDataUrl, type WorksheetPdfFontBytes } from '../src/pdf/worksheetPdf';
 
 const moduleInfo: ModuleInfo = {
@@ -101,7 +102,7 @@ describe('fixed Japanese-to-English worksheet planner', () => {
   it('reverses clean LEAP-style English prompt and Japanese answer rows for Japanese-to-English output', () => {
     const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, [leapQuestion(387)], true);
     expect(plan.rows[0]).toMatchObject({
-      number: 387,
+      sourceNumber: 387,
       prompt: '厳しい；厳格な',
       answer: 'strict'
     });
@@ -123,9 +124,28 @@ describe('fixed Japanese-to-English worksheet planner', () => {
     expect(plan.warnings[0]).toContain('問題文と解答本文は省略しません');
   });
 
-  it('preserves question numbers', () => {
-    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, questions(3), false);
-    expect(plan.rows.map((row) => row.number)).toEqual([201, 202, 203]);
+  it('keeps source numbers while numbering each printed page from 1', () => {
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, questions(50), true);
+    expect(plan.rows.slice(0, 3).map((row) => row.sourceNumber)).toEqual([201, 202, 203]);
+    expect(plan.questionPages[0].rows.map((row) => row.displayNumber)).toEqual(Array.from({ length: 25 }, (_, index) => index + 1));
+    expect(plan.questionPages[1].rows.map((row) => row.displayNumber)).toEqual(Array.from({ length: 25 }, (_, index) => index + 1));
+    expect(plan.answerPages[0].rows).toEqual(plan.questionPages[0].rows);
+    expect(plan.answerPages[1].rows).toEqual(plan.questionPages[1].rows);
+  });
+
+  it('derives the source range independently of output order', () => {
+    const reordered = [inputQuestion(14), inputQuestion(3), inputQuestion(21), inputQuestion(9)];
+    const plan = createJapaneseToEnglishWorksheetPlan(moduleInfo, reordered, false);
+    expect(plan.rangeLabel).toBe('No.203-221');
+    expect(plan.questionPages[0].rows.map((row) => row.sourceNumber)).toEqual([214, 203, 221, 209]);
+    expect(plan.questionPages[0].rows.map((row) => row.displayNumber)).toEqual([1, 2, 3, 4]);
+  });
+
+  it('shuffles a copy with injectable randomness without mutating the source', () => {
+    const source = questions(4);
+    const shuffled = shuffleWorksheetQuestions(source, () => 0);
+    expect(source.map((question) => question.id)).toEqual(['q-1', 'q-2', 'q-3', 'q-4']);
+    expect(shuffled.map((question) => question.id)).toEqual(['q-2', 'q-3', 'q-4', 'q-1']);
   });
 
   it('skips non-vocabulary, reverse-direction, image, and unsupported questions', () => {

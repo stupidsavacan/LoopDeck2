@@ -8,16 +8,20 @@ const JAPANESE_TEXT = /[\u3040-\u30ff\u3400-\u9fff]/;
 const ENGLISH_TEXT = /[a-z]/i;
 
 export interface WorksheetRow {
-  number: number;
+  sourceNumber: number;
   prompt: string;
   answer: string;
+}
+
+export interface WorksheetPageRow extends WorksheetRow {
+  displayNumber: number;
 }
 
 export interface WorksheetPage {
   kind: 'questions' | 'answers';
   pageNumber: number;
   sectionPageNumber: number;
-  rows: WorksheetRow[];
+  rows: WorksheetPageRow[];
 }
 
 export interface WorksheetPlan {
@@ -41,8 +45,9 @@ function chunks<T>(values: T[], size: number): T[][] {
 
 function rangeLabel(rows: WorksheetRow[]): string {
   if (!rows.length) return '0 questions';
-  const first = rows[0].number;
-  const last = rows[rows.length - 1].number;
+  const sourceNumbers = rows.map((row) => row.sourceNumber);
+  const first = Math.min(...sourceNumbers);
+  const last = Math.max(...sourceNumbers);
   return first === last ? `No.${first}` : `No.${first}-${last}`;
 }
 
@@ -78,15 +83,15 @@ function createWorksheetRow(question: Question, fallbackIndex: number): Workshee
 
   const prompt = clean(question.prompt);
   const answerText = clean(answer);
-  const number = question.number ?? fallbackIndex + 1;
+  const sourceNumber = question.number ?? fallbackIndex + 1;
 
   if (JAPANESE_TEXT.test(prompt) && ENGLISH_TEXT.test(answerText)) {
-    return { number, prompt, answer: answerText };
+    return { sourceNumber, prompt, answer: answerText };
   }
 
   const meanings = japaneseMeanings(question);
   if (ENGLISH_TEXT.test(prompt) && !JAPANESE_TEXT.test(prompt) && meanings.length) {
-    return { number, prompt: meanings.join('；'), answer: prompt };
+    return { sourceNumber, prompt: meanings.join('；'), answer: prompt };
   }
 
   return undefined;
@@ -103,18 +108,19 @@ export function createJapaneseToEnglishWorksheetPlan(module: ModuleInfo, questio
     if (row) rows.push(row);
   }
   const questionChunks = chunks(rows, WORKSHEET_ROWS_PER_PAGE);
-  const questionPages = questionChunks.map((pageRows, index): WorksheetPage => ({
+  const pageRows = questionChunks.map((chunk) => chunk.map((row, index): WorksheetPageRow => ({ ...row, displayNumber: index + 1 })));
+  const questionPages = pageRows.map((rowsForPage, index): WorksheetPage => ({
     kind: 'questions',
     pageNumber: index + 1,
     sectionPageNumber: index + 1,
-    rows: pageRows
+    rows: rowsForPage
   }));
   const answerPages = includeAnswerKey
-    ? questionChunks.map((pageRows, index): WorksheetPage => ({
+    ? pageRows.map((rowsForPage, index): WorksheetPage => ({
         kind: 'answers',
         pageNumber: questionPages.length + index + 1,
         sectionPageNumber: index + 1,
-        rows: pageRows
+        rows: rowsForPage
       }))
     : [];
 

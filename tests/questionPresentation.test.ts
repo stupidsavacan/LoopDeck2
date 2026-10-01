@@ -3,6 +3,7 @@ import type { InputQuestion, ModuleInfo, Question } from '../src/core/models';
 import {
   canAutoReverseQuestion,
   getModuleStudyQuestionModes,
+  getQuestionStudyPair,
   getStudyQuestionModeLabel,
   getSupportedStudyQuestionModes,
   presentQuestionForStudy
@@ -68,10 +69,50 @@ describe('question presentation fallback reverse study', () => {
     expect(getStudyQuestionModeLabel('back_to_front', question)).toBe('\u65e5\u672c\u8a9e \u2192 \u82f1\u8a9e');
   });
 
+  it('builds a reusable English/Japanese study pair for compact vocabulary', () => {
+    const pair = getQuestionStudyPair(inputQuestion());
+
+    expect(pair).toEqual({
+      front: { label: '\u82f1\u8a9e', text: 'modern' },
+      back: { label: '\u65e5\u672c\u8a9e', text: modernMeaning, acceptableAnswers: [modernAlt] }
+    });
+  });
+
+  it('uses explicit sides as the authoritative study pair', () => {
+    const pair = getQuestionStudyPair(
+      inputQuestion({
+        sides: {
+          front: { label: '\u53e4\u8a9e', text: '\u3042\u306f\u308c' },
+          back: { label: '\u610f\u5473', text: '\u3057\u307f\u3058\u307f\u3068\u8da3\u6df1\u3044' }
+        },
+        supportedStudyModes: ['front_to_back', 'back_to_front']
+      })
+    );
+
+    expect(pair?.front).toEqual({ label: '\u53e4\u8a9e', text: '\u3042\u306f\u308c' });
+    expect(pair?.back).toEqual({ label: '\u610f\u5473', text: '\u3057\u307f\u3058\u307f\u3068\u8da3\u6df1\u3044' });
+  });
+
+  it('falls back to a generic problem/answer pair for ordinary questions', () => {
+    const pair = getQuestionStudyPair(inputQuestion({ prompt: '2 + 2', answer: '4', acceptableAnswers: undefined }));
+
+    expect(pair).toEqual({
+      front: { label: '\u554f\u984c', text: '2 + 2' },
+      back: { label: '\u7b54\u3048', text: '4' }
+    });
+  });
+
   it('does not auto-reverse mixed prompts, choices, multi-select, or image questions', () => {
     const mixed = inputQuestion({ id: 'mixed', prompt: `modern \u306e\u610f\u5473\u3092\u7b54\u3048\u3088` });
     const choice: Question = { id: 'choice', moduleId: moduleInfo.id, type: 'choice', prompt: 'modern', choices: ['a', 'b'], answer: 'a' };
-    const multi: Question = { id: 'multi', moduleId: moduleInfo.id, type: 'multi_select', prompt: 'modern', choices: ['a', 'b'], correctChoices: ['a'] };
+    const multi: Question = {
+      id: 'multi',
+      moduleId: moduleInfo.id,
+      type: 'multi_select',
+      prompt: 'modern',
+      choices: ['a', 'b'],
+      correctChoices: ['a']
+    };
     const image = inputQuestion({ id: 'image', imageAsset: 'images/card.png' });
 
     expect(canAutoReverseQuestion(mixed)).toBe(false);

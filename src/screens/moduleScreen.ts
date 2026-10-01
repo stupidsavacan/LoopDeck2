@@ -11,6 +11,7 @@ import {
 import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
 import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
+import { readStudyPreferences, sanitizeStudyPreferences, writeStudyPreferences } from '../storage/studyPreferences';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon, iconNameForModule } from '../ui/icons';
 import { moduleMeta } from '../ui/modulePresentation';
@@ -182,6 +183,23 @@ export function runtimeSettings(settings: StudySettings): StudySettings {
   };
 }
 
+export function defaultStudySettings(module: ModuleInfo): StudySettings {
+  return {
+    shuffle: true,
+    autoNext: true,
+    autoRevealAfterIdle: false,
+    questionLimit: 'all',
+    selectedRange: 'all',
+    selectedCategory: 'all',
+    filter: 'all',
+    answerFormat: module.preferredAnswerFormat ?? 'auto',
+    questionMode: 'as_stored',
+    showExample: true,
+    showNumber: true,
+    showCategory: true
+  };
+}
+
 export async function renderModuleScreen(
   root: HTMLElement,
   packView: ResolvedPackView,
@@ -214,7 +232,19 @@ export async function renderModuleScreen(
   const wrongQuestions = questions.filter((question) => wrongIds.has(question.id));
   const bookmarkedQuestions = questions.filter((question) => bookmarkIds.has(question.id));
   const categories = listQuestionCategories(questions);
+  const rangeOptions = buildRangeOptions(questions);
+  const questionModes = getModuleStudyQuestionModes(questions);
   const storedSession = readStoredSession(module.id, questionsById);
+  const defaults = defaultStudySettings(module);
+  const storedPreferences = modulePackId ? readStudyPreferences(modulePackId, module.id) : undefined;
+  const settings = sanitizeStudyPreferences(defaults, storedPreferences, {
+    validRanges: rangeOptions.map((option) => option.value),
+    categories,
+    questionModes
+  });
+  const persistStudyPreferences = () => {
+    if (modulePackId) writeStudyPreferences(modulePackId, module.id, settings);
+  };
 
   clear(root);
   const screen = el('main', 'screen module-screen');
@@ -254,21 +284,6 @@ export async function renderModuleScreen(
   );
   info.append(stats);
 
-  const settings: StudySettings = {
-    shuffle: true,
-    autoNext: true,
-    autoRevealAfterIdle: false,
-    questionLimit: 'all',
-    selectedRange: 'all',
-    selectedCategory: 'all',
-    filter: 'all',
-    answerFormat: module.preferredAnswerFormat ?? 'auto',
-    questionMode: 'as_stored',
-    showExample: true,
-    showNumber: true,
-    showCategory: true
-  };
-
   const settingsCard = el('section', 'card setup-card');
   settingsCard.append(el('h2', '', 'テスト前設定'));
   const settingsGrid = el('div', 'settings-grid');
@@ -284,13 +299,14 @@ export async function renderModuleScreen(
     option.value = value;
     countField.select.append(option);
   }
-  countField.select.value = 'all';
+  countField.select.value = String(settings.questionLimit);
   countField.select.onchange = () => {
     settings.questionLimit = countField.select.value === 'all' ? 'all' : Number(countField.select.value);
+    persistStudyPreferences();
   };
 
   const rangeField = makeSelect('範囲');
-  for (const optionInfo of buildRangeOptions(questions)) {
+  for (const optionInfo of rangeOptions) {
     const option = el('option', '', optionInfo.label) as HTMLOptionElement;
     option.value = optionInfo.value;
     rangeField.select.append(option);
@@ -301,8 +317,10 @@ export async function renderModuleScreen(
   const bookmarkOption = el('option', '', `ブックマーク (${bookmarkedQuestions.length}問)`) as HTMLOptionElement;
   bookmarkOption.value = 'bookmarked';
   rangeField.select.append(bookmarkOption);
+  rangeField.select.value = settings.selectedRange ?? 'all';
   rangeField.select.onchange = () => {
     settings.selectedRange = rangeField.select.value;
+    persistStudyPreferences();
   };
 
   const categoryField = makeSelect('カテゴリ');
@@ -314,9 +332,11 @@ export async function renderModuleScreen(
     option.value = category;
     categoryField.select.append(option);
   }
+  categoryField.select.value = settings.selectedCategory ?? 'all';
   categoryField.select.disabled = categories.length === 0;
   categoryField.select.onchange = () => {
     settings.selectedCategory = categoryField.select.value;
+    persistStudyPreferences();
   };
 
   const answerField = makeSelect('回答形式');
@@ -332,10 +352,10 @@ export async function renderModuleScreen(
   answerField.select.value = settings.answerFormat ?? 'auto';
   answerField.select.onchange = () => {
     settings.answerFormat = answerField.select.value as StudySettings['answerFormat'];
+    persistStudyPreferences();
   };
 
   const questionModeField = makeSelect('出題形式');
-  const questionModes = getModuleStudyQuestionModes(questions);
   const sampleQuestion = questions.find((question) => question.sides) ?? questions.find(canAutoReverseQuestion) ?? questions[0];
   for (const mode of questionModes) {
     const option = el('option', '', getStudyQuestionModeLabel(mode, sampleQuestion)) as HTMLOptionElement;
@@ -346,6 +366,7 @@ export async function renderModuleScreen(
   questionModeField.select.disabled = questionModes.length <= 1;
   questionModeField.select.onchange = () => {
     settings.questionMode = questionModeField.select.value as StudySettings['questionMode'];
+    persistStudyPreferences();
   };
 
   settingsGrid.append(countField.wrap, rangeField.wrap, categoryField.wrap, answerField.wrap, questionModeField.wrap);
@@ -367,6 +388,7 @@ export async function renderModuleScreen(
     input.checked = Boolean(settings[key]);
     input.onchange = () => {
       settings[key] = input.checked;
+      persistStudyPreferences();
     };
     wrap.append(input, document.createTextNode(` ${label}`));
     settingRow.append(wrap);
