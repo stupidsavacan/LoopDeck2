@@ -4,6 +4,7 @@ import {
   buildWrongAnswerExplanation,
   buildWrongAnswerFeedback,
   buildWrongAnswerLookupIndex,
+  buildWrongAnswerLookupIndexForStudyMode,
   collectAnswerTexts,
   findQuestionByAnswer,
   normalizeWrongAnswerLookup
@@ -164,6 +165,45 @@ describe('wrong answer feedback lookup', () => {
     expect(feedback?.pair?.front.label).toBe('\u53e4\u8a9e');
   });
 
+  it('indexes auto-reversed answers for the active study direction', () => {
+    const pollution: Question = {
+      id: 'q-pollution',
+      moduleId: 'leap-dedicated-0701-0800',
+      type: 'input',
+      prompt: 'pollution',
+      answer: '\u6c5a\u67d3'
+    };
+    const tropical: Question = {
+      id: 'q-tropical',
+      moduleId: 'leap-dedicated-0701-0800',
+      type: 'input',
+      prompt: 'tropical',
+      answer: '\u71b1\u5e2f\u306e'
+    };
+    const presentedCurrent: Question = {
+      ...pollution,
+      prompt: '\u6c5a\u67d3',
+      answer: 'pollution',
+      acceptableAnswers: ['pollution'],
+      acceptedAnswers: ['pollution'],
+      activeStudyMode: 'back_to_front'
+    };
+    const pool = [pollution, tropical];
+    const index = buildWrongAnswerLookupIndexForStudyMode(pool, 'back_to_front');
+    const feedback = buildWrongAnswerFeedback('input', 'tropical', presentedCurrent, pool, index);
+
+    expect(feedback).toMatchObject({
+      found: true,
+      matchKind: 'lookup',
+      matchedQuestionId: 'q-tropical'
+    });
+    expect(feedback?.pair?.front).toMatchObject({ label: '\u82f1\u8a9e', text: 'tropical' });
+    expect(feedback?.pair?.back).toMatchObject({ label: '\u65e5\u672c\u8a9e', text: '\u71b1\u5e2f\u306e' });
+
+    const mixed = buildWrongAnswerLookupIndexForStudyMode([tropical], 'mixed');
+    expect(mixed.has('tropical')).toBe(true);
+    expect(mixed.has('\u71b1\u5e2f\u306e')).toBe(true);
+  });
   it('reuses a prebuilt answer index while preserving same-module priority', () => {
     const pool = [current, otherModule, otherSameModule];
     const index = buildWrongAnswerLookupIndex(pool);

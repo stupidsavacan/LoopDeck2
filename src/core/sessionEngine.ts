@@ -1,7 +1,7 @@
 import { buildChoiceCandidateIndex, type ChoiceCandidateIndex } from './choiceGenerator';
 import type { Attempt, ModuleInfo, Question, StudySettings } from './models';
 import { getSupportedStudyQuestionModes, presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
-import { buildWrongAnswerLookupIndex, type WrongAnswerLookupIndex } from './wrongAnswerExplanation';
+import { buildWrongAnswerLookupIndexForStudyMode, type WrongAnswerLookupIndex } from './wrongAnswerExplanation';
 
 export interface QuizSession {
   module: ModuleInfo;
@@ -125,7 +125,7 @@ export function createSession(
     queue,
     choicePool: sessionPool,
     choiceCandidateIndex: buildChoiceCandidateIndex(sessionPool),
-    wrongAnswerLookupIndex: buildWrongAnswerLookupIndex(explanationPool),
+    wrongAnswerLookupIndex: buildWrongAnswerLookupIndexForStudyMode(explanationPool, requestedMode),
     index: 0,
     settings,
     startedAt: now,
