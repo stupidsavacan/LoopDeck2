@@ -226,6 +226,16 @@ describe('settings and aggregation contracts', () => {
   });
 });
 describe('quiz asynchronous ownership', () => {
+  it.each(['leap', 'leap_final'])('does not opt imported module %s into automatic choices', (moduleId) => {
+    const questions = ['dog', 'cat', 'bird', 'fish'].map((answer, index) => ({ ...q, id: 'q' + index, moduleId, answer }));
+    const module = { ...pack().modules[0], id: moduleId, questionIds: questions.map((question) => question.id) };
+    const session = createSession(module, questions, { ...settings, answerFormat: 'auto' });
+    const container = document.createElement('div');
+    renderInlineQuiz(container, session, { onSessionChange() {}, onComplete() {} });
+    expect(container.querySelector('input.text-input')).not.toBeNull();
+    expect(container.querySelectorAll('.choice-btn')).toHaveLength(0);
+    disposeInlineQuizzes(container);
+  });
   it('reports an explicit choice format fallback and excludes accepted legacy distractors', () => {
     const container = document.createElement('div');
     const session = createSession(pack().modules[0], [{ ...q, type: 'choice', choices: ['dog', 'hot dog'] }], {

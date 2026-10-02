@@ -25,6 +25,18 @@ function pack(packId: string, title: string, questionId: string): LoopDeckPack {
 }
 
 describe('PDF worksheet module selection', () => {
+  it('uses each module owner when legacy packs contain the same question id', async () => {
+    const first = pack('a', 'First', 'duplicate');
+    const second = pack('b', 'Second', 'duplicate');
+    first.modules[0].id = first.questions[0].moduleId = 'first-module';
+    second.modules[0].id = second.questions[0].moduleId = 'second-module';
+    second.questions[0].number = 1000;
+    const root = document.createElement('div');
+    await renderPdfWorksheetScreen(root, resolveActivePacks([first, second]), () => {});
+    const select = root.querySelector<HTMLSelectElement>('.settings-grid select');
+    const labels = [...(select?.options ?? [])].map((option) => option.textContent);
+    expect(labels).toEqual(['First No.1 (1問)', 'Second No.1000 (1問)']);
+  });
   it('lists only the active module when different packs override the same module id', async () => {
     const oldPack = pack('old-pack', 'Old module', 'old-question');
     const activePack = pack('active-pack', 'Active module', 'active-question');
