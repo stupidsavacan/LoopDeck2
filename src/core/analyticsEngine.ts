@@ -1,6 +1,6 @@
 import { localCalendarDayKey, recentLocalCalendarDayKeys } from './calendarDay';
 import type { Attempt, ModuleInfo, Question } from './models';
-import { analyzeProblems, timingBand, type ReviewAttemptAggregation } from './reviewEngine';
+import { analyzeProblems, answerModeFor, timingBand, type ReviewAttemptAggregation } from './reviewEngine';
 
 export interface DailyStudyStat {
   date: string;
@@ -123,7 +123,7 @@ export function buildMistakeTrend(attempts: Attempt[], days = 14, now = new Date
   return [...byDay.entries()].map(([date, mistakes]) => ({ date, mistakes }));
 }
 
-export function buildMistakeBreakdown(attempts: Attempt[], questions: Question[], slowCorrectMs = 10000): MistakeBreakdownItem[] {
+export function buildMistakeBreakdown(attempts: Attempt[], questions: Question[]): MistakeBreakdownItem[] {
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const counts = new Map<string, MistakeBreakdownItem>();
   const wrongByQuestion = new Map<string, number>();
@@ -136,8 +136,8 @@ export function buildMistakeBreakdown(attempts: Attempt[], questions: Question[]
       wrongByQuestion.set(attempt.questionId, (wrongByQuestion.get(attempt.questionId) ?? 0) + 1);
       if (question?.type === 'multi_select') bump(counts, 'multi_select', '複数選択ミス');
       if (attempt.nearMiss) bump(counts, 'near_miss', 'ニアミス');
-      if (timingBand(attempt.elapsedMs, attempt.answerMode) === 'fast') bump(counts, 'quick_wrong', '即答ミス');
-      if (timingBand(attempt.elapsedMs, attempt.answerMode) === 'slow') bump(counts, 'slow_wrong', '長考して誤答');
+      if (timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'fast') bump(counts, 'quick_wrong', '即答ミス');
+      if (timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow') bump(counts, 'slow_wrong', '長考して誤答');
       continue;
     }
 
@@ -147,7 +147,7 @@ export function buildMistakeBreakdown(attempts: Attempt[], questions: Question[]
       continue;
     }
 
-    if (attempt.result === 'correct' && attempt.elapsedMs >= slowCorrectMs) {
+    if (attempt.result === 'correct' && timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow') {
       bump(counts, 'slow_correct', '時間がかかった正解');
     }
   }
@@ -173,12 +173,11 @@ export function buildAnalyticsOverview(
   attempts: Attempt[],
   modules: ModuleInfo[],
   questions: Question[],
-  options: { dailyDays?: number; trendDays?: number; slowCorrectMs?: number; now?: Date } = {}
+  options: { dailyDays?: number; trendDays?: number; now?: Date } = {}
 ): AnalyticsOverview {
   const now = options.now ?? new Date();
   const dailyDays = options.dailyDays ?? 28;
   const trendDays = options.trendDays ?? 14;
-  const slowCorrectMs = options.slowCorrectMs ?? 10000;
   const dailyByDay = new Map<string, DailyStudyStat>(
     recentLocalCalendarDayKeys(dailyDays, now).map((date) => [date, { date, attempts: 0, correct: 0, wrong: 0, revealed: 0, accuracy: 0 }])
   );
@@ -190,7 +189,7 @@ export function buildAnalyticsOverview(
   const wrongByQuestion = new Map<string, number>();
   const reviewByQuestion = new Map<string, Attempt[]>();
   const reviewWrongQuestionIds = new Set<string>();
-  const reviewWeakModules: Record<string, number> = {};
+  const reviewWeakModules: Record<string, number> = Object.create(null);
   let correct = 0;
   let mistakes = 0;
 
@@ -241,12 +240,12 @@ export function buildAnalyticsOverview(
       wrongByQuestion.set(attempt.questionId, (wrongByQuestion.get(attempt.questionId) ?? 0) + 1);
       if (question?.type === 'multi_select') bump(breakdownCounts, 'multi_select', '複数選択ミス');
       if (attempt.nearMiss) bump(breakdownCounts, 'near_miss', 'ニアミス');
-      if (timingBand(attempt.elapsedMs, attempt.answerMode) === 'fast') bump(breakdownCounts, 'quick_wrong', '即答ミス');
-      if (timingBand(attempt.elapsedMs, attempt.answerMode) === 'slow') bump(breakdownCounts, 'slow_wrong', '長考して誤答');
+      if (timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'fast') bump(breakdownCounts, 'quick_wrong', '即答ミス');
+      if (timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow') bump(breakdownCounts, 'slow_wrong', '長考して誤答');
     } else if (attempt.result === 'revealed') {
       bump(breakdownCounts, 'revealed', '答え表示');
       wrongByQuestion.set(attempt.questionId, (wrongByQuestion.get(attempt.questionId) ?? 0) + 1);
-    } else if (attempt.elapsedMs >= slowCorrectMs) {
+    } else if (timingBand(attempt.elapsedMs, answerModeFor(attempt)) === 'slow') {
       bump(breakdownCounts, 'slow_correct', '時間がかかった正解');
     }
   }

@@ -1,13 +1,12 @@
-import { validatePack } from '../packs/packValidator';
-import { validateBackupPayload } from './backupValidator';
 import type { Attempt, LoopDeckPack, ReviewCard, ReviewLog } from '../core/models';
 import type { ImportedPackAsset, PackAssetWriteStrategy } from '../packs/packTypes';
 
-const DB_NAME = 'loopdeck-db';
-const DB_VERSION = 4;
-
-const USER_DATA_STORES = ['attempts', 'bookmarks', 'packs', 'packAssets', 'reviewCards', 'reviewLogs'] as const;
-export type BackupImportMode = 'merge' | 'replace';
+import { runTransaction, transaction, getAll } from './indexedDb';
+import { installedOrder, putPacksInInstallOrder, savePackWithAssets, deletePackAndAssets, validatedPackForStorage, recoverStoredPacks, packAssetId } from './packStorage';
+import { importBackup } from './backupStorage';
+import type { BackupImportMode } from './storageTypes';
+export type { BackupImportMode } from './storageTypes';
+export { packAssetId } from './packStorage';
 
 import type { LoopDeckBackup, StoredPackAsset } from './storageTypes';
 export type { LoopDeckBackup, StoredPackAsset } from './storageTypes';
@@ -39,112 +38,6 @@ export interface LoopDeckDb {
   importUserData(backup: unknown, mode: BackupImportMode): Promise<void>;
 }
 
-export function packAssetId(packId: string, path: string): string {
-  return `${packId}:${path}`;
-}
-
-function storedAsset(packId: string, asset: ImportedPackAsset): StoredPackAsset {
-  return { assetId: packAssetId(packId, asset.path), packId, path: asset.path, mimeType: asset.mimeType, dataUrl: asset.dataUrl };
-}
-
-function ensureStore(database: IDBDatabase, transaction: IDBTransaction, name: string, keyPath: string): IDBObjectStore {
-  return database.objectStoreNames.contains(name) ? transaction.objectStore(name) : database.createObjectStore(name, { keyPath });
-}
-
-function ensureIndex(store: IDBObjectStore, name: string, keyPath: string): void {
-  if (!store.indexNames.contains(name)) store.createIndex(name, keyPath, { unique: false });
-}
-
-let databaseConnection: IDBDatabase | undefined;
-let databasePromise: Promise<IDBDatabase> | undefined;
-
-function openDb(): Promise<IDBDatabase> {
-  if (databaseConnection) return Promise.resolve(databaseConnection);
-  if (databasePromise) return databasePromise;
-
-  databasePromise = new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
-      const database = request.result;
-      if (database.objectStoreNames.contains('settings')) database.deleteObjectStore('settings');
-      const upgradeTransaction = request.transaction;
-      if (!upgradeTransaction) throw new Error('IndexedDB upgrade transaction is unavailable.');
-
-      const attempts = ensureStore(database, upgradeTransaction, 'attempts', 'attemptId');
-      ensureIndex(attempts, 'byQuestionId', 'questionId');
-      ensureIndex(attempts, 'byResult', 'result');
-
-      ensureStore(database, upgradeTransaction, 'bookmarks', 'questionId');
-      ensureStore(database, upgradeTransaction, 'packs', 'packId');
-
-      const packAssets = ensureStore(database, upgradeTransaction, 'packAssets', 'assetId');
-      ensureIndex(packAssets, 'byPackId', 'packId');
-
-      ensureStore(database, upgradeTransaction, 'reviewCards', 'questionId');
-
-      const reviewLogs = ensureStore(database, upgradeTransaction, 'reviewLogs', 'reviewLogId');
-      ensureIndex(reviewLogs, 'byQuestionId', 'questionId');
-      ensureIndex(reviewLogs, 'byReviewedAt', 'reviewedAt');
-    };
-    request.onsuccess = () => {
-      const database = request.result;
-      databaseConnection = database;
-      databasePromise = undefined;
-      database.onversionchange = () => {
-        database.close();
-        if (databaseConnection === database) databaseConnection = undefined;
-        databasePromise = undefined;
-      };
-      resolve(database);
-    };
-    request.onerror = () => {
-      databasePromise = undefined;
-      reject(request.error ?? new Error('Failed to open LoopDeck IndexedDB.'));
-    };
-  });
-  return databasePromise;
-}
-
-async function runTransaction<T>(
-  storeNames: string | string[],
-  mode: IDBTransactionMode,
-  task: (transaction: IDBTransaction) => T
-): Promise<T> {
-  const database = await openDb();
-  return new Promise<T>((resolve, reject) => {
-    const tx = database.transaction(storeNames, mode);
-    let result: T;
-    try {
-      result = task(tx);
-    } catch (error) {
-      try {
-        tx.abort();
-      } catch {
-        /* already inactive */
-      }
-      reject(error);
-      return;
-    }
-    tx.oncomplete = () => resolve(result);
-    tx.onerror = () => reject(tx.error ?? new Error('IndexedDB transaction failed.'));
-    tx.onabort = () => reject(tx.error ?? new Error('IndexedDB transaction was aborted.'));
-  });
-}
-
-async function transaction<T>(
-  storeName: string,
-  mode: IDBTransactionMode,
-  task: (store: IDBObjectStore) => IDBRequest<T> | void
-): Promise<T | void> {
-  const request = await runTransaction<IDBRequest<T> | void>(storeName, mode, (tx) => task(tx.objectStore(storeName)));
-  return request ? request.result : undefined;
-}
-
-async function getAll<T>(storeName: string): Promise<T[]> {
-  const result = await transaction<T[]>(storeName, 'readonly', (store) => store.getAll());
-  return Array.isArray(result) ? result : [];
-}
-
 async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<void> {
   await runTransaction('attempts', 'readwrite', (tx) => {
     const store = tx.objectStore('attempts');
@@ -158,98 +51,6 @@ async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<voi
         cursor.continue();
       };
     }
-  });
-}
-
-async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], strategy: PackAssetWriteStrategy): Promise<void> {
-  await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
-    tx.objectStore('packs').put(pack);
-    const assetStore = tx.objectStore('packAssets');
-    const writeAssets = () => {
-      for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset));
-    };
-
-    if (strategy === 'upsert') {
-      writeAssets();
-      return;
-    }
-
-    const request = assetStore.index('byPackId').openKeyCursor(IDBKeyRange.only(pack.packId));
-    request.onsuccess = () => {
-      const cursor = request.result;
-      if (cursor) {
-        assetStore.delete(cursor.primaryKey);
-        cursor.continue();
-        return;
-      }
-      writeAssets();
-    };
-  });
-}
-
-async function deletePackAndAssets(packId: string): Promise<void> {
-  await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
-    tx.objectStore('packs').delete(packId);
-    const assetStore = tx.objectStore('packAssets');
-    const request = assetStore.index('byPackId').openKeyCursor(IDBKeyRange.only(packId));
-    request.onsuccess = () => {
-      const cursor = request.result;
-      if (!cursor) return;
-      assetStore.delete(cursor.primaryKey);
-      cursor.continue();
-    };
-  });
-}
-
-function validatedPackForStorage(pack: unknown): LoopDeckPack {
-  const result = validatePack(pack);
-  if (result.ok && result.pack) return result.pack;
-  const detail = result.issues
-    .filter((issue) => issue.level === 'error')
-    .map((issue) => issue.message)
-    .join(' ');
-  throw new Error(`Imported pack failed validation before persistence.${detail ? ` ${detail}` : ''}`);
-}
-
-function recoverStoredPacks(packs: unknown[]): LoopDeckPack[] {
-  const recovered: LoopDeckPack[] = [];
-  for (const stored of packs) {
-    const result = validatePack(stored);
-    if (result.ok && result.pack) {
-      recovered.push(result.pack);
-      continue;
-    }
-    console.warn('Ignoring an invalid stored LoopDeck pack during startup recovery.', result.issues);
-  }
-  return recovered;
-}
-
-async function importBackup(rawBackup: unknown, mode: BackupImportMode): Promise<void> {
-  if (mode !== 'merge' && mode !== 'replace') throw new Error('Explicit backup import mode is required.');
-  const backup = validateBackupPayload(rawBackup);
-  await runTransaction([...USER_DATA_STORES], 'readwrite', (tx) => {
-    if (mode === 'replace') {
-      for (const storeName of USER_DATA_STORES) tx.objectStore(storeName).clear();
-    }
-
-    const attempts = tx.objectStore('attempts');
-    for (const attempt of backup.attempts) attempts.put(attempt);
-
-    const bookmarks = tx.objectStore('bookmarks');
-    const importedAt = new Date().toISOString();
-    for (const questionId of backup.bookmarks) bookmarks.put({ questionId, createdAt: importedAt });
-
-    const packs = tx.objectStore('packs');
-    for (const pack of backup.importedPacks) packs.put(pack);
-
-    const packAssets = tx.objectStore('packAssets');
-    for (const asset of backup.importedPackAssets ?? []) packAssets.put(asset);
-
-    const reviewCards = tx.objectStore('reviewCards');
-    for (const card of backup.reviewCards ?? []) reviewCards.put(card);
-
-    const reviewLogs = tx.objectStore('reviewLogs');
-    for (const log of backup.reviewLogs ?? []) reviewLogs.put(log);
   });
 }
 
@@ -288,13 +89,14 @@ export const db: LoopDeckDb = {
   },
   async saveImportedPack(pack) {
     const normalized = validatedPackForStorage(pack);
-    await transaction('packs', 'readwrite', (store) => store.put(normalized));
+    await runTransaction('packs', 'readwrite', (tx) => putPacksInInstallOrder(tx.objectStore('packs'), [normalized]));
   },
   async saveImportedPackWithAssets(pack, assets, strategy) {
     await savePackWithAssets(validatedPackForStorage(pack), assets, strategy);
   },
   async getImportedPacks() {
-    return recoverStoredPacks(await getAll<unknown>('packs'));
+    const rows = await getAll<unknown>('packs');
+    return recoverStoredPacks(rows.sort((left, right) => installedOrder(left) - installedOrder(right)));
   },
   async getImportedPackAssets() {
     return getAll<StoredPackAsset>('packAssets');

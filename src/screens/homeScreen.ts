@@ -1,5 +1,4 @@
 import type { ModuleInfo } from '../core/models';
-import { getVisibleBuiltinModules } from '../packs/builtinNormalizer';
 import { getActiveModules, type ResolvedPackView } from '../packs/packResolver';
 import { button, clear, el } from '../ui/dom';
 import { createUiIcon, iconNameForModule } from '../ui/icons';
@@ -8,7 +7,7 @@ import { buildHomeFolders, homeModuleMatches, type HomeFolder } from './homeFold
 
 const HOME_LAST_MODULE_KEY = 'loopdeck_last_module_v1';
 const HOME_IN_PLAYER_KEY = 'loopdeck_in_player_v1';
-const FOLDER_STATE_PREFIX = 'loopdeck_folder_open_v1_';
+const FOLDER_STATE_PREFIX = 'loopdeck_folder_open_v2_';
 
 function hexToRgba(hexColor: string, alpha: number): string {
   const red = Number.parseInt(hexColor.slice(1, 3), 16);
@@ -37,12 +36,19 @@ function moduleMatches(module: ModuleInfo, query: string): boolean {
   return homeModuleMatches(module, query, moduleMeta(module));
 }
 
-function folderOpen(folderId: string): boolean {
-  return safeGetStorage(FOLDER_STATE_PREFIX + folderId) !== '0';
+function folderStateKey(folder: HomeFolder): string {
+  return FOLDER_STATE_PREFIX + JSON.stringify([folder.kind, folder.id]);
 }
 
-function setFolderOpen(folderId: string, open: boolean): void {
-  safeSetStorage(FOLDER_STATE_PREFIX + folderId, open ? '1' : '0');
+function folderOpen(folder: HomeFolder): boolean {
+  const stored = safeGetStorage(folderStateKey(folder));
+  // Legacy 'other' was ambiguous between authored and synthesized folders.
+  const legacy = folder.id === 'other' ? null : safeGetStorage('loopdeck_folder_open_v1_' + folder.id);
+  return (stored ?? legacy) !== '0';
+}
+
+function setFolderOpen(folder: HomeFolder, open: boolean): void {
+  safeSetStorage(folderStateKey(folder), open ? '1' : '0');
 }
 
 function displayTags(module: ModuleInfo): string[] {
@@ -62,7 +68,7 @@ export function renderHomeScreen(
   safeSetStorage(HOME_IN_PLAYER_KEY, '0');
   let query = '';
 
-  const visibleModules = getVisibleBuiltinModules(getActiveModules(packView));
+  const visibleModules = getActiveModules(packView).filter((module) => module.questionIds.length > 0);
   const modulesById = new Map(visibleModules.map((module) => [module.id, module]));
   const homeFolders = buildHomeFolders(packView.packs, visibleModules);
 
@@ -138,7 +144,7 @@ export function renderHomeScreen(
     const modules = folder.moduleIds.map((id) => modulesById.get(id)).filter((module): module is ModuleInfo => Boolean(module));
     if (!modules.length) return undefined;
 
-    const isOpen = folderOpen(folder.id);
+    const isOpen = folderOpen(folder);
     const shell = el('section', 'folder-shell');
     const head = button('', 'folder-head');
     head.setAttribute('aria-expanded', String(isOpen));
@@ -152,7 +158,7 @@ export function renderHomeScreen(
     const content = el('div', isOpen ? 'folder-content open' : 'folder-content');
     if (isOpen) for (const module of modules) content.append(renderModuleCard(module));
     head.onclick = () => {
-      setFolderOpen(folder.id, !isOpen);
+      setFolderOpen(folder, !isOpen);
       renderList();
     };
     shell.append(head, content);
@@ -185,7 +191,7 @@ export function renderHomeScreen(
   showAll.onclick = () => {
     search.value = '';
     query = '';
-    for (const folder of homeFolders) setFolderOpen(folder.id, true);
+    for (const folder of homeFolders) setFolderOpen(folder, true);
     renderList();
   };
 

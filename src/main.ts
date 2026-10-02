@@ -9,6 +9,7 @@ import { resolveActivePacks, type ResolvedPackView } from './packs/packResolver'
 import { db } from './storage/db';
 import { renderHomeScreen } from './screens/homeScreen';
 import { renderModuleScreen } from './screens/moduleScreen';
+import { disposeInlineQuizzes } from './screens/inlineQuiz';
 import { renderReviewCenter } from './screens/reviewCenter';
 import { renderImportScreen } from './screens/importScreen';
 import { renderGraphsScreen } from './screens/graphsScreen';
@@ -92,6 +93,7 @@ async function loadPacks(): Promise<ResolvedPackView> {
 }
 
 function startRouteRender(route: AppRoute): void {
+  disposeInlineQuizzes(root);
   const lease = routeRenderCoordinator.begin();
   root.inert = true;
   root.setAttribute('aria-busy', 'true');

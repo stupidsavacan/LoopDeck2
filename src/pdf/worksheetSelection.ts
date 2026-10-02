@@ -14,7 +14,7 @@ export interface WorksheetQuestionRange {
 
 export function worksheetQuestionOrdinal(question: Question, index: number): number {
   const number = question.number;
-  return typeof number === 'number' && Number.isFinite(number) && number > 0 ? number : index + 1;
+  return typeof number === 'number' && Number.isSafeInteger(number) && number > 0 ? number : index + 1;
 }
 
 function sortedOrdinals(questions: Question[]): number[] {
@@ -69,17 +69,21 @@ function chunks<T>(values: T[], size: number): T[][] {
 
 export function buildWorksheetRangeOptions(questions: Question[], step = 25): WorksheetRangeOption[] {
   const options: WorksheetRangeOption[] = [{ value: 'all', label: formatRangeLabel(questions, '全範囲') }];
-  if (questions.length <= step) return options;
+  if (!Number.isSafeInteger(step) || step <= 0 || questions.length <= step) return options;
 
   const indexed = questions
     .map((question, index) => ({ question, ordinal: worksheetQuestionOrdinal(question, index), sourceIndex: index }))
     .sort((a, b) => a.ordinal - b.ordinal || a.sourceIndex - b.sourceIndex);
 
+  const overlappingNumbers = new Set(indexed.map((item) => item.ordinal)).size !== indexed.length;
   for (const chunk of chunks(indexed, step)) {
-    const chunkQuestions = chunk.map((item) => item.question);
+    const chunkQuestions = chunk.map((item) => ({ ...item.question, number: item.ordinal }));
     const range = describeWorksheetQuestionRange(chunkQuestions);
     if (!range) continue;
-    options.push({ value: `${range.first}-${range.last}`, label: formatRangeLabel(chunkQuestions, '') });
+    options.push({
+      value: overlappingNumbers ? `ids:${JSON.stringify(chunk.map((item) => item.question.id))}` : `${range.first}-${range.last}`,
+      label: formatRangeLabel(chunkQuestions, '')
+    });
   }
 
   return options;
@@ -96,6 +100,17 @@ function parseRange(value: string | undefined): [number, number] | undefined {
 }
 
 export function filterWorksheetQuestionsByRange(questions: Question[], selectedRange: string): Question[] {
+  if (selectedRange.startsWith('ids:')) {
+    try {
+      const ids: unknown = JSON.parse(selectedRange.slice(4));
+      if (Array.isArray(ids) && ids.every((id) => typeof id === 'string')) {
+        const selected = new Set(ids);
+        return questions.filter((question) => selected.has(question.id));
+      }
+    } catch {
+      /* Invalid stale selection falls back to all questions. */
+    }
+  }
   const parsed = parseRange(selectedRange);
   if (!parsed) return [...questions];
   const [start, end] = parsed;

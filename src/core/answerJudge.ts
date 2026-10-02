@@ -53,8 +53,9 @@ function compactSpaces(value: string): string {
 
 const normalize = (value: string): string => trimEdgeChars(compactSpaces(value.normalize('NFKC').trim())).toLowerCase();
 
-function stripJapaneseSentenceEdges(value: string): string {
-  let normalized = normalize(value);
+function stripJapaneseSentenceEdges(value: string, caseSensitive = false): string {
+  let normalized = trimEdgeChars(compactSpaces(value.normalize('NFKC').trim()));
+  if (!caseSensitive) normalized = normalized.toLowerCase();
   for (const prefix of JAPANESE_PREFIXES) {
     if (normalized.startsWith(prefix)) normalized = normalized.slice(prefix.length);
   }
@@ -96,17 +97,15 @@ function isAcceptableJapaneseExpansion(input: string, target: string): boolean {
   return prefixes.some((prefix) => suffixes.some((suffix) => (prefix || suffix) && input === `${prefix}${target}${suffix}`));
 }
 
-function removePunctuation(value: string): string {
-  return Array.from(value)
-    .filter((char) => !EDGE_CHARS.has(char))
-    .join('');
+export function removeAnswerPunctuation(value: string): string {
+  return value.replace(/\p{P}/gu, '');
 }
 
 function normalizeForRule(value: string, rule: AnswerJudgingRule = {}): string {
   let normalized = value.normalize('NFKC').trim();
-  if (rule.allowJapaneseSentenceEdges) normalized = stripJapaneseSentenceEdges(normalized);
+  if (rule.allowJapaneseSentenceEdges) normalized = stripJapaneseSentenceEdges(normalized, rule.caseSensitive);
   else normalized = trimEdgeChars(compactSpaces(normalized));
-  if (rule.ignorePunctuation) normalized = removePunctuation(normalized);
+  if (rule.ignorePunctuation) normalized = removeAnswerPunctuation(normalized);
   if (rule.ignoreSpaces) normalized = normalized.split(/\s+/).join('');
   if (!rule.caseSensitive) normalized = normalized.toLowerCase();
   return normalized.trim();
@@ -122,7 +121,7 @@ export function getAcceptedAnswers(question: InputQuestion | ChoiceQuestion): st
   for (const value of [question.answer, ...base]) {
     const trimmed = value.trim();
     if (!trimmed) continue;
-    const key = normalizeAnswer(trimmed);
+    const key = normalizeAnswerForQuestion(question, trimmed);
     if (seen.has(key)) continue;
     seen.add(key);
     result.push(trimmed);
@@ -172,11 +171,11 @@ export function judgeAnswerWithRule(question: InputQuestion | ChoiceQuestion, ra
   if (!normalizedInput) return false;
 
   if (mode === 'all_of') {
-    const requiredParts = rule.requiredParts?.map((part) => normalizeForRule(part, rule)).filter(Boolean) ?? [];
-    if (requiredParts.length) return requiredParts.every((part) => normalizedInput.includes(part));
+    const requiredParts = rule.requiredParts?.map((part) => normalizeAnswerForQuestion(question, part)) ?? [];
+    return requiredParts.length > 0 && requiredParts.every((part) => part.length > 0 && normalizedInput.includes(part));
   }
 
-  const normalizedAnswers = acceptedAnswers.map((answer) => normalizeForRule(answer, rule));
+  const normalizedAnswers = acceptedAnswers.map((answer) => normalizeAnswerForQuestion(question, answer));
   if (normalizedAnswers.some((answer) => normalizedInput === answer)) return true;
 
   if (mode === 'exact_phrase' || rule.caseSensitive || mode === 'numeric') return false;
@@ -200,11 +199,12 @@ export function judgeInputAnswer(question: InputQuestion | ChoiceQuestion, rawIn
 
 export function isNearMissAnswer(question: InputQuestion | ChoiceQuestion, rawInput: string): boolean {
   if (judgeInputAnswer(question, rawInput)) return false;
-  const input = normalize(rawInput);
+  if (question.answerJudging?.caseSensitive || question.answerJudging?.mode === 'exact_phrase') return false;
+  const input = normalizeAnswerForQuestion(question, rawInput);
   if (!input) return false;
 
   return inputCandidates(question).some((candidate) => {
-    const answer = normalize(candidate);
+    const answer = normalizeAnswerForQuestion(question, candidate);
     const longestLength = Math.max(input.length, answer.length);
     if (longestLength <= 1) return false;
     const maximumDistance = longestLength >= 5 ? 2 : 1;

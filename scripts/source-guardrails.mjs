@@ -29,26 +29,18 @@ function walk(dir) {
 walk(srcRoot);
 
 const errors = [];
-const warnings = [];
-const FILE_WARNING_LINES = 350;
-const FUNCTION_WARNING_LINES = 180;
+const navigation = [];
 
 function loc(sourceFile, node) {
   const pos = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
   return `${relative(root, sourceFile.fileName)}:${pos.line + 1}:${pos.character + 1}`;
 }
 
-function functionName(node) {
-  if ('name' in node && node.name && ts.isIdentifier(node.name)) return node.name.text;
-  if (ts.isMethodDeclaration(node) && node.name) return node.name.getText();
-  return '<anonymous>';
-}
-
 for (const file of files) {
   const text = readFileSync(file, 'utf8');
   const source = program.getSourceFile(file) ?? ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-  const fileLines = text.split(/\r?\n/).length;
-  if (fileLines > FILE_WARNING_LINES) warnings.push(`${relative(root, file)} has ${fileLines} lines (manual review threshold: ${FILE_WARNING_LINES}).`);
+  const declarations = source.statements.filter(ts.isFunctionDeclaration).filter(node => node.name);
+  navigation.push({ file: relative(root, file), functions: declarations.map(node => `${node.name.text}@${source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1}`) });
 
   if (/\/\/\s*@ts-(?:ignore|expect-error)|\/\*[\s\S]*?@ts-(?:ignore|expect-error)/.test(text)) {
     errors.push(`${relative(root, file)} contains @ts-ignore/@ts-expect-error.`);
@@ -74,15 +66,6 @@ for (const file of files) {
       }
     }
 
-    if (ts.isFunctionLike(node) && node.body) {
-      const start = source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1;
-      const end = source.getLineAndCharacterOfPosition(node.end).line + 1;
-      const length = end - start + 1;
-      if (length > FUNCTION_WARNING_LINES) {
-        warnings.push(`${loc(source, node)} ${functionName(node)} spans ${length} lines (manual review threshold: ${FUNCTION_WARNING_LINES}).`);
-      }
-    }
-
     ts.forEachChild(node, visit);
   }
 
@@ -90,15 +73,11 @@ for (const file of files) {
 }
 
 if (mode === 'report') {
-  if (warnings.length === 0) console.log('No readability hotspots above the review thresholds.');
-  else {
-    console.log('Readability hotspots (informational only):');
-    for (const warning of warnings) console.log(`- ${warning}`);
-  }
+  console.log('Source navigation (no file/function size limits):');
+  for (const item of navigation) console.log(`${item.file}: ${item.functions.join(', ') || '(no top-level functions)'}`);
   process.exit(0);
 }
 
-for (const warning of warnings) console.warn(`warning: ${warning}`);
 if (errors.length > 0) {
   console.error('Source guardrail violations:');
   for (const error of errors) console.error(`- ${error}`);

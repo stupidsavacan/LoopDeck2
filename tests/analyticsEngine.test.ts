@@ -123,23 +123,23 @@ describe('analytics engine', () => {
 
   it('builds the Graphs overview from one pass without changing existing summaries', () => {
     const now = new Date('2026-06-02T12:00:00.000Z');
-    const overview = buildAnalyticsOverview(attempts, modules, questions, { dailyDays: 3, trendDays: 2, slowCorrectMs: 10000, now });
+    const overview = buildAnalyticsOverview(attempts, modules, questions, { dailyDays: 3, trendDays: 2, now });
 
     expect(overview).toMatchObject({ totalAttempts: 5, correct: 2, mistakes: 3 });
     expect(overview.dailyStudyStats).toEqual(buildDailyStudyStats(attempts, 3, now));
     expect(overview.moduleStudyStats).toEqual(buildModuleStudyStats(attempts, modules));
     expect(overview.mistakeTrend).toEqual(buildMistakeTrend(attempts, 2, now));
-    expect(overview.mistakeBreakdown).toEqual(buildMistakeBreakdown(attempts, questions, 10000));
+    expect(overview.mistakeBreakdown).toEqual(buildMistakeBreakdown(attempts, questions));
   });
 
   it('breaks down mistake categories honestly from available data', () => {
-    const breakdown = buildMistakeBreakdown(attempts, questions, 10000);
+    const breakdown = buildMistakeBreakdown(attempts, questions);
     const byId = new Map(breakdown.map((item) => [item.id, item.count]));
 
     expect(byId.get('wrong')).toBe(2);
     expect(byId.get('revealed')).toBe(1);
     expect(byId.get('multi_select')).toBe(2);
-    expect(byId.get('slow_correct')).toBe(1);
+    expect(byId.get('slow_correct')).toBeUndefined();
     expect(byId.get('repeated')).toBe(1);
   });
 });
