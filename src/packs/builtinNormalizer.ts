@@ -225,7 +225,9 @@ function normalizeModule(rawModule: unknown, questionsByModule: Map<string, stri
       rawModule.preferredAnswerFormat === 'choice' ||
       rawModule.preferredAnswerFormat === 'input'
         ? rawModule.preferredAnswerFormat
-        : undefined,
+        : LEAP_MODULE_IDS.has(id)
+          ? 'choice'
+          : undefined,
     color: asString(rawModule.color).trim() || undefined,
     accent: asString(rawModule.accent).trim() || presentation?.accent,
     accentColor: asString(rawModule.accentColor).trim() || undefined,

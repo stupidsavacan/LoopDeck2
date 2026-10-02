@@ -1,6 +1,7 @@
 import type { FolderInfo, LoopDeckPack, ModuleInfo } from '../core/models';
 
 export type HomeFolder = {
+  kind: 'authored' | 'fallback';
   id: string;
   title: string;
   description: string;
@@ -87,6 +88,7 @@ export function buildHomeFolders(packs: LoopDeckPack[], visibleModules: ModuleIn
     for (const moduleId of moduleIds) placed.add(moduleId);
     const modules = moduleIds.map((moduleId) => modulesById.get(moduleId)).filter((module): module is ModuleInfo => Boolean(module));
     folders.push({
+      kind: 'authored',
       id: folder.id,
       title: folder.title,
       description: folder.description ?? '追加で読み込んだ教材',
@@ -99,6 +101,7 @@ export function buildHomeFolders(packs: LoopDeckPack[], visibleModules: ModuleIn
   if (fallbackIds.length) {
     const modules = fallbackIds.map((moduleId) => modulesById.get(moduleId)).filter((module): module is ModuleInfo => Boolean(module));
     folders.push({
+      kind: 'fallback',
       id: OTHER_HOME_FOLDER.id,
       title: OTHER_HOME_FOLDER.title,
       description: OTHER_HOME_FOLDER.description ?? '',

@@ -181,7 +181,7 @@ describe('module screen study preferences', () => {
     change(count);
     range.value = '1-25';
     change(range);
-    category.value = 'A';
+    category.value = JSON.stringify(['category', 'A']);
     change(category);
     answer.value = 'input';
     change(answer);
@@ -192,7 +192,7 @@ describe('module screen study preferences', () => {
     expect(stored).toMatchObject({
       questionLimit: 20,
       selectedRange: '1-25',
-      selectedCategory: 'A',
+      selectedCategory: JSON.stringify(['category', 'A']),
       answerFormat: 'input',
       shuffle: false
     });
@@ -207,7 +207,7 @@ describe('module screen study preferences', () => {
     );
     expect(fieldSelect(root, '\u554f\u984c\u6570').value).toBe('20');
     expect(fieldSelect(root, '\u7bc4\u56f2').value).toBe('1-25');
-    expect(fieldSelect(root, '\u30ab\u30c6\u30b4\u30ea').value).toBe('A');
+    expect(fieldSelect(root, '\u30ab\u30c6\u30b4\u30ea').value).toBe(JSON.stringify(['category', 'A']));
     expect(fieldSelect(root, '\u56de\u7b54\u5f62\u5f0f').value).toBe('input');
     expect(settingCheckbox(root, '\u30b7\u30e3\u30c3\u30d5\u30eb').checked).toBe(false);
   });

@@ -145,6 +145,25 @@ async function getAll<T>(storeName: string): Promise<T[]> {
   return Array.isArray(result) ? result : [];
 }
 
+function installedOrder(row: unknown): number {
+  if (typeof row !== 'object' || row === null) return 0;
+  const value = (row as { installedOrder?: unknown }).installedOrder;
+  return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : 0;
+}
+
+/** Allocate priority inside the same write transaction, including concurrent tabs. */
+function putPacksInInstallOrder(store: IDBObjectStore, packs: LoopDeckPack[]): void {
+  const request = store.getAll();
+  request.onsuccess = () => {
+    try {
+      let order = request.result.reduce((max: number, row: unknown) => Math.max(max, installedOrder(row)), 0);
+      for (const pack of packs) store.put({ ...pack, installedOrder: ++order });
+    } catch {
+      store.transaction.abort();
+    }
+  };
+}
+
 async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<void> {
   await runTransaction('attempts', 'readwrite', (tx) => {
     const store = tx.objectStore('attempts');
@@ -163,7 +182,7 @@ async function deleteAttemptsByResult(results: Attempt['result'][]): Promise<voi
 
 async function savePackWithAssets(pack: LoopDeckPack, assets: ImportedPackAsset[], strategy: PackAssetWriteStrategy): Promise<void> {
   await runTransaction(['packs', 'packAssets'], 'readwrite', (tx) => {
-    tx.objectStore('packs').put(pack);
+    putPacksInInstallOrder(tx.objectStore('packs'), [pack]);
     const assetStore = tx.objectStore('packAssets');
     const writeAssets = () => {
       for (const asset of assets) assetStore.put(storedAsset(pack.packId, asset));
@@ -214,7 +233,7 @@ function validatedPackForStorage(pack: unknown): LoopDeckPack {
 function recoverStoredPacks(packs: unknown[]): LoopDeckPack[] {
   const recovered: LoopDeckPack[] = [];
   for (const stored of packs) {
-    const result = validatePack(stored);
+    const result = validatePack(stored, 'stored');
     if (result.ok && result.pack) {
       recovered.push(result.pack);
       continue;
@@ -240,7 +259,7 @@ async function importBackup(rawBackup: unknown, mode: BackupImportMode): Promise
     for (const questionId of backup.bookmarks) bookmarks.put({ questionId, createdAt: importedAt });
 
     const packs = tx.objectStore('packs');
-    for (const pack of backup.importedPacks) packs.put(pack);
+    putPacksInInstallOrder(packs, backup.importedPacks);
 
     const packAssets = tx.objectStore('packAssets');
     for (const asset of backup.importedPackAssets ?? []) packAssets.put(asset);
@@ -288,13 +307,14 @@ export const db: LoopDeckDb = {
   },
   async saveImportedPack(pack) {
     const normalized = validatedPackForStorage(pack);
-    await transaction('packs', 'readwrite', (store) => store.put(normalized));
+    await runTransaction('packs', 'readwrite', (tx) => putPacksInInstallOrder(tx.objectStore('packs'), [normalized]));
   },
   async saveImportedPackWithAssets(pack, assets, strategy) {
     await savePackWithAssets(validatedPackForStorage(pack), assets, strategy);
   },
   async getImportedPacks() {
-    return recoverStoredPacks(await getAll<unknown>('packs'));
+    const rows = await getAll<unknown>('packs');
+    return recoverStoredPacks(rows.sort((left, right) => installedOrder(left) - installedOrder(right)));
   },
   async getImportedPackAssets() {
     return getAll<StoredPackAsset>('packAssets');

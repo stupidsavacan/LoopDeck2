@@ -6,9 +6,10 @@ import {
   buildWorksheetRangeOptions,
   filterWorksheetQuestionsByRange,
   formatWorksheetModuleLabel,
-  shuffleWorksheetQuestions
+  shuffleWorksheetQuestions,
+  worksheetQuestionOrdinal
 } from '../pdf/worksheetSelection';
-import type { ResolvedPackView } from '../packs/packResolver';
+import { getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { saveBlob, type SaveProgressReporter } from '../platform/fileSave';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
@@ -59,10 +60,9 @@ async function savePdf(blob: Blob, filename: string, progress: SaveProgressRepor
   await saveBlob(blob, filename, { idPrefix: 'worksheet', progress });
 }
 
-function supportedQuestions(module: ModuleInfo, questionsById: ReadonlyMap<string, Question>): Question[] {
-  return module.questionIds
-    .map((questionId) => questionsById.get(questionId))
-    .filter((question): question is Question => Boolean(question))
+function supportedQuestions(module: ModuleInfo, packView: ResolvedPackView): Question[] {
+  return getQuestionsForModule(packView, module)
+    .map((question, index) => ({ ...question, number: worksheetQuestionOrdinal(question, index) }))
     .filter(isJapaneseToEnglishWorksheetQuestion);
 }
 
@@ -81,7 +81,7 @@ function worksheetModuleOptions(packView: ResolvedPackView): WorksheetModuleOpti
     const packId = packView.modulePackIdById.get(module.id);
     const pack = packId ? packView.packById.get(packId) : undefined;
     if (!packId || !pack) continue;
-    const questions = supportedQuestions(module, packView.questionById);
+    const questions = supportedQuestions(module, packView);
     if (!questions.length) continue;
     options.push({ packId, module, questions, label: formatWorksheetModuleLabel(module, questions) });
   }

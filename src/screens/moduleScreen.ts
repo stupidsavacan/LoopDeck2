@@ -1,4 +1,5 @@
 import { buildChoiceCandidateIndex } from '../core/choiceGenerator';
+import { encodeStudyCategory } from '../core/studyCategory';
 import { buildWrongAnswerLookupIndexForStudyMode } from '../core/wrongAnswerExplanation';
 import type { Attempt, ConcreteStudyQuestionMode, ModuleInfo, Question, StudySettings } from '../core/models';
 import {
@@ -246,7 +247,7 @@ export async function renderModuleScreen(
     questionModes
   });
   const persistStudyPreferences = () => {
-    if (modulePackId) writeStudyPreferences(modulePackId, module.id, settings);
+    if (modulePackId && !writeStudyPreferences(modulePackId, module.id, settings)) toast('学習設定を保存できませんでした。');
   };
 
   clear(root);
@@ -332,7 +333,7 @@ export async function renderModuleScreen(
   categoryField.select.append(allCategory);
   for (const category of categories) {
     const option = el('option', '', category) as HTMLOptionElement;
-    option.value = category;
+    option.value = encodeStudyCategory(category);
     categoryField.select.append(option);
   }
   categoryField.select.value = settings.selectedCategory ?? 'all';
@@ -413,14 +414,19 @@ export async function renderModuleScreen(
       saveStoredSession(module.id, next);
       mountSession(next);
     };
-    renderInlineQuiz(quizMount, session, {
-      onSessionChange: update,
-      onSessionCheckpoint: (checkpoint) => saveStoredSession(module.id, checkpoint),
-      onComplete: () => {
-        clearStoredSession(module.id);
-        rerender();
-      }
-    });
+    renderInlineQuiz(
+      quizMount,
+      session,
+      {
+        onSessionChange: update,
+        onSessionCheckpoint: (checkpoint) => saveStoredSession(module.id, checkpoint),
+        onComplete: () => {
+          clearStoredSession(module.id);
+          rerender();
+        }
+      },
+      { isCurrent }
+    );
   }
 
   function startSession(baseSettings: StudySettings, mode: 'normal' | 'review'): void {

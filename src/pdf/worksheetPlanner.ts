@@ -1,5 +1,6 @@
 import { getCorrectAnswer } from '../core/answerJudge';
 import type { InputQuestion, ModuleInfo, Question } from '../core/models';
+import { worksheetQuestionOrdinal } from './worksheetSelection';
 
 export const WORKSHEET_ROWS_PER_PAGE = 25;
 export const WORKSHEET_PDF_TITLE_MAX_CHARS = 72;
@@ -83,7 +84,7 @@ function createWorksheetRow(question: Question, fallbackIndex: number): Workshee
 
   const prompt = clean(question.prompt);
   const answerText = clean(answer);
-  const sourceNumber = question.number ?? fallbackIndex + 1;
+  const sourceNumber = worksheetQuestionOrdinal(question, fallbackIndex);
 
   if (JAPANESE_TEXT.test(prompt) && ENGLISH_TEXT.test(answerText)) {
     return { sourceNumber, prompt, answer: answerText };
@@ -104,7 +105,7 @@ export function isJapaneseToEnglishWorksheetQuestion(question: Question): boolea
 export function createJapaneseToEnglishWorksheetPlan(module: ModuleInfo, questions: Question[], includeAnswerKey: boolean): WorksheetPlan {
   const rows: WorksheetRow[] = [];
   for (const question of questions) {
-    const row = createWorksheetRow(question, rows.length);
+    const row = createWorksheetRow(question, Math.max(0, module.questionIds.indexOf(question.id)));
     if (row) rows.push(row);
   }
   const questionChunks = chunks(rows, WORKSHEET_ROWS_PER_PAGE);

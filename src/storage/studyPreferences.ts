@@ -1,6 +1,7 @@
 import type { StudyQuestionMode, StudySettings } from '../core/models';
+import { decodeStudyCategory, encodeStudyCategory } from '../core/studyCategory';
 
-const STUDY_PREFERENCES_VERSION = 1;
+const STUDY_PREFERENCES_VERSION = 2;
 const QUESTION_LIMITS = new Set<StudySettings['questionLimit']>([10, 20, 50, 'all']);
 const ANSWER_FORMATS = new Set(['auto', 'choice', 'input']);
 const BOOLEAN_KEYS = ['shuffle', 'autoNext', 'autoRevealAfterIdle', 'showExample', 'showNumber', 'showCategory'] as const;
@@ -12,7 +13,7 @@ type StoredStudySettings = Pick<
 >;
 
 export interface StoredStudyPreferencesV1 {
-  version: 1;
+  version: 1 | 2;
   settings: Partial<StoredStudySettings>;
   savedAt: string;
 }
@@ -24,7 +25,7 @@ export interface StudyPreferenceSanitizeContext {
 }
 
 export function studyPreferencesKey(packId: string, moduleId: string): string {
-  return `loopdeck_study_prefs_v1_${packId}:${moduleId}`;
+  return `loopdeck_study_prefs_v2_${JSON.stringify([packId, moduleId])}`;
 }
 
 export function readStudyPreferences(
@@ -33,11 +34,24 @@ export function readStudyPreferences(
   storage: Pick<Storage, 'getItem'> = localStorage
 ): Partial<StudySettings> | undefined {
   try {
-    const raw = storage.getItem(studyPreferencesKey(packId, moduleId));
+    const legacyKey = `loopdeck_study_prefs_v1_${packId}:${moduleId}`;
+    const raw =
+      storage.getItem(studyPreferencesKey(packId, moduleId)) ??
+      (!packId.includes(':') && !moduleId.includes(':') ? storage.getItem(legacyKey) : null);
     if (!raw) return undefined;
     const parsed = JSON.parse(raw) as Partial<StoredStudyPreferencesV1>;
-    if (parsed.version !== STUDY_PREFERENCES_VERSION || !parsed.settings || typeof parsed.settings !== 'object') return undefined;
-    return parsed.settings as Partial<StudySettings>;
+    if (
+      (parsed.version !== STUDY_PREFERENCES_VERSION && parsed.version !== 1) ||
+      !parsed.settings ||
+      typeof parsed.settings !== 'object' ||
+      Array.isArray(parsed.settings)
+    )
+      return undefined;
+    const settings = { ...parsed.settings };
+    if (parsed.version === 1 && settings.selectedCategory && settings.selectedCategory !== 'all') {
+      settings.selectedCategory = encodeStudyCategory(settings.selectedCategory);
+    }
+    return settings as Partial<StudySettings>;
   } catch {
     return undefined;
   }
@@ -103,10 +117,14 @@ export function sanitizeStudyPreferences(
   result.selectedRange =
     typeof stored.selectedRange === 'string' && ranges.has(stored.selectedRange) ? stored.selectedRange : (defaults.selectedRange ?? 'all');
 
-  const categories = new Set(['all', ...context.categories]);
+  const categories = new Set(context.categories.map((category) => category.trim()));
+  const category = decodeStudyCategory(stored.selectedCategory);
   result.selectedCategory =
-    typeof stored.selectedCategory === 'string' && categories.has(stored.selectedCategory)
-      ? stored.selectedCategory
+    typeof stored.selectedCategory === 'string' &&
+    (stored.selectedCategory === 'all' || (category !== undefined && categories.has(category)))
+      ? category
+        ? encodeStudyCategory(category)
+        : 'all'
       : (defaults.selectedCategory ?? 'all');
 
   result.answerFormat =

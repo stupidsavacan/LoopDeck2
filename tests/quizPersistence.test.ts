@@ -37,5 +37,8 @@ describe('quiz persistence service', () => {
     expect(cards[0]).toMatchObject({ questionId: 'q1', moduleId: 'm1', totalReviews: 1, totalWrong: 1 });
     expect(logs).toHaveLength(1);
     expect(logs[0]).toMatchObject({ questionId: 'q1', attemptId: 'attempt-1', result: 'wrong' });
+    expect(logs[0].reviewedAt).toBe(attempt().answeredAt);
+    expect(cards[0].createdAt).toBe(attempt().answeredAt);
+    expect(cards[0].dueAt).toBe('2026-09-27T00:10:00.000Z');
   });
 });

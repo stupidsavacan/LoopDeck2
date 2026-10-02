@@ -50,7 +50,7 @@ export interface ReviewAttemptAggregation {
 export function aggregateReviewAttempts(attempts: Attempt[]): ReviewAttemptAggregation {
   const byQuestion = new Map<string, Attempt[]>();
   const wrongQuestionIds = new Set<string>();
-  const weakModules: Record<string, number> = {};
+  const weakModules: Record<string, number> = Object.create(null);
 
   for (const attempt of attempts) {
     const records = byQuestion.get(attempt.questionId) ?? [];
@@ -87,7 +87,7 @@ function recencyWeight(attempt: Attempt, now: Date, halfLifeDays?: number): numb
   return Math.pow(0.5, ageDays / halfLifeDays);
 }
 
-function answerModeFor(attempt: Pick<Attempt, 'answerMode' | 'input'>): AnswerFormat {
+export function answerModeFor(attempt: Pick<Attempt, 'answerMode' | 'input'>): AnswerFormat {
   if (attempt.answerMode === 'choice' || attempt.answerMode === 'input') return attempt.answerMode;
   return Array.isArray(attempt.input) ? 'choice' : 'input';
 }
@@ -134,7 +134,7 @@ export function getWrongQuestionIds(attempts: Attempt[]): string[] {
   const wrong = attempts
     .filter((attempt) => attempt.result === 'wrong' || attempt.result === 'revealed')
     .map((attempt) => attempt.questionId);
-  return [...new Set(wrong)].reverse();
+  return [...new Set(wrong.reverse())];
 }
 
 export function buildMistakeQuestions(allQuestions: Question[], attempts: Attempt[], aggregation?: ReviewAttemptAggregation): Question[] {
@@ -148,7 +148,7 @@ export function summarizeWeakModules(attempts: Attempt[], aggregation?: ReviewAt
     if (attempt.result === 'correct') return acc;
     acc[attempt.moduleId] = (acc[attempt.moduleId] ?? 0) + 1;
     return acc;
-  }, {});
+  }, Object.create(null));
 }
 
 export function buildReviewQueue(

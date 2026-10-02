@@ -141,8 +141,8 @@ export async function renderReviewCenter(
       showCategory: true
     };
     const session = createSession(reviewModule, items, settings, 'review', questions);
-    const update = (next: QuizSession) => renderInlineQuiz(mount, next, { onSessionChange: update, onComplete: rerender });
-    renderInlineQuiz(mount, session, { onSessionChange: update, onComplete: rerender });
+    const update = (next: QuizSession) => renderInlineQuiz(mount, next, { onSessionChange: update, onComplete: rerender }, { isCurrent });
+    renderInlineQuiz(mount, session, { onSessionChange: update, onComplete: rerender }, { isCurrent });
   }
 
   const srsCard = el('section', 'card action-card');

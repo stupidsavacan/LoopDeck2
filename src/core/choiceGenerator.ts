@@ -1,4 +1,4 @@
-import { getAcceptedAnswers, normalizeAnswer } from './answerJudge';
+import { getAcceptedAnswers, judgeInputAnswer, normalizeAnswer } from './answerJudge';
 import type { ConcreteStudyQuestionMode, InputQuestion, Question } from './models';
 import { presentQuestionForStudy } from './questionPresentation';
 
@@ -58,7 +58,7 @@ function uniqueAnswers(values: string[]): string[] {
   return result;
 }
 
-export function getManualChoiceCandidates(question: Question): string[] | undefined {
+export function getManualChoiceCandidates(question: Question, optionCount = 4): string[] | undefined {
   if (question.type === 'multi_select') return undefined;
   const mode = question.activeStudyMode;
   const manual =
@@ -74,10 +74,10 @@ export function getManualChoiceCandidates(question: Question): string[] | undefi
 
   const wrongChoices = choices.filter((choice) => {
     const normalized = normalizeAnswer(choice);
-    return normalized === correct || !accepted.has(normalized);
+    return normalized === correct || (!accepted.has(normalized) && !judgeInputAnswer(question, choice));
   });
 
-  if (wrongChoices.length < 4) return undefined;
+  if (wrongChoices.length < optionCount) return undefined;
   return wrongChoices;
 }
 
@@ -125,7 +125,7 @@ export function buildGeneratedChoiceOptions(
   if (!correct) return undefined;
   const correctOption: GeneratedChoiceOption = { text: correct, kind: 'correct' };
 
-  const manualChoices = getManualChoiceCandidates(question);
+  const manualChoices = getManualChoiceCandidates(question, optionCount);
   if (manualChoices) {
     const correctKey = normalizeAnswer(correct);
     const distractors = manualChoices.filter((choice) => normalizeAnswer(choice) !== correctKey);
@@ -151,7 +151,7 @@ export function buildGeneratedChoiceOptions(
     });
 
     for (const candidate of shuffle([...candidates], random)) {
-      if (seen.has(candidate.normalizedAnswer)) continue;
+      if (seen.has(candidate.normalizedAnswer) || judgeInputAnswer(question, candidate.answer)) continue;
       seen.add(candidate.normalizedAnswer);
       distractors.push({
         text: candidate.answer,

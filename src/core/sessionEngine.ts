@@ -1,5 +1,6 @@
 import { buildChoiceCandidateIndex, type ChoiceCandidateIndex } from './choiceGenerator';
 import type { Attempt, ModuleInfo, Question, StudySettings } from './models';
+import { decodeStudyCategory } from './studyCategory';
 import { getSupportedStudyQuestionModes, presentQuestionForStudy, resolveConcreteStudyQuestionMode } from './questionPresentation';
 import { buildWrongAnswerLookupIndexForStudyMode, type WrongAnswerLookupIndex } from './wrongAnswerExplanation';
 
@@ -41,7 +42,7 @@ function idSet(values?: Iterable<string>): Set<string> | undefined {
   return values ? new Set(values) : undefined;
 }
 function questionOrdinal(question: Question, index: number): number {
-  return typeof question.number === 'number' && Number.isFinite(question.number) && question.number > 0 ? question.number : index + 1;
+  return typeof question.number === 'number' && Number.isSafeInteger(question.number) && question.number > 0 ? question.number : index + 1;
 }
 function parseRange(value?: string): [number, number] | undefined {
   if (!value || value === 'all' || value === 'wrong' || value === 'bookmarked') return undefined;
@@ -59,7 +60,9 @@ export function buildRangeOptions(questions: Question[], step = 25): StudyRangeO
   const first = Math.min(...ordinals);
   const last = Math.max(...ordinals);
   if (last - first + 1 <= step) return options;
-  for (let start = first; start <= last; start += step) {
+  if (!Number.isSafeInteger(step) || step <= 0) return options;
+  const starts = [...new Set(ordinals.map((ordinal) => first + Math.floor((ordinal - first) / step) * step))].sort((a, b) => a - b);
+  for (const start of starts) {
     const end = Math.min(last, start + step - 1);
     options.push({ value: `${start}-${end}`, label: `${String(start).padStart(3, '0')}〜${String(end).padStart(3, '0')}` });
   }
@@ -72,6 +75,7 @@ export function listQuestionCategories(questions: Question[]): string[] {
 }
 
 export function filterStudyQuestions(questions: Question[], settings: StudySettings, context: StudySelectionContext = {}): Question[] {
+  const ordinals = new Map(questions.map((question, index) => [question.id, questionOrdinal(question, index)]));
   let selected = [...questions];
   const wrong = idSet(context.wrongQuestionIds);
   const bookmarked = idSet(context.bookmarkedQuestionIds);
@@ -84,13 +88,13 @@ export function filterStudyQuestions(questions: Question[], settings: StudySetti
   const parsed = parseRange(range);
   if (parsed) {
     const [start, end] = parsed;
-    selected = selected.filter((question, index) => {
-      const ordinal = questionOrdinal(question, index);
-      return ordinal >= start && ordinal <= end;
+    selected = selected.filter((question) => {
+      const ordinal = ordinals.get(question.id);
+      return ordinal !== undefined && ordinal >= start && ordinal <= end;
     });
   }
-  const category = settings.selectedCategory?.trim();
-  return category && category !== 'all' ? selected.filter((question) => question.category === category) : selected;
+  const category = decodeStudyCategory(settings.selectedCategory);
+  return category ? selected.filter((question) => question.category?.trim() === category) : selected;
 }
 
 export function selectSessionQuestions(questions: Question[], settings: StudySettings, context: StudySelectionContext = {}): Question[] {

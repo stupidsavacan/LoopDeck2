@@ -221,6 +221,7 @@ export function hasTwoSidedStudyData(question: Question): boolean {
 
 export function getSupportedStudyQuestionModes(question: Question): ConcreteStudyQuestionMode[] {
   const modes: ConcreteStudyQuestionMode[] = ['as_stored'];
+  if (question.type !== 'input') return modes;
 
   if (!hasTwoSidedStudyData(question)) {
     const auto = autoLanguageStudyData(question);

@@ -1,5 +1,5 @@
 import { writeDebugLog } from '../debug/debugLog';
-import { getCorrectAnswer, isNearMissAnswer, judgeQuestion } from '../core/answerJudge';
+import { getCorrectAnswer, isNearMissAnswer, judgeInputAnswer, judgeQuestion, normalizeAnswerForQuestion } from '../core/answerJudge';
 import { buildGeneratedChoiceOptions, type GeneratedChoiceOption } from '../core/choiceGenerator';
 import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
 import { createIdleRevealController, type IdleRevealController } from '../core/idleRevealController';
@@ -20,20 +20,26 @@ export interface InlineQuizCallbacks {
 }
 export interface InlineQuizOptions {
   resolveImageAsset?: QuestionImageAssetResolver;
+  isCurrent?: () => boolean;
 }
 
-const DEFAULT_CHOICE_MODULE_IDS = new Set(['leap', 'leap_final']);
 const AUTO_REVEAL_IDLE_MS = 10_000;
 const renderCleanupByContainer = new WeakMap<HTMLElement, () => void>();
 const renderTokenByContainer = new WeakMap<HTMLElement, symbol>();
+export function disposeInlineQuizzes(root: HTMLElement): void {
+  for (const container of [root, ...root.querySelectorAll<HTMLElement>('[data-inline-quiz]')]) {
+    renderCleanupByContainer.get(container)?.();
+  }
+}
 function effectiveAnswerMode(
   question: Question,
   requested: AnswerFormat = 'auto',
-  generatedChoices?: readonly GeneratedChoiceOption[]
+  generatedChoices?: readonly GeneratedChoiceOption[],
+  nativeChoiceCount = 0
 ): AnswerFormat {
   if (question.type === 'multi_select') return 'choice';
   if (requested === 'input') return 'input';
-  if (question.type === 'choice') return 'choice';
+  if (question.type === 'choice') return nativeChoiceCount >= 2 ? 'choice' : 'input';
   return generatedChoices?.length ? 'choice' : 'input';
 }
 function canJudgeNearMiss(question: Question): question is InputQuestion | ChoiceQuestion {
@@ -78,6 +84,7 @@ export function renderInlineQuiz(
   renderCleanupByContainer.delete(container);
   const renderToken = Symbol('inline-quiz-render');
   renderTokenByContainer.set(container, renderToken);
+  container.dataset.inlineQuiz = 'true';
   clear(container);
   if (isSessionComplete(session)) {
     const done = el('div', 'quiz-card done');
@@ -99,12 +106,22 @@ export function renderInlineQuiz(
   const requestedAnswerFormat = session.settings.answerFormat ?? 'auto';
   const shouldGenerateChoices =
     question.type === 'input' &&
-    (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && DEFAULT_CHOICE_MODULE_IDS.has(question.moduleId)));
+    (requestedAnswerFormat === 'choice' || (requestedAnswerFormat === 'auto' && session.module.preferredAnswerFormat === 'choice'));
   const generatedChoices =
     question.type === 'input' && shouldGenerateChoices
       ? buildGeneratedChoiceOptions(question, session.choicePool, 4, Math.random, session.choiceCandidateIndex)
       : undefined;
-  const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices);
+  const seenNativeChoices = new Set<string>();
+  const nativeChoices =
+    question.type === 'choice'
+      ? [question.answer, ...question.choices].filter((choice) => {
+          const key = normalizeAnswerForQuestion(question, choice);
+          if (!key || seenNativeChoices.has(key) || (choice !== question.answer && judgeInputAnswer(question, choice))) return false;
+          seenNativeChoices.add(key);
+          return true;
+        })
+      : [];
+  const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices, nativeChoices.length);
   const card = el('section', 'quiz-card');
   const answerArea = el('div', 'answer-area');
   const controls = el('div', 'quiz-controls');
@@ -121,9 +138,10 @@ export function renderInlineQuiz(
   let idleController: IdleRevealController | undefined;
   let persistenceInFlight = false;
   let persistenceComplete = false;
+  let autoNextTimer: number | undefined;
 
   function isCurrentRender(): boolean {
-    return renderTokenByContainer.get(container) === renderToken && card.isConnected && container.contains(card);
+    return renderTokenByContainer.get(container) === renderToken && container.contains(card) && (options.isCurrent?.() ?? true);
   }
 
   function currentRenderExcludedMs(now = Date.now()): number {
@@ -136,6 +154,7 @@ export function renderInlineQuiz(
   }
 
   function checkpointCurrentTiming(now = Date.now()): void {
+    if (!isCurrentRender()) return;
     callbacks.onSessionCheckpoint?.({
       ...session,
       currentElapsedMs: currentAnswerElapsedMs(now),
@@ -144,11 +163,16 @@ export function renderInlineQuiz(
     });
   }
 
-  function cleanup(): void {
+  function stopObserving(): void {
     idleController?.dispose();
     idleController = undefined;
     document.removeEventListener('visibilitychange', handleVisibilityChange);
     window.removeEventListener('pagehide', handlePageHide);
+  }
+
+  function cleanup(): void {
+    stopObserving();
+    if (autoNextTimer !== undefined) window.clearTimeout(autoNextTimer);
     if (renderTokenByContainer.get(container) === renderToken) {
       renderTokenByContainer.delete(container);
       renderCleanupByContainer.delete(container);
@@ -160,7 +184,7 @@ export function renderInlineQuiz(
   }
 
   function handleVisibilityChange(): void {
-    if (answered || moved) return;
+    if (answered || moved || !isCurrentRender()) return;
     const now = Date.now();
     if (document.hidden) {
       checkpointCurrentTiming(now);
@@ -187,19 +211,20 @@ export function renderInlineQuiz(
   }
 
   function nextQuestion(): void {
-    if (moved || !persistenceComplete) return;
+    if (moved || !persistenceComplete || !isCurrentRender()) return;
     moved = true;
     cleanup();
     callbacks.onSessionChange(advanceSession(session, pendingAttempt));
   }
 
   async function persistAttempt(attempt: Attempt): Promise<void> {
-    if (persistenceInFlight || persistenceComplete) return;
+    if (persistenceInFlight || persistenceComplete || !isCurrentRender()) return;
     persistenceInFlight = true;
     resultArea.querySelector('.persistence-error')?.remove();
     try {
       await persistAttemptAndReview(attempt, db);
       persistenceComplete = true;
+      if (!isCurrentRender()) return;
       try {
         callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
       } catch (error) {
@@ -218,8 +243,9 @@ export function renderInlineQuiz(
         nextButton.disabled = false;
         nextButton.hidden = false;
       }
-      if (attempt.result === 'correct' && session.settings.autoNext) window.setTimeout(nextQuestion, 650);
+      if (attempt.result === 'correct' && session.settings.autoNext) autoNextTimer = window.setTimeout(nextQuestion, 650);
     } catch (error) {
+      if (!isCurrentRender()) return;
       const detail = error instanceof Error ? error.message : String(error);
       console.error('Failed to persist answer/SRS state', error);
       writeDebugLog({
@@ -244,9 +270,9 @@ export function renderInlineQuiz(
   }
 
   function record(answer: string | string[], revealed = false, generatedChoice?: GeneratedChoiceOption): void {
-    if (answered) return;
+    if (answered || !isCurrentRender()) return;
     answered = true;
-    cleanup();
+    stopObserving();
     lockAnswerControls();
     const elapsedMs = currentAnswerElapsedMs();
     const totalHiddenTimeExcludedMs = session.currentHiddenTimeExcludedMs + currentRenderExcludedMs();
@@ -289,14 +315,34 @@ export function renderInlineQuiz(
     bookmark.classList.toggle('selected', bookmarked);
   };
   renderBookmark();
-  void db.hasBookmark(question.id).then((enabled) => {
-    bookmarked = enabled;
-    renderBookmark();
-  });
+  bookmark.disabled = true;
+  void db
+    .hasBookmark(question.id)
+    .then((enabled) => {
+      if (!isCurrentRender()) return;
+      bookmarked = enabled;
+      renderBookmark();
+      bookmark.disabled = false;
+    })
+    .catch(() => {
+      if (isCurrentRender()) toast('ブックマークを読み込めませんでした。');
+    });
   bookmark.onclick = async () => {
+    if (!isCurrentRender() || bookmark.disabled) return;
+    const previous = bookmarked;
     bookmarked = !bookmarked;
-    await db.setBookmark(question.id, bookmarked);
     renderBookmark();
+    bookmark.disabled = true;
+    try {
+      await db.setBookmark(question.id, bookmarked);
+    } catch {
+      if (!isCurrentRender()) return;
+      bookmarked = previous;
+      renderBookmark();
+      toast('ブックマークを保存できませんでした。');
+    } finally {
+      if (isCurrentRender()) bookmark.disabled = false;
+    }
   };
 
   if (session.settings.showExample && question.example) answerArea.append(el('p', 'example-line', question.example));
@@ -328,11 +374,13 @@ export function renderInlineQuiz(
     const submit = button('回答する', 'btn primary');
     submit.onclick = () => record(input.value);
     answerArea.append(input, submit);
-    window.setTimeout(() => input.focus(), 0);
+    window.setTimeout(() => {
+      if (isCurrentRender()) input.focus();
+    }, 0);
   } else if (question.type === 'choice' || generatedChoices) {
     const list = el('div', 'choice-list');
     if (question.type === 'choice') {
-      for (const choice of question.choices) {
+      for (const choice of nativeChoices) {
         const choiceButton = button(choice, 'choice-btn');
         choiceButton.onclick = () => {
           selectedAnswer = choice;
@@ -373,13 +421,13 @@ export function renderInlineQuiz(
     answerArea.append(list, submit);
   }
 
-  const hintText = question.example ?? question.explanation;
+  const hintText = session.settings.showExample ? undefined : question.example;
   const hint = button('', 'btn ghost');
   appendIconLabel(hint, 'hint', 'ヒント');
   hint.setAttribute('aria-label', 'ヒント');
   hint.disabled = !hintText;
   hint.onclick = () => {
-    if (!hintText || resultArea.querySelector('.hint-panel')) return;
+    if (!isCurrentRender() || !hintText || resultArea.querySelector('.hint-panel')) return;
     resultArea.prepend(el('p', 'hint-panel', hintText));
     resetIdleReveal();
   };
@@ -401,11 +449,15 @@ export function renderInlineQuiz(
   controls.append(next);
 
   card.append(renderQuizMeta(session, question), tools, el('h3', 'question-prompt', question.prompt));
+  if (requestedAnswerFormat === 'choice' && answerMode === 'input') {
+    card.append(el('p', 'notice', '安全な選択肢が不足しているため、この問題は入力で回答してください。'));
+  }
   const image = renderQuestionImage(question, options.resolveImageAsset ?? resolveActiveQuestionImageAsset);
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
   container.append(card);
   window.requestAnimationFrame(() => {
+    if (!isCurrentRender()) return;
     container.scrollIntoView?.({ block: 'start', inline: 'nearest', behavior: 'auto' });
   });
   document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -414,7 +466,7 @@ export function renderInlineQuiz(
   if (session.settings.autoRevealAfterIdle) {
     idleController = createIdleRevealController({
       timeoutMs: AUTO_REVEAL_IDLE_MS,
-      isEligible: () => !answered && !moved && isCurrentRender(),
+      isEligible: () => !answered && !moved && card.isConnected && isCurrentRender(),
       onSuspend: (elapsed) => {
         suspendedTimeExcludedMs += elapsed;
         checkpointCurrentTiming();

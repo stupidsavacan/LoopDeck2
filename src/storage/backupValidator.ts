@@ -211,7 +211,7 @@ export function validateBackupPayload(value: unknown): LoopDeckBackup {
 
   const rawPacks = requireArray(value.importedPacks, 'importedPacks');
   const importedPacks = rawPacks.map((pack, index) => {
-    const result = validatePack(pack);
+    const result = validatePack(pack, 'stored');
     if (!result.ok || !result.pack) {
       const detail = result.issues
         .filter((entry) => entry.level === 'error')

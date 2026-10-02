@@ -13,6 +13,7 @@ import type {
   TwoSidedStudyData
 } from '../core/models';
 import { extensionOf, isSafeImageAssetRef, isSafePackPath } from './assetSafety';
+import { judgeInputAnswer, normalizeAnswer, normalizeAnswerForQuestion } from '../core/answerJudge';
 import { FORBIDDEN_EXTENSIONS, type PackValidationIssue, type PackValidationResult } from './packTypes';
 
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
@@ -235,7 +236,7 @@ function parseQuestion(raw: unknown, index: number, ids: Set<string>, issues: Pa
   const imageAsset = optionalString(raw, 'imageAsset', path, issues);
   if (imageAsset !== undefined && !isSafeImageAssetRef(imageAsset))
     issues.push(issue(`${path}.imageAsset must be a safe local supported image path.`, imageAsset));
-  const category = optionalString(raw, 'category', path, issues);
+  const category = optionalString(raw, 'category', path, issues)?.trim();
   const number = optionalFiniteNumber(raw, 'number', path, issues);
   const example = optionalString(raw, 'example', path, issues);
   const sides = parseSides(raw.sides, `${path}.sides`, issues);
@@ -359,13 +360,14 @@ function parseFolders(value: unknown, issues: PackValidationIssue[]): FolderInfo
       issues.push(issue(`${path}.id is required.`));
       return;
     }
-    if (ids.has(raw.id)) issues.push(issue(`Duplicate folder id: ${raw.id}`));
-    ids.add(raw.id);
+    const id = raw.id.trim();
+    if (ids.has(id)) issues.push(issue(`Duplicate folder id: ${id}`));
+    ids.add(id);
     if (raw.title !== undefined && typeof raw.title !== 'string') issues.push(issue(`${path}.title must be a string.`));
     const title = typeof raw.title === 'string' && nonEmpty(raw.title) ? raw.title : raw.id;
     const description = normalizedOptionalString(raw.description, undefined, issues, path + '.description');
     const tags = normalizedOptionalStringArray(raw.tags, issues, path + '.tags');
-    result.push({ id: raw.id, title, ...(description !== undefined ? { description } : {}), ...(tags ? { tags } : {}) });
+    result.push({ id, title, ...(description !== undefined ? { description } : {}), ...(tags ? { tags } : {}) });
   });
   return result;
 }
@@ -472,8 +474,10 @@ export function validatePackFiles(paths: string[]): PackValidationIssue[] {
   return issues;
 }
 
-export function validatePack(rawPack: unknown): PackValidationResult {
+export function validatePack(rawPack: unknown, source: 'import' | 'stored' = 'import'): PackValidationResult {
   const issues: PackValidationIssue[] = [];
+  // New authoring constraints must not hide already installed legacy content.
+  const contractIssue = (message: string): PackValidationIssue => ({ level: source === 'stored' ? 'warning' : 'error', message });
   if (!isObject(rawPack)) return { ok: false, issues: [issue('Pack must be an object.')] };
 
   if (rawPack.packVersion !== 1) issues.push(issue('packVersion must be 1.'));
@@ -489,7 +493,39 @@ export function validatePack(rawPack: unknown): PackValidationResult {
   else
     rawPack.questions.forEach((raw, index) => {
       const parsed = parseQuestion(raw, index, questionIds, issues);
-      if (parsed) questions.push(parsed);
+      if (parsed) {
+        if (parsed.number !== undefined && (!Number.isSafeInteger(parsed.number) || parsed.number <= 0))
+          issues.push(contractIssue(`Question ${parsed.id}.number must be a positive safe integer.`));
+        if (
+          parsed.type !== 'multi_select' &&
+          parsed.answerJudging?.mode === 'all_of' &&
+          parsed.answerJudging.requiredParts?.some((part) => !normalizeAnswerForQuestion(parsed, part))
+        )
+          issues.push(contractIssue(`Question ${parsed.id} required parts must remain non-empty under answer normalization.`));
+        if (parsed.type !== 'input') {
+          const keys = parsed.choices.map((choice) =>
+            parsed.type === 'choice' ? normalizeAnswerForQuestion(parsed, choice) : normalizeAnswer(choice)
+          );
+          if (keys.some((key) => !key) || new Set(keys).size !== keys.length) {
+            issues.push(contractIssue(`Question ${parsed.id} choices must be non-empty and distinct under answer normalization.`));
+          }
+          if (parsed.type === 'choice' && parsed.choices.some((choice) => choice !== parsed.answer && judgeInputAnswer(parsed, choice))) {
+            issues.push(contractIssue(`Question ${parsed.id} contains a distractor accepted as correct by its answer judging rule.`));
+          }
+        }
+        if (parsed.type !== 'input' && parsed.supportedStudyModes?.length) {
+          issues.push(contractIssue(`Question ${parsed.id}: reversible study modes are only supported for input questions.`));
+        }
+        if (parsed.type === 'input' && parsed.sides && parsed.sideChoiceCandidates) {
+          for (const mode of ['front_to_back', 'back_to_front'] as const) {
+            const manual = parsed.sideChoiceCandidates[mode];
+            const answerSide = mode === 'front_to_back' ? parsed.sides.back : parsed.sides.front;
+            if (manual && !manual.choices.includes(answerSide.text))
+              issues.push(contractIssue(`Question ${parsed.id}: ${mode} choices must include the directional answer.`));
+          }
+        }
+        questions.push(parsed);
+      }
     });
 
   const folderIds = new Set(folders.map((folder) => folder.id));
@@ -497,6 +533,12 @@ export function validatePack(rawPack: unknown): PackValidationResult {
   const questionById = new Map(questions.map((question) => [question.id, question]));
 
   for (const module of modules) {
+    const ordinals = new Set<number>();
+    module.questionIds.forEach((id, index) => {
+      const ordinal = questionById.get(id)?.number ?? index + 1;
+      if (ordinals.has(ordinal)) issues.push(contractIssue(`Module ${module.id} has duplicate question number: ${ordinal}`));
+      ordinals.add(ordinal);
+    });
     if (module.folderId && !folderIds.has(module.folderId))
       issues.push(issue(`Module ${module.id} references unknown folderId: ${module.folderId}`));
     for (const id of module.questionIds) {
