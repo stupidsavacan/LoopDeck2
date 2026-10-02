@@ -1,9 +1,10 @@
 import { writeDebugLog } from '../debug/debugLog';
-import { getCorrectAnswer, isNearMissAnswer, judgeInputAnswer, judgeQuestion, normalizeAnswerForQuestion } from '../core/answerJudge';
+import { isNearMissAnswer, judgeInputAnswer, judgeQuestion, normalizeAnswerForQuestion } from '../core/answerJudge';
 import { buildGeneratedChoiceOptions, type GeneratedChoiceOption } from '../core/choiceGenerator';
-import type { AnswerFormat, Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
+import type { Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/models';
 import { createIdleRevealController, type IdleRevealController } from '../core/idleRevealController';
-import { scoreAttemptDelta } from '../core/reviewEngine';
+import { buildQuizAttempt, resolveQuizAnswerMode } from '../core/quizAnswer';
+import { createQuizBookmarkButton } from '../ui/quizBookmark';
 import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
 import { buildWrongAnswerFeedback } from '../core/wrongAnswerExplanation';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
@@ -31,47 +32,8 @@ export function disposeInlineQuizzes(root: HTMLElement): void {
     renderCleanupByContainer.get(container)?.();
   }
 }
-function effectiveAnswerMode(
-  question: Question,
-  requested: AnswerFormat = 'auto',
-  generatedChoices?: readonly GeneratedChoiceOption[],
-  nativeChoiceCount = 0
-): AnswerFormat {
-  if (question.type === 'multi_select') return 'choice';
-  if (requested === 'input') return 'input';
-  if (question.type === 'choice') return nativeChoiceCount >= 2 ? 'choice' : 'input';
-  return generatedChoices?.length ? 'choice' : 'input';
-}
 function canJudgeNearMiss(question: Question): question is InputQuestion | ChoiceQuestion {
   return question.type === 'input' || question.type === 'choice';
-}
-
-function buildAttempt(
-  question: Question,
-  result: Attempt['result'],
-  input: string | string[],
-  elapsedMs: number,
-  mode: 'normal' | 'review',
-  answerMode: AnswerFormat,
-  hiddenTimeExcludedMs: number,
-  nearMiss = false
-): Attempt {
-  return {
-    attemptId: `${Date.now()}-${crypto.randomUUID()}`,
-    questionId: question.id,
-    moduleId: question.moduleId,
-    answeredAt: new Date().toISOString(),
-    result,
-    input,
-    answer: getCorrectAnswer(question),
-    elapsedMs,
-    mode,
-    nearMiss,
-    hiddenTimeExcludedMs,
-    priorityDelta: scoreAttemptDelta(result, nearMiss, elapsedMs, answerMode),
-    answerMode,
-    questionMode: question.activeStudyMode ?? 'as_stored'
-  };
 }
 
 export function renderInlineQuiz(
@@ -121,7 +83,7 @@ export function renderInlineQuiz(
           return true;
         })
       : [];
-  const answerMode = effectiveAnswerMode(question, requestedAnswerFormat, generatedChoices, nativeChoices.length);
+  const answerMode = resolveQuizAnswerMode(question, requestedAnswerFormat, generatedChoices, nativeChoices.length);
   const card = el('section', 'quiz-card');
   const answerArea = el('div', 'answer-area');
   const controls = el('div', 'quiz-controls');
@@ -279,7 +241,7 @@ export function renderInlineQuiz(
     const nearMiss =
       !revealed && typeof answer === 'string' && canJudgeNearMiss(activeQuestion) ? isNearMissAnswer(activeQuestion, answer) : false;
     const result: Attempt['result'] = revealed ? 'revealed' : judgeQuestion(activeQuestion, answer) ? 'correct' : 'wrong';
-    const attempt = buildAttempt(
+    const attempt = buildQuizAttempt(
       activeQuestion,
       result,
       revealed ? '' : answer,
@@ -306,44 +268,7 @@ export function renderInlineQuiz(
     void persistAttempt(attempt);
   }
 
-  const bookmark = button('', 'btn ghost bookmark-btn');
-  let bookmarked = false;
-  const renderBookmark = () => {
-    const label = bookmarked ? 'ブックマーク済み' : 'ブックマーク';
-    appendIconLabel(bookmark, 'bookmark', label);
-    bookmark.setAttribute('aria-label', label);
-    bookmark.classList.toggle('selected', bookmarked);
-  };
-  renderBookmark();
-  bookmark.disabled = true;
-  void db
-    .hasBookmark(question.id)
-    .then((enabled) => {
-      if (!isCurrentRender()) return;
-      bookmarked = enabled;
-      renderBookmark();
-      bookmark.disabled = false;
-    })
-    .catch(() => {
-      if (isCurrentRender()) toast('ブックマークを読み込めませんでした。');
-    });
-  bookmark.onclick = async () => {
-    if (!isCurrentRender() || bookmark.disabled) return;
-    const previous = bookmarked;
-    bookmarked = !bookmarked;
-    renderBookmark();
-    bookmark.disabled = true;
-    try {
-      await db.setBookmark(question.id, bookmarked);
-    } catch {
-      if (!isCurrentRender()) return;
-      bookmarked = previous;
-      renderBookmark();
-      toast('ブックマークを保存できませんでした。');
-    } finally {
-      if (isCurrentRender()) bookmark.disabled = false;
-    }
-  };
+  const bookmark = createQuizBookmarkButton(question.id, isCurrentRender);
 
   if (session.settings.showExample && question.example) answerArea.append(el('p', 'example-line', question.example));
   if (answerMode === 'input') {

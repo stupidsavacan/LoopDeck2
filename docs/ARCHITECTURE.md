@@ -8,6 +8,22 @@ This document identifies which repository paths are authoritative and which are 
 - `src/main.ts`: application entry point and stylesheet load order.
 - `tests/`: behavior/regression tests.
 
+For machine navigation, run `npm run code:map` and query the ignored `.codex-code-map.json`. It records source imports, public names, named functions/locations and body hashes. Regenerate it after source changes; it is generated evidence, not source.
+
+The main debugging paths are:
+
+- `src/storage/db.ts`: the stable application storage facade.
+- `src/storage/indexedDb.ts`: connection, schema/index creation and transaction completion/abort handling.
+- `src/storage/packStorage.ts`: pack priority, assets, validation and recovery.
+- `src/storage/backupStorage.ts`: restore transaction composition.
+- `src/storage/sessionStorage.ts`: resume payload read/restore/save/clear, including legacy compatibility.
+- `src/core/studySettings.ts`: study defaults and runtime queue settings.
+- `src/core/quizAnswer.ts`: answer-mode selection and attempt construction.
+- `src/ui/quizBookmark.ts`: bookmark button state and persistence.
+- `src/screens/inlineQuiz.ts`: quiz render ownership, timing, answer/save/next orchestration and input events.
+
+Existing `db.ts` and `moduleScreen.ts` exports remain available through imports/re-exports. Refactoring these paths must preserve storage keys/versions, transaction order, timing, DOM labels and callbacks. Source length and expansion/compression are unrestricted; check correctness with `npm run verify` and browser QA.
+
 The current visual target is the editorial UI. Until the stylesheet-collapse work in Issue #16 is completed, `editorialUi.css` is the final visual-authority layer and is intentionally loaded after the older base/feature/mobile sheets. New visual work should not create another chronological override sheet.
 
 ## Built-in study content
@@ -51,6 +67,6 @@ IndexedDB `loopdeck-db` stores attempts, bookmarks, imported packs/assets, revie
 Two separate localStorage responsibilities must not be conflated:
 
 - `loopdeck_session_<moduleId>` stores in-progress session resume state, including the already-built queue, timing, attempts, and runtime session settings. Queue-generation settings such as range, count, and shuffle are intentionally normalized after the queue has been created.
-- `loopdeck_study_prefs_v1_<packId>:<moduleId>` stores the reusable per-pack/per-module study preferences chosen on the pre-study settings screen. These preferences survive session completion and are validated against the current module when restored.
+- `loopdeck_study_prefs_v2_<JSON([packId,moduleId])>` stores the reusable per-pack/per-module study preferences chosen on the pre-study settings screen. These preferences survive session completion and are validated against the current module when restored. Unambiguous v1 keys remain readable for migration.
 
 Reusable study preferences are intentionally separate from resume state so completing or discarding a session cannot erase the user's next-session defaults, and different packs with the same module ID do not share preferences.

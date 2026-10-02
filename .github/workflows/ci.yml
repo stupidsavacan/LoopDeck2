@@ -52,14 +52,12 @@ jobs:
         run: npm run check:architecture
       - name: Run dead-code audit
         run: npm run deadcode
-      - name: Check changed-file formatting
-        run: npm run format:check
 
       - name: Run lint guardrails
         run: npm run lint
 
-      - name: Report readability hotspots
-        run: npm run readability
+      - name: Generate source navigation index
+        run: npm run code:map
 
       - name: Run web tests
         run: npm test

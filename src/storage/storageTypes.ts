@@ -15,3 +15,5 @@ export interface LoopDeckBackup {
   reviewCards?: ReviewCard[];
   reviewLogs?: ReviewLog[];
 }
+
+export type BackupImportMode = 'merge' | 'replace';
