@@ -16,6 +16,7 @@ export interface StoredStudyPreferencesV1 {
   version: 1 | 2;
   settings: Partial<StoredStudySettings>;
   savedAt: string;
+  contentIdentity?: string;
 }
 
 export interface StudyPreferenceSanitizeContext {
@@ -31,15 +32,19 @@ export function studyPreferencesKey(packId: string, moduleId: string): string {
 export function readStudyPreferences(
   packId: string,
   moduleId: string,
-  storage: Pick<Storage, 'getItem'> = localStorage
+  storage?: Pick<Storage, 'getItem'>,
+  contentIdentity?: string
 ): Partial<StudySettings> | undefined {
   try {
     const legacyKey = `loopdeck_study_prefs_v1_${packId}:${moduleId}`;
     const raw =
-      storage.getItem(studyPreferencesKey(packId, moduleId)) ??
-      (!packId.includes(':') && !moduleId.includes(':') ? storage.getItem(legacyKey) : null);
+      (storage ?? localStorage).getItem(studyPreferencesKey(packId, moduleId)) ??
+      (contentIdentity === undefined && !packId.includes(':') && !moduleId.includes(':')
+        ? (storage ?? localStorage).getItem(legacyKey)
+        : null);
     if (!raw) return undefined;
     const parsed = JSON.parse(raw) as Partial<StoredStudyPreferencesV1>;
+    if (contentIdentity !== undefined && parsed.contentIdentity !== contentIdentity) return undefined;
     if (
       (parsed.version !== STUDY_PREFERENCES_VERSION && parsed.version !== 1) ||
       !parsed.settings ||
@@ -77,15 +82,17 @@ export function writeStudyPreferences(
   packId: string,
   moduleId: string,
   settings: StudySettings,
-  storage: Pick<Storage, 'setItem'> = localStorage
+  storage?: Pick<Storage, 'setItem'>,
+  contentIdentity?: string
 ): boolean {
   try {
     const stored: StoredStudyPreferencesV1 = {
       version: STUDY_PREFERENCES_VERSION,
       settings: storedSettings(settings),
-      savedAt: new Date().toISOString()
+      savedAt: new Date().toISOString(),
+      ...(contentIdentity !== undefined ? { contentIdentity } : {})
     };
-    storage.setItem(studyPreferencesKey(packId, moduleId), JSON.stringify(stored));
+    (storage ?? localStorage).setItem(studyPreferencesKey(packId, moduleId), JSON.stringify(stored));
     return true;
   } catch {
     return false;

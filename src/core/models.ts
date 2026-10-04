@@ -118,6 +118,15 @@ export interface MultiSelectQuestion extends BaseQuestion {
 
 export type Question = InputQuestion | ChoiceQuestion | MultiSelectQuestion;
 
+export interface QuizAnswerSource {
+  packId: string;
+  question: Question;
+  packRevision?: string;
+  resetEpoch?: string;
+  /** null means the source had no stored image; undefined means no asset check. */
+  imageDataUrl?: string | null;
+}
+
 export interface LoopDeckPack {
   packVersion: number;
   packId: string;
@@ -129,6 +138,7 @@ export interface LoopDeckPack {
 }
 
 export interface Attempt {
+  contentRetired?: boolean;
   attemptId: string;
   questionId: string;
   moduleId: string;
@@ -147,6 +157,7 @@ export interface Attempt {
 
 export interface ReviewCard {
   questionId: string;
+  questionMode?: ConcreteStudyQuestionMode;
   moduleId: string;
   state: ReviewState;
   dueAt: string | null;
@@ -169,6 +180,7 @@ export interface ReviewCard {
 export interface ReviewLog {
   reviewLogId: string;
   questionId: string;
+  questionMode?: ConcreteStudyQuestionMode;
   moduleId: string;
   reviewedAt: string;
   rating: ReviewRating;

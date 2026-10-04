@@ -102,6 +102,8 @@ test('import error recovery, merge preview, JSON/ZIP/backup and PDF downloads', 
   await input.setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{') });
   await expect(page.locator('.issue.error')).not.toHaveCount(0);
   const pack = fixture().packs[0];
+  // JSON cannot carry image files; successful download coverage uses text-only material.
+  pack.questions = pack.questions.map(({ imageAsset, ...question }) => question);
   await input.setInputFiles({ name: 'long-filename-'.repeat(15) + '.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(pack)) });
   await page.getByRole('button', { name: 'この教材を取り込む', exact: true }).click();
   await expect(page.locator('.home-screen')).toBeVisible();
@@ -117,6 +119,22 @@ test('import error recovery, merge preview, JSON/ZIP/backup and PDF downloads', 
   const download = page.waitForEvent('download'); await page.getByRole('button', { name: 'PDFを書き出す' }).click();
   const file = await download; const path = info.outputPath('worksheet.pdf'); await file.saveAs(path);
   expect((await readFile(path)).subarray(0, 5).toString()).toBe('%PDF-');
+});
+
+test('image exports reject missing files instead of downloading incomplete material', async ({ page }) => {
+  await go(page, 'import');
+  const pack = fixture().packs[0];
+  await page.locator('input[type=file]').setInputFiles({ name: 'missing-images.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(pack)) });
+  await page.getByRole('button', { name: 'この教材を取り込む', exact: true }).click();
+  await expect(page.locator('.home-screen')).toBeVisible();
+  await go(page, 'import');
+  const downloads = [];
+  page.on('download', download => downloads.push(download));
+  await page.getByRole('button', { name: 'JSON', exact: true }).last().click();
+  await expect(page.locator('.toast').last()).toContainText('JSONでは画像を保存できません');
+  await page.getByRole('button', { name: 'ZIP', exact: true }).last().click();
+  await expect(page.locator('.toast').last()).toContainText('ZIPを書き出せません');
+  expect(downloads).toHaveLength(0);
 });
 
 // Reflow equivalents only: this does not certify native Chrome zoom or OS scaling.

@@ -47,6 +47,19 @@ function card(questionId: string): ReviewCard {
 }
 
 describe('review center model', () => {
+  it('excludes removed questions, moved modules and unsupported presentations from every due count', () => {
+    const model = buildReviewCenterModel(
+      [],
+      [card('missing'), { ...card('recent'), moduleId: 'removed' }, { ...card('old'), questionMode: 'back_to_front' }],
+      questions,
+      'all',
+      new Date('2026-09-27T00:00:00.000Z')
+    );
+    expect(model.schedule.total).toBe(0);
+    expect(model.allSchedule.dueToday).toBe(0);
+    expect(model.srsQueue).toEqual([]);
+    expect(model.buckets.overdue).toEqual([]);
+  });
   it('prepares recent scope without rendering DOM', () => {
     const now = new Date('2026-09-27T00:00:00.000Z');
     const model = buildReviewCenterModel(

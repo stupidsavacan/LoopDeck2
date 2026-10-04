@@ -39,30 +39,37 @@ describe('imported pack asset storage', () => {
     await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/map.png')], 'replace');
     expect(await db.getPackAsset(packId, 'images/map.png')).toMatchObject({ packId, path: 'images/map.png' });
 
-    await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/new.png')], 'upsert');
+    const mergedPack = {
+      ...savedPack,
+      questions: [...savedPack.questions, { ...savedPack.questions[0], id: 'new-q', imageAsset: 'images/new.png' }],
+      modules: [{ ...savedPack.modules[0], questionIds: ['q', 'new-q'] }]
+    };
+    await db.saveImportedPackWithAssets(mergedPack, [asset(packId, 'images/new.png')], 'upsert');
     expect(await db.getPackAsset(packId, 'images/map.png')).toBeDefined();
     expect(await db.getPackAsset(packId, 'images/new.png')).toBeDefined();
 
-    await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/new.png', 'bmV3')], 'replace');
+    const replacement = { ...savedPack, questions: [{ ...savedPack.questions[0], imageAsset: 'images/new.png' }] };
+    await db.saveImportedPackWithAssets(replacement, [asset(packId, 'images/new.png', 'bmV3')], 'replace');
     expect(await db.getPackAsset(packId, 'images/map.png')).toBeUndefined();
     expect((await db.getPackAsset(packId, 'images/new.png'))?.dataUrl).toBe('data:image/png;base64,bmV3');
-    expect(await db.getAttempts()).toContainEqual(attempt);
+    expect(await db.getAttempts()).not.toContainEqual(attempt);
+    expect((await db.exportUserData()).attempts).toContainEqual({ ...attempt, contentRetired: true });
 
     await db.deleteImportedPack(packId);
     expect(await db.getPackAsset(packId, 'images/new.png')).toBeUndefined();
     expect((await db.getImportedPacks()).some((item) => item.packId === packId)).toBe(false);
-    expect(await db.getAttempts()).toContainEqual(attempt);
+    expect(await db.getAttempts()).not.toContainEqual(attempt);
   });
 
-  it('overwrites an existing same-path asset during upsert merge', async () => {
+  it('rejects a same-path different-byte merge atomically and preserves the existing image', async () => {
     const packId = 'storage-image-path-collision';
     const savedPack = pack(packId);
     await db.deleteImportedPack(packId);
     await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/map.png', 'b2xk')], 'replace');
 
-    await db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/map.png', 'bmV3')], 'upsert');
+    await expect(db.saveImportedPackWithAssets(savedPack, [asset(packId, 'images/map.png', 'bmV3')], 'upsert')).rejects.toThrow();
 
-    expect((await db.getPackAsset(packId, 'images/map.png'))?.dataUrl).toBe('data:image/png;base64,bmV3');
+    expect((await db.getPackAsset(packId, 'images/map.png'))?.dataUrl).toBe('data:image/png;base64,b2xk');
     await db.deleteImportedPack(packId);
   });
 });

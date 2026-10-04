@@ -1,14 +1,17 @@
 import { encodeStudyCategory } from '../core/studyCategory';
 import type { ModuleInfo, StudySettings } from '../core/models';
-import {
-  canAutoReverseQuestion,
-  getModuleStudyQuestionModes,
-  getStudyQuestionModeLabel
-} from '../core/questionPresentation';
+import { canAutoReverseQuestion, getModuleStudyQuestionModes, getStudyQuestionModeLabel } from '../core/questionPresentation';
 import { buildRangeOptions, createSession, listQuestionCategories, selectSessionQuestions, type QuizSession } from '../core/sessionEngine';
 import { getModuleById, getQuestionsForModule, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
-import { readStoredSession, restoreStoredSession, saveStoredSession, clearStoredSession } from '../storage/sessionStorage';
+import { buildQuizAnswerSources } from '../services/quizPersistence';
+import {
+  readStoredSession,
+  restoreStoredSession,
+  saveStoredSession,
+  clearStoredSession,
+  sessionStorageScope
+} from '../storage/sessionStorage';
 import { defaultStudySettings, runtimeSettings } from '../core/studySettings';
 export { readStoredSession, restoreStoredSession } from '../storage/sessionStorage';
 export type { StoredSessionQuestion, StoredSession } from '../storage/sessionStorage';
@@ -55,6 +58,8 @@ export async function renderModuleScreen(
   const questionsById = new Map(questions.map((question) => [question.id, question]));
   const attempts = await db.getAttempts();
   const bookmarks = await db.getBookmarks();
+  const packAssets = await db.getImportedPackAssets();
+  const revisions = await db.getImportedPackRevisions();
   if (!isCurrent()) return;
   const wrongIds = new Set(attempts.filter((attempt) => attempt.result !== 'correct').map((attempt) => attempt.questionId));
   const bookmarkIds = new Set(bookmarks);
@@ -63,16 +68,32 @@ export async function renderModuleScreen(
   const categories = listQuestionCategories(questions);
   const rangeOptions = buildRangeOptions(questions);
   const questionModes = getModuleStudyQuestionModes(questions);
-  const storedSession = readStoredSession(module.id, questionsById);
+  const storageScope = {
+    ...(await sessionStorageScope(modulePackId ?? '', module, sessionQuestionPool)),
+    packRevision: revisions.get(modulePackId ?? '') ?? 'builtin',
+    resetEpoch: revisions.get('') ?? '0'
+  };
+  if (!isCurrent()) return;
+  const sourceByQuestionId = buildQuizAnswerSources(questions, packView.modulePackIdById, packAssets, revisions);
+  const storedSession = readStoredSession(module.id, questionsById, storageScope);
   const defaults = defaultStudySettings(module);
-  const storedPreferences = modulePackId ? readStudyPreferences(modulePackId, module.id) : undefined;
+  const storedPreferences = modulePackId
+    ? readStudyPreferences(modulePackId, module.id, undefined, storageScope.contentIdentity)
+    : undefined;
   const settings = sanitizeStudyPreferences(defaults, storedPreferences, {
     validRanges: rangeOptions.map((option) => option.value),
     categories,
     questionModes
   });
   const persistStudyPreferences = () => {
-    if (modulePackId && !writeStudyPreferences(modulePackId, module.id, settings)) toast('学習設定を保存できませんでした。');
+    if (modulePackId && !writeStudyPreferences(modulePackId, module.id, settings, undefined, storageScope.contentIdentity))
+      toast('学習設定を保存できませんでした。');
+  };
+  const persistSession = (session: QuizSession) => {
+    if (!saveStoredSession(module.id, session, storageScope)) toast('再開位置を保存できませんでした。学習は続けられます。');
+  };
+  const clearSession = () => {
+    if (!clearStoredSession(module.id, storageScope)) toast('保存された再開位置を削除できませんでした。');
   };
 
   clear(root);
@@ -234,9 +255,10 @@ export async function renderModuleScreen(
   }
 
   function mountSession(session: QuizSession): void {
-    saveStoredSession(module.id, session);
+    session.sourceByQuestionId = sourceByQuestionId;
+    persistSession(session);
     const update = (next: QuizSession) => {
-      saveStoredSession(module.id, next);
+      persistSession(next);
       mountSession(next);
     };
     renderInlineQuiz(
@@ -244,9 +266,9 @@ export async function renderModuleScreen(
       session,
       {
         onSessionChange: update,
-        onSessionCheckpoint: (checkpoint) => saveStoredSession(module.id, checkpoint),
+        onSessionCheckpoint: persistSession,
         onComplete: () => {
-          clearStoredSession(module.id);
+          clearSession();
           rerender();
         }
       },
@@ -275,7 +297,7 @@ export async function renderModuleScreen(
     resume.onclick = () => {
       const session = restoreStoredSession(module, storedSession, questionsById, sessionQuestionPool);
       if (!session) {
-        clearStoredSession(module.id);
+        clearSession();
         toast('保存された学習状態を復元できませんでした。');
         return;
       }

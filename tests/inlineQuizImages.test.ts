@@ -44,7 +44,8 @@ describe('renderInlineQuiz image assets', () => {
       session(),
       { onSessionChange() {}, onComplete() {} },
       {
-        resolveImageAsset: async () => 'data:image/png;base64,iVBORw0KGgo='
+        resolveImageAsset: async () =>
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
       }
     );
 
@@ -52,7 +53,9 @@ describe('renderInlineQuiz image assets', () => {
 
     const image = container.querySelector<HTMLImageElement>('img.question-image');
     expect(image).not.toBeNull();
-    expect(image?.src).toBe('data:image/png;base64,iVBORw0KGgo=');
+    expect(image?.src).toBe(
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+    );
     expect(container.querySelector('.image-fallback')).toBeNull();
   });
 
@@ -92,7 +95,7 @@ describe('renderInlineQuiz image assets', () => {
           packId: pack.packId,
           path: 'images/map.png',
           mimeType: 'image/png',
-          dataUrl: 'data:image/png;base64,iVBORw0KGgo='
+          dataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
         }
       ],
       'replace'
@@ -103,7 +106,9 @@ describe('renderInlineQuiz image assets', () => {
     renderInlineQuiz(container, session(), { onSessionChange() {}, onComplete() {} });
     await settleImageResolution();
 
-    expect(container.querySelector<HTMLImageElement>('img.question-image')?.src).toBe('data:image/png;base64,iVBORw0KGgo=');
+    expect(container.querySelector<HTMLImageElement>('img.question-image')?.src).toBe(
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+    );
     expect(container.querySelector('.image-fallback')).toBeNull();
     await db.deleteImportedPack(pack.packId);
   });

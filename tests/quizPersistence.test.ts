@@ -22,17 +22,16 @@ describe('quiz persistence service', () => {
     const cards: ReviewCard[] = [];
     const logs: ReviewLog[] = [];
     const store: QuizPersistenceStore = {
-      saveAttemptWithReview: vi.fn(async (_attempt: Attempt, card: ReviewCard, log: ReviewLog) => {
+      saveAttemptWithReview: vi.fn(async (_attempt: Attempt, update: (existing?: ReviewCard) => { card: ReviewCard; log: ReviewLog }) => {
+        const { card, log } = update();
         cards.push(card);
         logs.push(log);
-      }),
-      getReviewCard: vi.fn(async () => undefined)
+      })
     };
 
     await persistAttemptAndReview(attempt(), store);
 
     expect(store.saveAttemptWithReview).toHaveBeenCalledOnce();
-    expect(store.getReviewCard).toHaveBeenCalledWith('q1');
     expect(cards).toHaveLength(1);
     expect(cards[0]).toMatchObject({ questionId: 'q1', moduleId: 'm1', totalReviews: 1, totalWrong: 1 });
     expect(logs).toHaveLength(1);

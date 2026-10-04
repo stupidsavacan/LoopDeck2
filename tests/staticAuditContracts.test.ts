@@ -266,10 +266,13 @@ describe('quiz asynchronous ownership', () => {
     [...container.querySelectorAll('button')].find((b) => b.textContent === '回答する')!.click();
     await vi.waitFor(() => expect(callbacks.onSessionCheckpoint).toHaveBeenCalledTimes(1));
     disposeInlineQuizzes(container);
+    // Disposal synchronously saves active session duration; detached timers must
+    // not write anything after that final checkpoint.
+    expect(callbacks.onSessionCheckpoint).toHaveBeenCalledTimes(2);
     container.remove();
     window.dispatchEvent(new Event('pagehide'));
     await new Promise((resolve) => setTimeout(resolve, 750));
-    expect(callbacks.onSessionCheckpoint).toHaveBeenCalledTimes(1);
+    expect(callbacks.onSessionCheckpoint).toHaveBeenCalledTimes(2);
     expect(callbacks.onSessionChange).not.toHaveBeenCalled();
   });
   it('disables bookmark toggles until the initial read completes and rolls back failed writes', async () => {

@@ -147,10 +147,13 @@ jobs:
           EOF
           chmod 600 android/loopdeck-release.jks android/keystore.properties
 
+      - name: Derive traceable Android version
+        run: node scripts/android-version.mjs
+
       - name: Build signed release APK
         if: steps.signing.outputs.ready == 'true'
         working-directory: android
-        run: gradle --no-daemon assembleRelease
+        run: gradle --no-daemon assembleRelease -PloopdeckVersionCode="$LOOPDECK_VERSION_CODE" -PloopdeckVersionName="$LOOPDECK_VERSION_NAME"
 
       - name: List release APK outputs
         if: steps.signing.outputs.ready == 'true'
@@ -166,14 +169,8 @@ jobs:
           set -euo pipefail
           rm -rf artifacts/release-apk
           mkdir -p artifacts/release-apk
-          find android/app/build/outputs -type f -name "*.apk" -exec cp {} artifacts/release-apk/ \;
-          echo "Collected APK files:"
-          find artifacts/release-apk -type f -name "*.apk" -print
-          apk_count="$(find artifacts/release-apk -type f -name "*.apk" | wc -l | tr -d ' ')"
-          if [ "$apk_count" -eq 0 ]; then
-            echo "::error::No release APKs were collected from android/app/build/outputs."
-            exit 1
-          fi
+          test -s android/app/build/outputs/apk/release/app-release.apk
+          cp android/app/build/outputs/apk/release/app-release.apk artifacts/release-apk/app-release.apk
 
       - name: Upload release assets to GitHub Release
         if: steps.signing.outputs.ready == 'true'
@@ -181,11 +178,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          apk_path="$(find artifacts/release-apk -type f -name "*.apk" | sort | head -n 1)"
-          if [ -z "$apk_path" ]; then
-            echo "::error::No signed APK file was found for release upload."
-            exit 1
-          fi
+          apk_path="artifacts/release-apk/app-release.apk"
+          test -s "$apk_path"
 
           release_tag="signed-apk-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
           release_title="LoopDeck2 build ${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}"
