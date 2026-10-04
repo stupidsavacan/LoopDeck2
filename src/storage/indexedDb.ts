@@ -1,5 +1,8 @@
+import { recoverReviewRows } from './reviewRecovery';
+import type { ReviewCard } from '../core/models';
+
 const DB_NAME = 'loopdeck-db';
-const DB_VERSION = 4;
+const DB_VERSION = 7;
 export const USER_DATA_STORES = ['attempts', 'bookmarks', 'packs', 'packAssets', 'reviewCards', 'reviewLogs'] as const;
 
 function ensureStore(database: IDBDatabase, transaction: IDBTransaction, name: string, keyPath: string): IDBObjectStore {
@@ -19,11 +22,13 @@ function openDb(): Promise<IDBDatabase> {
 
   databasePromise = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
+    request.onupgradeneeded = (event) => {
       const database = request.result;
       if (database.objectStoreNames.contains('settings')) database.deleteObjectStore('settings');
       const upgradeTransaction = request.transaction;
       if (!upgradeTransaction) throw new Error('IndexedDB upgrade transaction is unavailable.');
+      // Version 7 keeps a durable reset epoch separate from user backup data.
+      ensureStore(database, upgradeTransaction, 'contentMetadata', 'key');
 
       const attempts = ensureStore(database, upgradeTransaction, 'attempts', 'attemptId');
       ensureIndex(attempts, 'byQuestionId', 'questionId');
@@ -35,11 +40,38 @@ function openDb(): Promise<IDBDatabase> {
       const packAssets = ensureStore(database, upgradeTransaction, 'packAssets', 'assetId');
       ensureIndex(packAssets, 'byPackId', 'packId');
 
-      ensureStore(database, upgradeTransaction, 'reviewCards', 'questionId');
+      const reviewCards = database.objectStoreNames.contains('reviewCards')
+        ? upgradeTransaction.objectStore('reviewCards')
+        : database.createObjectStore('reviewCards', { keyPath: ['questionId', 'questionMode'] });
 
       const reviewLogs = ensureStore(database, upgradeTransaction, 'reviewLogs', 'reviewLogId');
       ensureIndex(reviewLogs, 'byQuestionId', 'questionId');
       ensureIndex(reviewLogs, 'byReviewedAt', 'reviewedAt');
+      // Version 5 repairs record shapes; version 6 also separates study directions.
+      if (event.oldVersion < 6) {
+        const cards: ReviewCard[] = [];
+        recoverReviewRows(reviewCards, cards, reviewCards, undefined, () => {
+          if (Array.isArray(reviewCards.keyPath)) return;
+          database.deleteObjectStore('reviewCards');
+          const directedCards = database.createObjectStore('reviewCards', { keyPath: ['questionId', 'questionMode'] });
+          for (const card of cards) directedCards.put(card);
+        });
+        recoverReviewRows(reviewLogs, []);
+        const request = packAssets.openCursor();
+        request.onsuccess = () => {
+          const cursor = request.result;
+          if (!cursor) return;
+          const asset = cursor.value;
+          if (typeof asset.packId === 'string' && typeof asset.path === 'string') {
+            const assetId = JSON.stringify([asset.packId, asset.path]);
+            if (cursor.primaryKey !== assetId) {
+              cursor.delete();
+              packAssets.put({ ...asset, assetId });
+            }
+          }
+          cursor.continue();
+        };
+      }
     };
     request.onsuccess = () => {
       const database = request.result;
@@ -99,4 +131,3 @@ export async function getAll<T>(storeName: string): Promise<T[]> {
   const result = await transaction<T[]>(storeName, 'readonly', (store) => store.getAll());
   return Array.isArray(result) ? result : [];
 }
-

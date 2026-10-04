@@ -5,7 +5,14 @@ import type { Attempt, ChoiceQuestion, InputQuestion, Question } from '../core/m
 import { createIdleRevealController, type IdleRevealController } from '../core/idleRevealController';
 import { buildQuizAttempt, resolveQuizAnswerMode } from '../core/quizAnswer';
 import { createQuizBookmarkButton } from '../ui/quizBookmark';
-import { advanceSession, currentQuestion, elapsedForCurrent, isSessionComplete, type QuizSession } from '../core/sessionEngine';
+import {
+  advanceSession,
+  currentQuestion,
+  elapsedForCurrent,
+  elapsedForSession,
+  isSessionComplete,
+  type QuizSession
+} from '../core/sessionEngine';
 import { buildWrongAnswerFeedback } from '../core/wrongAnswerExplanation';
 import { resolveActiveQuestionImageAsset, type QuestionImageAssetResolver } from '../packs/packAssetResolver';
 import { persistAttemptAndReview } from '../services/quizPersistence';
@@ -117,8 +124,15 @@ export function renderInlineQuiz(
 
   function checkpointCurrentTiming(now = Date.now()): void {
     if (!isCurrentRender()) return;
+    const sessionElapsedMs = elapsedForSession(session, currentRenderExcludedMs(now), now);
+    if (answered) {
+      if (persistenceComplete) callbacks.onSessionCheckpoint?.(advanceSession(session, pendingAttempt, sessionElapsedMs));
+      return;
+    }
     callbacks.onSessionCheckpoint?.({
       ...session,
+      sessionElapsedMs,
+      sessionSegmentStartedAt: now,
       currentElapsedMs: currentAnswerElapsedMs(now),
       currentStartedAt: now,
       currentHiddenTimeExcludedMs: session.currentHiddenTimeExcludedMs + currentRenderExcludedMs(now)
@@ -133,6 +147,7 @@ export function renderInlineQuiz(
   }
 
   function cleanup(): void {
+    if (!moved) checkpointCurrentTiming();
     stopObserving();
     if (autoNextTimer !== undefined) window.clearTimeout(autoNextTimer);
     if (renderTokenByContainer.get(container) === renderToken) {
@@ -146,7 +161,7 @@ export function renderInlineQuiz(
   }
 
   function handleVisibilityChange(): void {
-    if (answered || moved || !isCurrentRender()) return;
+    if (moved || !isCurrentRender()) return;
     const now = Date.now();
     if (document.hidden) {
       checkpointCurrentTiming(now);
@@ -162,7 +177,7 @@ export function renderInlineQuiz(
   }
 
   function handlePageHide(): void {
-    if (!answered && !moved) checkpointCurrentTiming();
+    if (!moved) checkpointCurrentTiming();
   }
 
   function lockAnswerControls(): void {
@@ -176,7 +191,7 @@ export function renderInlineQuiz(
     if (moved || !persistenceComplete || !isCurrentRender()) return;
     moved = true;
     cleanup();
-    callbacks.onSessionChange(advanceSession(session, pendingAttempt));
+    callbacks.onSessionChange(advanceSession(session, pendingAttempt, elapsedForSession(session, currentRenderExcludedMs())));
   }
 
   async function persistAttempt(attempt: Attempt): Promise<void> {
@@ -184,11 +199,11 @@ export function renderInlineQuiz(
     persistenceInFlight = true;
     resultArea.querySelector('.persistence-error')?.remove();
     try {
-      await persistAttemptAndReview(attempt, db);
+      await persistAttemptAndReview(attempt, db, session.sourceByQuestionId?.get(attempt.questionId));
       persistenceComplete = true;
       if (!isCurrentRender()) return;
       try {
-        callbacks.onSessionCheckpoint?.(advanceSession(session, attempt));
+        callbacks.onSessionCheckpoint?.(advanceSession(session, attempt, elapsedForSession(session, currentRenderExcludedMs())));
       } catch (error) {
         // IndexedDB has committed. A localStorage checkpoint failure must not
         // retry the answer transaction and apply the SRS rating twice.
@@ -234,7 +249,8 @@ export function renderInlineQuiz(
   function record(answer: string | string[], revealed = false, generatedChoice?: GeneratedChoiceOption): void {
     if (answered || !isCurrentRender()) return;
     answered = true;
-    stopObserving();
+    idleController?.dispose();
+    idleController = undefined;
     lockAnswerControls();
     const elapsedMs = currentAnswerElapsedMs();
     const totalHiddenTimeExcludedMs = session.currentHiddenTimeExcludedMs + currentRenderExcludedMs();
@@ -381,6 +397,7 @@ export function renderInlineQuiz(
   if (image) card.append(image);
   card.append(answerArea, controls, resultArea);
   container.append(card);
+  if (document.hidden) hiddenStartedAt = Date.now();
   window.requestAnimationFrame(() => {
     if (!isCurrentRender()) return;
     container.scrollIntoView?.({ block: 'start', inline: 'nearest', behavior: 'auto' });

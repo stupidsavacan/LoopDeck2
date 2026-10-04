@@ -16,3 +16,4 @@ qa-report/
 qa-report-web/
 
 /.codex-code-map.json
+android/build/

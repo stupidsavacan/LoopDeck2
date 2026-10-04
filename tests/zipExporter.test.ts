@@ -31,7 +31,11 @@ const samplePack: LoopDeckPack = {
   ]
 };
 
-function asset(path: string, dataUrl = 'data:image/png;base64,iVBORw0KGgo=', packId = samplePack.packId): ImportedPackAsset {
+function asset(
+  path: string,
+  dataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+  packId = samplePack.packId
+): ImportedPackAsset {
   return { packId, path, mimeType: 'image/png', dataUrl };
 }
 
@@ -79,7 +83,9 @@ describe('zipExporter', () => {
     const zip = await JSZip.loadAsync(bytes);
 
     expect(zip.file('images/map.png')).not.toBeNull();
-    expect(await zip.file('images/map.png')!.async('base64')).toBe('iVBORw0KGgo=');
+    expect(await zip.file('images/map.png')!.async('base64')).toBe(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+    );
     expect(zip.file('images/unreferenced.png')).toBeNull();
   });
 
@@ -88,14 +94,22 @@ describe('zipExporter', () => {
     await db.deleteImportedPack(storedPack.packId);
     await db.saveImportedPackWithAssets(
       storedPack,
-      [asset('images/map.png', 'data:image/png;base64,c3RvcmVk', storedPack.packId)],
+      [
+        asset(
+          'images/map.png',
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+          storedPack.packId
+        )
+      ],
       'replace'
     );
 
     const blob = await createLoopDeckZipBlob(storedPack);
     const zip = await JSZip.loadAsync(await blob.arrayBuffer());
 
-    expect(await zip.file('images/map.png')!.async('base64')).toBe('c3RvcmVk');
+    expect(await zip.file('images/map.png')!.async('base64')).toBe(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+    );
     await db.deleteImportedPack(storedPack.packId);
   });
 
@@ -104,10 +118,7 @@ describe('zipExporter', () => {
       ...samplePack,
       questions: [{ ...samplePack.questions[0], imageAsset: '../evil.png' }]
     };
-    const bytes = await createLoopDeckZipBytes(unsafePack, [asset('../evil.png')]);
-    const zip = await JSZip.loadAsync(bytes);
-
-    expect(Object.keys(zip.files).sort()).toEqual(['manifest.json', 'modules.json', 'questions.json']);
+    await expect(createLoopDeckZipBytes(unsafePack, [asset('../evil.png')])).rejects.toThrow('Unsafe image reference');
   });
 
   it('exports full pack JSON with a trailing newline', () => {

@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import type { LoopDeckPack } from '../core/models';
 import { db } from '../storage/db';
-import { isSafeImageAssetRef, isSafeImageDataUrl } from './assetSafety';
+import { extensionOf, isSafeImageAssetRef, isSafeImageDataUrl } from './assetSafety';
 import type { ImportedPackAsset } from './packTypes';
 
 export interface LoopDeckZipFiles {
@@ -60,11 +60,44 @@ export function createLoopDeckZipFiles(pack: LoopDeckPack): LoopDeckZipFiles {
 }
 
 export function stringifyLoopDeckJson(pack: LoopDeckPack): string {
+  if (pack.questions.some((question) => question.imageAsset))
+    throw new Error('画像ファイルを含む教材はZIPで書き出してください。JSONでは画像を保存できません。');
   return stringifyJson(pack);
 }
 
+async function resolveExportAssets(pack: LoopDeckPack, assets?: ImportedPackAsset[]): Promise<ImportedPackAsset[]> {
+  if (!pack.questions.some((question) => question.imageAsset)) return [];
+  const available = assets ?? (await db.getImportedPackAssets());
+  const resolved: ImportedPackAsset[] = [];
+  const globalWithAssets = globalThis as typeof globalThis & { __LOOPDECK_EMBEDDED_ASSETS__?: Record<string, string> };
+  const paths = new Set(pack.questions.map((question) => question.imageAsset).filter((path): path is string => Boolean(path)));
+  for (const path of paths) {
+    if (!isSafeImageAssetRef(path)) throw new Error(`Unsafe image reference: ${path}`);
+    const stored = available.find((asset) => asset.packId === pack.packId && asset.path === path);
+    let dataUrl = stored?.dataUrl;
+    if (!dataUrl && pack.packId === 'loopdeck-builtin-v1') {
+      dataUrl = globalWithAssets.__LOOPDECK_EMBEDDED_ASSETS__?.[path];
+      if (!dataUrl) {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`Image could not be exported: ${path}`);
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        const mime = extensionOf(path) === '.png' ? 'image/png' : extensionOf(path) === '.webp' ? 'image/webp' : 'image/jpeg';
+        let binary = '';
+        for (let offset = 0; offset < bytes.length; offset += 8192) binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+        dataUrl = `data:${mime};base64,${btoa(binary)}`;
+      }
+    }
+    if (!dataUrl || !isSafeImageDataUrl(dataUrl)) throw new Error(`画像ファイルがないか破損しています。ZIPを書き出せません: ${path}`);
+    const expectedMime = extensionOf(path) === '.png' ? 'image/png' : extensionOf(path) === '.webp' ? 'image/webp' : 'image/jpeg';
+    if (!dataUrl.toLowerCase().startsWith(`data:${expectedMime};base64,`))
+      throw new Error(`Image type does not match its filename: ${path}`);
+    resolved.push({ packId: pack.packId, path, mimeType: dataUrl.slice(5, dataUrl.indexOf(';')), dataUrl });
+  }
+  return resolved;
+}
+
 export async function createLoopDeckZipBlob(pack: LoopDeckPack, assets?: ImportedPackAsset[]): Promise<Blob> {
-  const availableAssets = assets ?? (await db.getImportedPackAssets());
+  const availableAssets = await resolveExportAssets(pack, assets);
   return createZip(pack, availableAssets).generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
@@ -72,8 +105,8 @@ export async function createLoopDeckZipBlob(pack: LoopDeckPack, assets?: Importe
   });
 }
 
-export async function createLoopDeckZipBytes(pack: LoopDeckPack, assets: ImportedPackAsset[] = []): Promise<Uint8Array> {
-  return createZip(pack, assets).generateAsync({
+export async function createLoopDeckZipBytes(pack: LoopDeckPack, assets?: ImportedPackAsset[]): Promise<Uint8Array> {
+  return createZip(pack, await resolveExportAssets(pack, assets)).generateAsync({
     type: 'uint8array',
     compression: 'DEFLATE',
     compressionOptions: { level: 6 }

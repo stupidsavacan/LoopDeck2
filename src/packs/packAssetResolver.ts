@@ -1,7 +1,7 @@
 import type { Question } from '../core/models';
 import { db, type StoredPackAsset } from '../storage/db';
 import { isSafeImageAssetRef, isSafeImageDataUrl } from './assetSafety';
-import { getQuestionPackId, type ResolvedPackView } from './packResolver';
+import { getQuestionsForModule, type ResolvedPackView } from './packResolver';
 
 export interface PackAssetReader {
   getPackAsset(packId: string, path: string): Promise<StoredPackAsset | undefined>;
@@ -29,12 +29,14 @@ export function createQuestionImageAssetResolver(
     const path = question.imageAsset;
     if (!path || !isSafeImageAssetRef(path)) return undefined;
 
-    const packId = getQuestionPackId(packView, question.id);
+    const packId = getQuestionsForModule(packView, question.moduleId).some((item) => item.id === question.id)
+      ? packView.modulePackIdById.get(question.moduleId)
+      : undefined;
     if (!packId) return undefined;
 
     // Imported/overridden pack assets remain authoritative when present.
     const stored = await assetReader.getPackAsset(packId, path);
-    if (stored?.dataUrl) return stored.dataUrl;
+    if (stored?.dataUrl && isSafeImageDataUrl(stored.dataUrl)) return stored.dataUrl;
 
     if (packId !== BUILTIN_PACK_ID) return undefined;
 

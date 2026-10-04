@@ -7,6 +7,7 @@ import { loadBuiltinPacks } from './packs/builtinLoader';
 import { setActivePackAssetView } from './packs/packAssetResolver';
 import { resolveActivePacks, type ResolvedPackView } from './packs/packResolver';
 import { db } from './storage/db';
+import { subscribePackChanges } from './storage/packChanges';
 import { renderHomeScreen } from './screens/homeScreen';
 import { renderModuleScreen } from './screens/moduleScreen';
 import { disposeInlineQuizzes } from './screens/inlineQuiz';
@@ -341,6 +342,11 @@ async function renderRoute(route: AppRoute, lease: RouteRenderLease): Promise<vo
 window.addEventListener('popstate', (event) => {
   const route = isAppRoute(event.state) ? event.state : routeFromUrl();
   startRouteRender(route);
+});
+
+subscribePackChanges(() => {
+  invalidatePackView();
+  startRouteRender(routeFromUrl());
 });
 
 const initialRoute = routeFromUrl();

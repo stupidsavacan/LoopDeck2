@@ -2,8 +2,11 @@ import type { ModuleInfo, Question, ReviewCard, StudySettings } from '../core/mo
 import { DEFAULT_REVIEW_LOOKBACK_DAYS } from '../core/reviewEngine';
 import { buildReviewCenterModel, type ReviewScope } from '../core/reviewCenterModel';
 import { createSession, type QuizSession } from '../core/sessionEngine';
+import { presentQuestionForStudy } from '../core/questionPresentation';
+import { buildSrsReviewQueue } from '../core/scheduler';
 import { getActiveQuestions, type ResolvedPackView } from '../packs/packResolver';
 import { db } from '../storage/db';
+import { buildQuizAnswerSources } from '../services/quizPersistence';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel } from '../ui/icons';
 import { renderInlineQuiz } from './inlineQuiz';
@@ -13,7 +16,10 @@ const percent = (value: number): string => `${Math.round(value * 100)}%`;
 const seconds = (value: number): string => `${Math.round(value / 100) / 10}秒`;
 
 function questionsForCards(cards: ReviewCard[], questionsById: Map<string, Question>): Question[] {
-  return cards.map((card) => questionsById.get(card.questionId)).filter((question): question is Question => Boolean(question));
+  return cards.flatMap((card) => {
+    const question = questionsById.get(card.questionId);
+    return question ? [presentQuestionForStudy(question, card.questionMode ?? 'as_stored')] : [];
+  });
 }
 
 function stat(label: string, value: string | number): HTMLElement {
@@ -65,8 +71,11 @@ export async function renderReviewCenter(
   if (!isCurrent()) return;
   const attempts = await db.getAttempts();
   const reviewCards = await db.getReviewCards();
+  const packAssets = await db.getImportedPackAssets();
+  const revisions = await db.getImportedPackRevisions();
   if (!isCurrent()) return;
   const questions = getActiveQuestions(packView);
+  const sourceByQuestionId = buildQuizAnswerSources(questions, packView.modulePackIdById, packAssets, revisions);
   const modules = packView.moduleById;
   const scope = readReviewScope();
   const { questionsById, activeModuleIds, queue, mistakes, analyses, weak, schedule, buckets, srsQueue, hiddenDueCount } =
@@ -141,6 +150,12 @@ export async function renderReviewCenter(
       showCategory: true
     };
     const session = createSession(reviewModule, items, settings, 'review', questions);
+    session.sourceByQuestionId = sourceByQuestionId;
+    // SRS items already carry their presentation. A queue may contain both
+    // directions of one question, so a single session setting cannot represent it.
+    if (items.some((question) => question.activeStudyMode !== undefined)) {
+      session.queue = session.queue.map((question, index) => items[index] ?? question);
+    }
     const update = (next: QuizSession) => renderInlineQuiz(mount, next, { onSessionChange: update, onComplete: rerender }, { isCurrent });
     renderInlineQuiz(mount, session, { onSessionChange: update, onComplete: rerender }, { isCurrent });
   }
@@ -169,7 +184,8 @@ export async function renderReviewCenter(
   const overdue = button('期限切れだけ復習', 'btn');
   overdue.onclick = () => startReviewSession(questionsForCards(buckets.overdue, questionsById), '期限切れ復習', 'srs-overdue', 30, false);
   const leech = button('重点復習だけ', 'btn');
-  leech.onclick = () => startReviewSession(questionsForCards(buckets.leech, questionsById), '重点復習', 'srs-leech', 30, false);
+  leech.onclick = () =>
+    startReviewSession(questionsForCards(buildSrsReviewQueue(buckets.leech), questionsById), '重点復習', 'srs-leech', 30, false);
   const reset = button('SRS予定だけリセット', 'btn ghost danger');
   reset.onclick = async () => {
     if (!window.confirm('SRSの次回予定・状態・ReviewLogだけ削除します。回答履歴は残るため、履歴ベースの弱点候補は残ります。')) return;
@@ -231,7 +247,7 @@ export async function renderReviewCenter(
   srsListCard.append(el('h2', '', '今日の候補'));
   const srsList = el('div', 'priority-list');
   for (const card of srsQueue.slice(0, 3)) {
-    const question = questionsById.get(card.questionId);
+    const question = questionsForCards([card], questionsById)[0];
     if (!question) continue;
     const row = el('div', `priority-row priority-${card.state}`);
     const meta = el('div', 'pack-meta');

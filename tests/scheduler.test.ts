@@ -16,6 +16,17 @@ function card(overrides: Partial<ReviewCard> = {}): ReviewCard {
 }
 
 describe('SRS scheduler', () => {
+  it('honors exact due time while retaining same-day cards in summary buckets', () => {
+    const { card: retry } = applyReviewRating(card(), 'again', 'wrong', 1000, { now });
+    expect(bucketReviewCards([retry], now).relearning).toEqual([retry]);
+    expect(buildSrsReviewQueue([retry], now)).toEqual([]);
+    expect(buildSrsReviewQueue([retry], new Date('2026-06-05T09:09:59.999Z'))).toEqual([]);
+    expect(buildSrsReviewQueue([retry], new Date('2026-06-05T09:10:00.000Z'))).toEqual([retry]);
+    const leech = { ...retry, state: 'leech' as const };
+    expect(buildSrsReviewQueue([leech], now)).toEqual([]);
+    const normalReview = { ...retry, state: 'review' as const };
+    expect(buildSrsReviewQueue([normalReview], now)).toEqual([]);
+  });
   it('new card + good becomes review with dueAt and intervalDays >= 1', () => {
     const result = applyReviewRating(card(), 'good', 'correct', 9000, { now });
 

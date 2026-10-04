@@ -55,13 +55,13 @@ LoopDeck は、生の回答履歴と問題ごとの復習状態を保存しま�
 ## コマンド
 
 ```bash
-npm install
+npm ci --include=dev
 npm run dev
 npm test
 npm run build
 ```
 
-依存関係は `latest` ではなく、安定した Vite / TypeScript / Vitest のバージョンに固定しています。生成済みの lockfile は削除しました。これは private / internal registry を指しており、GitHub Actions 上で壊れた Vite パッケージに解決されていたためです。
+依存関係の解決結果は公開npmレジストリから生成した `package-lock.json` に固定しています。ローカル・CIとも `npm ci` を使い、CIではlockfileの参照先レジストリも検証します。Dependabotが依存関係とGitHub Actionsの更新を週次で確認します。
 
 ## GitHub Actions
 
@@ -74,10 +74,12 @@ push、pull request、手動実行では、Web のみの CI ワークフロー�
 実行内容:
 
 ```text
-npm install --include=dev
+npm ci --include=dev
 npm test
 npm run build
 ```
+
+AndroidのCIビルドには、workflowのrun numberと再実行番号から生成した `versionCode`、およびcommit SHAを含む `versionName` を付けます。署名付きreleaseは `app-release.apk` を明示してGitHub Releasesへ公開します。ローカルreleaseビルドにも `-PloopdeckVersionCode=... -PloopdeckVersionName=...` が必要です。
 
 未署名の debug APK を出力するには、次のワークフローを実行します。
 

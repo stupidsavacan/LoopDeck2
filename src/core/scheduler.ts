@@ -1,4 +1,4 @@
-import type { AnswerFormat, AnswerResult, ReviewCard, ReviewLog, ReviewRating } from './models';
+import type { AnswerFormat, AnswerResult, ConcreteStudyQuestionMode, ReviewCard, ReviewLog, ReviewRating } from './models';
 import { endOfLocalCalendarDay, startOfLocalCalendarDay } from './calendarDay';
 
 const DEFAULT_EASE = 2.5;
@@ -71,10 +71,16 @@ export function inferReviewRating(result: AnswerResult, elapsedMs: number, answe
   return 'good';
 }
 
-export function createReviewCard(questionId: string, moduleId: string, now = new Date()): ReviewCard {
+export function createReviewCard(
+  questionId: string,
+  moduleId: string,
+  now = new Date(),
+  questionMode: ConcreteStudyQuestionMode = 'as_stored'
+): ReviewCard {
   const createdAt = iso(now);
   return {
     questionId,
+    questionMode,
     moduleId,
     state: 'new',
     dueAt: null,
@@ -168,6 +174,7 @@ export function applyReviewRating(
   const log: ReviewLog = {
     reviewLogId: reviewLogId(next.questionId, reviewedAt),
     questionId: next.questionId,
+    questionMode: next.questionMode ?? 'as_stored',
     moduleId: next.moduleId,
     reviewedAt,
     rating,
@@ -220,7 +227,10 @@ export function bucketReviewCards(cards: ReviewCard[], now = new Date()): Review
 }
 
 export function buildSrsReviewQueue(cards: ReviewCard[], now = new Date(), limit = 30): ReviewCard[] {
-  const buckets = bucketReviewCards(cards, now);
+  const buckets = bucketReviewCards(
+    cards.filter((card) => (dueTime(card) ?? Infinity) <= now.getTime()),
+    now
+  );
   return [...buckets.relearning, ...buckets.overdue, ...buckets.dueToday, ...buckets.leech, ...buckets.masteredDue].slice(
     0,
     Math.max(0, limit)

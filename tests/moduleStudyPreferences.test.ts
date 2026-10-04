@@ -214,6 +214,7 @@ describe('module screen study preferences', () => {
 
   it('clears only resume state when a session completes and keeps reusable preferences', async () => {
     const pack = testPack(1);
+    await db.saveImportedPack(pack);
     const view = resolveActivePacks([pack]);
     const root = document.createElement('div');
     await renderModuleScreen(
