@@ -11,6 +11,7 @@ import { createLoopDeckZipBlob, makePackFileStem, stringifyLoopDeckJson } from '
 import { saveBlob } from '../platform/fileSave';
 import { readImportFile } from '../services/importFileService';
 import { db, type BackupImportMode, type LoopDeckBackup } from '../storage/db';
+import { exportLoopDeck3MigrationBackup } from '../storage/backupExport';
 import { button, clear, el, toast } from '../ui/dom';
 import { appendIconLabel, createUiIcon } from '../ui/icons';
 
@@ -42,6 +43,17 @@ async function exportBackup(): Promise<void> {
     toast('バックアップを書き出しました。');
   } catch (error) {
     toast(`書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+async function exportLoopDeck3Migration(): Promise<void> {
+  try {
+    const backup = await exportLoopDeck3MigrationBackup();
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    await saveBlob(blob, `loopdeck2-to-loopdeck3-${backup.exportedAt.slice(0, 10)}.json`);
+    toast('LoopDeck3引き継ぎ用バックアップを書き出しました。');
+  } catch (error) {
+    toast(`LoopDeck3引き継ぎ用バックアップの書き出しに失敗しました：${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -197,10 +209,10 @@ export async function renderImportScreen(
     }
   }
 
-  function renderBackupImport(backup: LoopDeckBackup): void {
+  function renderBackupImport(backup: LoopDeckBackup, source: 'loopdeck2' | 'loopdeck3'): void {
     clear(preview);
     preview.append(
-      el('h2', '', 'バックアップを読み込む'),
+      el('h2', '', source === 'loopdeck3' ? 'LoopDeck3 バックアップを読み込む' : 'バックアップを読み込む'),
       el(
         'p',
         'import-summary',
@@ -234,7 +246,7 @@ export async function renderImportScreen(
     try {
       const imported = await readImportFile(file);
       if (imported.kind === 'backup') {
-        renderBackupImport(imported.backup);
+        renderBackupImport(imported.backup, imported.source);
         return;
       }
       const result = imported.result;
@@ -476,6 +488,8 @@ export async function renderImportScreen(
   const dataActions = el('div', 'data-actions');
   const backup = button('履歴バックアップを書き出し', 'btn primary');
   backup.onclick = () => void exportBackup();
+  const loopDeck3Migration = button('LoopDeck3へ引き継ぎ', 'btn');
+  loopDeck3Migration.onclick = () => void exportLoopDeck3Migration();
   const clearHistory = button('回答履歴を全削除', 'btn ghost danger');
   clearHistory.onclick = async () => {
     if (!window.confirm('回答履歴をすべて削除します。ブックマークと教材パックは残ります。')) return;
@@ -494,7 +508,7 @@ export async function renderImportScreen(
     await db.clearBookmarks();
     toast('ブックマークを削除しました。');
   };
-  dataActions.append(backup);
+  dataActions.append(backup, loopDeck3Migration);
   const dangerZone = el('details', 'v2-danger-zone');
   dangerZone.append(el('summary', '', 'データ削除'));
   const dangerActions = el('div', 'v2-danger-actions');
@@ -502,7 +516,11 @@ export async function renderImportScreen(
   dangerZone.append(dangerActions);
   dataCard.append(
     dataActions,
-    el('p', 'hint', 'JSONバックアップを読み込むと、「現在データを置き換えて復元」または「現在データにマージ」を選べます。'),
+    el(
+      'p',
+      'hint',
+      '通常バックアップに加え、LoopDeck3へそのまま読み込める引き継ぎ用JSONを書き出せます。LoopDeck2 / LoopDeck3 の対応バックアップは、置き換え復元またはマージを選べます。'
+    ),
     dangerZone
   );
 
@@ -529,7 +547,7 @@ export async function renderImportScreen(
     el('summary', '', '対応ファイルと安全制限'),
     infoList([
       'JSON単体、または manifest.json / modules.json / questions.json を含む .loopdeck.zip に対応。',
-      'LoopDeckバックアップJSONは、置き換え復元とマージ読み込みを明示的に選べます。',
+      'LoopDeck2 native backup v1 と LoopDeck3 backup schema 1 は、置き換え復元とマージ読み込みを明示的に選べます。',
       'HTML / JavaScript / CSS は教材として実行しません。',
       '.html / .js / .mjs / .cjs / .css / .apk / .dex / .jar / .so / .exe / .bat / .cmd / .sh / .ps1 は拒否します。',
       '../、..\\、絶対パス、空パス、null byte を含む危険なパスは拒否します。'

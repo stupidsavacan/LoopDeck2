@@ -1,10 +1,17 @@
 import { importLoopDeckJson, importLoopDeckZip } from '../packs/zipImporter';
 import { validateImportFileSize } from '../packs/importLimits';
 import type { PackValidationResult } from '../packs/packTypes';
-import { looksLikeLoopDeckBackup, validateBackupPayload } from '../storage/backupValidator';
+import {
+  looksLikeLoopDeck3Backup,
+  looksLikeLoopDeckBackup,
+  normalizeLoopDeck3Backup,
+  validateBackupPayload
+} from '../storage/backupValidator';
 import type { LoopDeckBackup } from '../storage/db';
 
-export type ImportFileResult = { kind: 'backup'; backup: LoopDeckBackup } | { kind: 'pack'; result: PackValidationResult };
+export type ImportFileResult =
+  | { kind: 'backup'; backup: LoopDeckBackup; source: 'loopdeck2' | 'loopdeck3' }
+  | { kind: 'pack'; result: PackValidationResult };
 
 export async function readImportFile(file: File): Promise<ImportFileResult> {
   const issues = validateImportFileSize(file);
@@ -23,7 +30,8 @@ export async function readImportFile(file: File): Promise<ImportFileResult> {
   } catch {
     parsed = undefined;
   }
-  if (looksLikeLoopDeckBackup(parsed)) return { kind: 'backup', backup: validateBackupPayload(parsed) };
+  if (looksLikeLoopDeckBackup(parsed)) return { kind: 'backup', backup: validateBackupPayload(parsed), source: 'loopdeck2' };
+  if (looksLikeLoopDeck3Backup(parsed)) return { kind: 'backup', backup: normalizeLoopDeck3Backup(parsed), source: 'loopdeck3' };
   const jsonFile = new File([text], file.name, { type: file.type || 'application/json' });
   return { kind: 'pack', result: await importLoopDeckJson(jsonFile) };
 }
