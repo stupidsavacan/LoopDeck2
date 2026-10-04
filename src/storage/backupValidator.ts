@@ -16,7 +16,7 @@ import { validatePack, validateActivePackIdentities } from '../packs/packValidat
 import { loadBuiltinPacks } from '../packs/builtinLoader';
 import { resolveActivePacks } from '../packs/packResolver';
 import { getSupportedStudyQuestionModes } from '../core/questionPresentation';
-import type { LoopDeckBackup, StoredPackAsset } from './storageTypes';
+import type { LoopDeck3MigrationBackup, LoopDeckBackup, StoredPackAsset } from './storageTypes';
 
 const ANSWER_RESULTS = new Set<AnswerResult>(['correct', 'wrong', 'revealed']);
 const ATTEMPT_MODES = new Set(['normal', 'review']);
@@ -286,6 +286,41 @@ export function parseStoredAsset(value: unknown, index: number, packIds: Set<str
 
 export function looksLikeLoopDeckBackup(value: unknown): boolean {
   return isObject(value) && value.loopDeckBackupVersion !== undefined;
+}
+
+export function looksLikeLoopDeck3Backup(value: unknown): boolean {
+  return isObject(value) && value.format === 'loopdeck3.backup';
+}
+
+export function normalizeLoopDeck3Backup(value: unknown): LoopDeckBackup {
+  if (!isObject(value) || value.format !== 'loopdeck3.backup') fail('format must be loopdeck3.backup.');
+  if (value.schema !== 1) fail('LoopDeck3 schema must be 1.');
+  const normalized = {
+    loopDeckBackupVersion: 1,
+    exportedAt: value.exportedAt,
+    attempts: value.attempts,
+    bookmarks: value.bookmarks,
+    importedPacks: value.importedPacks,
+    ...(value.importedPackAssets !== undefined ? { importedPackAssets: value.importedPackAssets } : {}),
+    ...(value.reviewCards !== undefined ? { reviewCards: value.reviewCards } : {}),
+    ...(value.reviewLogs !== undefined ? { reviewLogs: value.reviewLogs } : {})
+  };
+  return validateBackupPayload(normalized);
+}
+
+export function validateLoopDeck3MigrationBackup(value: unknown): LoopDeck3MigrationBackup {
+  const backup = normalizeLoopDeck3Backup(value);
+  return {
+    format: 'loopdeck3.backup',
+    schema: 1,
+    exportedAt: backup.exportedAt,
+    attempts: backup.attempts,
+    bookmarks: backup.bookmarks,
+    importedPacks: backup.importedPacks,
+    ...(backup.importedPackAssets !== undefined ? { importedPackAssets: backup.importedPackAssets } : {}),
+    ...(backup.reviewCards !== undefined ? { reviewCards: backup.reviewCards } : {}),
+    ...(backup.reviewLogs !== undefined ? { reviewLogs: backup.reviewLogs } : {})
+  };
 }
 
 export function validateBackupPayload(value: unknown): LoopDeckBackup {

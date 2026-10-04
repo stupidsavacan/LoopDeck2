@@ -59,9 +59,37 @@ describe('backup import UI semantics', () => {
     const labels = [...root.querySelectorAll('button')].map((button) => button.textContent);
     expect(labels).toContain('現在データを置き換えて復元');
     expect(labels).toContain('現在データにマージ');
+    expect(root.textContent).not.toContain('LoopDeck3 バックアップを読み込む');
 
     const merge = [...root.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === '現在データにマージ')!;
     merge.click();
     await vi.waitFor(() => expect(importUserData).toHaveBeenCalledWith(backup, 'merge'));
+  });
+
+  it('labels LoopDeck3 schema 1 backups while preserving restore choices', async () => {
+    installFileTextForJSDom();
+    vi.spyOn(db, 'getImportedPacks').mockResolvedValue([]);
+    const root = document.createElement('div');
+    document.body.append(root);
+    await renderImportScreen(
+      root,
+      resolveActivePacks([]),
+      () => {},
+      async () => {}
+    );
+
+    const input = root.querySelector<HTMLInputElement>('input[type="file"]')!;
+    const file = new File(
+      [JSON.stringify({ format: 'loopdeck3.backup', schema: 1, exportedAt: backup.exportedAt, attempts: [], bookmarks: [], importedPacks: [] })],
+      'loopdeck3-backup.json',
+      { type: 'application/json' }
+    );
+    Object.defineProperty(input, 'files', { value: [file], configurable: true });
+    await input.onchange?.(new Event('change'));
+
+    expect(root.textContent).toContain('LoopDeck3 バックアップを読み込む');
+    const labels = [...root.querySelectorAll('button')].map((button) => button.textContent);
+    expect(labels).toContain('現在データを置き換えて復元');
+    expect(labels).toContain('現在データにマージ');
   });
 });

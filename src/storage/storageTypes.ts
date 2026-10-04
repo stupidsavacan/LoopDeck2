@@ -5,8 +5,7 @@ export interface StoredPackAsset extends ImportedPackAsset {
   assetId: string;
 }
 
-export interface LoopDeckBackup {
-  loopDeckBackupVersion: 1;
+export interface BackupSnapshot {
   exportedAt: string;
   attempts: Attempt[];
   bookmarks: string[];
@@ -14,6 +13,15 @@ export interface LoopDeckBackup {
   importedPackAssets?: StoredPackAsset[];
   reviewCards?: ReviewCard[];
   reviewLogs?: ReviewLog[];
+}
+
+export interface LoopDeckBackup extends BackupSnapshot {
+  loopDeckBackupVersion: 1;
+}
+
+export interface LoopDeck3MigrationBackup extends BackupSnapshot {
+  format: 'loopdeck3.backup';
+  schema: 1;
 }
 
 export type BackupImportMode = 'merge' | 'replace';

@@ -8,9 +8,9 @@ import { parseAttempt, parseReviewLog, parseStoredAsset, validateBackupPayload }
 import { runTransaction, USER_DATA_STORES } from './indexedDb';
 import { installedOrder, recoverStoredPacks } from './packStorage';
 import { recoverReviewCard, recoverStoredRows } from './reviewRecovery';
-import type { LoopDeckBackup } from './storageTypes';
+import type { BackupSnapshot, LoopDeck3MigrationBackup, LoopDeckBackup } from './storageTypes';
 
-export async function exportBackup(): Promise<LoopDeckBackup> {
+export async function collectBackupSnapshot(): Promise<BackupSnapshot> {
   // Queue all reads together. Overlapping writes cannot interleave between stores.
   const requests = await runTransaction([...USER_DATA_STORES], 'readonly', (tx) =>
     Object.fromEntries(USER_DATA_STORES.map((name) => [name, tx.objectStore(name).getAll() as IDBRequest<unknown[]>]))
@@ -65,8 +65,7 @@ export async function exportBackup(): Promise<LoopDeckBackup> {
     const questionId = typeof row === 'object' && row !== null && 'questionId' in row ? row.questionId : undefined;
     return typeof questionId === 'string' && questionId.trim() ? [questionId] : [];
   });
-  return validateBackupPayload({
-    loopDeckBackupVersion: 1,
+  return {
     exportedAt: new Date().toISOString(),
     attempts,
     bookmarks,
@@ -74,5 +73,31 @@ export async function exportBackup(): Promise<LoopDeckBackup> {
     importedPackAssets,
     reviewCards,
     reviewLogs
+  };
+}
+
+function validateSnapshot(snapshot: BackupSnapshot): LoopDeckBackup {
+  return validateBackupPayload({
+    loopDeckBackupVersion: 1,
+    ...snapshot
   });
+}
+
+export async function exportBackup(): Promise<LoopDeckBackup> {
+  return validateSnapshot(await collectBackupSnapshot());
+}
+
+export async function exportLoopDeck3MigrationBackup(): Promise<LoopDeck3MigrationBackup> {
+  const backup = validateSnapshot(await collectBackupSnapshot());
+  return {
+    format: 'loopdeck3.backup',
+    schema: 1,
+    exportedAt: backup.exportedAt,
+    attempts: backup.attempts,
+    bookmarks: backup.bookmarks,
+    importedPacks: backup.importedPacks,
+    ...(backup.importedPackAssets !== undefined ? { importedPackAssets: backup.importedPackAssets } : {}),
+    ...(backup.reviewCards !== undefined ? { reviewCards: backup.reviewCards } : {}),
+    ...(backup.reviewLogs !== undefined ? { reviewLogs: backup.reviewLogs } : {})
+  };
 }
